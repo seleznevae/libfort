@@ -1,0 +1,52 @@
+cmake_minimum_required(VERSION 2.8)
+
+project(libfort)
+
+option(CERAII_TEST_BUILD "Test build with sanitizers and small library stack size" ON)
+option(CERAII_GCC_BUILD "Build with gcc" ON)
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
+include_directories(include)
+include_directories(src)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+
+
+
+
+FILE(GLOB_RECURSE FortHeaders "include/*.h" "tests/*.h")
+add_custom_target(headers SOURCES ${FortHeaders})
+
+
+set(FORT_SOURCES src/fort.c)
+
+
+add_executable(${PROJECT_NAME}
+    example/main.c
+    ${FORT_SOURCES})
+
+
+include_directories(tests/cmocka-1.1.0/include)
+link_directories(${CMAKE_SOURCE_DIR}/tests/cmocka-1.1.0/build/src)
+
+add_executable(TEST
+    tests/test.c
+    tests/test_vector.c
+    tests/test_table.c)
+
+target_link_libraries(TEST
+    cmocka)
+
+
+
+
+
+if(CERAII_TEST_BUILD)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
+    if(CERAII_GCC_BUILD)
+        target_link_libraries(${PROJECT_NAME} asan)
+        target_link_libraries(TEST asan)
+    endif(CERAII_GCC_BUILD)
+endif(CERAII_TEST_BUILD)
+

@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/cmocka.h
+
+/home/anton/programs/libfort/tests/cmocka-1.1.0/example/key_value.c
+stddef.h
+-
+stdlib.h
+-
+string.h
+-
+key_value.h
+/home/anton/programs/libfort/tests/cmocka-1.1.0/example/key_value.h
+
+/home/anton/programs/libfort/tests/cmocka-1.1.0/example/key_value.h
+
+/home/anton/programs/libfort/tests/cmocka-1.1.0/example/key_value_test.c
+stdarg.h
+-
+stddef.h
+-
+setjmp.h
+-
+string.h
+-
+cmocka.h
+-
+key_value.h
+/home/anton/programs/libfort/tests/cmocka-1.1.0/example/key_value.h
+

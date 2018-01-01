@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/cmocka.h
+
+/home/anton/programs/libfort/tests/cmocka-1.1.0/example/assert_macro.c
+string.h
+-
+assert_macro.h
+/home/anton/programs/libfort/tests/cmocka-1.1.0/example/assert_macro.h
+
+/home/anton/programs/libfort/tests/cmocka-1.1.0/example/assert_macro.h
+
+/home/anton/programs/libfort/tests/cmocka-1.1.0/example/assert_macro_test.c
+stdarg.h
+-
+stddef.h
+-
+setjmp.h
+-
+cmocka.h
+-
+assert_macro.h
+/home/anton/programs/libfort/tests/cmocka-1.1.0/example/assert_macro.h
+
