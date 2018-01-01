@@ -182,16 +182,6 @@ int lines_number_cell(fort_cell_t *cell)
     return result + 1;
 }
 
-int hint_height_cell(fort_cell_t *cell)
-{
-    assert(cell);
-    int result = cell->options.padding_top + cell->options.padding_bottom;
-    if (cell->str_buffer) {
-        result += lines_number_cell(cell);
-    }
-    return result;
-}
-
 /*****************************************************************************
  *               ROW
  * ***************************************************************************/
@@ -930,7 +920,7 @@ static void table_geometry(const FTABLE *table, size_t *height, size_t *width)
     if (table) {
         size_t cols = 0;
         size_t rows = 0;
-        table_sizes(table, &rows, &cols);
+        table_body_sizes(table, &rows, &cols);
         if (table->header) {
             cols = MAX(cols, columns_in_row(table->header));
             ++rows;
