@@ -28,6 +28,7 @@ SOFTWARE.
 #define LIBFORT_H
 
 #include <stddef.h>
+#include <stdlib.h>
 
 /*
  * Determine compiler
@@ -86,14 +87,14 @@ int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ..
 int ft_row_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, ...);
 int ft_cell_printf(FTABLE *FORT_RESTRICT table, size_t row, size_t col, const char* FORT_RESTRICT fmt, ...);
 
-const char* ft_to_string(const FTABLE *FORT_RESTRICT table);
-const char* ft_n_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
+char* ft_to_string(const FTABLE *FORT_RESTRICT table);
+ssize_t ft_n_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
 
-const char* ft_header_to_string(const FTABLE *FORT_RESTRICT table);
-const char* ft_n_header_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
+char* ft_header_to_string(const FTABLE *FORT_RESTRICT table);
+ssize_t ft_n_header_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
 
-const char* ft_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row);
-const char* ft_n_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row, char *FORT_RESTRICT dst, size_t dst_len);
+char* ft_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row);
+ssize_t ft_n_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row, char *FORT_RESTRICT dst, size_t dst_len);
 
 FORT_END_DECLS
 

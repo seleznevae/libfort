@@ -18,6 +18,19 @@
 #define F_CREATE(type) ((type *)F_CALLOC(sizeof(type), 1))
 
 #define MAX(a,b) ((a) > (b) ? (a) : b)
+#define MIN(a,b) ((a) < (b) ? (a) : b)
+
+
+
+#define STR_2_CAT_(arg1, arg2) \
+    arg1##arg2
+#define STR_2_CAT(arg1, arg2) \
+    STR_2_CAT_(arg1, arg2)
+
+#define UNIQUE_NAME_(prefix) \
+    STR_2_CAT(prefix,__COUNTER__)
+#define UNIQUE_NAME(prefix) \
+    UNIQUE_NAME_(prefix)
 
 
 /*****************************************************************************
@@ -80,11 +93,30 @@ static void* vector_at(vector_t*, size_t index);
 /*****************************************************************************
  *               CELL
  * ***************************************************************************/
+struct cell_options
+{
+    int padding_top;
+    int padding_bottom;
+    int padding_left;
+    int padding_right;
+};
+typedef struct cell_options cell_options_t;
+
+void init_cell_options(cell_options_t *options)
+{
+    assert(options);
+    options->padding_top = 1;
+    options->padding_bottom = 1;
+    options->padding_left = 1;
+    options->padding_right = 1;
+}
+
 struct fort_cell;
 typedef struct fort_cell fort_cell_t;
 struct fort_cell
 {
     string_buffer_t *str_buffer;
+    cell_options_t options;
 };
 
 fort_cell_t * create_cell()
@@ -97,6 +129,7 @@ fort_cell_t * create_cell()
         F_FREE(cell);
         return NULL;
     }
+    init_cell_options(&(cell->options));
     return cell;
 }
 
@@ -108,25 +141,56 @@ void destroy_cell(fort_cell_t *cell)
     F_FREE(cell);
 }
 
+int hint_width_cell(fort_cell_t *cell)
+{
+    assert(cell);
+    int result = cell->options.padding_left + cell->options.padding_right;
+    if (cell->str_buffer && cell->str_buffer->str) {
+        result += strlen(cell->str_buffer->str);
+    }
+    return result;
+}
+
+int hint_height_cell(fort_cell_t *cell)
+{
+    assert(cell);
+    int result = cell->options.padding_top + cell->options.padding_bottom;
+    if (cell->str_buffer && cell->str_buffer->str) {
+        result += 1;
+    }
+    return result;
+}
+
+
 /*
  * Returns number of lines in cell. If cell is empty or
  * contains empty string, then 0 is returned.
  */
-//int fort_cell_lines_number(fort_cell_t *cell)
-//{
-//    assert(cell);
-//    if (cell->str == NULL || cell->str[0] == '\0') {
-//        return 0;
-//    }
+int lines_number_cell(fort_cell_t *cell)
+{
+    assert(cell);
+    if (cell->str_buffer == NULL || cell->str_buffer->str == NULL || cell->str_buffer->str[0] == '\0') {
+        return 0;
+    }
 
-//    int result = 0;
-//    char *pos = cell->str;
-//    while ((pos = strchr(pos, '\n')) != NULL) {
-//        result++;
-//        pos++;
-//    }
-//    return result + 1;
-//}
+    int result = 0;
+    char *pos = cell->str_buffer->str;
+    while ((pos = strchr(pos, '\n')) != NULL) {
+        result++;
+        pos++;
+    }
+    return result + 1;
+}
+
+int hint_height_cell(fort_cell_t *cell)
+{
+    assert(cell);
+    int result = cell->options.padding_top + cell->options.padding_bottom;
+    if (cell->str_buffer) {
+        result += lines_number_cell(cell);
+    }
+    return result;
+}
 
 /*****************************************************************************
  *               ROW
@@ -171,6 +235,14 @@ static void destroy_row(fort_row_t *row)
 
 static fort_row_t * create_row_from_string(const char *str);
 static fort_row_t* create_row_from_fmt_string(const char* FORT_RESTRICT fmt, va_list *va_args);
+
+int columns_in_row(const fort_row_t *row)
+{
+    if (row == NULL || row->cells == NULL)
+        return 0;
+
+    return vector_size(row->cells);
+}
 
 
 /*****************************************************************************
@@ -222,7 +294,14 @@ size_t number_of_columns_in_format_string(const char *fmt)
 FTABLE * ft_create_table(void)
 {
     FTABLE *result = F_CALLOC(1, sizeof(FTABLE));
+    if (result == NULL)
+        return NULL;
 
+    result->rows = create_vector(sizeof(fort_row_t*), 10);
+    if (result->rows == NULL) {
+        F_FREE(result);
+        return NULL;
+    }
     return result;
 }
 
@@ -430,6 +509,9 @@ void ft_destroy_table(FTABLE *FORT_RESTRICT table)
 
 int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
 {
+    if (table == NULL)
+        return -1;
+
     va_list va;
     va_start(va, fmt);
     fort_row_t *row = create_row_from_fmt_string(fmt, &va);
@@ -439,10 +521,54 @@ int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ..
         return -1;
     }
 
+    if (table->header) {
+        destroy_row(table->header);
+    }
     table->header = row;
     return vector_size(row->cells);
 }
 
+int ft_row_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, ...)
+{
+    if (table == NULL)
+        return -1;
+
+    va_list va;
+    va_start(va, fmt);
+    fort_row_t *new_row = create_row_from_fmt_string(fmt, &va);
+    va_end(va);
+
+    if (new_row == NULL) {
+        return -1;
+    }
+
+    fort_row_t **cur_row_p = NULL;
+    size_t sz = vector_size(table->rows);
+    if (row >= sz) {
+        size_t push_n = row - sz + 1;
+        for (size_t i = 0; i < push_n; ++i) {
+            fort_row_t *new_row = create_row();
+            if (new_row == NULL)
+                goto clear;
+
+            if (IS_ERROR(vector_push(table->rows, &new_row))) {
+                destroy_row(new_row);
+                goto clear;
+            }
+        }
+    }
+    /* todo clearing pushed items in case of error */
+
+    cur_row_p = (fort_row_t**)vector_at(table->rows, row);
+
+    destroy_row(*cur_row_p);
+    *cur_row_p = new_row;
+    return vector_size(new_row->cells);
+
+clear:
+    destroy_row(new_row);
+    return -1;
+}
 
 
 
@@ -649,6 +775,11 @@ static void *vector_at(vector_t *vector, size_t index)
 }
 
 
+#define FOR_EACH_(type, item, vector, index_name) \
+    for (size_t index_name = 0; (item = *(type*)vector_at(vector, index_name)), (index_name < vector_size(vector));  ++index_name)
+
+#define FOR_EACH(type, item, vector) \
+    FOR_EACH_(type, item, vector, UNIQUE_NAME(i))
 
 /*****************************************************************************
  *               ROW
@@ -745,6 +876,7 @@ static fort_row_t* create_row_from_fmt_string(const char* FORT_RESTRICT fmt, va_
         return row;
     }
 
+    /* todo: add processing of cols != cols_origin */
 
 clear:
     destroy_string_buffer(buffer);
@@ -755,21 +887,80 @@ clear:
 /*****************************************************************************
  *               TABLE
  * ***************************************************************************/
-const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
+
+static int print_row(char *buffer, const fort_row_t *row)
+{
+    assert(row);
+    ssize_t pos = 0;
+    size_t v_size = vector_size(row->cells);
+    for (size_t i = 0; i < v_size; ++i) {
+        fort_cell_t* cell = *(fort_cell_t**)vector_at(row->cells, i);
+        int deviation = sprintf(buffer + pos, "| %s", cell->str_buffer->str);
+        pos += deviation;
+    }
+    return pos;
+}
+
+/*
+ * Returns number of cells (rows * cols)
+ */
+static void table_body_sizes(const FTABLE *table, size_t *rows, size_t *cols)
+{
+    *rows = 0;
+    *cols = 0;
+    if (table && table->rows) {
+        fort_row_t *row = NULL;
+        FOR_EACH(fort_row_t*, row, table->rows) {
+            size_t cols_in_row = columns_in_row(row);
+            if (cols_in_row > *cols)
+                *cols = cols_in_row;
+        }
+    }
+}
+
+
+
+/*
+ * Returns geometry in characters
+ */
+static void table_geometry(const FTABLE *table, size_t *height, size_t *width)
+{
+    *height = 0;
+    *width = 0;
+    if (table) {
+        size_t cols = 0;
+        size_t rows = 0;
+        table_sizes(table, &rows, &cols);
+        if (table->header) {
+            cols = MAX(cols, columns_in_row(table->header));
+            ++rows;
+        }
+    }
+}
+
+char* ft_to_string(const FTABLE *FORT_RESTRICT table)
 {
     assert(table);
     char *dummy = F_MALLOC(2056);
-    fort_row_t *header = table->header;
-    ssize_t pos = 0;
-    size_t v_size = vector_size(header->cells);
-    for (size_t i = 0; i < v_size; ++i) {
-        fort_cell_t* cell = *(fort_cell_t**)vector_at(header->cells, i);
-        int deviation = sprintf(dummy + pos, "| %s", cell->str_buffer->str);
-        pos += deviation;
-    }
-    return dummy;
 
+    fort_row_t *header = table->header;
+    int dev = print_row(dummy, header);
+
+    sprintf(dummy + dev , "\n");
+    dev += 1;
+
+    size_t rows = vector_size(table->rows);
+    for (size_t i = 0; i < rows; ++i) {
+        fort_row_t *row = *(fort_row_t**)vector_at(table->rows, i);
+        dev += print_row(dummy + dev, row);
+        sprintf(dummy + dev , "\n");
+        dev += 1;
+    }
+
+    return dummy;
 }
+
+
 
 
 
