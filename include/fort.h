@@ -69,6 +69,10 @@ SOFTWARE.
 #endif
 
 
+#ifndef FORT_EXTERN
+#define FORT_EXTERN extern
+#endif
+
 /*
  * libfort structures and functions declarations
  */
@@ -78,23 +82,23 @@ FORT_BEGIN_DECLS
 struct fort_table;
 typedef struct fort_table FTABLE;
 
-FTABLE * ft_create_table(void);
-void ft_destroy_table(FTABLE *FORT_RESTRICT table);
+FORT_EXTERN FTABLE * ft_create_table(void);
+FORT_EXTERN void ft_destroy_table(FTABLE *FORT_RESTRICT table);
 
 
-int ft_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...);
-int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...);
-int ft_row_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, ...);
-int ft_cell_printf(FTABLE *FORT_RESTRICT table, size_t row, size_t col, const char* FORT_RESTRICT fmt, ...);
+//FORT_EXTERN int ft_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...);
+FORT_EXTERN int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...);
+FORT_EXTERN int ft_row_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, ...);
+//FORT_EXTERN int ft_cell_printf(FTABLE *FORT_RESTRICT table, size_t row, size_t col, const char* FORT_RESTRICT fmt, ...);
 
-char* ft_to_string(const FTABLE *FORT_RESTRICT table);
-ssize_t ft_n_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
+FORT_EXTERN char* ft_to_string(const FTABLE *FORT_RESTRICT table);
+//FORT_EXTERN ssize_t ft_n_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
 
-char* ft_header_to_string(const FTABLE *FORT_RESTRICT table);
-ssize_t ft_n_header_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
+//FORT_EXTERN char* ft_header_to_string(const FTABLE *FORT_RESTRICT table);
+//FORT_EXTERN ssize_t ft_n_header_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
 
-char* ft_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row);
-ssize_t ft_n_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row, char *FORT_RESTRICT dst, size_t dst_len);
+//FORT_EXTERN char* ft_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row);
+//FORT_EXTERN ssize_t ft_n_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row, char *FORT_RESTRICT dst, size_t dst_len);
 
 FORT_END_DECLS
 

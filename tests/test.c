@@ -4,6 +4,7 @@
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_vector_basic),
+        cmocka_unit_test(test_table_sizes),
         cmocka_unit_test(test_table_geometry),
         cmocka_unit_test(test_table_basic)
     };

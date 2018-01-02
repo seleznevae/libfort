@@ -7,6 +7,8 @@
 #include "wchar.h"
 
 #define FORT_COL_SEPARATOR '|'
+#define FORT_HOR_CELL_SEPARATOR '='
+#define FORT_VER_CELL_SEPARATOR '|'
 #define FORT_UNUSED  __attribute__((unused))
 
 #define F_CALLOC calloc
@@ -52,7 +54,21 @@ typedef int fort_status_t;
 /*****************************************************************************
  *               UTILITIES
  * ***************************************************************************/
+static int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
+{
+    if (length <= n)
+        return -1;
 
+    int status = snprintf(buf, length, "%0*d", (int)n, 0);
+    if (status < 0)
+        return status;
+
+    for (size_t i = 0; i < n; ++i) {
+        *buf = ch;
+        buf++;
+    }
+    return n;
+}
 
 
 /*****************************************************************************
@@ -131,14 +147,15 @@ struct cell_options
     int padding_right;
 };
 typedef struct cell_options cell_options_t;
+static cell_options_t g_cell_options = {1, 1, 1, 1};
 
 static void init_cell_options(cell_options_t *options)
 {
     assert(options);
-    options->padding_top = 1;
-    options->padding_bottom = 1;
-    options->padding_left = 1;
-    options->padding_right = 1;
+    options->padding_top = g_cell_options.padding_top;
+    options->padding_bottom = g_cell_options.padding_bottom;
+    options->padding_left = g_cell_options.padding_left;
+    options->padding_right = g_cell_options.padding_right;
 }
 
 struct fort_cell;
@@ -219,25 +236,22 @@ static int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len)
         return -1;
     }
 
-
     if (row < cell->options.padding_top
             || row >= (cell->options.padding_top + buffer_text_height(cell->str_buffer))) {
-        for (int i = 0; i < (buf_len - 1); ++i) {
-            snprintf(buf, buf_len, "%c", ' ');
-        }
-        return buf_len - 1;
+        int k = snprint_n_chars(buf, buf_len, buf_len - 1, ' ');
+        return k;
     } else {
         int written = 0;
         int left = cell->options.padding_left;
+        int right = cell->options.padding_right;
 
-        for (int i = 0; i < left; ++i) {
-            written += snprintf(buf + written, buf_len - written, "%c", ' ');
-        }
+        written += snprint_n_chars(buf + written, buf_len - written, left, ' ');
 
-        written += buffer_printf(cell->str_buffer, row - cell->options.padding_top, buf + written, buf_len - written);
-        while (written < (buf_len - 1)) {
-            written += snprintf(buf + written, buf_len - written, "%c", ' ');
-        }
+        if (cell->str_buffer)
+            written += buffer_printf(cell->str_buffer, row - cell->options.padding_top, buf + written, buf_len - written - right);
+        else
+            written += snprint_n_chars(buf + written, buf_len - written, buf_len - written - right, ' ');
+        written += snprint_n_chars(buf + written, buf_len - written, right, ' ');
 
         return written;
     }
@@ -303,7 +317,7 @@ static fort_cell_t *get_cell(fort_row_t *row, size_t col)
     }
 
     if (col < columns_in_row(row)) {
-        return vector_at(row->cells, col);
+        return *(fort_cell_t**)vector_at(row->cells, col);
     }
     return NULL;
 }
@@ -336,7 +350,7 @@ static fort_row_t *get_row(fort_table_t *table, size_t row)
 
     size_t rows = vector_size(table->rows);
     if (row < rows) {
-        return vector_at(table->rows, row);
+        return *(fort_row_t**)vector_at(table->rows, row);
     }
     return NULL;
 }
@@ -414,7 +428,7 @@ void ft_destroy_table(FTABLE *FORT_RESTRICT table)
 
 
 
-int ft_row_printf_impl(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, va_list *va)
+static int ft_row_printf_impl(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, va_list *va)
 {
     if (table == NULL)
         return -1;
@@ -784,12 +798,38 @@ clear:
     return NULL;
 }
 
+static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
+                        size_t row_height)
+{
+    if (row == NULL)
+        return -1;
+
+    int cols_in_row = columns_in_row(row);
+    if (cols_in_row > col_width_arr_sz)
+        return -1;
+
+    int dev = 0;
+    for (size_t i = 0; i < row_height; ++i) {
+        dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, FORT_VER_CELL_SEPARATOR);
+        for (size_t j = 0; j < col_width_arr_sz; ++j) {
+            if (j < cols_in_row) {
+                fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
+                dev += cell_printf(cell, i, buffer + dev, col_width_arr[j] + 1);
+            } else {
+                dev += snprint_n_chars(buffer + dev, buf_sz - dev, col_width_arr[j], ' ');
+            }
+            dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, FORT_VER_CELL_SEPARATOR);
+        }
+        dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, '\n');
+    }
+    return dev;
+}
 
 /*****************************************************************************
  *               TABLE
  * ***************************************************************************/
 
-static int print_row(char *buffer, const fort_row_t *row)
+static int print_row(char *buffer, size_t buf_len, const fort_row_t *row)
 {
     assert(row);
     ssize_t pos = 0;
@@ -810,6 +850,7 @@ static fort_status_t get_table_sizes(const FTABLE *table, size_t *rows, size_t *
     *rows = 0;
     *cols = 0;
     if (table && table->rows) {
+        *rows = vector_size(table->rows);
         fort_row_t *row = NULL;
         FOR_EACH(fort_row_t*, row, table->rows) {
             size_t cols_in_row = columns_in_row(row);
@@ -895,37 +936,10 @@ static fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t 
 
 }
 
-char* ft_to_string(const FTABLE *FORT_RESTRICT table)
-{
-    assert(table);
-    char *dummy = F_MALLOC(2056);
-
-    int dev = 0;
-    size_t rows = vector_size(table->rows);
-    for (size_t i = 0; i < rows; ++i) {
-        fort_row_t *row = *(fort_row_t**)vector_at(table->rows, i);
-        dev += print_row(dummy + dev, row);
-        sprintf(dummy + dev , "\n");
-        dev += 1;
-    }
-
-    return dummy;
-}
-
-
 //char* ft_to_string(const FTABLE *FORT_RESTRICT table)
 //{
 //    assert(table);
-
-//    size_t height = 0;
-//    size_t width = 0;
-//    int status = table_geometry(table, &height, &width);
-//    if (IS_ERROR(status)) {
-//        return NULL;
-//    }
-//    fprintf(stderr, "width = %d ; height = %d\n", (int)width, (int)height);
-//    size_t sz = height * width + 10;
-//    char *dummy = F_MALLOC(sz);
+//    char *dummy = F_MALLOC(2056);
 
 //    int dev = 0;
 //    size_t rows = vector_size(table->rows);
@@ -938,6 +952,62 @@ char* ft_to_string(const FTABLE *FORT_RESTRICT table)
 
 //    return dummy;
 //}
+
+
+char* ft_to_string(const FTABLE *FORT_RESTRICT table)
+{
+#define CHECK_RESULT_AND_MOVE_DEV(statement) \
+    k = statement; \
+    if (k < 0) {\
+        goto clear; \
+    } \
+    dev += k;
+
+    assert(table);
+
+    size_t height = 0;
+    size_t width = 0;
+    int status = table_geometry(table, &height, &width);
+    if (IS_ERROR(status)) {
+        return NULL;
+    }
+    size_t sz = height * width + 1;
+    char *buffer = F_MALLOC(sz);
+    if (buffer == NULL)
+        return NULL;
+
+    size_t cols = 0;
+    size_t rows = 0;
+    size_t *col_width_arr = NULL;
+    size_t *row_height_arr = NULL;
+    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
+
+    if (IS_ERROR(status))
+        return NULL;
+
+    int dev = 0;
+    int k = 0;
+    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, width - 1, FORT_HOR_CELL_SEPARATOR));
+    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, 1, '\n'));
+
+
+    for (size_t i = 0; i < rows; ++i) {
+        fort_row_t *row = *(fort_row_t**)vector_at(table->rows, i);
+        CHECK_RESULT_AND_MOVE_DEV(snprintf_row(row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i]));
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, width - 1, FORT_HOR_CELL_SEPARATOR));
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, 1, '\n'));
+    }
+
+    F_FREE(col_width_arr);
+    F_FREE(row_height_arr);
+    return buffer;
+
+clear:
+    F_FREE(col_width_arr);
+    F_FREE(row_height_arr);
+    F_FREE(buffer);
+    return NULL;
+}
 
 
 
