@@ -11,6 +11,8 @@
 
 
 void test_vector_basic(void **state);
+
+void test_table_geometry(void **state);
 void test_table_basic(void **state);
 
 
