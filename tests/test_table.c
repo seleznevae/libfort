@@ -391,9 +391,82 @@ void test_table_options(void **state)
     }
 
 
+    WHEN("Empty string has 0 heigt") {
+        fort_table_options_t table_options;
+        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        table_options.cell_padding_bottom = 1;
+        table_options.cell_padding_top = 1;
+        table_options.cell_padding_left = 1;
+        table_options.cell_padding_right = 1;
+        table_options.cell_empty_string_height = 0;
+        ft_set_default_options(&table_options);
+
+        table = create_test_int_table();
+        int n = ft_row_printf(table, 3, "|||");
+        assert_true( n == 4 );
+
+        char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "===================\n"
+                "|   |   |    |    |\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "|   |   |    |    |\n"
+                "===================\n"
+                "|   |   |    |    |\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "|   |   |    |    |\n"
+                "===================\n"
+                "|   |   |    |    |\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "|   |   |    |    |\n"
+                "===================\n"
+                "|   |   |    |    |\n"
+                "|   |   |    |    |\n"
+                "===================\n";
+//        fprintf(stderr, "content:\n%s", table_str);
+
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        free(table_str);
+        ft_destroy_table(table);
+    }
 
 
+    WHEN("Changing cell separators") {
+        fort_table_options_t table_options;
+        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        table_options.hor_separator = '|';
+        table_options.ver_separator = '=';
 
+        ft_set_default_options(&table_options);
+
+        table = create_test_int_table();
+
+
+        char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "|||||||||||||||||||\n"
+                "=   =   =    =    =\n"
+                "= 3 = 4 = 55 = 67 =\n"
+                "=   =   =    =    =\n"
+                "|||||||||||||||||||\n"
+                "=   =   =    =    =\n"
+                "= 3 = 4 = 55 = 67 =\n"
+                "=   =   =    =    =\n"
+                "|||||||||||||||||||\n"
+                "=   =   =    =    =\n"
+                "= 3 = 4 = 55 = 67 =\n"
+                "=   =   =    =    =\n"
+                "|||||||||||||||||||\n";
+//        fprintf(stderr, "content:\n%s", table_str);
+
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        free(table_str);
+        ft_destroy_table(table);
+    }
 
 
 }

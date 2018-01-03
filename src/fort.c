@@ -89,7 +89,7 @@ static fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char
 
 static size_t buffer_text_height(string_buffer_t *buffer)
 {
-    if (buffer == NULL) {
+    if (buffer == NULL || buffer->str == NULL || strlen(buffer->str) == 0) {
         return 0;
     }
     return 1;
@@ -147,7 +147,7 @@ static void* vector_at(vector_t*, size_t index);
 //    int padding_right;
 //};
 //typedef struct cell_options cell_options_t;
-static fort_table_options_t g_table_options = {1, 1, 1, 1, '=', '|'};
+static fort_table_options_t g_table_options = {1, 1, 1, 1, 1, '=', '|'};
 
 static void init_cell_options(fort_table_options_t *options)
 {
@@ -156,6 +156,7 @@ static void init_cell_options(fort_table_options_t *options)
     options->cell_padding_bottom = g_table_options.cell_padding_bottom;
     options->cell_padding_left = g_table_options.cell_padding_left;
     options->cell_padding_right = g_table_options.cell_padding_right;
+    options->cell_empty_string_height = g_table_options.cell_empty_string_height;
 }
 
 struct fort_cell;
@@ -203,7 +204,8 @@ static int hint_height_cell(const fort_cell_t *cell)
     assert(cell);
     int result = cell->options.cell_padding_top + cell->options.cell_padding_bottom;
     if (cell->str_buffer && cell->str_buffer->str) {
-        result += buffer_text_height(cell->str_buffer);
+        size_t text_height = buffer_text_height(cell->str_buffer);
+        result += text_height == 0 ? cell->options.cell_empty_string_height : text_height;
     }
     return result;
 }

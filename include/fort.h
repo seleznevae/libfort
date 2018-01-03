@@ -107,6 +107,7 @@ struct fort_table_options
     int cell_padding_bottom;
     int cell_padding_left;
     int cell_padding_right;
+    int cell_empty_string_height;
     char hor_separator;
     char ver_separator;
 };
