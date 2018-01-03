@@ -100,6 +100,22 @@ FORT_EXTERN char* ft_to_string(const FTABLE *FORT_RESTRICT table);
 //FORT_EXTERN char* ft_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row);
 //FORT_EXTERN ssize_t ft_n_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row, char *FORT_RESTRICT dst, size_t dst_len);
 
+
+struct fort_table_options
+{
+    int cell_padding_top;
+    int cell_padding_bottom;
+    int cell_padding_left;
+    int cell_padding_right;
+    char hor_separator;
+    char ver_separator;
+};
+typedef struct fort_table_options fort_table_options_t;
+
+FORT_EXTERN void ft_set_default_options(const fort_table_options_t *options);
+FORT_EXTERN void ft_get_default_options(fort_table_options_t *options);
+
+
 FORT_END_DECLS
 
 #endif // LIBFORT_H

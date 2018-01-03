@@ -15,6 +15,7 @@ void test_vector_basic(void **state);
 void test_table_sizes(void **state);
 void test_table_geometry(void **state);
 void test_table_basic(void **state);
+void test_table_options(void **state);
 
 
 #endif // TESTS_H

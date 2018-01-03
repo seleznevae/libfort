@@ -7,8 +7,8 @@
 #include "wchar.h"
 
 #define FORT_COL_SEPARATOR '|'
-#define FORT_HOR_CELL_SEPARATOR '='
-#define FORT_VER_CELL_SEPARATOR '|'
+#define FORT_HOR_CELL_SEPARATOR (g_table_options.hor_separator)
+#define FORT_VER_CELL_SEPARATOR (g_table_options.ver_separator)
 #define FORT_UNUSED  __attribute__((unused))
 
 #define F_CALLOC calloc
@@ -139,23 +139,23 @@ static void* vector_at(vector_t*, size_t index);
 /*****************************************************************************
  *               CELL
  * ***************************************************************************/
-struct cell_options
-{
-    int padding_top;
-    int padding_bottom;
-    int padding_left;
-    int padding_right;
-};
-typedef struct cell_options cell_options_t;
-static cell_options_t g_cell_options = {1, 1, 1, 1};
+//struct cell_options
+//{
+//    int padding_top;
+//    int padding_bottom;
+//    int padding_left;
+//    int padding_right;
+//};
+//typedef struct cell_options cell_options_t;
+static fort_table_options_t g_table_options = {1, 1, 1, 1, '=', '|'};
 
-static void init_cell_options(cell_options_t *options)
+static void init_cell_options(fort_table_options_t *options)
 {
     assert(options);
-    options->padding_top = g_cell_options.padding_top;
-    options->padding_bottom = g_cell_options.padding_bottom;
-    options->padding_left = g_cell_options.padding_left;
-    options->padding_right = g_cell_options.padding_right;
+    options->cell_padding_top = g_table_options.cell_padding_top;
+    options->cell_padding_bottom = g_table_options.cell_padding_bottom;
+    options->cell_padding_left = g_table_options.cell_padding_left;
+    options->cell_padding_right = g_table_options.cell_padding_right;
 }
 
 struct fort_cell;
@@ -163,7 +163,7 @@ typedef struct fort_cell fort_cell_t;
 struct fort_cell
 {
     string_buffer_t *str_buffer;
-    cell_options_t options;
+    fort_table_options_t options;
 };
 
 static fort_cell_t * create_cell()
@@ -191,7 +191,7 @@ static void destroy_cell(fort_cell_t *cell)
 static int hint_width_cell(const fort_cell_t *cell)
 {
     assert(cell);
-    int result = cell->options.padding_left + cell->options.padding_right;
+    int result = cell->options.cell_padding_left + cell->options.cell_padding_right;
     if (cell->str_buffer && cell->str_buffer->str) {
         result += buffer_text_width(cell->str_buffer);
     }
@@ -201,7 +201,7 @@ static int hint_width_cell(const fort_cell_t *cell)
 static int hint_height_cell(const fort_cell_t *cell)
 {
     assert(cell);
-    int result = cell->options.padding_top + cell->options.padding_bottom;
+    int result = cell->options.cell_padding_top + cell->options.cell_padding_bottom;
     if (cell->str_buffer && cell->str_buffer->str) {
         result += buffer_text_height(cell->str_buffer);
     }
@@ -236,19 +236,19 @@ static int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len)
         return -1;
     }
 
-    if (row < cell->options.padding_top
-            || row >= (cell->options.padding_top + buffer_text_height(cell->str_buffer))) {
+    if (row < cell->options.cell_padding_top
+            || row >= (cell->options.cell_padding_top + buffer_text_height(cell->str_buffer))) {
         int k = snprint_n_chars(buf, buf_len, buf_len - 1, ' ');
         return k;
     } else {
         int written = 0;
-        int left = cell->options.padding_left;
-        int right = cell->options.padding_right;
+        int left = cell->options.cell_padding_left;
+        int right = cell->options.cell_padding_right;
 
         written += snprint_n_chars(buf + written, buf_len - written, left, ' ');
 
         if (cell->str_buffer)
-            written += buffer_printf(cell->str_buffer, row - cell->options.padding_top, buf + written, buf_len - written - right);
+            written += buffer_printf(cell->str_buffer, row - cell->options.cell_padding_top, buf + written, buf_len - written - right);
         else
             written += snprint_n_chars(buf + written, buf_len - written, buf_len - written - right, ' ');
         written += snprint_n_chars(buf + written, buf_len - written, right, ' ');
@@ -485,6 +485,15 @@ int ft_row_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_REST
     return result;
 }
 
+void ft_set_default_options(const fort_table_options_t *options)
+{
+    memcpy(&g_table_options, options, sizeof(fort_table_options_t));
+}
+
+void ft_get_default_options(fort_table_options_t *options)
+{
+    memcpy(options, &g_table_options, sizeof(fort_table_options_t));
+}
 
 
 /*****************************************************************************

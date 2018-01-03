@@ -231,6 +231,169 @@ void test_table_basic(void **state)
         free(table_str);
         ft_destroy_table(table);
     }
+}
+
+
+
+FTABLE *create_test_int_table()
+{
+    FTABLE *table = NULL;
+
+    table = ft_create_table();
+
+    assert_true (table != NULL);
+
+    int n = ft_hdr_printf(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+    assert_true( n == 4 );
+    n = ft_row_printf(table, 1, "%d|%d|%d|%d", 3, 4, 55, 67);
+    assert_true( n == 4 );
+    n = ft_row_printf(table, 2, "%d|%d|%d|%d", 3, 4, 55, 67);
+    assert_true( n == 4 );
+
+    return table;
+}
+
+void test_table_options(void **state)
+{
+    (void)state;
+    FTABLE *table = NULL;
+
+    fort_table_options_t def_options;
+    ft_get_default_options(&def_options);
+
+
+    WHEN("All paddings = 1") {
+        fort_table_options_t table_options;
+        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        table_options.cell_padding_bottom = 1;
+        table_options.cell_padding_top = 1;
+        table_options.cell_padding_left = 1;
+        table_options.cell_padding_right = 1;
+        ft_set_default_options(&table_options);
+
+        table = create_test_int_table();
+
+        char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "===================\n"
+                "|   |   |    |    |\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "|   |   |    |    |\n"
+                "===================\n"
+                "|   |   |    |    |\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "|   |   |    |    |\n"
+                "===================\n"
+                "|   |   |    |    |\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "|   |   |    |    |\n"
+                "===================\n";
+//        fprintf(stderr, "content:\n%s", table_str);
+
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        free(table_str);
+        ft_destroy_table(table);
+    }
+
+    WHEN("Top and bottom padding = 0") {
+        fort_table_options_t table_options;
+        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        table_options.cell_padding_bottom = 0;
+        table_options.cell_padding_top = 0;
+        table_options.cell_padding_left = 1;
+        table_options.cell_padding_right = 1;
+        ft_set_default_options(&table_options);
+
+        table = create_test_int_table();
+
+        char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "===================\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "===================\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "===================\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "===================\n";
+//        fprintf(stderr, "content:\n%s", table_str);
+
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        free(table_str);
+        ft_destroy_table(table);
+    }
+
+    WHEN("Left and right padding = 0") {
+        fort_table_options_t table_options;
+        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        table_options.cell_padding_bottom = 1;
+        table_options.cell_padding_top = 1;
+        table_options.cell_padding_left = 0;
+        table_options.cell_padding_right = 0;
+        ft_set_default_options(&table_options);
+
+        table = create_test_int_table();
+
+        char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "===========\n"
+                "| | |  |  |\n"
+                "|3|4|55|67|\n"
+                "| | |  |  |\n"
+                "===========\n"
+                "| | |  |  |\n"
+                "|3|4|55|67|\n"
+                "| | |  |  |\n"
+                "===========\n"
+                "| | |  |  |\n"
+                "|3|4|55|67|\n"
+                "| | |  |  |\n"
+                "===========\n";
+//        fprintf(stderr, "content:\n%s", table_str);
+
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        free(table_str);
+        ft_destroy_table(table);
+    }
+
+    WHEN("All paddings = 0") {
+        fort_table_options_t table_options;
+        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        table_options.cell_padding_bottom = 0;
+        table_options.cell_padding_top = 0;
+        table_options.cell_padding_left = 0;
+        table_options.cell_padding_right = 0;
+        ft_set_default_options(&table_options);
+
+        table = create_test_int_table();
+
+        char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "===========\n"
+                "|3|4|55|67|\n"
+                "===========\n"
+                "|3|4|55|67|\n"
+                "===========\n"
+                "|3|4|55|67|\n"
+                "===========\n";
+//        fprintf(stderr, "content:\n%s", table_str);
+
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        free(table_str);
+        ft_destroy_table(table);
+    }
+
+
+
+
+
 
 
 }
