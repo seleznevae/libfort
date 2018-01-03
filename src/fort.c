@@ -715,12 +715,14 @@ static fort_row_t* create_row_from_string(const char *str)
 
     char *pos = str_copy;
     char *base_pos = str_copy;
+    int number_of_separators = 0;
     while (*pos) {
         pos = strchr(pos, FORT_COL_SEPARATOR);
         if (pos != NULL) {
             *(pos) = '\0';
             ++pos;
-         }
+            number_of_separators++;
+        }
 
         fort_cell_t *cell = create_cell();
         if (cell == NULL)
@@ -741,6 +743,25 @@ static fort_row_t* create_row_from_string(const char *str)
         if (pos == NULL)
             break;
         base_pos = pos;
+    }
+
+    /* special case if in format string last cell is empty */
+    while (vector_size(row->cells) < (number_of_separators + 1)) {
+        fort_cell_t *cell = create_cell();
+        if (cell == NULL)
+            goto clear;
+
+        int status = fill_buffer_from_string(cell->str_buffer, "");
+        if (IS_ERROR(status)) {
+            destroy_cell(cell);
+            goto clear;
+        }
+
+        status = vector_push(row->cells, &cell);
+        if (IS_ERROR(status)) {
+            destroy_cell(cell);
+            goto clear;
+        }
     }
 
     F_FREE(str_copy);

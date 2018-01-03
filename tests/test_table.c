@@ -170,7 +170,7 @@ void test_table_basic(void **state)
         assert_true( n == 4 );
         n = ft_row_printf(table, 1, "%c|%s|%f", 'c', "234", 3.14);
         assert_true( n == 3 );
-        n = ft_row_printf(table, 2, "%s|%f||%c", "234", 3.14, 'c');
+        n = ft_row_printf(table, 2, "%s|%f||", "234", 3.14);
         assert_true( n == 4 );
 
         char *table_str = ft_to_string(table);
@@ -186,9 +186,44 @@ void test_table_basic(void **state)
                 "|     |          |          |          |\n"
                 "========================================\n"
                 "|     |          |          |          |\n"
-                "| 234 | 3.140000 |          |        c |\n"
+                "| 234 | 3.140000 |          |          |\n"
                 "|     |          |          |          |\n"
                 "========================================\n";
+
+//        fprintf(stderr, "content:\n%s", table_str);
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        free(table_str);
+        ft_destroy_table(table);
+    }
+
+    WHEN("All cells are empty") {
+        table = ft_create_table();
+
+        int n = ft_hdr_printf(table, "|||");
+        assert_true( n == 4 );
+        n = ft_row_printf(table, 1, "|||");
+        assert_true( n == 4 );
+        n = ft_row_printf(table, 2, "|||");
+        assert_true( n == 4 );
+
+        char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "=============\n"
+                "|  |  |  |  |\n"
+                "|  |  |  |  |\n"
+                "|  |  |  |  |\n"
+                "=============\n"
+                "|  |  |  |  |\n"
+                "|  |  |  |  |\n"
+                "|  |  |  |  |\n"
+                "=============\n"
+                "|  |  |  |  |\n"
+                "|  |  |  |  |\n"
+                "|  |  |  |  |\n"
+                "=============\n";
+
 
 //        fprintf(stderr, "content:\n%s", table_str);
         assert_true( strcmp(table_str, table_str_etalon) == 0);
