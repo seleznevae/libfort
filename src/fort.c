@@ -1,3 +1,29 @@
+/*
+libfort
+
+MIT License
+
+Copyright (c) 2017 - 2018 Seleznev Anton
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 #include "stdlib.h"
 #include "stdarg.h"
 #include "stdio.h"
@@ -861,19 +887,6 @@ static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size
  *               TABLE
  * ***************************************************************************/
 
-static int print_row(char *buffer, size_t buf_len, const fort_row_t *row)
-{
-    assert(row);
-    ssize_t pos = 0;
-    size_t v_size = vector_size(row->cells);
-    for (size_t i = 0; i < v_size; ++i) {
-        fort_cell_t* cell = *(fort_cell_t**)vector_at(row->cells, i);
-        int deviation = sprintf(buffer + pos, "| %s", cell->str_buffer->str);
-        pos += deviation;
-    }
-    return pos;
-}
-
 /*
  * Returns number of cells (rows * cols)
  */
@@ -968,22 +981,6 @@ static fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t 
 
 }
 
-//char* ft_to_string(const FTABLE *FORT_RESTRICT table)
-//{
-//    assert(table);
-//    char *dummy = F_MALLOC(2056);
-
-//    int dev = 0;
-//    size_t rows = vector_size(table->rows);
-//    for (size_t i = 0; i < rows; ++i) {
-//        fort_row_t *row = *(fort_row_t**)vector_at(table->rows, i);
-//        dev += print_row(dummy + dev, row);
-//        sprintf(dummy + dev , "\n");
-//        dev += 1;
-//    }
-
-//    return dummy;
-//}
 
 
 char* ft_to_string(const FTABLE *FORT_RESTRICT table)
@@ -1039,6 +1036,8 @@ clear:
     F_FREE(row_height_arr);
     F_FREE(buffer);
     return NULL;
+
+#undef CHECK_RESULT_AND_MOVE_DEV
 }
 
 
