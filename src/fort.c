@@ -241,21 +241,21 @@ static int hint_height_cell(const fort_cell_t *cell)
  * Returns number of lines in cell. If cell is empty or
  * contains empty string, then 0 is returned.
  */
-static int lines_number_cell(fort_cell_t *cell)
-{
-    assert(cell);
-    if (cell->str_buffer == NULL || cell->str_buffer->str == NULL || cell->str_buffer->str[0] == '\0') {
-        return 0;
-    }
+//static int lines_number_cell(fort_cell_t *cell)
+//{
+//    assert(cell);
+//    if (cell->str_buffer == NULL || cell->str_buffer->str == NULL || cell->str_buffer->str[0] == '\0') {
+//        return 0;
+//    }
 
-    int result = 0;
-    char *pos = cell->str_buffer->str;
-    while ((pos = strchr(pos, '\n')) != NULL) {
-        result++;
-        pos++;
-    }
-    return result + 1;
-}
+//    int result = 0;
+//    char *pos = cell->str_buffer->str;
+//    while ((pos = strchr(pos, '\n')) != NULL) {
+//        result++;
+//        pos++;
+//    }
+//    return result + 1;
+//}
 
 static int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len)
 {
@@ -1041,6 +1041,24 @@ clear:
 }
 
 
+
+
+/*
+ *  TMP
+ */
+static int dummy_function() __attribute__ ((unused));
+
+static int dummy_function()
+{
+    if (0) {
+        vector_t *v = create_vector(1, 10);
+        vector_clear(v);
+        vector_erase(v, 0);
+        vector_index_of(v, NULL);
+        vector_capacity(v);
+    }
+    return 0;
+}
 
 
 
