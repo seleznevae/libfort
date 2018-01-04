@@ -173,24 +173,26 @@ static void* vector_at(vector_t*, size_t index);
 //    int padding_right;
 //};
 //typedef struct cell_options cell_options_t;
+typedef fort_table_options_t context_t;
 static fort_table_options_t g_table_options = {1, 1, 1, 1, 1, '=', '|'};
 
-static void init_cell_options(fort_table_options_t *options)
-{
-    assert(options);
-    options->cell_padding_top = g_table_options.cell_padding_top;
-    options->cell_padding_bottom = g_table_options.cell_padding_bottom;
-    options->cell_padding_left = g_table_options.cell_padding_left;
-    options->cell_padding_right = g_table_options.cell_padding_right;
-    options->cell_empty_string_height = g_table_options.cell_empty_string_height;
-}
+//static void set_cell_options(fort_table_options_t *dst_options, const fort_table_options_t *src_options)
+//{
+//    assert(dst_options);
+//    assert(src_options);
+//    dst_options->cell_padding_top = src_options->cell_padding_top;
+//    dst_options->cell_padding_bottom = src_options->cell_padding_bottom;
+//    dst_options->cell_padding_left = src_options->cell_padding_left;
+//    dst_options->cell_padding_right = src_options->cell_padding_right;
+//    dst_options->cell_empty_string_height = src_options->cell_empty_string_height;
+//}
 
 struct fort_cell;
 typedef struct fort_cell fort_cell_t;
 struct fort_cell
 {
     string_buffer_t *str_buffer;
-    fort_table_options_t options;
+    fort_table_options_t *options;
 };
 
 static fort_cell_t * create_cell()
@@ -203,7 +205,8 @@ static fort_cell_t * create_cell()
         F_FREE(cell);
         return NULL;
     }
-    init_cell_options(&(cell->options));
+    cell->options = NULL;
+//    init_cell_options(&(cell->options));
     return cell;
 }
 
@@ -212,26 +215,29 @@ static void destroy_cell(fort_cell_t *cell)
     if (cell == NULL)
         return;
     destroy_string_buffer(cell->str_buffer);
+    F_FREE(cell->options);
     F_FREE(cell);
 }
 
-static int hint_width_cell(const fort_cell_t *cell)
+static int hint_width_cell(const fort_cell_t *cell, const context_t *context)
 {
     assert(cell);
-    int result = cell->options.cell_padding_left + cell->options.cell_padding_right;
+    assert(context);
+    int result = context->cell_padding_left + context->cell_padding_right;
     if (cell->str_buffer && cell->str_buffer->str) {
         result += buffer_text_width(cell->str_buffer);
     }
     return result;
 }
 
-static int hint_height_cell(const fort_cell_t *cell)
+static int hint_height_cell(const fort_cell_t *cell, const context_t *context)
 {
     assert(cell);
-    int result = cell->options.cell_padding_top + cell->options.cell_padding_bottom;
+    assert(context);
+    int result = context->cell_padding_top + context->cell_padding_bottom;
     if (cell->str_buffer && cell->str_buffer->str) {
         size_t text_height = buffer_text_height(cell->str_buffer);
-        result += text_height == 0 ? cell->options.cell_empty_string_height : text_height;
+        result += text_height == 0 ? context->cell_empty_string_height : text_height;
     }
     return result;
 }
@@ -257,26 +263,26 @@ static int hint_height_cell(const fort_cell_t *cell)
 //    return result + 1;
 //}
 
-static int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len)
+static int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context)
 {
-    if (cell == NULL || buf_len == 0 || row >= hint_height_cell(cell)
-            || (buf_len <= hint_width_cell(cell))) {
+    if (cell == NULL || buf_len == 0 || row >= hint_height_cell(cell, context)
+            || (buf_len <= hint_width_cell(cell, context))) {
         return -1;
     }
 
-    if (row < cell->options.cell_padding_top
-            || row >= (cell->options.cell_padding_top + buffer_text_height(cell->str_buffer))) {
+    if (row < context->cell_padding_top
+            || row >= (context->cell_padding_top + buffer_text_height(cell->str_buffer))) {
         int k = snprint_n_chars(buf, buf_len, buf_len - 1, ' ');
         return k;
     } else {
         int written = 0;
-        int left = cell->options.cell_padding_left;
-        int right = cell->options.cell_padding_right;
+        int left = context->cell_padding_left;
+        int right = context->cell_padding_right;
 
         written += snprint_n_chars(buf + written, buf_len - written, left, ' ');
 
         if (cell->str_buffer)
-            written += buffer_printf(cell->str_buffer, row - cell->options.cell_padding_top, buf + written, buf_len - written - right);
+            written += buffer_printf(cell->str_buffer, row - context->cell_padding_top, buf + written, buf_len - written - right);
         else
             written += snprint_n_chars(buf + written, buf_len - written, buf_len - written - right, ' ');
         written += snprint_n_chars(buf + written, buf_len - written, right, ' ');
@@ -364,6 +370,7 @@ typedef struct fort_table fort_table_t;
 struct fort_table
 {
     vector_t *rows;
+    fort_table_options_t *options;
 };
 
 static fort_status_t get_table_sizes(const FTABLE *table, size_t *rows, size_t *cols);
@@ -434,6 +441,7 @@ FTABLE * ft_create_table(void)
         F_FREE(result);
         return NULL;
     }
+    result->options = NULL;
     return result;
 }
 
@@ -450,6 +458,7 @@ void ft_destroy_table(FTABLE *FORT_RESTRICT table)
         }
         destroy_vector(table->rows);
     }
+    F_FREE(table->options);
     F_FREE(table);
 }
 
@@ -513,14 +522,35 @@ int ft_row_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_REST
     return result;
 }
 
-void ft_set_default_options(const fort_table_options_t *options)
+int ft_set_default_options(const fort_table_options_t *options)
 {
     memcpy(&g_table_options, options, sizeof(fort_table_options_t));
+    return 0;
 }
 
-void ft_get_default_options(fort_table_options_t *options)
+int ft_get_default_options(fort_table_options_t *options)
 {
     memcpy(options, &g_table_options, sizeof(fort_table_options_t));
+    return 0;
+}
+
+int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_t * FORT_RESTRICT options)
+{
+    assert(table);
+    if (options == NULL) {
+        F_FREE(table->options);
+        table->options = NULL;
+        return 0;
+    }
+
+    fort_table_options_t *new_options = F_CALLOC(sizeof(fort_table_options_t), 1);
+    if (new_options == NULL) {
+        return -1;
+    }
+    memcpy(new_options, options, sizeof(fort_table_options_t));
+    F_FREE(table->options);
+    table->options = new_options;
+    return 0;
 }
 
 
@@ -857,8 +887,9 @@ clear:
 }
 
 static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
-                        size_t row_height)
+                        size_t row_height, const context_t *context)
 {
+    assert(context);
     if (row == NULL)
         return -1;
 
@@ -872,7 +903,7 @@ static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size
         for (size_t j = 0; j < col_width_arr_sz; ++j) {
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
-                dev += cell_printf(cell, i, buffer + dev, col_width_arr[j] + 1);
+                dev += cell_printf(cell, i, buffer + dev, col_width_arr[j] + 1, context);
             } else {
                 dev += snprint_n_chars(buffer + dev, buf_sz - dev, col_width_arr[j], ' ');
             }
@@ -914,6 +945,8 @@ static fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
         return F_ERROR;
     }
 
+
+
     size_t cols = 0;
     size_t rows = 0;
     int status = get_table_sizes(table, &rows, &cols);
@@ -928,14 +961,15 @@ static fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
         return F_ERROR;
     }
 
+    context_t *context = (table->options ? table->options : &g_table_options);
     for (size_t col = 0; col < cols; ++col) {
         col_width_arr[col] = 0;
         for (size_t row = 0; row < rows; ++row) {
             const fort_row_t *row_p = get_row_c(table, row);
             const fort_cell_t *cell = get_cell_c(row_p, col);
             if (cell) {
-                col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell));
-                row_height_arr[row] = MAX(row_height_arr[row], hint_height_cell(cell));
+                col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, context));
+                row_height_arr[row] = MAX(row_height_arr[row], hint_height_cell(cell, context));
             }
         }
     }
@@ -1019,10 +1053,10 @@ char* ft_to_string(const FTABLE *FORT_RESTRICT table)
     CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, width - 1, FORT_HOR_CELL_SEPARATOR));
     CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, 1, '\n'));
 
-
+    context_t *context = (table->options ? table->options : &g_table_options);
     for (size_t i = 0; i < rows; ++i) {
         fort_row_t *row = *(fort_row_t**)vector_at(table->rows, i);
-        CHECK_RESULT_AND_MOVE_DEV(snprintf_row(row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i]));
+        CHECK_RESULT_AND_MOVE_DEV(snprintf_row(row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], context));
         CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, width - 1, FORT_HOR_CELL_SEPARATOR));
         CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, 1, '\n'));
     }

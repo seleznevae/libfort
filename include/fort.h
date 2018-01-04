@@ -113,8 +113,10 @@ struct fort_table_options
 };
 typedef struct fort_table_options fort_table_options_t;
 
-FORT_EXTERN void ft_set_default_options(const fort_table_options_t *options);
-FORT_EXTERN void ft_get_default_options(fort_table_options_t *options);
+FORT_EXTERN int ft_set_default_options(const fort_table_options_t *options);
+FORT_EXTERN int ft_get_default_options(fort_table_options_t *options);
+FORT_EXTERN int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_t * FORT_RESTRICT options);
+
 
 
 FORT_END_DECLS
