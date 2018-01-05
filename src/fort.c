@@ -78,6 +78,13 @@ typedef int fort_status_t;
 #define IS_ERROR(arg) (!IS_SUCCESS(arg))
 
 /*****************************************************************************
+ *               DEFAULT_SIZES
+ * ***************************************************************************/
+#define DEFAULT_STR_BUF_SIZE 1024
+#define DEFAULT_VECTOR_CAPACITY 10
+
+
+/*****************************************************************************
  *               UTILITIES
  * ***************************************************************************/
 static int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
@@ -200,7 +207,7 @@ static fort_cell_t * create_cell()
     fort_cell_t *cell = F_CALLOC(sizeof(fort_cell_t), 1);
     if (cell == NULL)
         return NULL;
-    cell->str_buffer = create_string_buffer(1024);
+    cell->str_buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE);
     if (cell->str_buffer == NULL) {
         F_FREE(cell);
         return NULL;
@@ -308,7 +315,7 @@ static fort_row_t * create_row()
     fort_row_t * row = F_CALLOC(sizeof(fort_row_t), 1);
     if (row == NULL)
         return NULL;
-    row->cells = create_vector(sizeof(fort_cell_t*), 10);
+    row->cells = create_vector(sizeof(fort_cell_t*), DEFAULT_VECTOR_CAPACITY);
     if (row->cells == NULL) {
         F_FREE(row);
         return NULL;
@@ -436,7 +443,7 @@ FTABLE * ft_create_table(void)
     if (result == NULL)
         return NULL;
 
-    result->rows = create_vector(sizeof(fort_row_t*), 10);
+    result->rows = create_vector(sizeof(fort_row_t*), DEFAULT_VECTOR_CAPACITY);
     if (result->rows == NULL) {
         F_FREE(result);
         return NULL;
@@ -843,7 +850,7 @@ clear:
 
 static fort_row_t* create_row_from_fmt_string(const char* FORT_RESTRICT fmt, va_list *va_args)
 {
-    string_buffer_t *buffer = create_string_buffer(1024);
+    string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE);
     if (buffer == NULL)
         return NULL;
 
@@ -1085,7 +1092,7 @@ static int dummy_function() __attribute__ ((unused));
 static int dummy_function()
 {
     if (0) {
-        vector_t *v = create_vector(1, 10);
+        vector_t *v = create_vector(1, DEFAULT_VECTOR_CAPACITY);
         vector_clear(v);
         vector_erase(v, 0);
         vector_index_of(v, NULL);
