@@ -33,8 +33,7 @@ SOFTWARE.
 #include "wchar.h"
 
 #define FORT_COL_SEPARATOR '|'
-#define FORT_HOR_CELL_SEPARATOR (g_table_options.hor_separator)
-#define FORT_VER_CELL_SEPARATOR (g_table_options.ver_separator)
+
 #define FORT_UNUSED  __attribute__((unused))
 
 #define F_CALLOC calloc
@@ -906,7 +905,7 @@ static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size
 
     int dev = 0;
     for (size_t i = 0; i < row_height; ++i) {
-        dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, FORT_VER_CELL_SEPARATOR);
+        dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, context->ver_separator);
         for (size_t j = 0; j < col_width_arr_sz; ++j) {
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
@@ -914,7 +913,7 @@ static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size
             } else {
                 dev += snprint_n_chars(buffer + dev, buf_sz - dev, col_width_arr[j], ' ');
             }
-            dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, FORT_VER_CELL_SEPARATOR);
+            dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, context->ver_separator);
         }
         dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, '\n');
     }
@@ -1057,14 +1056,14 @@ char* ft_to_string(const FTABLE *FORT_RESTRICT table)
 
     int dev = 0;
     int k = 0;
-    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, width - 1, FORT_HOR_CELL_SEPARATOR));
+    context_t *context = (table->options ? table->options : &g_table_options);
+    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, width - 1, context->hor_separator));
     CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, 1, '\n'));
 
-    context_t *context = (table->options ? table->options : &g_table_options);
     for (size_t i = 0; i < rows; ++i) {
         fort_row_t *row = *(fort_row_t**)vector_at(table->rows, i);
         CHECK_RESULT_AND_MOVE_DEV(snprintf_row(row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], context));
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, width - 1, FORT_HOR_CELL_SEPARATOR));
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, width - 1, context->hor_separator));
         CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, 1, '\n'));
     }
 
