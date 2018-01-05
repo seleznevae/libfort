@@ -110,6 +110,7 @@ struct fort_table_options
     int cell_empty_string_height;
     char hor_separator;
     char ver_separator;
+    char header_hor_separator;
 };
 typedef struct fort_table_options fort_table_options_t;
 

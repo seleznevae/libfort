@@ -390,7 +390,6 @@ void test_table_options(void **state)
         ft_destroy_table(table);
     }
 
-
     WHEN("Empty string has 0 heigt") {
         fort_table_options_t table_options;
         memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
@@ -432,12 +431,12 @@ void test_table_options(void **state)
         ft_destroy_table(table);
     }
 
-
     WHEN("Changing cell separators") {
         fort_table_options_t table_options;
         memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
         table_options.hor_separator = '|';
         table_options.ver_separator = '=';
+        table_options.header_hor_separator = '*';
 
         ft_set_default_options(&table_options);
 
@@ -447,11 +446,11 @@ void test_table_options(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "|||||||||||||||||||\n"
+                "*******************\n"
                 "=   =   =    =    =\n"
                 "= 3 = 4 = 55 = 67 =\n"
                 "=   =   =    =    =\n"
-                "|||||||||||||||||||\n"
+                "*******************\n"
                 "=   =   =    =    =\n"
                 "= 3 = 4 = 55 = 67 =\n"
                 "=   =   =    =    =\n"

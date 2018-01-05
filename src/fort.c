@@ -48,6 +48,12 @@ SOFTWARE.
 #define MIN(a,b) ((a) < (b) ? (a) : b)
 
 
+enum F_BOOL
+{
+    F_FALSE = 0,
+    F_TRUE = 1
+};
+
 
 #define STR_2_CAT_(arg1, arg2) \
     arg1##arg2
@@ -180,7 +186,16 @@ static void* vector_at(vector_t*, size_t index);
 //};
 //typedef struct cell_options cell_options_t;
 typedef fort_table_options_t context_t;
-static fort_table_options_t g_table_options = {1, 1, 1, 1, 1, '=', '|'};
+static fort_table_options_t g_table_options = {
+    1,      /* cell_padding_top         */
+    1,      /* cell_padding_bottom      */
+    1,      /* cell_padding_left        */
+    1,      /* cell_padding_right       */
+    1,      /* cell_empty_string_height */
+    '=',    /* hor_separator            */
+    '|',    /* ver_separator            */
+    '='     /* header_hor_separator     */
+};
 
 //static void set_cell_options(fort_table_options_t *dst_options, const fort_table_options_t *src_options)
 //{
@@ -306,6 +321,7 @@ typedef struct fort_row fort_row_t;
 struct fort_row
 {
     vector_t *cells;
+    enum F_BOOL is_header;
 };
 
 
@@ -319,6 +335,7 @@ static fort_row_t * create_row()
         F_FREE(row);
         return NULL;
     }
+    row->is_header = F_FALSE;
     return row;
 }
 
@@ -365,6 +382,50 @@ static fort_cell_t *get_cell(fort_row_t *row, size_t col)
 static const fort_cell_t *get_cell_c(const fort_row_t *row, size_t col)
 {
     return get_cell((fort_row_t *)row, col);
+}
+
+static int print_row_separator(char *buffer, size_t buffer_sz, size_t table_width,
+                               const fort_row_t *upper_row, const fort_row_t *lower_row,
+                               const context_t *context)
+{
+#define CHECK_RESULT_AND_MOVE_DEV(statement) \
+    k = statement; \
+    if (k < 0) {\
+        goto clear; \
+    } \
+    dev += k;
+
+    assert(buffer);
+    assert(context);
+
+    int dev = 0;
+    int k = 0;
+    const char *hor_separator = NULL;
+
+    const fort_row_t *main_row = NULL;
+    if (upper_row != NULL && lower_row != NULL) {
+        main_row = lower_row->is_header == F_TRUE ? lower_row : upper_row;
+    } else if (upper_row != NULL && lower_row == NULL) {
+        main_row = upper_row;
+    } else if (upper_row == NULL && lower_row != NULL) {
+        main_row = lower_row;
+    } else if (upper_row == NULL && lower_row == NULL) {
+        main_row = NULL;
+    }
+
+    hor_separator = (main_row && main_row->is_header == F_TRUE)
+            ? &(context->header_hor_separator)
+            : &(context->hor_separator);
+
+    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, buffer_sz - dev, table_width - 1, *hor_separator));
+    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, buffer_sz - dev, 1, '\n'));
+
+    return dev;
+
+clear:
+    return -1;
+
+#undef CHECK_RESULT_AND_MOVE_DEV
 }
 
 
@@ -516,6 +577,12 @@ int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ..
     va_start(va, fmt);
     int result = ft_row_printf_impl(table, 0, fmt, &va);
     va_end(va);
+    if (result >= 0 && table->rows) {
+        int sz = vector_size(table->rows);
+        if (sz != 0) {
+            (*(fort_row_t**)vector_at(table->rows, sz - 1))->is_header = F_TRUE;
+        }
+    }
     return result;
 }
 
@@ -1051,21 +1118,26 @@ char* ft_to_string(const FTABLE *FORT_RESTRICT table)
     size_t *row_height_arr = NULL;
     status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
 
+    if (rows == 0)
+        return F_STRDUP("");
+
     if (IS_ERROR(status))
         return NULL;
 
     int dev = 0;
     int k = 0;
     context_t *context = (table->options ? table->options : &g_table_options);
-    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, width - 1, context->hor_separator));
-    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, 1, '\n'));
-
+    fort_row_t *prev_row = NULL;
+    fort_row_t *cur_row = NULL;
     for (size_t i = 0; i < rows; ++i) {
-        fort_row_t *row = *(fort_row_t**)vector_at(table->rows, i);
-        CHECK_RESULT_AND_MOVE_DEV(snprintf_row(row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], context));
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, width - 1, context->hor_separator));
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, sz - dev, 1, '\n'));
+        cur_row = *(fort_row_t**)vector_at(table->rows, i);
+        CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, width, prev_row, cur_row, context));
+        CHECK_RESULT_AND_MOVE_DEV(snprintf_row(cur_row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], context));
+        prev_row = cur_row;
     }
+    cur_row = NULL;
+    CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, width, prev_row, cur_row, context));
+
 
     F_FREE(col_width_arr);
     F_FREE(row_height_arr);
