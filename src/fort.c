@@ -177,14 +177,7 @@ static void* vector_at(vector_t*, size_t index);
 /*****************************************************************************
  *               CELL
  * ***************************************************************************/
-//struct cell_options
-//{
-//    int padding_top;
-//    int padding_bottom;
-//    int padding_left;
-//    int padding_right;
-//};
-//typedef struct cell_options cell_options_t;
+
 typedef fort_table_options_t context_t;
 static fort_table_options_t g_table_options = {
     1,      /* cell_padding_top         */
@@ -194,19 +187,11 @@ static fort_table_options_t g_table_options = {
     1,      /* cell_empty_string_height */
     '=',    /* hor_separator            */
     '|',    /* ver_separator            */
-    '='     /* header_hor_separator     */
+    '=',    /* header_hor_separator     */
+    '|'     /* header_ver_separator     */
 };
 
-//static void set_cell_options(fort_table_options_t *dst_options, const fort_table_options_t *src_options)
-//{
-//    assert(dst_options);
-//    assert(src_options);
-//    dst_options->cell_padding_top = src_options->cell_padding_top;
-//    dst_options->cell_padding_bottom = src_options->cell_padding_bottom;
-//    dst_options->cell_padding_left = src_options->cell_padding_left;
-//    dst_options->cell_padding_right = src_options->cell_padding_right;
-//    dst_options->cell_empty_string_height = src_options->cell_empty_string_height;
-//}
+
 
 struct fort_cell;
 typedef struct fort_cell fort_cell_t;
@@ -970,9 +955,13 @@ static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size
     if (cols_in_row > col_width_arr_sz)
         return -1;
 
+    const char *ver_separator = (row->is_header == F_TRUE)
+            ? &(context->header_ver_separator)
+            : &(context->ver_separator);
+
     int dev = 0;
     for (size_t i = 0; i < row_height; ++i) {
-        dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, context->ver_separator);
+        dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, *ver_separator);
         for (size_t j = 0; j < col_width_arr_sz; ++j) {
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
@@ -980,7 +969,7 @@ static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size
             } else {
                 dev += snprint_n_chars(buffer + dev, buf_sz - dev, col_width_arr[j], ' ');
             }
-            dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, context->ver_separator);
+            dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, *ver_separator);
         }
         dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, '\n');
     }

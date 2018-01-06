@@ -111,6 +111,7 @@ struct fort_table_options
     char hor_separator;
     char ver_separator;
     char header_hor_separator;
+    char header_ver_separator;
 };
 typedef struct fort_table_options fort_table_options_t;
 

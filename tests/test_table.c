@@ -437,6 +437,7 @@ void test_table_options(void **state)
         table_options.hor_separator = '|';
         table_options.ver_separator = '=';
         table_options.header_hor_separator = '*';
+        table_options.header_ver_separator = 'v';
 
         ft_set_default_options(&table_options);
 
@@ -447,9 +448,9 @@ void test_table_options(void **state)
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "*******************\n"
-                "=   =   =    =    =\n"
-                "= 3 = 4 = 55 = 67 =\n"
-                "=   =   =    =    =\n"
+                "v   v   v    v    v\n"
+                "v 3 v 4 v 55 v 67 v\n"
+                "v   v   v    v    v\n"
                 "*******************\n"
                 "=   =   =    =    =\n"
                 "= 3 = 4 = 55 = 67 =\n"
