@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(libfort)
 
-option(CERAII_TEST_BUILD "Test build with sanitizers and small library stack size" ON)
-option(CERAII_GCC_BUILD "Build with gcc" ON)
+option(FORT_TEST_BUILD "Test build with sanitizers and small library stack size" ON)
+option(FORT_GCC_BUILD "Build with gcc" ON)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -42,11 +42,11 @@ target_link_libraries(TEST
 
 
 
-if(CERAII_TEST_BUILD)
+if(FORT_TEST_BUILD)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
-    if(CERAII_GCC_BUILD)
+    if(FORT_GCC_BUILD)
         target_link_libraries(${PROJECT_NAME} asan)
         target_link_libraries(TEST asan)
-    endif(CERAII_GCC_BUILD)
-endif(CERAII_TEST_BUILD)
+    endif(FORT_GCC_BUILD)
+endif(FORT_TEST_BUILD)
 
