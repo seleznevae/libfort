@@ -146,6 +146,8 @@ enum BorderItemPos
     BorderItemPosSize
 };
 
+struct vector;
+typedef struct vector vector_t;
 struct fort_table_options
 {
     int cell_padding_top;
@@ -156,12 +158,14 @@ struct fort_table_options
 
     char border_chars[BorderItemPosSize];
     char header_border_chars[BorderItemPosSize];
+    vector_t *col_min_widths;
 };
 typedef struct fort_table_options fort_table_options_t;
 
 FORT_EXTERN int ft_set_default_options(const fort_table_options_t *options);
 FORT_EXTERN int ft_get_default_options(fort_table_options_t *options);
 FORT_EXTERN int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_t * FORT_RESTRICT options);
+FORT_EXTERN int ft_set_column_min_width(FTABLE * FORT_RESTRICT table, size_t column, size_t width);
 
 
 

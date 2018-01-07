@@ -175,7 +175,7 @@ static void* vector_at(vector_t*, size_t index);
 
 
 /*****************************************************************************
- *               CELL
+ *               OPTIONS
  * ***************************************************************************/
 
 typedef fort_table_options_t context_t;
@@ -200,12 +200,70 @@ static fort_table_options_t g_table_options = {
      '|', '|', '|',
      '=', '=', '=', '=',
      '=', '=', '=', '='
-    }
+    },
 
+    NULL     /* col_widths */
 };
 
 
+static fort_table_options_t* create_table_options()
+{
+    fort_table_options_t* options = F_CALLOC(sizeof(fort_table_options_t), 1);
+    if (options == NULL) {
+        return NULL;
+    }
+    memcpy(options, &g_table_options, sizeof(fort_table_options_t));
+    return options;
+}
 
+static void destroy_table_options(fort_table_options_t* options)
+{
+    if (options == NULL)
+        return;
+
+    if (options->col_min_widths != NULL) {
+        destroy_vector(options->col_min_widths);
+    }
+    F_FREE(options);
+}
+
+static fort_status_t fort_options_set_column_min_width(fort_table_options_t *options, size_t column, size_t width)
+{
+    assert(options);
+
+    if (options->col_min_widths == NULL) {
+        options->col_min_widths = create_vector(sizeof(int), DEFAULT_VECTOR_CAPACITY);
+        if (options->col_min_widths == NULL)
+            return F_MEMORY_ERROR;
+    }
+
+    while (vector_size(options->col_min_widths) <= column) {
+        int dummy = -1;
+        vector_push(options->col_min_widths, &dummy);
+    }
+
+    int *wid = (int*)vector_at(options->col_min_widths, column);
+    *wid = width;
+
+    return F_SUCCESS;
+}
+
+static int fort_options_column_width(fort_table_options_t *options, size_t column)
+{
+    assert(options);
+    if (options->col_min_widths == NULL)
+        return -1;
+
+    if (vector_size(options->col_min_widths) <= column)
+        return -1;
+
+    return *(int*)vector_at(options->col_min_widths, column);
+}
+
+
+/*****************************************************************************
+ *               CELL
+ * ***************************************************************************/
 struct fort_cell;
 typedef struct fort_cell fort_cell_t;
 struct fort_cell
@@ -567,7 +625,7 @@ void ft_destroy_table(FTABLE *FORT_RESTRICT table)
         }
         destroy_vector(table->rows);
     }
-    F_FREE(table->options);
+    destroy_table_options(table->options);
     F_FREE(table);
 }
 
@@ -666,6 +724,20 @@ int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_
     F_FREE(table->options);
     table->options = new_options;
     return 0;
+}
+
+
+
+int ft_set_column_min_width(FTABLE *table, size_t column, size_t width)
+{
+    if (table->options == NULL) {
+        table->options = create_table_options();
+        if (table->options == NULL)
+            return F_MEMORY_ERROR;
+    }
+
+    int status = fort_options_set_column_min_width(table->options, column, width);
+    return status;
 }
 
 
@@ -1103,6 +1175,16 @@ static fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
                 col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, context));
                 row_height_arr[row] = MAX(row_height_arr[row], hint_height_cell(cell, context));
             }
+        }
+    }
+
+    /* todo: Maybe it is better to move min width checking to a particular cell width checking.
+     * At the moment min width includes paddings. Maybe it is better that min width weren't include
+     * paddings but be min width of the cell content without padding
+     */
+    if (table->options) {
+        for (size_t i = 0; i < cols; ++i) {
+            col_width_arr[i] = MAX((int)col_width_arr[i], fort_options_column_width(table->options, i));
         }
     }
 
