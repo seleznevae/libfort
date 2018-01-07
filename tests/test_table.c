@@ -434,10 +434,23 @@ void test_table_options(void **state)
     WHEN("Changing cell separators") {
         fort_table_options_t table_options;
         memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
-        table_options.hor_separator = '|';
-        table_options.ver_separator = '=';
-        table_options.header_hor_separator = '*';
-        table_options.header_ver_separator = 'v';
+
+#define BOR_CHARS table_options.border_chars
+#define H_BOR_CHARS table_options.header_border_chars
+
+        BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = '|';
+        BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = '|';
+        BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = '|';
+        BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = '=';
+
+
+        H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = '*';
+        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = '*';
+        H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = '*';
+        H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = 'v';
+
+#undef BOR_CHARS
+#undef H_BOR_CHARS
 
         ft_set_default_options(&table_options);
 

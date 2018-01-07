@@ -185,10 +185,23 @@ static fort_table_options_t g_table_options = {
     1,      /* cell_padding_left        */
     1,      /* cell_padding_right       */
     1,      /* cell_empty_string_height */
-    '=',    /* hor_separator            */
-    '|',    /* ver_separator            */
-    '=',    /* header_hor_separator     */
-    '|'     /* header_ver_separator     */
+
+    /* border_chars */
+    {
+     '=', '=', '=', '=',
+     '|', '|', '|',
+     '=', '=', '=', '=',
+     '=', '=', '=', '='
+    },
+
+    /* header_border_chars */
+    {
+     '=', '=', '=', '=',
+     '|', '|', '|',
+     '=', '=', '=', '=',
+     '=', '=', '=', '='
+    }
+
 };
 
 
@@ -369,9 +382,10 @@ static const fort_cell_t *get_cell_c(const fort_row_t *row, size_t col)
     return get_cell((fort_row_t *)row, col);
 }
 
-static int print_row_separator(char *buffer, size_t buffer_sz, size_t table_width,
+static int print_row_separator(char *buffer, size_t buffer_sz,
+                               const size_t *col_width_arr, size_t cols,
                                const fort_row_t *upper_row, const fort_row_t *lower_row,
-                               const context_t *context)
+                               enum HorSeparatorPos separatorPos, const context_t *context)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
     k = statement; \
@@ -385,7 +399,6 @@ static int print_row_separator(char *buffer, size_t buffer_sz, size_t table_widt
 
     int dev = 0;
     int k = 0;
-    const char *hor_separator = NULL;
 
     const fort_row_t *main_row = NULL;
     if (upper_row != NULL && lower_row != NULL) {
@@ -398,11 +411,55 @@ static int print_row_separator(char *buffer, size_t buffer_sz, size_t table_widt
         main_row = NULL;
     }
 
-    hor_separator = (main_row && main_row->is_header == F_TRUE)
-            ? &(context->header_hor_separator)
-            : &(context->hor_separator);
+    /*  Row separator anatomy
+     *
+     *  L  I  I  I  IV  I   I   I  R
+     */
+    const char *L = NULL;
+    const char *I = NULL;
+    const char *IV = NULL;
+    const char *R = NULL;
 
-    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, buffer_sz - dev, table_width - 1, *hor_separator));
+    const char (*border_chars)[BorderItemPosSize] = NULL;
+    if (main_row && main_row->is_header == F_TRUE) {
+        border_chars = &context->header_border_chars;
+    } else {
+        border_chars = &context->border_chars;
+    }
+
+    switch (separatorPos) {
+        case TopSeparator:
+            L = &(*border_chars)[TL_bip];
+            I = &(*border_chars)[TT_bip];
+            IV = &(*border_chars)[TV_bip];
+            R = &(*border_chars)[TR_bip];
+            break;
+        case InsideSeparator:
+            L = &(*border_chars)[LH_bip];
+            I = &(*border_chars)[IH_bip];
+            IV = &(*border_chars)[II_bip];
+            R = &(*border_chars)[RH_bip];
+            break;
+        case BottomSeparator:
+            L = &(*border_chars)[BL_bip];
+            I = &(*border_chars)[BB_bip];
+            IV = &(*border_chars)[BV_bip];
+            R = &(*border_chars)[BR_bip];
+            break;
+        default:
+            break;
+    }
+
+    for (size_t i = 0; i < cols; ++i) {
+        if (i == 0) {
+            CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, buffer_sz - dev, 1, *L));
+        } else {
+            CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, buffer_sz - dev, 1, *IV));
+        }
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, buffer_sz - dev, col_width_arr[i], *I));
+    }
+    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, buffer_sz - dev, 1, *R));
+
     CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars(buffer + dev, buffer_sz - dev, 1, '\n'));
 
     return dev;
@@ -955,13 +1012,22 @@ static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size
     if (cols_in_row > col_width_arr_sz)
         return -1;
 
-    const char *ver_separator = (row->is_header == F_TRUE)
-            ? &(context->header_ver_separator)
-            : &(context->ver_separator);
+    /*  Row separator anatomy
+     *
+     *  L    data    IV    data   IV   data    R
+     */
+
+    const char (*bord_chars)[BorderItemPosSize] = (row->is_header)
+            ? (&context->header_border_chars)
+            : (&context->border_chars);
+    const char *L = &(*bord_chars)[LL_bip];
+    const char *IV = &(*bord_chars)[IV_bip];
+    const char *R = &(*bord_chars)[RR_bip];
+
 
     int dev = 0;
     for (size_t i = 0; i < row_height; ++i) {
-        dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, *ver_separator);
+        dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, *L);
         for (size_t j = 0; j < col_width_arr_sz; ++j) {
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
@@ -969,7 +1035,11 @@ static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size
             } else {
                 dev += snprint_n_chars(buffer + dev, buf_sz - dev, col_width_arr[j], ' ');
             }
-            dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, *ver_separator);
+            if (j == col_width_arr_sz - 1) {
+                dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, *R);
+            } else {
+                dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, *IV);
+            }
         }
         dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, '\n');
     }
@@ -1120,12 +1190,13 @@ char* ft_to_string(const FTABLE *FORT_RESTRICT table)
     fort_row_t *cur_row = NULL;
     for (size_t i = 0; i < rows; ++i) {
         cur_row = *(fort_row_t**)vector_at(table->rows, i);
-        CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, width, prev_row, cur_row, context));
+        enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
+        CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, separatorPos, context));
         CHECK_RESULT_AND_MOVE_DEV(snprintf_row(cur_row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], context));
         prev_row = cur_row;
     }
     cur_row = NULL;
-    CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, width, prev_row, cur_row, context));
+    CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, context));
 
 
     F_FREE(col_width_arr);
