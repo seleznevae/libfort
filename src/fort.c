@@ -108,6 +108,157 @@ static int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
     return n;
 }
 
+/*****************************************************************************
+ *               VECTOR
+ * ***************************************************************************/
+
+struct vector;
+typedef struct vector vector_t;
+
+#define INVALID_VEC_INDEX ((size_t) -1)
+
+static vector_t* create_vector(size_t item_size, size_t capacity);
+static void destroy_vector(vector_t*);
+
+static size_t vector_size(const vector_t*);
+static size_t vector_capacity(const vector_t*);
+static size_t vector_index_of(const vector_t*, const void *item);
+
+static int vector_push(vector_t*, const void *item);
+static int vector_erase(vector_t*, size_t index);
+static void vector_clear(vector_t*);
+static void* vector_at(vector_t*, size_t index);
+
+
+
+
+/*****************************************************************************
+ *               COLUMN OPTIONS
+ * ***************************************************************************/
+
+static fort_column_options_t g_column_options =
+{
+    0,           /* col_min_width*/
+    RightAligned, /* align */
+};
+
+static fort_column_options_t create_column_options()
+{
+    fort_column_options_t result;
+    memset(&result, '\0', sizeof(result));
+    memcpy(&result, &g_column_options, sizeof(result));
+    return result;
+}
+
+/*****************************************************************************
+ *               OPTIONS
+ * ***************************************************************************/
+
+static fort_table_options_t g_table_options = {
+    1,      /* cell_padding_top         */
+    1,      /* cell_padding_bottom      */
+    1,      /* cell_padding_left        */
+    1,      /* cell_padding_right       */
+    1,      /* cell_empty_string_height */
+
+    /* border_chars */
+    {
+     '=', '=', '=', '=',
+     '|', '|', '|',
+     '=', '=', '=', '=',
+     '=', '=', '=', '='
+    },
+
+    /* header_border_chars */
+    {
+     '=', '=', '=', '=',
+     '|', '|', '|',
+     '=', '=', '=', '=',
+     '=', '=', '=', '='
+    },
+
+    NULL,     /* col_options */
+
+};
+
+
+static fort_table_options_t* create_table_options()
+{
+    fort_table_options_t* options = F_CALLOC(sizeof(fort_table_options_t), 1);
+    if (options == NULL) {
+        return NULL;
+    }
+    memcpy(options, &g_table_options, sizeof(fort_table_options_t));
+    return options;
+}
+
+static void destroy_table_options(fort_table_options_t* options)
+{
+    if (options == NULL)
+        return;
+
+    if (options->col_options != NULL) {
+        destroy_vector(options->col_options);
+    }
+    F_FREE(options);
+}
+
+
+#define FORT_OPTIONS_SET_COLUMN_OPTION(options, column, opt_name, opt_value) \
+    assert(options);\
+\
+    if (options->col_options == NULL) {\
+        options->col_options = create_vector(sizeof(fort_column_options_t), DEFAULT_VECTOR_CAPACITY);\
+        if (options->col_options == NULL) \
+            return F_MEMORY_ERROR; \
+    } \
+\
+    while (vector_size(options->col_options) <= column) {\
+        fort_column_options_t def_option = create_column_options();\
+        vector_push(options->col_options, &def_option);\
+    }\
+\
+    fort_column_options_t *col_option = (fort_column_options_t*)vector_at(options->col_options, column);\
+    col_option->opt_name = opt_value;\
+\
+    return F_SUCCESS;
+
+static fort_status_t fort_options_set_column_min_width(fort_table_options_t *options, size_t column, size_t width)
+{
+    FORT_OPTIONS_SET_COLUMN_OPTION(options, column, col_min_width, width);
+}
+
+static fort_status_t fort_options_set_column_alignment(fort_table_options_t *options, size_t column, enum TextAlignment al)
+{
+    FORT_OPTIONS_SET_COLUMN_OPTION(options, column, align, al);
+}
+
+static int fort_options_column_width(const fort_table_options_t *options, size_t column)
+{
+    assert(options);
+    if (options->col_options == NULL)
+        return -1;
+
+    if (vector_size(options->col_options) <= column)
+        return -1;
+
+    return ((fort_column_options_t*)vector_at(options->col_options, column))->col_min_width;
+}
+
+static int fort_options_column_alignment(const fort_table_options_t *options, size_t column)
+{
+    assert(options);
+
+    enum TextAlignment align = g_column_options.align;
+    if (options->col_options == NULL)
+        return align;
+
+    if (vector_size(options->col_options) <= column)
+        return align;
+
+    return ((fort_column_options_t*)vector_at(options->col_options, column))->align;
+}
+
 
 /*****************************************************************************
  *               STRING BUFFER
@@ -141,123 +292,52 @@ static size_t buffer_text_width(string_buffer_t *buffer)
     return strlen(buffer->str);
 }
 
-static int buffer_printf(string_buffer_t *buffer, size_t row, char *buf, size_t buf_len)
+static int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_column, char *buf, size_t buf_len, const context_t *context)
 {
     if (buffer == NULL || buffer->str == NULL
-            || row >= buffer_text_height(buffer) || buf_len == 0) {
+            || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
         return -1;
     }
 
-    return snprintf(buf, buf_len, "%*s", (int)(buf_len - 1), buffer->str);
-}
-
-
-/*****************************************************************************
- *               VECTOR
- * ***************************************************************************/
-
-struct vector;
-typedef struct vector vector_t;
-
-#define INVALID_VEC_INDEX ((size_t) -1)
-
-static vector_t* create_vector(size_t item_size, size_t capacity);
-static void destroy_vector(vector_t*);
-
-static size_t vector_size(const vector_t*);
-static size_t vector_capacity(const vector_t*);
-static size_t vector_index_of(const vector_t*, const void *item);
-
-static int vector_push(vector_t*, const void *item);
-static int vector_erase(vector_t*, size_t index);
-static void vector_clear(vector_t*);
-static void* vector_at(vector_t*, size_t index);
-
-
-/*****************************************************************************
- *               OPTIONS
- * ***************************************************************************/
-
-typedef fort_table_options_t context_t;
-static fort_table_options_t g_table_options = {
-    1,      /* cell_padding_top         */
-    1,      /* cell_padding_bottom      */
-    1,      /* cell_padding_left        */
-    1,      /* cell_padding_right       */
-    1,      /* cell_empty_string_height */
-
-    /* border_chars */
-    {
-     '=', '=', '=', '=',
-     '|', '|', '|',
-     '=', '=', '=', '=',
-     '=', '=', '=', '='
-    },
-
-    /* header_border_chars */
-    {
-     '=', '=', '=', '=',
-     '|', '|', '|',
-     '=', '=', '=', '=',
-     '=', '=', '=', '='
-    },
-
-    NULL     /* col_widths */
-};
-
-
-static fort_table_options_t* create_table_options()
-{
-    fort_table_options_t* options = F_CALLOC(sizeof(fort_table_options_t), 1);
-    if (options == NULL) {
-        return NULL;
-    }
-    memcpy(options, &g_table_options, sizeof(fort_table_options_t));
-    return options;
-}
-
-static void destroy_table_options(fort_table_options_t* options)
-{
-    if (options == NULL)
-        return;
-
-    if (options->col_min_widths != NULL) {
-        destroy_vector(options->col_min_widths);
-    }
-    F_FREE(options);
-}
-
-static fort_status_t fort_options_set_column_min_width(fort_table_options_t *options, size_t column, size_t width)
-{
-    assert(options);
-
-    if (options->col_min_widths == NULL) {
-        options->col_min_widths = create_vector(sizeof(int), DEFAULT_VECTOR_CAPACITY);
-        if (options->col_min_widths == NULL)
-            return F_MEMORY_ERROR;
-    }
-
-    while (vector_size(options->col_min_widths) <= column) {
-        int dummy = -1;
-        vector_push(options->col_min_widths, &dummy);
-    }
-
-    int *wid = (int*)vector_at(options->col_min_widths, column);
-    *wid = width;
-
-    return F_SUCCESS;
-}
-
-static int fort_options_column_width(fort_table_options_t *options, size_t column)
-{
-    assert(options);
-    if (options->col_min_widths == NULL)
+    size_t content_width = buffer_text_width(buffer);
+    if ((buf_len - 1) < content_width)
         return -1;
 
-    if (vector_size(options->col_min_widths) <= column)
+    int left = 0;
+    int right = 0;
+
+    switch (fort_options_column_alignment(context, table_column)) {
+        case LeftAligned:
+            left = 0;
+            right = (buf_len - 1) - content_width;
+            break;
+        case CenterAligned:
+            left = ((buf_len - 1) - content_width) / 2;
+            right = ((buf_len - 1) - content_width) - left;
+            break;
+        case RightAligned:
+            left = (buf_len - 1) - content_width;
+            right = 0;
+            break;
+        default:
+            assert(0);
+            break;
+    }
+    if (left < 0 || right < 0)
         return -1;
 
-    return *(int*)vector_at(options->col_min_widths, column);
+
+    int  written = 0;
+    written += snprint_n_chars(buf + written, buf_len - written, left, ' ');
+    if (written < 0)
+        return written;
+
+    written += snprintf(buf + written, buf_len - written, "%*s", (int)content_width, buffer->str);
+    if (written < 0)
+        return written;
+
+    written += snprint_n_chars(buf + written, buf_len - written, right, ' ');
+    return written;
 }
 
 
@@ -340,7 +420,7 @@ static int hint_height_cell(const fort_cell_t *cell, const context_t *context)
 //    return result + 1;
 //}
 
-static int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context)
+static int cell_printf(fort_cell_t *cell, size_t row, size_t column, char *buf, size_t buf_len, const context_t *context)
 {
     if (cell == NULL || buf_len == 0 || row >= hint_height_cell(cell, context)
             || (buf_len <= hint_width_cell(cell, context))) {
@@ -359,7 +439,7 @@ static int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len,
         written += snprint_n_chars(buf + written, buf_len - written, left, ' ');
 
         if (cell->str_buffer)
-            written += buffer_printf(cell->str_buffer, row - context->cell_padding_top, buf + written, buf_len - written - right);
+            written += buffer_printf(cell->str_buffer, row - context->cell_padding_top, column, buf + written, buf_len - written - right, context);
         else
             written += snprint_n_chars(buf + written, buf_len - written, buf_len - written - right, ' ');
         written += snprint_n_chars(buf + written, buf_len - written, right, ' ');
@@ -740,6 +820,19 @@ int ft_set_column_min_width(FTABLE *table, size_t column, size_t width)
     return status;
 }
 
+int ft_set_column_alignment(FTABLE * FORT_RESTRICT table, size_t column, enum TextAlignment align)
+{
+    if (table->options == NULL) {
+        table->options = create_table_options();
+        if (table->options == NULL)
+            return F_MEMORY_ERROR;
+    }
+
+    int status = fort_options_set_column_alignment(table->options, column, align);
+    return status;
+}
+
+
 
 /*****************************************************************************
  *               STRING BUFFER
@@ -1103,7 +1196,7 @@ static int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size
         for (size_t j = 0; j < col_width_arr_sz; ++j) {
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
-                dev += cell_printf(cell, i, buffer + dev, col_width_arr[j] + 1, context);
+                dev += cell_printf(cell, i, j, buffer + dev, col_width_arr[j] + 1, context);
             } else {
                 dev += snprint_n_chars(buffer + dev, buf_sz - dev, col_width_arr[j], ' ');
             }

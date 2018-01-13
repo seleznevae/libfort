@@ -528,6 +528,7 @@ void test_table_options(void **state)
                 "|3|4|55|67|\n"
                 "| | |  |  |\n"
                 "===========\n";
+//        fprintf(stderr, "content:\n%s", table_str);
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
         free(table_str);
@@ -536,7 +537,7 @@ void test_table_options(void **state)
 
 
 
-    WHEN("Set table width") {
+    WHEN("Set table width and column alignment") {
         fort_table_options_t table_options;
         memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
         table_options.cell_padding_bottom = 1;
@@ -548,21 +549,22 @@ void test_table_options(void **state)
 
         table = create_test_int_table();
         ft_set_column_min_width(table, 1, 7);
+        ft_set_column_alignment(table, 1, LeftAligned);
 
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "=======================\n"
                 "|   |       |    |    |\n"
-                "| 3 |     4 | 55 | 67 |\n"
+                "| 3 | 4     | 55 | 67 |\n"
                 "|   |       |    |    |\n"
                 "=======================\n"
                 "|   |       |    |    |\n"
-                "| 3 |     4 | 55 | 67 |\n"
+                "| 3 | 4     | 55 | 67 |\n"
                 "|   |       |    |    |\n"
                 "=======================\n"
                 "|   |       |    |    |\n"
-                "| 3 |     4 | 55 | 67 |\n"
+                "| 3 | 4     | 55 | 67 |\n"
                 "|   |       |    |    |\n"
                 "=======================\n";
 //        fprintf(stderr, "content:\n%s", table_str);

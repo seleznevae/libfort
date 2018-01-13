@@ -102,6 +102,13 @@ FORT_EXTERN char* ft_to_string(const FTABLE *FORT_RESTRICT table);
 
 
 
+enum TextAlignment
+{
+    LeftAligned,
+    CenterAligned,
+    RightAligned
+};
+
 
 /*****************************************************************************
  *               TABLE BORDER
@@ -148,6 +155,14 @@ enum BorderItemPos
 
 struct vector;
 typedef struct vector vector_t;
+
+struct fort_column_options
+{
+    int col_min_width;
+    enum TextAlignment align;
+};
+typedef struct fort_column_options fort_column_options_t;
+
 struct fort_table_options
 {
     int cell_padding_top;
@@ -158,14 +173,17 @@ struct fort_table_options
 
     char border_chars[BorderItemPosSize];
     char header_border_chars[BorderItemPosSize];
-    vector_t *col_min_widths;
+    vector_t *col_options;
+
 };
 typedef struct fort_table_options fort_table_options_t;
+typedef fort_table_options_t context_t;
 
 FORT_EXTERN int ft_set_default_options(const fort_table_options_t *options);
 FORT_EXTERN int ft_get_default_options(fort_table_options_t *options);
 FORT_EXTERN int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_t * FORT_RESTRICT options);
 FORT_EXTERN int ft_set_column_min_width(FTABLE * FORT_RESTRICT table, size_t column, size_t width);
+FORT_EXTERN int ft_set_column_alignment(FTABLE * FORT_RESTRICT table, size_t column, enum TextAlignment align);
 
 
 
