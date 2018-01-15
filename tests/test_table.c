@@ -455,8 +455,6 @@ void test_table_options(void **state)
         ft_set_default_options(&table_options);
 
         table = create_test_int_table();
-
-
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
@@ -472,6 +470,49 @@ void test_table_options(void **state)
                 "=   =   =    =    =\n"
                 "= 3 = 4 = 55 = 67 =\n"
                 "=   =   =    =    =\n"
+                "|||||||||||||||||||\n";
+//        fprintf(stderr, "content:\n%s", table_str);
+
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        free(table_str);
+        ft_destroy_table(table);
+
+
+
+#define BOR_CHARS table_options.border_chars
+#define H_BOR_CHARS table_options.header_border_chars
+
+        BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = '|';
+        BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = '\0';
+        BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = '|';
+        BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = '=';
+
+
+        H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = '*';
+        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = '*';
+        H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = '*';
+        H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = 'v';
+
+#undef BOR_CHARS
+#undef H_BOR_CHARS
+
+        table_options.cell_padding_bottom = 0;
+        table_options.cell_padding_top = 0;
+        table_options.cell_padding_left = 1;
+        table_options.cell_padding_right = 1;
+        table_options.cell_empty_string_height = 0;
+        ft_set_default_options(&table_options);
+
+        table = create_test_int_table();
+        table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        table_str_etalon =
+                "*******************\n"
+                "v 3 v 4 v 55 v 67 v\n"
+                "*******************\n"
+                "= 3 = 4 = 55 = 67 =\n"
+                "= 3 = 4 = 55 = 67 =\n"
                 "|||||||||||||||||||\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
@@ -550,23 +591,26 @@ void test_table_options(void **state)
         table = create_test_int_table();
         ft_set_column_min_width(table, 1, 7);
         ft_set_column_alignment(table, 1, LeftAligned);
+        ft_set_column_min_width(table, 2, 8);
+        ft_set_column_alignment(table, 2, CenterAligned);
+
 
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "+---+-------+----+----+\n"
-                "|   |       |    |    |\n"
-                "| 3 | 4     | 55 | 67 |\n"
-                "|   |       |    |    |\n"
-                "+---+-------+----+----+\n"
-                "|   |       |    |    |\n"
-                "| 3 | 4     | 55 | 67 |\n"
-                "|   |       |    |    |\n"
-                "+---+-------+----+----+\n"
-                "|   |       |    |    |\n"
-                "| 3 | 4     | 55 | 67 |\n"
-                "|   |       |    |    |\n"
-                "+---+-------+----+----+\n";
+                "+---+-------+--------+----+\n"
+                "|   |       |        |    |\n"
+                "| 3 | 4     |   55   | 67 |\n"
+                "|   |       |        |    |\n"
+                "+---+-------+--------+----+\n"
+                "|   |       |        |    |\n"
+                "| 3 | 4     |   55   | 67 |\n"
+                "|   |       |        |    |\n"
+                "+---+-------+--------+----+\n"
+                "|   |       |        |    |\n"
+                "| 3 | 4     |   55   | 67 |\n"
+                "|   |       |        |    |\n"
+                "+---+-------+--------+----+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);

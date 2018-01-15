@@ -31,6 +31,7 @@ SOFTWARE.
 #include "assert.h"
 #include "string.h"
 #include "wchar.h"
+#include <ctype.h>
 
 #define FORT_COL_SEPARATOR '|'
 
@@ -586,6 +587,10 @@ static int print_row_separator(char *buffer, size_t buffer_sz,
         default:
             break;
     }
+
+    /* If all chars are not printable, skip line separator */
+    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R))
+        return 0;
 
     for (size_t i = 0; i < cols; ++i) {
         if (i == 0) {
