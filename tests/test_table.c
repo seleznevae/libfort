@@ -106,19 +106,19 @@ void test_table_basic(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "==========================\n"
+                "+---+---+-----+----------+\n"
                 "|   |   |     |          |\n"
                 "| 3 | c | 234 | 3.140000 |\n"
                 "|   |   |     |          |\n"
-                "==========================\n"
+                "+---+---+-----+----------+\n"
                 "|   |   |     |          |\n"
                 "| 3 | c | 234 | 3.140000 |\n"
                 "|   |   |     |          |\n"
-                "==========================\n"
+                "+---+---+-----+----------+\n"
                 "|   |   |     |          |\n"
                 "| 3 | c | 234 | 3.140000 |\n"
                 "|   |   |     |          |\n"
-                "==========================\n";
+                "+---+---+-----+----------+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
@@ -142,19 +142,19 @@ void test_table_basic(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "========================================\n"
+                "+-----+----------+----------+----------+\n"
                 "|     |          |          |          |\n"
                 "|   3 |        c |      234 | 3.140000 |\n"
                 "|     |          |          |          |\n"
-                "========================================\n"
+                "+-----+----------+----------+----------+\n"
                 "|     |          |          |          |\n"
                 "|   c |      234 | 3.140000 |        3 |\n"
                 "|     |          |          |          |\n"
-                "========================================\n"
+                "+-----+----------+----------+----------+\n"
                 "|     |          |          |          |\n"
                 "| 234 | 3.140000 |        3 |        c |\n"
                 "|     |          |          |          |\n"
-                "========================================\n";
+                "+-----+----------+----------+----------+\n";
 
 //        fprintf(stderr, "content:\n%s", table_str);
         assert_true( strcmp(table_str, table_str_etalon) == 0);
@@ -176,19 +176,19 @@ void test_table_basic(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "========================================\n"
+                "+-----+----------+----------+----------+\n"
                 "|     |          |          |          |\n"
                 "|     |          |      234 | 3.140000 |\n"
                 "|     |          |          |          |\n"
-                "========================================\n"
+                "+-----+----------+----------+----------+\n"
                 "|     |          |          |          |\n"
                 "|   c |      234 | 3.140000 |          |\n"
                 "|     |          |          |          |\n"
-                "========================================\n"
+                "+-----+----------+----------+----------+\n"
                 "|     |          |          |          |\n"
                 "| 234 | 3.140000 |          |          |\n"
                 "|     |          |          |          |\n"
-                "========================================\n";
+                "+-----+----------+----------+----------+\n";
 
 //        fprintf(stderr, "content:\n%s", table_str);
         assert_true( strcmp(table_str, table_str_etalon) == 0);
@@ -210,19 +210,19 @@ void test_table_basic(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "=============\n"
+                "+--+--+--+--+\n"
                 "|  |  |  |  |\n"
                 "|  |  |  |  |\n"
                 "|  |  |  |  |\n"
-                "=============\n"
+                "+--+--+--+--+\n"
                 "|  |  |  |  |\n"
                 "|  |  |  |  |\n"
                 "|  |  |  |  |\n"
-                "=============\n"
+                "+--+--+--+--+\n"
                 "|  |  |  |  |\n"
                 "|  |  |  |  |\n"
                 "|  |  |  |  |\n"
-                "=============\n";
+                "+--+--+--+--+\n";
 
 
 //        fprintf(stderr, "content:\n%s", table_str);
@@ -276,19 +276,19 @@ void test_table_options(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "===================\n"
+                "+---+---+----+----+\n"
                 "|   |   |    |    |\n"
                 "| 3 | 4 | 55 | 67 |\n"
                 "|   |   |    |    |\n"
-                "===================\n"
+                "+---+---+----+----+\n"
                 "|   |   |    |    |\n"
                 "| 3 | 4 | 55 | 67 |\n"
                 "|   |   |    |    |\n"
-                "===================\n"
+                "+---+---+----+----+\n"
                 "|   |   |    |    |\n"
                 "| 3 | 4 | 55 | 67 |\n"
                 "|   |   |    |    |\n"
-                "===================\n";
+                "+---+---+----+----+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
@@ -311,13 +311,13 @@ void test_table_options(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "===================\n"
+                "+---+---+----+----+\n"
                 "| 3 | 4 | 55 | 67 |\n"
-                "===================\n"
+                "+---+---+----+----+\n"
                 "| 3 | 4 | 55 | 67 |\n"
-                "===================\n"
+                "+---+---+----+----+\n"
                 "| 3 | 4 | 55 | 67 |\n"
-                "===================\n";
+                "+---+---+----+----+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
@@ -340,19 +340,19 @@ void test_table_options(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "===========\n"
+                "+-+-+--+--+\n"
                 "| | |  |  |\n"
                 "|3|4|55|67|\n"
                 "| | |  |  |\n"
-                "===========\n"
+                "+-+-+--+--+\n"
                 "| | |  |  |\n"
                 "|3|4|55|67|\n"
                 "| | |  |  |\n"
-                "===========\n"
+                "+-+-+--+--+\n"
                 "| | |  |  |\n"
                 "|3|4|55|67|\n"
                 "| | |  |  |\n"
-                "===========\n";
+                "+-+-+--+--+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
@@ -375,13 +375,13 @@ void test_table_options(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "===========\n"
+                "+-+-+--+--+\n"
                 "|3|4|55|67|\n"
-                "===========\n"
+                "+-+-+--+--+\n"
                 "|3|4|55|67|\n"
-                "===========\n"
+                "+-+-+--+--+\n"
                 "|3|4|55|67|\n"
-                "===========\n";
+                "+-+-+--+--+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
@@ -407,22 +407,22 @@ void test_table_options(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "===================\n"
+                "+---+---+----+----+\n"
                 "|   |   |    |    |\n"
                 "| 3 | 4 | 55 | 67 |\n"
                 "|   |   |    |    |\n"
-                "===================\n"
+                "+---+---+----+----+\n"
                 "|   |   |    |    |\n"
                 "| 3 | 4 | 55 | 67 |\n"
                 "|   |   |    |    |\n"
-                "===================\n"
+                "+---+---+----+----+\n"
                 "|   |   |    |    |\n"
                 "| 3 | 4 | 55 | 67 |\n"
                 "|   |   |    |    |\n"
-                "===================\n"
+                "+---+---+----+----+\n"
                 "|   |   |    |    |\n"
                 "|   |   |    |    |\n"
-                "===================\n";
+                "+---+---+----+----+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
@@ -495,13 +495,13 @@ void test_table_options(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "===========\n"
+                "+-+-+--+--+\n"
                 "|3|4|55|67|\n"
-                "===========\n"
+                "+-+-+--+--+\n"
                 "|3|4|55|67|\n"
-                "===========\n"
+                "+-+-+--+--+\n"
                 "|3|4|55|67|\n"
-                "===========\n";
+                "+-+-+--+--+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
@@ -515,19 +515,19 @@ void test_table_options(void **state)
         table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         table_str_etalon =
-                "===========\n"
+                "+-+-+--+--+\n"
                 "| | |  |  |\n"
                 "|3|4|55|67|\n"
                 "| | |  |  |\n"
-                "===========\n"
+                "+-+-+--+--+\n"
                 "| | |  |  |\n"
                 "|3|4|55|67|\n"
                 "| | |  |  |\n"
-                "===========\n"
+                "+-+-+--+--+\n"
                 "| | |  |  |\n"
                 "|3|4|55|67|\n"
                 "| | |  |  |\n"
-                "===========\n";
+                "+-+-+--+--+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
@@ -554,19 +554,19 @@ void test_table_options(void **state)
         char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "=======================\n"
+                "+---+-------+----+----+\n"
                 "|   |       |    |    |\n"
                 "| 3 | 4     | 55 | 67 |\n"
                 "|   |       |    |    |\n"
-                "=======================\n"
+                "+---+-------+----+----+\n"
                 "|   |       |    |    |\n"
                 "| 3 | 4     | 55 | 67 |\n"
                 "|   |       |    |    |\n"
-                "=======================\n"
+                "+---+-------+----+----+\n"
                 "|   |       |    |    |\n"
                 "| 3 | 4     | 55 | 67 |\n"
                 "|   |       |    |    |\n"
-                "=======================\n";
+                "+---+-------+----+----+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
