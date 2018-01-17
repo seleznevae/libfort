@@ -15,11 +15,19 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
 
 
 
-FILE(GLOB_RECURSE FortHeaders "include/*.h" "tests/*.h")
+FILE(GLOB_RECURSE FortHeaders "include/*.h" "tests/*.h" "src/*.h" "src/*.h" "src/*.h" "src/*.h" "src/*.h" "src/*.h")
 add_custom_target(headers SOURCES ${FortHeaders})
 
 
-set(FORT_SOURCES src/fort.c)
+set(FORT_SOURCES
+    src/fort.c
+    src/vector.c
+    src/string_buffer.c
+    src/options.c
+    src/cell.c
+    src/row.c
+    src/table.c
+    src/fort_impl.c)
 
 
 add_executable(${PROJECT_NAME}
@@ -31,6 +39,7 @@ include_directories(tests/cmocka-1.1.0/include)
 link_directories(${CMAKE_SOURCE_DIR}/tests/cmocka-1.1.0/build/src)
 
 add_executable(TEST
+    ${FORT_SOURCES}
     tests/test.c
     tests/test_vector.c
     tests/test_table.c)

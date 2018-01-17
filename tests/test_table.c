@@ -1,10 +1,11 @@
-#define FORT_EXTERN static
+//#define FORT_EXTERN static
 #include "tests.h"
 #include "fort.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "fort.c"
+//#include "fort.c"
+#include "table.h"
 
 void test_table_sizes(void **state)
 {
