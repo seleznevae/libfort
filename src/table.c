@@ -65,13 +65,6 @@ string_buffer_t * get_cur_str_buffer_and_create_if_not_exists(FTABLE *FORT_RESTR
     if (cell == NULL)
         return NULL;
 
-//    if (cell->str_buffer == NULL) {
-//        cell->str_buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE);
-//        if (cell->str_buffer == NULL)
-//            return NULL;
-//    }
-//    return cell->str_buffer;
-
     return cell_get_string_buffer(cell);
 }
 

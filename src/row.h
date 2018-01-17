@@ -7,12 +7,12 @@
 
 struct fort_row;
 typedef struct fort_row fort_row_t;
-struct fort_row
-{
-    vector_t *cells;
-    enum F_BOOL is_header;
-};
 
+enum RowType
+{
+    Common,
+    Header
+};
 
 
 fort_row_t * create_row();
@@ -44,5 +44,6 @@ fort_row_t* create_row_from_fmt_string(const char* FORT_RESTRICT fmt, va_list *v
 int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                         size_t row_height, const context_t *context);
 
+void set_row_type(fort_row_t *row, enum RowType type);
 
 #endif // ROW_H

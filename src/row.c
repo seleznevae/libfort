@@ -5,6 +5,14 @@
 #include "vector.h"
 #include "ctype.h"
 
+struct fort_row
+{
+    vector_t *cells;
+    enum RowType type;
+};
+
+
+
 fort_row_t * create_row()
 {
     fort_row_t * row = F_CALLOC(sizeof(fort_row_t), 1);
@@ -15,7 +23,8 @@ fort_row_t * create_row()
         F_FREE(row);
         return NULL;
     }
-    row->is_header = F_FALSE;
+//    row->is_header = F_FALSE;
+    row->type = Common;
     return row;
 }
 
@@ -118,7 +127,7 @@ int print_row_separator(char *buffer, size_t buffer_sz,
 
     const fort_row_t *main_row = NULL;
     if (upper_row != NULL && lower_row != NULL) {
-        main_row = lower_row->is_header == F_TRUE ? lower_row : upper_row;
+        main_row = lower_row->type == Header ? lower_row : upper_row;
     } else if (upper_row != NULL && lower_row == NULL) {
         main_row = upper_row;
     } else if (upper_row == NULL && lower_row != NULL) {
@@ -137,7 +146,7 @@ int print_row_separator(char *buffer, size_t buffer_sz,
     const char *R = NULL;
 
     const char (*border_chars)[BorderItemPosSize] = NULL;
-    if (main_row && main_row->is_header == F_TRUE) {
+    if (main_row && main_row->type == Header) {
         border_chars = &context->header_border_chars;
     } else {
         border_chars = &context->border_chars;
@@ -333,7 +342,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
      *  L    data    IV    data   IV   data    R
      */
 
-    const char (*bord_chars)[BorderItemPosSize] = (row->is_header)
+    const char (*bord_chars)[BorderItemPosSize] = (row->type == Header)
             ? (&context->header_border_chars)
             : (&context->border_chars);
     const char *L = &(*bord_chars)[LL_bip];
@@ -360,4 +369,12 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
         dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, '\n');
     }
     return dev;
+}
+
+
+
+void set_row_type(fort_row_t *row, enum RowType type)
+{
+    assert(row);
+    row->type = type;
 }

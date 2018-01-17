@@ -135,7 +135,7 @@ static int ft_row_printf_impl(FTABLE *FORT_RESTRICT table, size_t row, const cha
     *cur_row_p = new_row;
     table->cur_col = 0;
     table->cur_row++;
-    return vector_size(new_row->cells);
+    return columns_in_row(new_row);
 
 clear:
     destroy_row(new_row);
@@ -151,7 +151,7 @@ int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ..
     if (result >= 0 && table->rows) {
         int sz = vector_size(table->rows);
         if (sz != 0) {
-            (*(fort_row_t**)vector_at(table->rows, sz - 1))->is_header = F_TRUE;
+            set_row_type(*(fort_row_t**)vector_at(table->rows, sz - 1), Header);
         }
     }
     return result;

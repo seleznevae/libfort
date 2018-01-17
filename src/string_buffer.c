@@ -5,6 +5,7 @@
 /*****************************************************************************
  *               STRING BUFFER
  * ***************************************************************************/
+
 string_buffer_t* create_string_buffer(size_t sz)
 {
     string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
@@ -130,3 +131,4 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_colum
     written += snprint_n_chars(buf + written, buf_len - written, right, ' ');
     return written;
 }
+
