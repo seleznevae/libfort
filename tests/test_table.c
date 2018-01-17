@@ -23,7 +23,7 @@ void test_table_sizes(void **state)
     }
 
     WHEN("Insert one cell") {
-        int n = ft_hdr_printf(table, "%c", 'c');
+        int n = FT_HDR_PRINTF(table, "%c", 'c');
         assert_true( n == 1 );
         status = get_table_sizes(table, &rows, &cols);
         assert_true( IS_SUCCESS(status) );
@@ -32,7 +32,7 @@ void test_table_sizes(void **state)
     }
 
     WHEN("Insert two cells in the next row") {
-        int n = ft_row_printf(table, 1, "%c|%c", 'c', 'd');
+        int n = FT_ROW_PRINTF(table, 1, "%c|%c", 'c', 'd');
         assert_true( n == 2 );
         status = get_table_sizes(table, &rows, &cols);
         assert_true( IS_SUCCESS(status) );
@@ -41,7 +41,7 @@ void test_table_sizes(void **state)
     }
 
     WHEN("Insert five cells in the next row") {
-        int n = ft_row_printf(table, 2, "%d|%d|%d|%d|%d", 1, 2, 3, 4, 5);
+        int n = FT_ROW_PRINTF(table, 2, "%d|%d|%d|%d|%d", 1, 2, 3, 4, 5);
         assert_true( n == 5 );
         status = get_table_sizes(table, &rows, &cols);
         assert_true( IS_SUCCESS(status) );
@@ -70,7 +70,7 @@ void test_table_geometry(void **state)
     }
 
     WHEN("Table has one cell") {
-        int n = ft_hdr_printf(table, "%c", 'c');
+        int n = FT_HDR_PRINTF(table, "%c", 'c');
         assert_true( n == 1 );
         status = table_geometry(table, &height, &width);
         assert_true( IS_SUCCESS(status) );
@@ -79,7 +79,7 @@ void test_table_geometry(void **state)
     }
 
     WHEN("Inserting 3 cells in the next row") {
-        int n = ft_row_printf(table, 1, "%c|%s|%c", 'c', "as", 'e');
+        int n = FT_ROW_PRINTF(table, 1, "%c|%s|%c", 'c', "as", 'e');
         assert_true( n == 3 );
         status = table_geometry(table, &height, &width);
         assert_true( IS_SUCCESS(status) );
@@ -96,14 +96,14 @@ void test_table_basic(void **state)
     FTABLE *table = ft_create_table();
 
     WHEN("All columns are equal and not empty") {
-        int n = ft_hdr_printf(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        int n = FT_HDR_PRINTF(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
-        n = ft_row_printf(table, 1, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        n = FT_ROW_PRINTF(table, 1, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
-        n = ft_row_printf(table, 2, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        n = FT_ROW_PRINTF(table, 2, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+---+---+-----+----------+\n"
@@ -123,7 +123,6 @@ void test_table_basic(void **state)
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 
@@ -132,14 +131,14 @@ void test_table_basic(void **state)
     WHEN("All columns are not equal and not empty") {
         table = ft_create_table();
 
-        int n = ft_hdr_printf(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        int n = FT_HDR_PRINTF(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
-        n = ft_row_printf(table, 1, "%c|%s|%f|%d", 'c', "234", 3.14, 3);
+        n = FT_ROW_PRINTF(table, 1, "%c|%s|%f|%d", 'c', "234", 3.14, 3);
         assert_true( n == 4 );
-        n = ft_row_printf(table, 2, "%s|%f|%d|%c", "234", 3.14,  3, 'c');
+        n = FT_ROW_PRINTF(table, 2, "%s|%f|%d|%c", "234", 3.14,  3, 'c');
         assert_true( n == 4 );
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+-----+----------+----------+----------+\n"
@@ -159,21 +158,20 @@ void test_table_basic(void **state)
 //        fprintf(stderr, "content:\n%s", table_str);
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 
     WHEN("All columns are not equal and some cells are empty") {
         table = ft_create_table();
 
-        int n = ft_hdr_printf(table, "||%s|%f", "234", 3.14);
+        int n = FT_HDR_PRINTF(table, "||%s|%f", "234", 3.14);
         assert_true( n == 4 );
-        n = ft_row_printf(table, 1, "%c|%s|%f", 'c', "234", 3.14);
+        n = FT_ROW_PRINTF(table, 1, "%c|%s|%f", 'c', "234", 3.14);
         assert_true( n == 3 );
-        n = ft_row_printf(table, 2, "%s|%f||", "234", 3.14);
+        n = FT_ROW_PRINTF(table, 2, "%s|%f||", "234", 3.14);
         assert_true( n == 4 );
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+-----+----------+----------+----------+\n"
@@ -193,21 +191,20 @@ void test_table_basic(void **state)
 //        fprintf(stderr, "content:\n%s", table_str);
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 
     WHEN("All cells are empty") {
         table = ft_create_table();
 
-        int n = ft_hdr_printf(table, "|||");
+        int n = FT_HDR_PRINTF(table, "|||");
         assert_true( n == 4 );
-        n = ft_row_printf(table, 1, "|||");
+        n = FT_ROW_PRINTF(table, 1, "|||");
         assert_true( n == 4 );
-        n = ft_row_printf(table, 2, "|||");
+        n = FT_ROW_PRINTF(table, 2, "|||");
         assert_true( n == 4 );
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+--+--+--+--+\n"
@@ -228,7 +225,6 @@ void test_table_basic(void **state)
 //        fprintf(stderr, "content:\n%s", table_str);
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 }
@@ -243,12 +239,18 @@ FTABLE *create_test_int_table()
 
     assert_true (table != NULL);
 
-    int n = ft_hdr_printf(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+    int n = FT_HDR_PRINTF(table, "%d|%d|%d|%d", 3, 4, 55, 67);
     assert_true( n == 4 );
-    n = ft_row_printf(table, 1, "%d|%d|%d|%d", 3, 4, 55, 67);
-    assert_true( n == 4 );
-    n = ft_row_printf(table, 2, "%d|%d|%d|%d", 3, 4, 55, 67);
-    assert_true( n == 4 );
+
+    assert(ft_write(table, "3") == F_SUCCESS);
+    assert(ft_write(table, "4") == F_SUCCESS);
+    assert(ft_write(table, "55") == F_SUCCESS);
+    assert(ft_write_ln(table, "67") == F_SUCCESS);
+
+    assert(ft_write(table, "3") == F_SUCCESS);
+    assert(ft_write(table, "4") == F_SUCCESS);
+    assert(ft_write(table, "55") == F_SUCCESS);
+    assert(ft_write_ln(table, "67") == F_SUCCESS);
 
     return table;
 }
@@ -273,7 +275,7 @@ void test_table_options(void **state)
 
         table = create_test_int_table();
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+---+---+----+----+\n"
@@ -293,7 +295,6 @@ void test_table_options(void **state)
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 
@@ -308,7 +309,7 @@ void test_table_options(void **state)
 
         table = create_test_int_table();
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+---+---+----+----+\n"
@@ -322,7 +323,6 @@ void test_table_options(void **state)
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 
@@ -337,7 +337,7 @@ void test_table_options(void **state)
 
         table = create_test_int_table();
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+-+-+--+--+\n"
@@ -357,7 +357,6 @@ void test_table_options(void **state)
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 
@@ -372,7 +371,7 @@ void test_table_options(void **state)
 
         table = create_test_int_table();
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+-+-+--+--+\n"
@@ -386,7 +385,6 @@ void test_table_options(void **state)
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 
@@ -404,7 +402,7 @@ void test_table_options(void **state)
         int n = ft_row_printf(table, 3, "|||");
         assert_true( n == 4 );
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+---+---+----+----+\n"
@@ -427,7 +425,6 @@ void test_table_options(void **state)
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 
@@ -455,7 +452,7 @@ void test_table_options(void **state)
         ft_set_default_options(&table_options);
 
         table = create_test_int_table();
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "*******************\n"
@@ -475,7 +472,6 @@ void test_table_options(void **state)
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
 
 
@@ -518,7 +514,6 @@ void test_table_options(void **state)
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 
@@ -533,7 +528,7 @@ void test_table_options(void **state)
 
         table = create_test_int_table();
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+-+-+--+--+\n"
@@ -546,7 +541,6 @@ void test_table_options(void **state)
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
-        free(table_str);
 
         table_options.cell_padding_bottom = 1;
         table_options.cell_padding_top = 1;
@@ -572,7 +566,6 @@ void test_table_options(void **state)
 //        fprintf(stderr, "content:\n%s", table_str);
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 
@@ -595,7 +588,7 @@ void test_table_options(void **state)
         ft_set_column_alignment(table, 2, CenterAligned);
 
 
-        char *table_str = ft_to_string(table);
+        const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
                 "+---+-------+--------+----+\n"
@@ -615,7 +608,6 @@ void test_table_options(void **state)
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-        free(table_str);
         ft_destroy_table(table);
     }
 }

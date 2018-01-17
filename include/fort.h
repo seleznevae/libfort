@@ -91,7 +91,16 @@ FORT_EXTERN int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_REST
 FORT_EXTERN int ft_row_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, ...);
 //FORT_EXTERN int ft_cell_printf(FTABLE *FORT_RESTRICT table, size_t row, size_t col, const char* FORT_RESTRICT fmt, ...);
 
-FORT_EXTERN char* ft_to_string(const FTABLE *FORT_RESTRICT table);
+FORT_EXTERN int ft_write(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content);
+FORT_EXTERN int ft_write_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content);
+
+#define FT_HDR_PRINTF(table, ...) \
+    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_hdr_printf(table, __VA_ARGS__))
+#define FT_ROW_PRINTF(table, row, ...) \
+    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_row_printf(table, row, __VA_ARGS__))
+
+
+FORT_EXTERN const char* ft_to_string(const FTABLE *FORT_RESTRICT table);
 //FORT_EXTERN ssize_t ft_n_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
 
 //FORT_EXTERN char* ft_header_to_string(const FTABLE *FORT_RESTRICT table);

@@ -10,7 +10,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 include_directories(include)
 include_directories(src)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
 
 
 

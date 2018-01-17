@@ -48,6 +48,11 @@ SOFTWARE.
 #define MAX(a,b) ((a) > (b) ? (a) : b)
 #define MIN(a,b) ((a) < (b) ? (a) : b)
 
+enum PolicyOnNull
+{
+    Create,
+    DoNotCreate
+};
 
 enum F_BOOL
 {
@@ -503,22 +508,51 @@ static int columns_in_row(const fort_row_t *row)
     return vector_size(row->cells);
 }
 
-static fort_cell_t *get_cell(fort_row_t *row, size_t col)
+
+static fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnNull policy)
 {
     if (row == NULL || row->cells == NULL) {
         return NULL;
     }
 
-    if (col < columns_in_row(row)) {
-        return *(fort_cell_t**)vector_at(row->cells, col);
+    switch (policy) {
+        case DoNotCreate:
+            if (col < columns_in_row(row)) {
+                return *(fort_cell_t**)vector_at(row->cells, col);
+            }
+            return NULL;
+            break;
+        case Create:
+            while(col >= columns_in_row(row)) {
+                fort_cell_t *new_cell = create_cell();
+                if (new_cell == NULL)
+                    return NULL;
+                if (IS_ERROR(vector_push(row->cells, &new_cell))) {
+                    destroy_cell(new_cell);
+                    return NULL;
+                }
+            }
+            return *(fort_cell_t**)vector_at(row->cells, col);
+            break;
     }
     return NULL;
+}
+
+static fort_cell_t *get_cell(fort_row_t *row, size_t col)
+{
+    return get_cell_implementation(row, col, DoNotCreate);
 }
 
 static const fort_cell_t *get_cell_c(const fort_row_t *row, size_t col)
 {
     return get_cell((fort_row_t *)row, col);
 }
+
+static fort_cell_t *get_cell_and_create_if_not_exists(fort_row_t *row, size_t col)
+{
+    return get_cell_implementation(row, col, Create);
+}
+
 
 static int print_row_separator(char *buffer, size_t buffer_sz,
                                const size_t *col_width_arr, size_t cols,
@@ -622,29 +656,81 @@ struct fort_table
 {
     vector_t *rows;
     fort_table_options_t *options;
+    string_buffer_t *conv_buffer;
+    size_t cur_row;
+    size_t cur_col;
 };
 
 static fort_status_t get_table_sizes(const FTABLE *table, size_t *rows, size_t *cols);
 
 
 
-static fort_row_t *get_row(fort_table_t *table, size_t row)
+static fort_row_t *get_row_implementation(fort_table_t *table, size_t row, enum PolicyOnNull policy)
 {
     if (table == NULL || table->rows == NULL) {
         return NULL;
     }
 
-    size_t rows = vector_size(table->rows);
-    if (row < rows) {
-        return *(fort_row_t**)vector_at(table->rows, row);
+    switch (policy) {
+        case DoNotCreate:
+            if (row < vector_size(table->rows)) {
+                return *(fort_row_t**)vector_at(table->rows, row);
+            }
+            return NULL;
+            break;
+        case Create:
+            while(row >= vector_size(table->rows)) {
+                fort_row_t *new_row = create_row();
+                if (new_row == NULL)
+                    return NULL;
+                if (IS_ERROR(vector_push(table->rows, &new_row))) {
+                    destroy_row(new_row);
+                    return NULL;
+                }
+            }
+            return *(fort_row_t**)vector_at(table->rows, row);
+            break;
     }
     return NULL;
+}
+
+static fort_row_t *get_row(fort_table_t *table, size_t row)
+{
+    return get_row_implementation(table, row, DoNotCreate);
 }
 
 static const fort_row_t *get_row_c(const fort_table_t *table, size_t row)
 {
     return get_row((fort_table_t *)table, row);
 }
+
+static fort_row_t *get_row_and_create_if_not_exists(fort_table_t *table, size_t row)
+{
+    return get_row_implementation(table, row, Create);
+}
+
+
+
+static string_buffer_t * get_cur_str_buffer_and_create_if_not_exists(FTABLE *FORT_RESTRICT table)
+{
+    assert(table);
+
+    fort_row_t *row = get_row_and_create_if_not_exists(table, table->cur_row);
+    if (row == NULL)
+        return NULL;
+    fort_cell_t *cell = get_cell_and_create_if_not_exists(row, table->cur_col);
+    if (cell == NULL)
+        return NULL;
+
+    if (cell->str_buffer == NULL) {
+        cell->str_buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE);
+        if (cell->str_buffer == NULL)
+            return NULL;
+    }
+
+    return cell->str_buffer;
+}
+
 /*****************************************************************************
  *               LIBFORT helpers
  *****************************************************************************/
@@ -693,6 +779,9 @@ FTABLE * ft_create_table(void)
         return NULL;
     }
     result->options = NULL;
+    result->conv_buffer = NULL;
+    result->cur_row = 0;
+    result->cur_col = 0;
     return result;
 }
 
@@ -710,6 +799,7 @@ void ft_destroy_table(FTABLE *FORT_RESTRICT table)
         destroy_vector(table->rows);
     }
     destroy_table_options(table->options);
+    destroy_string_buffer(table->conv_buffer);
     F_FREE(table);
 }
 
@@ -748,6 +838,8 @@ static int ft_row_printf_impl(FTABLE *FORT_RESTRICT table, size_t row, const cha
 
     destroy_row(*cur_row_p);
     *cur_row_p = new_row;
+    table->cur_col = 0;
+    table->cur_row++;
     return vector_size(new_row->cells);
 
 clear:
@@ -777,6 +869,29 @@ int ft_row_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_REST
     int result = ft_row_printf_impl(table, row, fmt, &va);
     va_end(va);
     return result;
+}
+
+int ft_write(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content)
+{
+    string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
+    if (str_buffer == NULL)
+        return F_ERROR;
+
+    int status = fill_buffer_from_string(str_buffer, cell_content);
+    if (IS_SUCCESS(status)) {
+        table->cur_col++;
+    }
+    return status;
+}
+
+int ft_write_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content)
+{
+    int status = ft_write(table, cell_content);
+    if (IS_SUCCESS(status)) {
+        table->cur_col = 0;
+        table->cur_row++;
+    }
+    return status;
 }
 
 int ft_set_default_options(const fort_table_options_t *options)
@@ -1316,6 +1431,7 @@ static fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t 
         *width += col_width_arr[i];
     }
 
+    /* todo: add check for non printable horizontal row separators */
     *height = 1 + (rows == 0 ? 1 : rows); // for boundaries (that take 1 symbol)
     for (size_t i = 0; i < rows; ++i) {
         *height += row_height_arr[i];
@@ -1328,7 +1444,7 @@ static fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t 
 
 
 
-char* ft_to_string(const FTABLE *FORT_RESTRICT table)
+const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
     k = statement; \
@@ -1339,6 +1455,7 @@ char* ft_to_string(const FTABLE *FORT_RESTRICT table)
 
     assert(table);
 
+    /* Determing size of table string representation */
     size_t height = 0;
     size_t width = 0;
     int status = table_geometry(table, &height, &width);
@@ -1346,9 +1463,20 @@ char* ft_to_string(const FTABLE *FORT_RESTRICT table)
         return NULL;
     }
     size_t sz = height * width + 1;
-    char *buffer = F_MALLOC(sz);
-    if (buffer == NULL)
-        return NULL;
+
+    /* Allocate string buffer for string representation */
+    if (table->conv_buffer == NULL) {
+        ((FTABLE *)table)->conv_buffer = create_string_buffer(sz);
+        if (table->conv_buffer == NULL)
+            return NULL;
+    }
+    while (table->conv_buffer->str_sz < sz) {
+        if (IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
+            return NULL;
+        }
+    }
+    char *buffer = table->conv_buffer->str;
+
 
     size_t cols = 0;
     size_t rows = 0;
