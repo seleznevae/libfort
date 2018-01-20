@@ -24,7 +24,7 @@ void test_table_sizes(void **state)
     }
 
     WHEN("Insert one cell") {
-        int n = FT_HDR_PRINTF(table, "%c", 'c');
+        int n = FT_HDR_PRINTF_LN(table, "%c", 'c');
         assert_true( n == 1 );
         status = get_table_sizes(table, &rows, &cols);
         assert_true( IS_SUCCESS(status) );
@@ -33,7 +33,7 @@ void test_table_sizes(void **state)
     }
 
     WHEN("Insert two cells in the next row") {
-        int n = FT_ROW_PRINTF(table, 1, "%c|%c", 'c', 'd');
+        int n = FT_PRINTF_LN(table, 1, "%c|%c", 'c', 'd');
         assert_true( n == 2 );
         status = get_table_sizes(table, &rows, &cols);
         assert_true( IS_SUCCESS(status) );
@@ -42,7 +42,7 @@ void test_table_sizes(void **state)
     }
 
     WHEN("Insert five cells in the next row") {
-        int n = FT_ROW_PRINTF(table, 2, "%d|%d|%d|%d|%d", 1, 2, 3, 4, 5);
+        int n = FT_PRINTF_LN(table, 2, "%d|%d|%d|%d|%d", 1, 2, 3, 4, 5);
         assert_true( n == 5 );
         status = get_table_sizes(table, &rows, &cols);
         assert_true( IS_SUCCESS(status) );
@@ -71,7 +71,7 @@ void test_table_geometry(void **state)
     }
 
     WHEN("Table has one cell") {
-        int n = FT_HDR_PRINTF(table, "%c", 'c');
+        int n = FT_HDR_PRINTF_LN(table, "%c", 'c');
         assert_true( n == 1 );
         status = table_geometry(table, &height, &width);
         assert_true( IS_SUCCESS(status) );
@@ -80,7 +80,7 @@ void test_table_geometry(void **state)
     }
 
     WHEN("Inserting 3 cells in the next row") {
-        int n = FT_ROW_PRINTF(table, 1, "%c|%s|%c", 'c', "as", 'e');
+        int n = FT_PRINTF_LN(table, 1, "%c|%s|%c", 'c', "as", 'e');
         assert_true( n == 3 );
         status = table_geometry(table, &height, &width);
         assert_true( IS_SUCCESS(status) );
@@ -97,11 +97,11 @@ void test_table_basic(void **state)
     FTABLE *table = ft_create_table();
 
     WHEN("All columns are equal and not empty") {
-        int n = FT_HDR_PRINTF(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        int n = FT_HDR_PRINTF_LN(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
-        n = FT_ROW_PRINTF(table, 1, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        n = FT_PRINTF_LN(table, 1, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
-        n = FT_ROW_PRINTF(table, 2, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        n = FT_PRINTF_LN(table, 2, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
 
         const char *table_str = ft_to_string(table);
@@ -132,11 +132,11 @@ void test_table_basic(void **state)
     WHEN("All columns are not equal and not empty") {
         table = ft_create_table();
 
-        int n = FT_HDR_PRINTF(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        int n = FT_HDR_PRINTF_LN(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
-        n = FT_ROW_PRINTF(table, 1, "%c|%s|%f|%d", 'c', "234", 3.14, 3);
+        n = FT_PRINTF_LN(table, 1, "%c|%s|%f|%d", 'c', "234", 3.14, 3);
         assert_true( n == 4 );
-        n = FT_ROW_PRINTF(table, 2, "%s|%f|%d|%c", "234", 3.14,  3, 'c');
+        n = FT_PRINTF_LN(table, 2, "%s|%f|%d|%c", "234", 3.14,  3, 'c');
         assert_true( n == 4 );
 
         const char *table_str = ft_to_string(table);
@@ -165,11 +165,11 @@ void test_table_basic(void **state)
     WHEN("All columns are not equal and some cells are empty") {
         table = ft_create_table();
 
-        int n = FT_HDR_PRINTF(table, "||%s|%f", "234", 3.14);
+        int n = FT_HDR_PRINTF_LN(table, "||%s|%f", "234", 3.14);
         assert_true( n == 4 );
-        n = FT_ROW_PRINTF(table, 1, "%c|%s|%f", 'c', "234", 3.14);
+        n = FT_PRINTF_LN(table, 1, "%c|%s|%f", 'c', "234", 3.14);
         assert_true( n == 3 );
-        n = FT_ROW_PRINTF(table, 2, "%s|%f||", "234", 3.14);
+        n = FT_PRINTF_LN(table, 2, "%s|%f||", "234", 3.14);
         assert_true( n == 4 );
 
         const char *table_str = ft_to_string(table);
@@ -198,11 +198,11 @@ void test_table_basic(void **state)
     WHEN("All cells are empty") {
         table = ft_create_table();
 
-        int n = FT_HDR_PRINTF(table, "|||");
+        int n = FT_HDR_PRINTF_LN(table, "|||");
         assert_true( n == 4 );
-        n = FT_ROW_PRINTF(table, 1, "|||");
+        n = FT_PRINTF_LN(table, 1, "|||");
         assert_true( n == 4 );
-        n = FT_ROW_PRINTF(table, 2, "|||");
+        n = FT_PRINTF_LN(table, 2, "|||");
         assert_true( n == 4 );
 
         const char *table_str = ft_to_string(table);
@@ -240,7 +240,7 @@ FTABLE *create_test_int_table()
 
     assert_true (table != NULL);
 
-    int n = FT_HDR_PRINTF(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+    int n = FT_HDR_PRINTF_LN(table, "%d|%d|%d|%d", 3, 4, 55, 67);
     assert_true( n == 4 );
 
     assert(ft_write(table, "3") == F_SUCCESS);
@@ -400,7 +400,7 @@ void test_table_options(void **state)
         ft_set_default_options(&table_options);
 
         table = create_test_int_table();
-        int n = ft_row_printf(table, 3, "|||");
+        int n = ft_printf_ln(table, 3, "|||");
         assert_true( n == 4 );
 
         const char *table_str = ft_to_string(table);

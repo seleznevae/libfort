@@ -83,7 +83,12 @@ void ft_destroy_table(FTABLE *FORT_RESTRICT table)
     F_FREE(table);
 }
 
-
+void ft_ln(FTABLE *FORT_RESTRICT table)
+{
+    assert(table);
+    table->cur_col = 0;
+    table->cur_row++;
+}
 
 
 static int ft_row_printf_impl(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, va_list *va)
@@ -118,9 +123,9 @@ static int ft_row_printf_impl(FTABLE *FORT_RESTRICT table, size_t row, const cha
 
     destroy_row(*cur_row_p);
     *cur_row_p = new_row;
-    table->cur_col = 0;
-    table->cur_row++;
-    return columns_in_row(new_row);
+    size_t new_cols = columns_in_row(new_row);
+    table->cur_col += new_cols;
+    return new_cols;
 
 clear:
     destroy_row(new_row);
@@ -129,6 +134,9 @@ clear:
 
 int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
 {
+    assert(table);
+    assert(fmt);
+
     va_list va;
     va_start(va, fmt);
     int result = ft_row_printf_impl(table, 0, fmt, &va);
@@ -142,7 +150,28 @@ int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ..
     return result;
 }
 
-int ft_row_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, ...)
+int ft_hdr_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
+{
+    assert(table);
+    assert(fmt);
+
+    va_list va;
+    va_start(va, fmt);
+    int result = ft_row_printf_impl(table, 0, fmt, &va);
+    va_end(va);
+    if (result >= 0 && table->rows) {
+        int sz = vector_size(table->rows);
+        if (sz != 0) {
+            set_row_type(*(fort_row_t**)vector_at(table->rows, sz - 1), Header);
+        }
+    }
+    if (result >= 0) {
+        ft_ln(table);
+    }
+    return result;
+}
+
+int ft_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, ...)
 {
     va_list va;
     va_start(va, fmt);
@@ -150,6 +179,19 @@ int ft_row_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_REST
     va_end(va);
     return result;
 }
+
+int ft_printf_ln(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, ...)
+{
+    va_list va;
+    va_start(va, fmt);
+    int result = ft_row_printf_impl(table, row, fmt, &va);
+    if (result >= 0) {
+        ft_ln(table);
+    }
+    va_end(va);
+    return result;
+}
+
 
 int ft_write(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content)
 {
@@ -168,11 +210,152 @@ int ft_write_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_cont
 {
     int status = ft_write(table, cell_content);
     if (IS_SUCCESS(status)) {
-        table->cur_col = 0;
-        table->cur_row++;
+        ft_ln(table);
     }
     return status;
 }
+
+FORT_EXTERN int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...)
+{
+    assert(table);
+    int status = ft_write(table, cell_content);
+    if (IS_ERROR(status))
+        return status;
+
+    va_list va;
+    va_start(va, cell_content);
+    --n;
+    for (size_t i = 0; i < n; ++i) {
+        const char *cell = va_arg(va, const char*);
+        status = ft_write(table, cell);
+        if (IS_ERROR(status))
+            return status;
+    }
+    va_end(va);
+    return status;
+}
+
+FORT_EXTERN int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...)
+{
+    assert(table);
+    int status = ft_write(table, cell_content);
+    if (IS_ERROR(status))
+        return status;
+
+    va_list va;
+    va_start(va, cell_content);
+    --n;
+    for (size_t i = 0; i < n; ++i) {
+        const char *cell = va_arg(va, const char*);
+        status = ft_write(table, cell);
+        if (IS_ERROR(status))
+            return status;
+    }
+    va_end(va);
+    return status;
+
+    ft_ln(table);
+    return status;
+}
+
+
+FORT_EXTERN int ft_write_status(FTABLE *FORT_RESTRICT table, int status, const char* FORT_RESTRICT cell_content)
+{
+    assert(table);
+    if (IS_ERROR(status))
+        return status;
+
+    return ft_write(table, cell_content);
+}
+
+
+
+FORT_EXTERN int ft_row_write(FTABLE *FORT_RESTRICT table, size_t cols, const char* FORT_RESTRICT cells[])
+{
+    assert(table);
+    for (size_t i = 0; i < cols; ++i) {
+        int status = ft_write(table, cells[i]);
+        if (IS_ERROR(status)) {
+            //todo: maybe current pos in case of error should be equal to the one before function call?
+            return status;
+        }
+    }
+    return F_SUCCESS;
+}
+
+FORT_EXTERN int ft_row_write_ln(FTABLE *FORT_RESTRICT table, size_t cols, const char* FORT_RESTRICT cells[])
+{
+    assert(table);
+    int status = ft_row_write(table, cols, cells);
+    if (IS_SUCCESS(status)) {
+        ft_ln(table);
+    }
+    return status;
+}
+
+
+
+//FORT_EXTERN int ft_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char** FORT_RESTRICT table_cells[]);
+//FORT_EXTERN int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char** FORT_RESTRICT table_cells[]);
+
+
+//int ft_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* FORT_RESTRICT table_cells[rows][cols]);
+//int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char** FORT_RESTRICT table_cells[rows][cols]);
+
+int ft_s_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* FORT_RESTRICT table_cells[rows][cols])
+{
+    assert(table);
+    for (size_t i = 0; i < rows; ++i) {
+        int status = ft_row_write(table, cols, table_cells[i]);
+        if (IS_ERROR(status)) {
+            //todo: maybe current pos in case of error should be equal to the one before function call?
+            return status;
+        }
+        if (i != rows - 1)
+            ft_ln(table);
+    }
+    return F_SUCCESS;
+}
+
+int ft_s_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* FORT_RESTRICT table_cells[rows][cols])
+{
+    assert(table);
+    int status = ft_s_table_write(table, rows, cols, table_cells);
+    if (IS_SUCCESS(status)) {
+        ft_ln(table);
+    }
+    return status;
+}
+
+
+int ft_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* * FORT_RESTRICT table_cells[rows])
+{
+    assert(table);
+    for (size_t i = 0; i < rows; ++i) {
+        int status = ft_row_write(table, cols, table_cells[i]);
+        if (IS_ERROR(status)) {
+            //todo: maybe current pos in case of error should be equal to the one before function call?
+            return status;
+        }
+        if (i != rows - 1)
+            ft_ln(table);
+    }
+    return F_SUCCESS;
+}
+
+int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* * FORT_RESTRICT table_cells[rows])
+{
+    assert(table);
+    int status = ft_table_write(table, rows, cols, table_cells);
+    if (IS_SUCCESS(status)) {
+        ft_ln(table);
+    }
+    return status;
+}
+
+
+
+
 
 int ft_set_default_options(const fort_table_options_t *options)
 {

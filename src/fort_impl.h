@@ -60,10 +60,10 @@ enum F_BOOL
  * ***************************************************************************/
 typedef int fort_status_t;
 #define F_SUCCESS        0
-#define F_MEMORY_ERROR   1
-#define F_ERROR          2
-#define IS_SUCCESS(arg) ((arg) == F_SUCCESS)
-#define IS_ERROR(arg) (!IS_SUCCESS(arg))
+#define F_MEMORY_ERROR   -1
+#define F_ERROR          -2
+#define IS_SUCCESS(arg) ((arg) >= 0)
+#define IS_ERROR(arg) ((arg) < 0)
 
 /*****************************************************************************
  *               DEFAULT_SIZES
