@@ -6,6 +6,61 @@
  *               STRING BUFFER
  * ***************************************************************************/
 
+size_t strchr_count(const char* str, char ch)
+{
+    if (str == NULL)
+        return 0;
+
+    size_t count = 0;
+    str = strchr(str, ch);
+    while (str) {
+        count++;
+        str++;
+        str = strchr(str, ch);
+    }
+    return count;
+}
+
+const char* str_n_substring_beg(const char* str, char ch_separator, size_t n)
+{
+    if (str == NULL)
+        return NULL;
+
+    if (n == 0)
+        return str;
+
+    str = strchr(str, ch_separator);
+    --n;
+    while (n > 0) {
+        if (str == NULL)
+            return NULL;
+        --n;
+        str++;
+        str = strchr(str, ch_separator);
+    }
+    return str ? (str + 1) : NULL;
+}
+
+void str_n_substring(const char* str, char ch_separator, size_t n, const char **begin, const char **end)
+{
+    const char *beg = str_n_substring_beg(str, ch_separator, n);
+    if (beg == NULL) {
+        *begin = NULL;
+        *end = NULL;
+        return;
+    }
+
+    const char *en = strchr(beg, ch_separator);
+    if (en == NULL) {
+        en = str + strlen(str);
+    }
+
+    *begin = beg;
+    *end = en;
+    return;
+}
+
+
 string_buffer_t* create_string_buffer(size_t sz)
 {
     string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
@@ -72,15 +127,23 @@ size_t buffer_text_height(string_buffer_t *buffer)
     if (buffer == NULL || buffer->str == NULL || strlen(buffer->str) == 0) {
         return 0;
     }
-    return 1;
+    return 1 + strchr_count(buffer->str, '\n');
 }
 
 size_t buffer_text_width(string_buffer_t *buffer)
 {
-    if (buffer == NULL || buffer->str == NULL) {
-        return 0;
+    size_t max_length = 0;
+    int n = 0;
+    while (1) {
+        const char *beg = NULL;
+        const char *end = NULL;
+        str_n_substring(buffer->str, '\n', n, &beg, &end);
+        if (beg == NULL || end == NULL)
+            return max_length;
+
+        max_length = MAX(max_length, (end - beg));
+        ++n;
     }
-    return strlen(buffer->str);
 }
 
 
@@ -124,9 +187,47 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_colum
     if (written < 0)
         return written;
 
-    written += snprintf(buf + written, buf_len - written, "%*s", (int)content_width, buffer->str);
+
+
+//    const char *substr = str_n_substring(buffer->str, '\n', buffer_row);
+//    if (substr == NULL)
+//        return -1;
+//    const char *next_substr = str_n_substring(buffer->str, '\n', buffer_row + 1);
+//    size_t buf_row_len = 0;
+//    if (next_substr) {
+//        buf_row_len = next_substr - substr - 1;
+//    } else {
+//        buf_row_len = strlen(buffer->str) - (next_substr - buffer->str);
+//    }   todo
+//    if (buf_row_len > content_width)
+//        return -1;
+
+//    written += snprintf(buf + written, buf_len - written, "%*s", (int)buf_row_len, substr);
+//    if (written < 0)
+//        return written;
+//    written += snprint_n_chars(buf + written, buf_len - written, content_width - buf_row_len, ' ');
+//    if (written < 0)
+//        return written;
+
+    const char *beg = NULL;
+    const char *end = NULL;
+    str_n_substring(buffer->str, '\n', buffer_row, &beg, &end);
+    if (beg == NULL || end == NULL)
+        return -1;
+    char old_value = *end;
+    *(char *)end = '\0';
+
+    written += snprintf(buf + written, buf_len - written, "%*s", (int)(end - beg), beg);
+    *(char *)end = old_value;
     if (written < 0)
         return written;
+    written += snprint_n_chars(buf + written,  buf_len - written, (int)(content_width - (end - beg)), ' ');
+    if (written < 0)
+        return written;
+
+//    written += snprintf(buf + written, buf_len - written, "%*s", (int)content_width, buffer->str);
+//    if (written < 0)
+//        return written;
 
     written += snprint_n_chars(buf + written, buf_len - written, right, ' ');
     return written;

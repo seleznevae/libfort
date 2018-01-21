@@ -42,7 +42,8 @@ add_executable(TEST
     ${FORT_SOURCES}
     tests/test.c
     tests/test_vector.c
-    tests/test_table.c)
+    tests/test_table.c
+    tests/test_string_buffer.c)
 
 target_link_libraries(TEST
     cmocka)

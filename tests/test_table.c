@@ -94,9 +94,12 @@ void test_table_geometry(void **state)
 void test_table_basic(void **state)
 {
     (void)state;
-    FTABLE *table = ft_create_table();
+
+    FTABLE *table = NULL;
 
     WHEN("All columns are equal and not empty") {
+        table = ft_create_table();
+
         int n = FT_HDR_PRINTF_LN(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
         n = FT_PRINTF_LN(table, 1, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
@@ -611,4 +614,41 @@ void test_table_options(void **state)
 
         ft_destroy_table(table);
     }
+
+    WHEN("All columns are equal and not empty") {
+        table = ft_create_table();
+
+        int n = FT_HDR_PRINTF_LN(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        assert_true( n == 4 );
+//        n = FT_PRINTF_LN(table, 1, "%d|%c|%s|%f", 3, 'c', "234\n123", 3.14);
+//        assert_true( n == 4 );
+//        FT_NWRITE_LN(table, "3", "c", "234", "3.140000");
+        FT_NWRITE_LN(table, "3", "c", "234\n12", "3.140000");
+        n = FT_PRINTF_LN(table, 2, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        assert_true( n == 4 );
+
+        const char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "+---+---+-----+----------+\n"
+                "|   |   |     |          |\n"
+                "| 3 | c | 234 | 3.140000 |\n"
+                "|   |   |     |          |\n"
+                "+---+---+-----+----------+\n"
+                "|   |   |     |          |\n"
+                "| 3 | c | 234 | 3.140000 |\n"
+                "|   |   | 12  |          |\n"
+                "|   |   |     |          |\n"
+                "+---+---+-----+----------+\n"
+                "|   |   |     |          |\n"
+                "| 3 | c | 234 | 3.140000 |\n"
+                "|   |   |     |          |\n"
+                "+---+---+-----+----------+\n";
+//        fprintf(stderr, "content:\n%s", table_str);
+
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        ft_destroy_table(table);
+    }
+
 }

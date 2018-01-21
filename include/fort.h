@@ -183,6 +183,9 @@ static inline void fort_check_if_string_helper(const char*str)
 #define FT_NWRITE(table, ...)\
     (CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__),ft_nwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 
+#define FT_NWRITE_LN(table, ...)\
+    (CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__),ft_nwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
+
 FORT_EXTERN int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...);
 FORT_EXTERN int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...);
 

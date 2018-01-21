@@ -117,7 +117,8 @@ static int ft_row_printf_impl(FTABLE *FORT_RESTRICT table, size_t row, const cha
             }
         }
     }
-    /* todo clearing pushed items in case of error */
+    /* todo: clearing pushed items in case of error */
+    /* todo: this function always create new row, this is not correct, it should be more complicated */
 
     cur_row_p = (fort_row_t**)vector_at(table->rows, row);
 

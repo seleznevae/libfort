@@ -83,12 +83,13 @@ int hint_height_cell(const fort_cell_t *cell, const context_t *context)
 
 int cell_printf(fort_cell_t *cell, size_t row, size_t column, char *buf, size_t buf_len, const context_t *context)
 {
-    if (cell == NULL || buf_len == 0 || row >= hint_height_cell(cell, context)
+    if (cell == NULL || buf_len == 0
             || (buf_len <= hint_width_cell(cell, context))) {
         return -1;
     }
 
-    if (row < context->cell_padding_top
+    if (row >= hint_height_cell(cell, context)
+            || row < context->cell_padding_top
             || row >= (context->cell_padding_top + buffer_text_height(cell->str_buffer))) {
         int k = snprint_n_chars(buf, buf_len, buf_len - 1, ' ');
         return k;

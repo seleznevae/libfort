@@ -6,6 +6,8 @@ int main()
 {
     FTABLE *table = ft_create_table();
 
+    ft_set_column_alignment(table, 2, LeftAligned);
+
     ft_hdr_printf_ln(table, "%d , %c|| %s|%f", 3, 'c', "234", 3.14);
 
     const char *row[] = {"AAA", " ADf qwer", "qwerwqer", "11111 23333", "qwe"};
@@ -34,16 +36,10 @@ int main()
     ft_nwrite(table, 3, "123", "2345", "4567");
     ft_ln(table);
 
-    FT_NWRITE(table, "123", "345", "Anton", "Petr", "Pavel");
+    FT_NWRITE_LN(table, "123", "132445\n123\n123", "Anton", "Petr", "Pavel");
 
     fprintf(stderr, "Table:\n");
     fprintf(stderr, "%s\n", ft_to_string(table));
 
-//    printf("Hello, world!\n");
-//    char buffer[3] = {'a', 'b', 'c'};
-//    int ret = snprintf(buffer, 3, "so");
-//    printf("result is %s = lent = %d\n", buffer, ret);
-//    fprintf(stderr, "asd %d|", 3);
-//    fprintf(stderr, "%d\n", 3.14);
     ft_destroy_table(table);
 }
