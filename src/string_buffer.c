@@ -188,27 +188,6 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_colum
         return written;
 
 
-
-//    const char *substr = str_n_substring(buffer->str, '\n', buffer_row);
-//    if (substr == NULL)
-//        return -1;
-//    const char *next_substr = str_n_substring(buffer->str, '\n', buffer_row + 1);
-//    size_t buf_row_len = 0;
-//    if (next_substr) {
-//        buf_row_len = next_substr - substr - 1;
-//    } else {
-//        buf_row_len = strlen(buffer->str) - (next_substr - buffer->str);
-//    }   todo
-//    if (buf_row_len > content_width)
-//        return -1;
-
-//    written += snprintf(buf + written, buf_len - written, "%*s", (int)buf_row_len, substr);
-//    if (written < 0)
-//        return written;
-//    written += snprint_n_chars(buf + written, buf_len - written, content_width - buf_row_len, ' ');
-//    if (written < 0)
-//        return written;
-
     const char *beg = NULL;
     const char *end = NULL;
     str_n_substring(buffer->str, '\n', buffer_row, &beg, &end);
@@ -225,9 +204,6 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_colum
     if (written < 0)
         return written;
 
-//    written += snprintf(buf + written, buf_len - written, "%*s", (int)content_width, buffer->str);
-//    if (written < 0)
-//        return written;
 
     written += snprint_n_chars(buf + written, buf_len - written, right, ' ');
     return written;

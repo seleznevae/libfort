@@ -99,13 +99,13 @@ FORT_EXTERN void ft_destroy_table(FTABLE *FORT_RESTRICT table);
 FORT_EXTERN void ft_ln(FTABLE *FORT_RESTRICT table);
 
 
-FORT_EXTERN int ft_printf(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, ...);
-FORT_EXTERN int ft_printf_ln(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, ...);
+FORT_EXTERN int ft_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...);
+FORT_EXTERN int ft_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...);
 
-#define FT_PRINTF(table, row, ...) \
-    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf(table, row, __VA_ARGS__))
-#define FT_PRINTF_LN(table, row, ...) \
-    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_ln(table, row, __VA_ARGS__))
+#define FT_PRINTF(table, ...) \
+    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf(table, __VA_ARGS__))
+#define FT_PRINTF_LN(table, ...) \
+    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_ln(table, __VA_ARGS__))
 
 
 FORT_EXTERN int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...);
