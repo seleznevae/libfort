@@ -27,9 +27,36 @@ fort_column_options_t create_column_options()
 
 
 
+//fort_table_options_t g_table_options = {
+//    1,      /* cell_padding_top         */
+//    1,      /* cell_padding_bottom      */
+//    1,      /* cell_padding_left        */
+//    1,      /* cell_padding_right       */
+//    1,      /* cell_empty_string_height */
+
+//    /* border_chars */
+//    {
+//     '+', '-', '+', '+',
+//     '|', '|', '|',
+//     '+', '-', '+', '+',
+//     '+', '-', '+', '+'
+//    },
+
+//    /* header_border_chars */
+//    {
+//    '+', '-', '+', '+',
+//    '|', '|', '|',
+//    '+', '-', '+', '+',
+//    '+', '-', '+', '+'
+//    },
+
+//    NULL,     /* col_options */
+//};
+
+
 fort_table_options_t g_table_options = {
-    1,      /* cell_padding_top         */
-    1,      /* cell_padding_bottom      */
+    0,      /* cell_padding_top         */
+    0,      /* cell_padding_bottom      */
     1,      /* cell_padding_left        */
     1,      /* cell_padding_right       */
     1,      /* cell_empty_string_height */
@@ -38,7 +65,7 @@ fort_table_options_t g_table_options = {
     {
      '+', '-', '+', '+',
      '|', '|', '|',
-     '+', '-', '+', '+',
+     '\0', '\0', '\0', '\0',
      '+', '-', '+', '+'
     },
 
