@@ -379,19 +379,30 @@ int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_
 {
     assert(table);
     if (options == NULL) {
-        F_FREE(table->options);
+        destroy_table_options(table->options);
         table->options = NULL;
         return 0;
     }
 
-    fort_table_options_t *new_options = F_CALLOC(sizeof(fort_table_options_t), 1);
+
+
+    fort_table_options_t *new_options = copy_table_options(options);
     if (new_options == NULL) {
         return -1;
     }
-    memcpy(new_options, options, sizeof(fort_table_options_t));
-    F_FREE(table->options);
+    destroy_table_options(table->options);
     table->options = new_options;
     return 0;
+
+
+//    fort_table_options_t *new_options = F_CALLOC(sizeof(fort_table_options_t), 1);
+//    if (new_options == NULL) {
+//        return -1;
+//    }
+//    memcpy(new_options, options, sizeof(fort_table_options_t));
+//    F_FREE(table->options);
+//    table->options = new_options;
+//    return 0;
 }
 
 

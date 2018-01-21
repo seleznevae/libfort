@@ -64,6 +64,19 @@ fort_table_options_t* create_table_options()
     return options;
 }
 
+fort_table_options_t* copy_table_options(const fort_table_options_t *option)
+{
+    /* todo: normal implementation, do deep copy of col options */
+
+    fort_table_options_t* new_opt = create_table_options();
+    if (new_opt == NULL)
+        return NULL;
+
+    memcpy(new_opt, option, sizeof(fort_table_options_t));
+    return new_opt;
+}
+
+
 void destroy_table_options(fort_table_options_t* options)
 {
     if (options == NULL)

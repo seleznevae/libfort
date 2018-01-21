@@ -6,11 +6,43 @@
 #include <stdio.h>
 //#include "fort.c"
 #include "table.h"
+#include "options.h"
+#include "vector.h"
+
+
+fort_table_options_t test_table_opts = {
+    1,      /* cell_padding_top         */
+    1,      /* cell_padding_bottom      */
+    1,      /* cell_padding_left        */
+    1,      /* cell_padding_right       */
+    1,      /* cell_empty_string_height */
+
+    /* border_chars */
+    {
+     '+', '-', '+', '+',
+     '|', '|', '|',
+     '+', '-', '+', '+',
+     '+', '-', '+', '+'
+    },
+
+    /* header_border_chars */
+    {
+    '+', '-', '+', '+',
+    '|', '|', '|',
+    '+', '-', '+', '+',
+    '+', '-', '+', '+'
+    },
+
+    NULL,     /* col_options */
+};
+
 
 void test_table_sizes(void **state)
 {
     (void)state;
     FTABLE *table = ft_create_table();
+    assert_true( table != NULL );
+    ft_set_table_options(table, &test_table_opts);
 
     size_t rows = 0;
     size_t cols = 0;
@@ -58,6 +90,8 @@ void test_table_geometry(void **state)
 {
     (void)state;
     FTABLE *table = ft_create_table();
+    assert_true( table != NULL );
+    ft_set_table_options(table, &test_table_opts);
 
     size_t height = 0;
     size_t width = 0;
@@ -99,6 +133,8 @@ void test_table_basic(void **state)
 
     WHEN("All columns are equal and not empty") {
         table = ft_create_table();
+        assert_true( table != NULL );
+        ft_set_table_options(table, &test_table_opts);
 
         int n = FT_HDR_PRINTF_LN(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
@@ -134,6 +170,8 @@ void test_table_basic(void **state)
 
     WHEN("All columns are not equal and not empty") {
         table = ft_create_table();
+        assert_true( table != NULL );
+        ft_set_table_options(table, &test_table_opts);
 
         int n = FT_HDR_PRINTF_LN(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
@@ -167,6 +205,8 @@ void test_table_basic(void **state)
 
     WHEN("All columns are not equal and some cells are empty") {
         table = ft_create_table();
+        assert_true( table != NULL );
+        ft_set_table_options(table, &test_table_opts);
 
         int n = FT_HDR_PRINTF_LN(table, "||%s|%f", "234", 3.14);
         assert_true( n == 4 );
@@ -200,6 +240,8 @@ void test_table_basic(void **state)
 
     WHEN("All cells are empty") {
         table = ft_create_table();
+        assert_true( table != NULL );
+        ft_set_table_options(table, &test_table_opts);
 
         int n = FT_HDR_PRINTF_LN(table, "|||");
         assert_true( n == 4 );
@@ -235,11 +277,14 @@ void test_table_basic(void **state)
 
 
 
-FTABLE *create_test_int_table()
+FTABLE *create_test_int_table(int set_test_opts)
 {
     FTABLE *table = NULL;
 
     table = ft_create_table();
+    assert_true( table != NULL );
+    if (set_test_opts)
+        ft_set_table_options(table, &test_table_opts);
 
     assert_true (table != NULL);
 
@@ -264,20 +309,20 @@ void test_table_options(void **state)
     (void)state;
     FTABLE *table = NULL;
 
-    fort_table_options_t def_options;
-    ft_get_default_options(&def_options);
+//    fort_table_options_t def_options =;
+//    ft_get_default_options(&def_options);
 
 
     WHEN("All paddings = 1") {
         fort_table_options_t table_options;
-        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
         table_options.cell_padding_bottom = 1;
         table_options.cell_padding_top = 1;
         table_options.cell_padding_left = 1;
         table_options.cell_padding_right = 1;
         ft_set_default_options(&table_options);
 
-        table = create_test_int_table();
+        table = create_test_int_table(0);
 
         const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
@@ -304,14 +349,14 @@ void test_table_options(void **state)
 
     WHEN("Top and bottom padding = 0") {
         fort_table_options_t table_options;
-        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
         table_options.cell_padding_bottom = 0;
         table_options.cell_padding_top = 0;
         table_options.cell_padding_left = 1;
         table_options.cell_padding_right = 1;
         ft_set_default_options(&table_options);
 
-        table = create_test_int_table();
+        table = create_test_int_table(0);
 
         const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
@@ -332,14 +377,14 @@ void test_table_options(void **state)
 
     WHEN("Left and right padding = 0") {
         fort_table_options_t table_options;
-        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
         table_options.cell_padding_bottom = 1;
         table_options.cell_padding_top = 1;
         table_options.cell_padding_left = 0;
         table_options.cell_padding_right = 0;
         ft_set_default_options(&table_options);
 
-        table = create_test_int_table();
+        table = create_test_int_table(0);
 
         const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
@@ -366,14 +411,14 @@ void test_table_options(void **state)
 
     WHEN("All paddings = 0") {
         fort_table_options_t table_options;
-        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
         table_options.cell_padding_bottom = 0;
         table_options.cell_padding_top = 0;
         table_options.cell_padding_left = 0;
         table_options.cell_padding_right = 0;
         ft_set_default_options(&table_options);
 
-        table = create_test_int_table();
+        table = create_test_int_table(0);
 
         const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
@@ -394,7 +439,7 @@ void test_table_options(void **state)
 
     WHEN("Empty string has 0 heigt") {
         fort_table_options_t table_options;
-        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
         table_options.cell_padding_bottom = 1;
         table_options.cell_padding_top = 1;
         table_options.cell_padding_left = 1;
@@ -402,7 +447,7 @@ void test_table_options(void **state)
         table_options.cell_empty_string_height = 0;
         ft_set_default_options(&table_options);
 
-        table = create_test_int_table();
+        table = create_test_int_table(0);
         int n = ft_printf_ln(table, "|||");
         assert_true( n == 4 );
 
@@ -434,7 +479,7 @@ void test_table_options(void **state)
 
     WHEN("Changing cell separators") {
         fort_table_options_t table_options;
-        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
 
 #define BOR_CHARS table_options.border_chars
 #define H_BOR_CHARS table_options.header_border_chars
@@ -455,7 +500,7 @@ void test_table_options(void **state)
 
         ft_set_default_options(&table_options);
 
-        table = create_test_int_table();
+        table = create_test_int_table(0);
         const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
@@ -504,7 +549,7 @@ void test_table_options(void **state)
         table_options.cell_empty_string_height = 0;
         ft_set_default_options(&table_options);
 
-        table = create_test_int_table();
+        table = create_test_int_table(0);
         table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         table_str_etalon =
@@ -523,14 +568,14 @@ void test_table_options(void **state)
 
     WHEN("Setting options for a particular table") {
         fort_table_options_t table_options;
-        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
         table_options.cell_padding_bottom = 0;
         table_options.cell_padding_top = 0;
         table_options.cell_padding_left = 0;
         table_options.cell_padding_right = 0;
         ft_set_default_options(&table_options);
 
-        table = create_test_int_table();
+        table = create_test_int_table(0);
 
         const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
@@ -577,7 +622,7 @@ void test_table_options(void **state)
 
     WHEN("Set table width and column alignment") {
         fort_table_options_t table_options;
-        memcpy(&table_options, &def_options, sizeof(fort_table_options_t));
+        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
         table_options.cell_padding_bottom = 1;
         table_options.cell_padding_top = 1;
         table_options.cell_padding_left = 1;
@@ -585,7 +630,7 @@ void test_table_options(void **state)
         ft_set_default_options(&table_options);
 
 
-        table = create_test_int_table();
+        table = create_test_int_table(0);
         ft_set_column_min_width(table, 1, 7);
         ft_set_column_alignment(table, 1, LeftAligned);
         ft_set_column_min_width(table, 2, 8);
