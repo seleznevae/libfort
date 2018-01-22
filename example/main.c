@@ -7,10 +7,10 @@ int main()
     FTABLE *table = ft_create_table();
     ft_set_column_alignment(table, 0, CenterAligned);
     ft_set_column_alignment(table, 1, LeftAligned);
-    FT_HDR_PRINTF_LN(table, "#|Planet|Avg. speed");
-    FT_PRINTF_LN(table, "%d|%s|%5.2f km/s", 1, "Mercury", 47.362);
-    FT_PRINTF_LN(table, "%d|%s|%5.2f km/s", 2, "Venus", 35.02);
-    FT_PRINTF_LN(table, "%d|%s|%5.2f km/s", 3, "Earth", 29.78);
+    ft_hdr_printf_ln(table, "#|Planet|Avg. speed");
+    ft_printf_ln(table, "%d|%s|%5.2f km/s", 1, "Mercury", 47.362);
+    ft_printf_ln(table, "%d|%s|%5.2f km/s", 2, "Venus", 35.02);
+    ft_printf_ln(table, "%d|%s|%5.2f km/s", 3, "Earth", 29.78);
 
     printf("Table:\n");
     printf("%s\n", ft_to_string(table));
@@ -21,7 +21,7 @@ int main()
     table = ft_create_table();
     ft_set_column_alignment(table, 0, CenterAligned);
     ft_set_column_alignment(table, 1, LeftAligned);
-    FT_HDR_PRINTF_LN(table, "Rank|Title|Year|Rating");
+    ft_hdr_printf_ln(table, "Rank|Title|Year|Rating");
 
     FT_NWRITE_LN(table, "1", "The Shawshank Redemption", "1994", "9.5");
     FT_NWRITE_LN(table, "2", "12 Angry Men", "1957", "8.8");
@@ -38,7 +38,7 @@ int main()
     table = ft_create_table();
     ft_set_column_alignment(table, 0, LeftAligned);
     ft_set_column_alignment(table, 1, CenterAligned);
-    FT_HDR_PRINTF_LN(table, "Commodity|Farm price|Avg. spread");
+    ft_hdr_printf_ln(table, "Commodity|Farm price|Avg. spread");
 
     const char *row1[] = {"Potatoes", "$1.60", "200.94%"};
     const char *row2[] = {"Carrots", "$0.32 ", "190.63%"};
@@ -54,7 +54,7 @@ int main()
     table = ft_create_table();
     ft_set_column_alignment(table, 0, CenterAligned);
     ft_set_column_alignment(table, 1, LeftAligned);
-    FT_HDR_PRINTF_LN(table, "No.|Name|Avg. Mark");
+    ft_hdr_printf_ln(table, "No.|Name|Avg. Mark");
 
     const char *ctab[2][3] = {
             {"1", "Joe Public", "3.14"},
@@ -71,7 +71,7 @@ int main()
     table = ft_create_table();
     ft_set_column_alignment(table, 0, CenterAligned);
     ft_set_column_alignment(table, 1, LeftAligned);
-    FT_HDR_PRINTF_LN(table, "No.|Name|Avg. Mark");
+    ft_hdr_printf_ln(table, "No.|Name|Avg. Mark");
 
     const char **tab[2] = {
         row1,

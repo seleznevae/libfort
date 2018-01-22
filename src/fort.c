@@ -133,7 +133,20 @@ clear:
     return -1;
 }
 
-int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
+
+#if defined(FORT_CLANG_COMPILER) || defined(FORT_GCC_COMPILER)
+#define FT_PRINTF ft_printf
+#define FT_PRINTF_LN ft_printf_ln
+#define FT_HDR_PRINTF ft_hdr_printf
+#define FT_HDR_PRINTF_LN ft_hdr_printf_ln
+#else
+#define FT_PRINTF ft_printf_impl
+#define FT_PRINTF_LN ft_printf_ln_impl
+#define FT_HDR_PRINTF ft_hdr_printf_impl
+#define FT_HDR_PRINTF_LN ft_hdr_printf_ln_impl
+#endif
+
+int FT_HDR_PRINTF(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
 {
     assert(table);
     assert(fmt);
@@ -151,7 +164,7 @@ int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ..
     return result;
 }
 
-int ft_hdr_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
+int FT_HDR_PRINTF_LN(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
 {
     assert(table);
     assert(fmt);
@@ -172,7 +185,7 @@ int ft_hdr_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt,
     return result;
 }
 
-int ft_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
+int FT_PRINTF(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
 {
     assert(table);
     va_list va;
@@ -182,7 +195,7 @@ int ft_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
     return result;
 }
 
-int ft_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
+int FT_PRINTF_LN(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
 {
     assert(table);
     va_list va;
@@ -194,6 +207,11 @@ int ft_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...
     va_end(va);
     return result;
 }
+
+#undef FT_PRINTF
+#undef FT_PRINTF_LN
+#undef FT_HDR_PRINTF
+#undef FT_HDR_PRINTF_LN
 
 
 int ft_write(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content)
