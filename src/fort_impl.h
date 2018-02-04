@@ -79,7 +79,10 @@ struct fort_row;
 struct vector;
 struct fort_cell;
 struct string_buffer;
-
+struct separator
+{
+    int enabled;
+};
 
 typedef struct fort_table_options fort_table_options_t;
 typedef fort_table_options_t context_t;
@@ -89,7 +92,7 @@ typedef struct fort_cell fort_cell_t;
 typedef struct string_buffer string_buffer_t;
 typedef struct fort_row fort_row_t;
 typedef struct fort_table FTABLE;
-
+typedef struct separator separator_t;
 
 
 

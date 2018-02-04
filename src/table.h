@@ -3,6 +3,7 @@
 
 #include "fort_impl.h"
 #include "fort.h"
+
 struct fort_table;
 typedef struct fort_table fort_table_t;
 struct fort_table
@@ -12,7 +13,25 @@ struct fort_table
     string_buffer_t *conv_buffer;
     size_t cur_row;
     size_t cur_col;
+    vector_t *separators;
 };
+
+static inline
+separator_t *create_separator(int enabled)
+{
+    separator_t *res = F_CALLOC(1, sizeof(separator_t));
+    if (res == NULL)
+        return NULL;
+    res->enabled = enabled;
+    return res;
+}
+
+static inline
+void destroy_separator(separator_t *sep)
+{
+    F_FREE(sep);
+}
+
 
 
 fort_status_t get_table_sizes(const FTABLE *table, size_t *rows, size_t *cols);

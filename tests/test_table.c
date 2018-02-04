@@ -33,6 +33,11 @@ fort_table_options_t test_table_opts = {
     '+', '-', '+', '+'
     },
 
+    /* separator_chars */
+    {
+    '+', '=', '+', '+',
+    },
+
     NULL,     /* col_options */
 };
 
@@ -336,6 +341,40 @@ void test_table_options(void **state)
                 "| 3 | 4 | 55 | 67 |\n"
                 "|   |   |    |    |\n"
                 "+---+---+----+----+\n"
+                "|   |   |    |    |\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "|   |   |    |    |\n"
+                "+---+---+----+----+\n";
+//        fprintf(stderr, "content:\n%s", table_str);
+
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        ft_destroy_table(table);
+    }
+
+    WHEN("Separator testing") {
+        table = create_test_int_table(0);
+        ft_add_separator(table);
+
+        int n = ft_hdr_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+        assert_true( n == 4 );
+
+        const char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "+---+---+----+----+\n"
+                "|   |   |    |    |\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "|   |   |    |    |\n"
+                "+---+---+----+----+\n"
+                "|   |   |    |    |\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "|   |   |    |    |\n"
+                "+---+---+----+----+\n"
+                "|   |   |    |    |\n"
+                "| 3 | 4 | 55 | 67 |\n"
+                "|   |   |    |    |\n"
+                "+===+===+====+====+\n"
                 "|   |   |    |    |\n"
                 "| 3 | 4 | 55 | 67 |\n"
                 "|   |   |    |    |\n"

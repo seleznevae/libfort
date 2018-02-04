@@ -77,6 +77,11 @@ fort_table_options_t g_table_options = {
     '+', '-', '+', '+'
     },
 
+    /* separator_chars */
+    {
+    '+', '=', '+', '+',
+    },
+
     NULL,     /* col_options */
 };
 

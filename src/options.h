@@ -75,6 +75,16 @@ enum BorderItemPos
 };
 
 
+enum SeparatorItemPos
+{
+    LH_sip = 0,
+    IH_sip = 1,
+    II_sip = 2,
+    RH_sip = 3,
+
+    SepratorItemPosSize
+};
+
 
 struct fort_table_options
 {
@@ -86,6 +96,7 @@ struct fort_table_options
 
     char border_chars[BorderItemPosSize];
     char header_border_chars[BorderItemPosSize];
+    char separator_chars[SepratorItemPosSize];
     vector_t *col_options;
 
 };

@@ -33,7 +33,8 @@ fort_cell_t *get_cell_and_create_if_not_exists(fort_row_t *row, size_t col);
 int print_row_separator(char *buffer, size_t buffer_sz,
                                const size_t *col_width_arr, size_t cols,
                                const fort_row_t *upper_row, const fort_row_t *lower_row,
-                               enum HorSeparatorPos separatorPos, const context_t *context);
+                               enum HorSeparatorPos separatorPos, const separator_t *sep,
+                               const context_t *context);
 
 
 

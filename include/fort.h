@@ -227,6 +227,7 @@ FORT_EXTERN int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size
 
 
 
+FORT_EXTERN int ft_add_separator(FTABLE *FORT_RESTRICT table);
 
 
 

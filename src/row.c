@@ -110,7 +110,8 @@ fort_cell_t *get_cell_and_create_if_not_exists(fort_row_t *row, size_t col)
 int print_row_separator(char *buffer, size_t buffer_sz,
                                const size_t *col_width_arr, size_t cols,
                                const fort_row_t *upper_row, const fort_row_t *lower_row,
-                               enum HorSeparatorPos separatorPos, const context_t *context)
+                               enum HorSeparatorPos separatorPos,
+                               const separator_t *sep, const context_t *context)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
     k = statement; \
@@ -152,27 +153,34 @@ int print_row_separator(char *buffer, size_t buffer_sz,
         border_chars = &context->border_chars;
     }
 
-    switch (separatorPos) {
-        case TopSeparator:
-            L = &(*border_chars)[TL_bip];
-            I = &(*border_chars)[TT_bip];
-            IV = &(*border_chars)[TV_bip];
-            R = &(*border_chars)[TR_bip];
-            break;
-        case InsideSeparator:
-            L = &(*border_chars)[LH_bip];
-            I = &(*border_chars)[IH_bip];
-            IV = &(*border_chars)[II_bip];
-            R = &(*border_chars)[RH_bip];
-            break;
-        case BottomSeparator:
-            L = &(*border_chars)[BL_bip];
-            I = &(*border_chars)[BB_bip];
-            IV = &(*border_chars)[BV_bip];
-            R = &(*border_chars)[BR_bip];
-            break;
-        default:
-            break;
+    if (sep && sep->enabled) {
+        L = &(context->separator_chars[LH_sip]);
+        I = &(context->separator_chars[IH_sip]);
+        IV = &(context->separator_chars[II_sip]);
+        R = &(context->separator_chars[RH_sip]);
+    } else {
+        switch (separatorPos) {
+            case TopSeparator:
+                L = &(*border_chars)[TL_bip];
+                I = &(*border_chars)[TT_bip];
+                IV = &(*border_chars)[TV_bip];
+                R = &(*border_chars)[TR_bip];
+                break;
+            case InsideSeparator:
+                L = &(*border_chars)[LH_bip];
+                I = &(*border_chars)[IH_bip];
+                IV = &(*border_chars)[II_bip];
+                R = &(*border_chars)[RH_bip];
+                break;
+            case BottomSeparator:
+                L = &(*border_chars)[BL_bip];
+                I = &(*border_chars)[BB_bip];
+                IV = &(*border_chars)[BV_bip];
+                R = &(*border_chars)[BR_bip];
+                break;
+            default:
+                break;
+        }
     }
 
     /* If all chars are not printable, skip line separator */

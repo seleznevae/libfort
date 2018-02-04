@@ -58,6 +58,12 @@ FTABLE * ft_create_table(void)
         F_FREE(result);
         return NULL;
     }
+    result->separators = create_vector(sizeof(separator_t*), DEFAULT_VECTOR_CAPACITY);
+    if (result->separators == NULL) {
+        destroy_vector(result->rows);
+        F_FREE(result);
+        return NULL;
+    }
     result->options = NULL;
     result->conv_buffer = NULL;
     result->cur_row = 0;
@@ -77,6 +83,13 @@ void ft_destroy_table(FTABLE *FORT_RESTRICT table)
             destroy_row(*(fort_row_t **)vector_at(table->rows, i));
         }
         destroy_vector(table->rows);
+    }
+    if (table->separators) {
+        size_t row_n = vector_size(table->separators);
+        for (size_t i = 0; i < row_n; ++i) {
+            destroy_separator(*(separator_t **)vector_at(table->separators, i));
+        }
+        destroy_vector(table->separators);
     }
     destroy_table_options(table->options);
     destroy_string_buffer(table->conv_buffer);
@@ -509,15 +522,20 @@ const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
     context_t *context = (table->options ? table->options : &g_table_options);
     fort_row_t *prev_row = NULL;
     fort_row_t *cur_row = NULL;
-    for (size_t i = 0; i < rows; ++i) {
+    separator_t *cur_sep = NULL;
+    size_t sep_size = vector_size(table->separators);
+    size_t i = 0;
+    for (i = 0; i < rows; ++i) {
+        cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
         cur_row = *(fort_row_t**)vector_at(table->rows, i);
         enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
-        CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, separatorPos, context));
+        CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, context));
         CHECK_RESULT_AND_MOVE_DEV(snprintf_row(cur_row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], context));
         prev_row = cur_row;
     }
     cur_row = NULL;
-    CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, context));
+    cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+    CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, context));
 
 
     F_FREE(col_width_arr);
@@ -555,3 +573,28 @@ static int dummy_function()
 
 
 
+
+int ft_add_separator(FTABLE *table)
+{
+    assert(table);
+    assert(table->separators);
+
+    while(vector_size(table->separators) <= table->cur_row) {
+        separator_t *sep_p = create_separator(F_FALSE);
+        if (sep_p == NULL)
+            return F_MEMORY_ERROR;
+        int status = vector_push(table->separators, &sep_p);
+        if (IS_ERROR(status))
+            return status;
+    }
+
+    separator_t **sep_p = (separator_t **)vector_at(table->separators, table->cur_row);
+    if (*sep_p == NULL)
+        *sep_p = create_separator(F_TRUE);
+    else
+        (*sep_p)->enabled = F_TRUE;
+
+    if (*sep_p == NULL)
+        return F_ERROR;
+    return F_SUCCESS;
+}
