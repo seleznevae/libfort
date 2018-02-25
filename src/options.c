@@ -146,7 +146,7 @@ fort_table_options_t g_table_options = {
     '+', '=', '+', '+',
     },
 
-    NULL,     /* col_options */
+//    NULL,     /* col_options */
     NULL,     /* cell_options */
 };
 
@@ -194,16 +194,16 @@ void destroy_table_options(fort_table_options_t* options)
     if (options == NULL)
         return;
 
-    if (options->col_options != NULL) {
-        destroy_vector(options->col_options);
-    }
+//    if (options->col_options != NULL) {
+//        destroy_vector(options->col_options);
+//    }
     if (options->cell_options != NULL) {
         destroy_cell_opt_container(options->cell_options);
     }
     F_FREE(options);
 }
 
-
+/*
 #define FORT_OPTIONS_SET_COLUMN_OPTION(options, column, opt_name, opt_value) \
     assert(options);\
 \
@@ -221,17 +221,17 @@ void destroy_table_options(fort_table_options_t* options)
     fort_column_options_t *col_option = (fort_column_options_t*)vector_at(options->col_options, column);\
     col_option->opt_name = opt_value;\
 \
-    return F_SUCCESS;
+    return F_SUCCESS;*/
 
-fort_status_t fort_options_set_column_min_width(fort_table_options_t *options, size_t column, size_t width)
-{
-    FORT_OPTIONS_SET_COLUMN_OPTION(options, column, col_min_width, width);
-}
+//fort_status_t fort_options_set_column_min_width(fort_table_options_t *options, size_t column, size_t width)
+//{
+//    FORT_OPTIONS_SET_COLUMN_OPTION(options, column, col_min_width, width);
+//}
 
-fort_status_t fort_options_set_column_alignment(fort_table_options_t *options, size_t column, enum TextAlignment al)
-{
-    FORT_OPTIONS_SET_COLUMN_OPTION(options, column, align, al);
-}
+//fort_status_t fort_options_set_column_alignment(fort_table_options_t *options, size_t column, enum TextAlignment al)
+//{
+//    FORT_OPTIONS_SET_COLUMN_OPTION(options, column, align, al);
+//}
 
 //int fort_options_column_width(const fort_table_options_t *options, size_t column)
 //{

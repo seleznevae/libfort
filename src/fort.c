@@ -754,3 +754,21 @@ int ft_set_table_option(FTABLE *table, uint32_t option, int value)
 }
 
 
+
+int ft_set_cell_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, int value)
+{
+    assert(table);
+
+    if (table->options == NULL) {
+        table->options = create_table_options();
+        if (table->options == NULL)
+            return F_MEMORY_ERROR;
+    }
+    if (table->options->cell_options == NULL) {
+        table->options->cell_options = create_cell_opt_container();
+        if (table->options->cell_options == NULL) {
+            return F_ERROR;
+        }
+    }
+    return set_cell_option(table->options->cell_options, row, col, option, value);
+}

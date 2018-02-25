@@ -817,10 +817,15 @@ void test_table_options(void **state)
 
         table = create_test_int_table(0);
         int status = F_SUCCESS;
-        status |= ft_set_column_min_width(table, 1, 7);
-        status |= ft_set_column_alignment(table, 1, LeftAligned);
-        status |= ft_set_column_min_width(table, 2, 8);
-        status |= ft_set_column_alignment(table, 2, CenterAligned);
+//        status |= ft_set_column_min_width(table, 1, 7);
+//        status |= ft_set_column_alignment(table, 1, LeftAligned);
+//        status |= ft_set_column_min_width(table, 2, 8);
+//        status |= ft_set_column_alignment(table, 2, CenterAligned);
+
+        status |= ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_MIN_WIDTH, 7);
+        status |= ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
+        status |= ft_set_cell_option(table, FT_ANY_ROW, 2, FT_OPT_MIN_WIDTH, 8);
+        status |= ft_set_cell_option(table, FT_ANY_ROW, 2, FT_OPT_TEXT_ALIGN, CenterAligned);
         assert_true( status == F_SUCCESS);
 
 
