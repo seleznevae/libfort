@@ -406,37 +406,49 @@ int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, con
 //    return 0;
 //}
 
-int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_t * FORT_RESTRICT options)
-{
-    assert(table);
-    if (options == NULL) {
-        destroy_table_options(table->options);
-        table->options = NULL;
-        return 0;
-    }
+//int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_t * FORT_RESTRICT options)
+//{
+//    assert(table);
+//    if (options == NULL) {
+//        destroy_table_options(table->options);
+//        table->options = NULL;
+//        return 0;
+//    }
 
 
 
-    fort_table_options_t *new_options = copy_table_options(options);
-    if (new_options == NULL) {
-        return -1;
-    }
-    destroy_table_options(table->options);
-    table->options = new_options;
-    return 0;
-
-
-//    fort_table_options_t *new_options = F_CALLOC(sizeof(fort_table_options_t), 1);
+//    fort_table_options_t *new_options = copy_table_options(options);
 //    if (new_options == NULL) {
 //        return -1;
 //    }
-//    memcpy(new_options, options, sizeof(fort_table_options_t));
-//    F_FREE(table->options);
+//    destroy_table_options(table->options);
 //    table->options = new_options;
 //    return 0;
-}
 
 
+////    fort_table_options_t *new_options = F_CALLOC(sizeof(fort_table_options_t), 1);
+////    if (new_options == NULL) {
+////        return -1;
+////    }
+////    memcpy(new_options, options, sizeof(fort_table_options_t));
+////    F_FREE(table->options);
+////    table->options = new_options;
+////    return 0;
+//}
+
+
+
+//int ft_set_column_min_width(FTABLE *table, size_t column, size_t width)
+//{
+//    if (table->options == NULL) {
+//        table->options = create_table_options();
+//        if (table->options == NULL)
+//            return F_MEMORY_ERROR;
+//    }
+
+//    int status = fort_options_set_column_min_width(table->options, column, width);
+//    return status;
+//}
 
 int ft_set_column_min_width(FTABLE *table, size_t column, size_t width)
 {
@@ -445,24 +457,42 @@ int ft_set_column_min_width(FTABLE *table, size_t column, size_t width)
         if (table->options == NULL)
             return F_MEMORY_ERROR;
     }
-
-    int status = fort_options_set_column_min_width(table->options, column, width);
-    return status;
+    if (table->options->cell_options == NULL) {
+        table->options->cell_options = create_cell_opt_container();
+        if (table->options->cell_options == NULL) {
+            return F_ERROR;
+        }
+    }
+    return set_cell_option(table->options->cell_options, FT_ANY_ROW, column, FT_OPT_MIN_WIDTH, width);
 }
 
-int ft_set_column_alignment(FTABLE * FORT_RESTRICT table, size_t column, enum TextAlignment align)
+//int ft_set_column_alignment(FTABLE * FORT_RESTRICT table, size_t column, enum TextAlignment align)
+//{
+//    if (table->options == NULL) {
+//        table->options = create_table_options();
+//        if (table->options == NULL)
+//            return F_MEMORY_ERROR;
+//    }
+
+//    int status = fort_options_set_column_alignment(table->options, column, align);
+//    return status;
+//}
+
+int ft_set_column_alignment(FTABLE *table, size_t column, enum TextAlignment align)
 {
     if (table->options == NULL) {
         table->options = create_table_options();
         if (table->options == NULL)
             return F_MEMORY_ERROR;
     }
-
-    int status = fort_options_set_column_alignment(table->options, column, align);
-    return status;
+    if (table->options->cell_options == NULL) {
+        table->options->cell_options = create_cell_opt_container();
+        if (table->options->cell_options == NULL) {
+            return F_ERROR;
+        }
+    }
+    return set_cell_option(table->options->cell_options, FT_ANY_ROW, column, FT_OPT_TEXT_ALIGN, align);
 }
-
-
 
 
 /*****************************************************************************

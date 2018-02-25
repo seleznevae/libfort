@@ -816,10 +816,12 @@ void test_table_options(void **state)
         set_test_options_as_default();
 
         table = create_test_int_table(0);
-        ft_set_column_min_width(table, 1, 7);
-        ft_set_column_alignment(table, 1, LeftAligned);
-        ft_set_column_min_width(table, 2, 8);
-        ft_set_column_alignment(table, 2, CenterAligned);
+        int status = F_SUCCESS;
+        status |= ft_set_column_min_width(table, 1, 7);
+        status |= ft_set_column_alignment(table, 1, LeftAligned);
+        status |= ft_set_column_min_width(table, 2, 8);
+        status |= ft_set_column_alignment(table, 2, CenterAligned);
+        assert_true( status == F_SUCCESS);
 
 
         const char *table_str = ft_to_string(table);

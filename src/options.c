@@ -58,9 +58,11 @@ fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_contain
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
-    const fort_cell_options_t opt = DEFAULT_CELL_OPTION;
+    fort_cell_options_t opt = DEFAULT_CELL_OPTION;
+    opt.cell_row = row;
+    opt.cell_col = col;
     if (IS_SUCCESS(vector_push(cont, &opt))) {
-        vector_at(cont, sz);
+        return (fort_cell_options_t*)vector_at(cont, sz);
     }
 
     return NULL;
@@ -72,10 +74,10 @@ fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, uns
     if (opt == NULL)
         return F_ERROR;
 
-    OPTION_SET(*opt, option);
-    if (OPTION_IS_SET(*opt, FT_OPT_MIN_WIDTH)) {
+    OPTION_SET(opt->options, option);
+    if (OPTION_IS_SET(option, FT_OPT_MIN_WIDTH)) {
         opt->col_min_width = value;
-    } else if (OPTION_IS_SET(*opt, FT_OPT_TEXT_ALIGN)) {
+    } else if (OPTION_IS_SET(option, FT_OPT_TEXT_ALIGN)) {
         opt->align = value;
     }
 
@@ -231,28 +233,58 @@ fort_status_t fort_options_set_column_alignment(fort_table_options_t *options, s
     FORT_OPTIONS_SET_COLUMN_OPTION(options, column, align, al);
 }
 
+//int fort_options_column_width(const fort_table_options_t *options, size_t column)
+//{
+//    assert(options);
+//    if (options->col_options == NULL)
+//        return -1;
+
+//    if (vector_size(options->col_options) <= column)
+//        return -1;
+
+//    return ((fort_column_options_t*)vector_at(options->col_options, column))->col_min_width;
+//}
+
 int fort_options_column_width(const fort_table_options_t *options, size_t column)
 {
     assert(options);
-    if (options->col_options == NULL)
+    if (options->cell_options == NULL)
         return -1;
 
-    if (vector_size(options->col_options) <= column)
+    const fort_cell_options_t* col_opt = cget_cell_opt(options->cell_options, FT_ANY_ROW, column);
+    if (col_opt == NULL || ((col_opt->options & FT_OPT_MIN_WIDTH) == 0))
         return -1;
-
-    return ((fort_column_options_t*)vector_at(options->col_options, column))->col_min_width;
+    else {
+        return col_opt->col_min_width;
+    }
 }
+
+//int fort_options_column_alignment(const fort_table_options_t *options, size_t column)
+//{
+//    assert(options);
+
+//    enum TextAlignment align = g_column_options.align;
+//    if (options->col_options == NULL)
+//        return align;
+
+//    if (vector_size(options->col_options) <= column)
+//        return align;
+
+//    return ((fort_column_options_t*)vector_at(options->col_options, column))->align;
+//}
 
 int fort_options_column_alignment(const fort_table_options_t *options, size_t column)
 {
     assert(options);
+    enum TextAlignment defaultAlign = g_column_options.align;
 
-    enum TextAlignment align = g_column_options.align;
-    if (options->col_options == NULL)
-        return align;
+    if (options->cell_options == NULL)
+        return defaultAlign;
 
-    if (vector_size(options->col_options) <= column)
-        return align;
-
-    return ((fort_column_options_t*)vector_at(options->col_options, column))->align;
+    const fort_cell_options_t* col_opt = cget_cell_opt(options->cell_options, FT_ANY_ROW, column);
+    if (col_opt == NULL || ((col_opt->options & FT_OPT_TEXT_ALIGN) == 0))
+        return defaultAlign;
+    else {
+        return col_opt->align;
+    }
 }

@@ -42,9 +42,9 @@ typedef struct vector vector_t;
 #define FT_OPT_RIGHT_PADDING ((uint32_t)(0x01U << (5)))
 #define FT_OPT_EMPTY_STR_HEIGHT ((uint32_t)(0x01U << (6)))
 
-#define OPTION_IS_SET(ft_opts, option) ((ft_opts).options & (option))
-#define OPTION_SET(ft_opts, option) ((ft_opts).options |=(option))
-#define OPTION_UNSET(ft_opts, option) ((ft_opts).options &= ~((uint32_t)option))
+#define OPTION_IS_SET(ft_opts, option) ((ft_opts) & (option))
+#define OPTION_SET(ft_opts, option) ((ft_opts) |=(option))
+#define OPTION_UNSET(ft_opts, option) ((ft_opts) &= ~((uint32_t)option))
 
 struct fort_cell_options
 {
