@@ -58,6 +58,22 @@ void destroy_vector(vector_t* vector)
     free(vector);
 }
 
+vector_t* copy_vector(vector_t *v)
+{
+    if (v == NULL)
+        return NULL;
+
+    vector_t* new_vector = create_vector(v->m_item_size, v->m_capacity);
+    if (new_vector == NULL)
+        return NULL;
+
+    memcpy(new_vector->m_data, v->m_data, v->m_item_size * v->m_size);
+    new_vector->m_size      = v->m_size ;
+    new_vector->m_item_size = v->m_item_size ;
+    return new_vector;
+}
+
+
 
 /* ----------- Nonmodifying functions --------------------------------- */
 
@@ -131,6 +147,13 @@ void vector_clear(vector_t *vector)
     vector->m_size = 0;
 }
 
+const void *vector_at_c(const vector_t *vector, size_t index)
+{
+    if (index >= vector->m_size)
+        return NULL;
+
+    return vector->m_data + index * vector->m_item_size;
+}
 
 
 void *vector_at(vector_t *vector, size_t index)

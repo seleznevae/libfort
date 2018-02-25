@@ -248,12 +248,29 @@ FORT_EXTERN const char* ft_to_string(const FTABLE *FORT_RESTRICT table);
 
 
 
-FORT_EXTERN int ft_set_default_options(const fort_table_options_t *options);
-FORT_EXTERN int ft_get_default_options(fort_table_options_t *options);
+//FORT_EXTERN int ft_set_default_options(const fort_table_options_t *options);
+//FORT_EXTERN int ft_get_default_options(fort_table_options_t *options);
+
 FORT_EXTERN int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_t * FORT_RESTRICT options);
 FORT_EXTERN int ft_set_column_min_width(FTABLE * FORT_RESTRICT table, size_t column, size_t width);
 FORT_EXTERN int ft_set_column_alignment(FTABLE * FORT_RESTRICT table, size_t column, enum TextAlignment align);
 
+
+
+struct border_chars
+{
+    char top_border_ch;
+    char separator_ch;
+    char bottom_border_ch;
+    char side_border_ch;
+    char out_intersect_ch;
+    char in_intersect_ch;
+};
+
+FORT_EXTERN int ft_set_default_borders(struct border_chars *border_chs, struct border_chars *header_border_chs);
+FORT_EXTERN int ft_set_table_borders(FTABLE * FORT_RESTRICT table, struct border_chars *border_chs, struct border_chars *header_border_chs);
+FORT_EXTERN int ft_set_default_option(uint32_t option, int value);
+FORT_EXTERN int ft_set_table_option(FTABLE * FORT_RESTRICT table, uint32_t option, int value);
 
 
 FORT_END_DECLS

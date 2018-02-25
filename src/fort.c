@@ -394,17 +394,17 @@ int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, con
 
 
 
-int ft_set_default_options(const fort_table_options_t *options)
-{
-    memcpy(&g_table_options, options, sizeof(fort_table_options_t));
-    return 0;
-}
+//int ft_set_default_options(const fort_table_options_t *options)
+//{
+//    memcpy(&g_table_options, options, sizeof(fort_table_options_t));
+//    return 0;
+//}
 
-int ft_get_default_options(fort_table_options_t *options)
-{
-    memcpy(options, &g_table_options, sizeof(fort_table_options_t));
-    return 0;
-}
+//int ft_get_default_options(fort_table_options_t *options)
+//{
+//    memcpy(options, &g_table_options, sizeof(fort_table_options_t));
+//    return 0;
+//}
 
 int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_t * FORT_RESTRICT options)
 {
@@ -598,3 +598,129 @@ int ft_add_separator(FTABLE *table)
         return F_ERROR;
     return F_SUCCESS;
 }
+
+int ft_set_default_option(uint32_t option, int value)
+{
+    switch (option) {
+    case FT_OPT_TOP_PADDING:
+            g_table_options.cell_padding_top = value;
+        break;
+    case FT_OPT_BOTTOM_PADDING:
+            g_table_options.cell_padding_bottom = value;
+        break;
+    case FT_OPT_LEFT_PADDING:
+            g_table_options.cell_padding_left = value;
+        break;
+    case FT_OPT_RIGHT_PADDING:
+            g_table_options.cell_padding_right = value;
+        break;
+    case FT_OPT_EMPTY_STR_HEIGHT:
+            g_table_options.cell_empty_string_height = value;
+        break;
+    default:
+        // todo
+        exit(22);
+    }
+    return F_SUCCESS;
+}
+
+
+static void set_border_options_for_options(fort_table_options_t *options, struct border_chars *border_chs, struct border_chars *header_border_chs)
+{
+#define BOR_CHARS options->border_chars
+#define H_BOR_CHARS options->header_border_chars
+
+//        BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->top_border_ch;
+//        BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = border_chs->separator_ch;
+//        BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->bottom_border_ch;
+//        BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
+
+//    H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->top_border_ch;
+//    H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->separator_ch;
+//    H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->bottom_border_ch;
+//    H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
+
+        BOR_CHARS[TT_bip] = border_chs->top_border_ch;
+        BOR_CHARS[IH_bip] = border_chs->separator_ch;
+        BOR_CHARS[BB_bip] = border_chs->bottom_border_ch;
+        BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
+
+        BOR_CHARS[TL_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->out_intersect_ch;
+        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = border_chs->out_intersect_ch;
+        BOR_CHARS[BL_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->out_intersect_ch;
+        BOR_CHARS[II_bip] = border_chs->in_intersect_ch;
+
+        if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
+            BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
+        }
+
+
+        H_BOR_CHARS[TT_bip] = header_border_chs->top_border_ch;
+        H_BOR_CHARS[IH_bip] = header_border_chs->separator_ch;
+        H_BOR_CHARS[BB_bip] = header_border_chs->bottom_border_ch;
+        H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
+
+        H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->out_intersect_ch;
+        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->out_intersect_ch;
+        H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->out_intersect_ch;
+        H_BOR_CHARS[II_bip] = header_border_chs->in_intersect_ch;
+
+        if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
+            H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
+        }
+
+#undef BOR_CHARS
+#undef H_BOR_CHARS
+}
+
+int ft_set_default_borders(struct border_chars *border_chs, struct border_chars *header_border_chs)
+{
+    set_border_options_for_options(&g_table_options, border_chs, header_border_chs);
+    return F_SUCCESS;
+}
+
+int ft_set_table_borders(FTABLE *table, struct border_chars *border_chs, struct border_chars *header_border_chs)
+{
+    assert(table);
+    if (table->options == NULL) {
+        table->options = create_table_options();
+        if (table->options == NULL)
+            return F_MEMORY_ERROR;
+    }
+    set_border_options_for_options(table->options, border_chs, header_border_chs);
+    return F_SUCCESS;
+}
+
+int ft_set_table_option(FTABLE *table, uint32_t option, int value)
+{
+    assert(table);
+    if (table->options == NULL) {
+        table->options = create_table_options();
+        if (table->options == NULL)
+            return F_MEMORY_ERROR;
+    }
+    switch (option) {
+    case FT_OPT_TOP_PADDING:
+            table->options->cell_padding_top = value;
+        break;
+    case FT_OPT_BOTTOM_PADDING:
+            table->options->cell_padding_bottom = value;
+        break;
+    case FT_OPT_LEFT_PADDING:
+            table->options->cell_padding_left = value;
+        break;
+    case FT_OPT_RIGHT_PADDING:
+            table->options->cell_padding_right = value;
+        break;
+    case FT_OPT_EMPTY_STR_HEIGHT:
+            table->options->cell_empty_string_height = value;
+        break;
+    default:
+        // todo
+        exit(22);
+    }
+    return F_SUCCESS;
+
+}
+
+

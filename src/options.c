@@ -21,6 +21,68 @@ fort_column_options_t create_column_options()
     return result;
 }
 
+
+#define DEFAULT_CELL_OPTION  {FT_ROW_UNSPEC, FT_COLUMN_UNSPEC, 0, 0, 0}
+
+fort_cell_opt_container_t *create_cell_opt_container()
+{
+    fort_cell_opt_container_t *ret = create_vector(sizeof(fort_cell_options_t), DEFAULT_VECTOR_CAPACITY);
+    return ret;
+}
+
+
+void destroy_cell_opt_container(fort_cell_opt_container_t *cont)
+{
+    if (cont)
+        destroy_vector(cont);
+}
+
+const fort_cell_options_t* cget_cell_opt(const fort_cell_opt_container_t *cont, unsigned row, unsigned col)
+{
+    assert(cont);
+    size_t sz = vector_size(cont);
+    for (size_t i = 0; i < sz; ++i) {
+        const fort_cell_options_t* opt = (const fort_cell_options_t*)vector_at_c(cont, i);
+        if (opt->cell_row == row && opt->cell_col == col)
+            return opt;
+    }
+    return NULL;
+}
+
+fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, unsigned row, unsigned col)
+{
+    assert(cont);
+    size_t sz = vector_size(cont);
+    for (size_t i = 0; i < sz; ++i) {
+        fort_cell_options_t* opt = (fort_cell_options_t*)vector_at(cont, i);
+        if (opt->cell_row == row && opt->cell_col == col)
+            return opt;
+    }
+    const fort_cell_options_t opt = DEFAULT_CELL_OPTION;
+    if (IS_SUCCESS(vector_push(cont, &opt))) {
+        vector_at(cont, sz);
+    }
+
+    return NULL;
+}
+
+fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option, int value)
+{
+    fort_cell_options_t* opt = get_cell_opt_and_create_if_not_exists(cont, row, col);
+    if (opt == NULL)
+        return F_ERROR;
+
+    OPTION_SET(*opt, option);
+    if (OPTION_IS_SET(*opt, FT_OPT_MIN_WIDTH)) {
+        opt->col_min_width = value;
+    } else if (OPTION_IS_SET(*opt, FT_OPT_TEXT_ALIGN)) {
+        opt->align = value;
+    }
+
+    return F_SUCCESS;
+}
+
+
 /*****************************************************************************
  *               OPTIONS
  * ***************************************************************************/
@@ -83,6 +145,7 @@ fort_table_options_t g_table_options = {
     },
 
     NULL,     /* col_options */
+    NULL,     /* cell_options */
 };
 
 
@@ -93,6 +156,12 @@ fort_table_options_t* create_table_options()
         return NULL;
     }
     memcpy(options, &g_table_options, sizeof(fort_table_options_t));
+    options->cell_options = create_cell_opt_container();
+    if (options->cell_options == NULL) {
+        destroy_table_options(options);
+        options = NULL;
+    }
+
     return options;
 }
 
@@ -105,6 +174,15 @@ fort_table_options_t* copy_table_options(const fort_table_options_t *option)
         return NULL;
 
     memcpy(new_opt, option, sizeof(fort_table_options_t));
+
+    if (option->cell_options) {
+        destroy_cell_opt_container(new_opt->cell_options);
+        new_opt->cell_options = copy_vector(option->cell_options);
+        if (new_opt->cell_options == NULL) {
+            destroy_table_options(new_opt);
+            new_opt = NULL;
+        }
+    }
     return new_opt;
 }
 
@@ -116,6 +194,9 @@ void destroy_table_options(fort_table_options_t* options)
 
     if (options->col_options != NULL) {
         destroy_vector(options->col_options);
+    }
+    if (options->cell_options != NULL) {
+        destroy_cell_opt_container(options->cell_options);
     }
     F_FREE(options);
 }

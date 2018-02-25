@@ -2,6 +2,8 @@
 #define OPTIONS_H
 
 #include "fort_impl.h"
+#include <stdint.h>
+#include <limits.h>
 
 enum TextAlignment
 {
@@ -26,10 +28,44 @@ fort_column_options_t create_column_options();
 struct vector;
 typedef struct vector vector_t;
 
+#define FT_ANY_COLUMN  (UINT_MAX)
+#define FT_ANY_ROW  (UINT_MAX)
+
+#define FT_ROW_UNSPEC  (UINT_MAX-1)
+#define FT_COLUMN_UNSPEC  (UINT_MAX-1)
+
+#define FT_OPT_MIN_WIDTH  ((uint32_t)(0x01U << (0)))
+#define FT_OPT_TEXT_ALIGN ((uint32_t)(0x01U << (1)))
+#define FT_OPT_TOP_PADDING  ((uint32_t)(0x01U << (2)))
+#define FT_OPT_BOTTOM_PADDING ((uint32_t)(0x01U << (3)))
+#define FT_OPT_LEFT_PADDING ((uint32_t)(0x01U << (4)))
+#define FT_OPT_RIGHT_PADDING ((uint32_t)(0x01U << (5)))
+#define FT_OPT_EMPTY_STR_HEIGHT ((uint32_t)(0x01U << (6)))
+
+#define OPTION_IS_SET(ft_opts, option) ((ft_opts).options & (option))
+#define OPTION_SET(ft_opts, option) ((ft_opts).options |=(option))
+#define OPTION_UNSET(ft_opts, option) ((ft_opts).options &= ~((uint32_t)option))
+
+struct fort_cell_options
+{
+    unsigned cell_row;
+    unsigned cell_col;
+    uint32_t options;
+    int col_min_width;
+    enum TextAlignment align;
+};
+
+typedef struct fort_cell_options fort_cell_options_t;
 
 
 
-
+typedef vector_t fort_cell_opt_container_t;
+fort_cell_opt_container_t *create_cell_opt_container();
+void destroy_cell_opt_container(fort_cell_opt_container_t *cont);
+const fort_cell_options_t* cget_cell_opt(const fort_cell_opt_container_t *cont, unsigned row, unsigned col);
+fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, unsigned row, unsigned col);
+fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option, int value);
+fort_status_t unset_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option);
 
 /*****************************************************************************
  *               TABLE BORDER
@@ -99,6 +135,7 @@ struct fort_table_options
     char separator_chars[SepratorItemPosSize];
     vector_t *col_options;
 
+    fort_cell_opt_container_t * cell_options;
 };
 typedef struct fort_table_options fort_table_options_t;
 typedef fort_table_options_t context_t;
