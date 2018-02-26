@@ -826,25 +826,28 @@ void test_table_options(void **state)
         status |= ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
         status |= ft_set_cell_option(table, FT_ANY_ROW, 2, FT_OPT_MIN_WIDTH, 8);
         status |= ft_set_cell_option(table, FT_ANY_ROW, 2, FT_OPT_TEXT_ALIGN, CenterAligned);
+
+        status |= ft_set_cell_option(table, 2, 3, FT_OPT_MIN_WIDTH, 6);
+        status |= ft_set_cell_option(table, 2, 3, FT_OPT_TEXT_ALIGN, LeftAligned);
         assert_true( status == F_SUCCESS);
 
 
         const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         const char *table_str_etalon =
-                "+---+-------+--------+----+\n"
-                "|   |       |        |    |\n"
-                "| 3 | 4     |   55   | 67 |\n"
-                "|   |       |        |    |\n"
-                "+---+-------+--------+----+\n"
-                "|   |       |        |    |\n"
-                "| 3 | 4     |   55   | 67 |\n"
-                "|   |       |        |    |\n"
-                "+---+-------+--------+----+\n"
-                "|   |       |        |    |\n"
-                "| 3 | 4     |   55   | 67 |\n"
-                "|   |       |        |    |\n"
-                "+---+-------+--------+----+\n";
+                "+---+-------+--------+------+\n"
+                "|   |       |        |      |\n"
+                "| 3 | 4     |   55   |   67 |\n"
+                "|   |       |        |      |\n"
+                "+---+-------+--------+------+\n"
+                "|   |       |        |      |\n"
+                "| 3 | 4     |   55   |   67 |\n"
+                "|   |       |        |      |\n"
+                "+---+-------+--------+------+\n"
+                "|   |       |        |      |\n"
+                "| 3 | 4     |   55   | 67   |\n"
+                "|   |       |        |      |\n"
+                "+---+-------+--------+------+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
