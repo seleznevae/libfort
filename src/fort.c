@@ -549,7 +549,8 @@ const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
 
     int dev = 0;
     int k = 0;
-    context_t *context = (table->options ? table->options : &g_table_options);
+    context_t context;
+    context.table_options = (table->options ? table->options : &g_table_options);
     fort_row_t *prev_row = NULL;
     fort_row_t *cur_row = NULL;
     separator_t *cur_sep = NULL;
@@ -559,13 +560,14 @@ const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
         cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
         cur_row = *(fort_row_t**)vector_at(table->rows, i);
         enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
-        CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, context));
-        CHECK_RESULT_AND_MOVE_DEV(snprintf_row(cur_row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], context));
+        CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
+        context.row = i;
+        CHECK_RESULT_AND_MOVE_DEV(snprintf_row(cur_row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], &context));
         prev_row = cur_row;
     }
     cur_row = NULL;
     cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-    CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, context));
+    CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
 
 
     F_FREE(col_width_arr);

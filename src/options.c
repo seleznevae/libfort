@@ -332,19 +332,19 @@ int fort_options_column_width(const fort_table_options_t *options, size_t column
 //    return ((fort_column_options_t*)vector_at(options->col_options, column))->align;
 //}
 
-int fort_options_column_alignment(const fort_table_options_t *options, size_t column)
-{
-    assert(options);
-    enum TextAlignment defaultAlign = g_column_options.align;
+//int fort_options_column_alignment(const fort_table_options_t *options, size_t column)
+//{
+//    assert(options);
+//    enum TextAlignment defaultAlign = g_column_options.align;
 
-    if (options->cell_options == NULL)
-        return defaultAlign;
+//    if (options->cell_options == NULL)
+//        return defaultAlign;
 
-    const fort_cell_options_t* col_opt = cget_cell_opt(options->cell_options, FT_ANY_ROW, column);
-    if (col_opt == NULL || ((col_opt->options & FT_OPT_TEXT_ALIGN) == 0))
-        return defaultAlign;
-    else {
-        return col_opt->align;
-    }
-}
+//    const fort_cell_options_t* col_opt = cget_cell_opt(options->cell_options, FT_ANY_ROW, column);
+//    if (col_opt == NULL || ((col_opt->options & FT_OPT_TEXT_ALIGN) == 0))
+//        return defaultAlign;
+//    else {
+//        return col_opt->align;
+//    }
+//}
 

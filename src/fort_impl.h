@@ -85,7 +85,13 @@ struct separator
 };
 
 typedef struct fort_table_options fort_table_options_t;
-typedef fort_table_options_t context_t;
+struct fort_context
+{
+    fort_table_options_t *table_options;
+    size_t row;
+    size_t column;
+};
+typedef struct fort_context context_t;
 typedef struct fort_column_options fort_column_options_t;
 typedef struct vector vector_t;
 typedef struct fort_cell fort_cell_t;

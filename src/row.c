@@ -148,16 +148,16 @@ int print_row_separator(char *buffer, size_t buffer_sz,
 
     const char (*border_chars)[BorderItemPosSize] = NULL;
     if (main_row && main_row->type == Header) {
-        border_chars = &context->header_border_chars;
+        border_chars = &context->table_options->header_border_chars;
     } else {
-        border_chars = &context->border_chars;
+        border_chars = &context->table_options->border_chars;
     }
 
     if (sep && sep->enabled) {
-        L = &(context->separator_chars[LH_sip]);
-        I = &(context->separator_chars[IH_sip]);
-        IV = &(context->separator_chars[II_sip]);
-        R = &(context->separator_chars[RH_sip]);
+        L = &(context->table_options->separator_chars[LH_sip]);
+        I = &(context->table_options->separator_chars[IH_sip]);
+        IV = &(context->table_options->separator_chars[II_sip]);
+        R = &(context->table_options->separator_chars[RH_sip]);
     } else {
         switch (separatorPos) {
             case TopSeparator:
@@ -351,8 +351,8 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
      */
 
     const char (*bord_chars)[BorderItemPosSize] = (row->type == Header)
-            ? (&context->header_border_chars)
-            : (&context->border_chars);
+            ? (&context->table_options->header_border_chars)
+            : (&context->table_options->border_chars);
     const char *L = &(*bord_chars)[LL_bip];
     const char *IV = &(*bord_chars)[IV_bip];
     const char *R = &(*bord_chars)[RR_bip];
@@ -362,6 +362,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
     for (size_t i = 0; i < row_height; ++i) {
         dev += snprint_n_chars(buffer + dev, buf_sz - dev, 1, *L);
         for (size_t j = 0; j < col_width_arr_sz; ++j) {
+            ((context_t *)context)->column = j;
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
                 dev += cell_printf(cell, i, j, buffer + dev, col_width_arr[j] + 1, context);

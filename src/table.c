@@ -112,15 +112,18 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
         return F_ERROR;
     }
 
-    context_t *context = (table->options ? table->options : &g_table_options);
+    context_t context;
+    context.table_options = (table->options ? table->options : &g_table_options);
     for (size_t col = 0; col < cols; ++col) {
         col_width_arr[col] = 0;
         for (size_t row = 0; row < rows; ++row) {
             const fort_row_t *row_p = get_row_c(table, row);
             const fort_cell_t *cell = get_cell_c(row_p, col);
+            context.column = col;
+            context.row = row;
             if (cell) {
-                col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, context));
-                row_height_arr[row] = MAX(row_height_arr[row], hint_height_cell(cell, context));
+                col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context));
+                row_height_arr[row] = MAX(row_height_arr[row], hint_height_cell(cell, &context));
             }
         }
     }

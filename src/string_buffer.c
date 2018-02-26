@@ -161,7 +161,8 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_colum
     int left = 0;
     int right = 0;
 
-    switch (fort_options_column_alignment(context, table_column)) {
+//    switch (fort_options_column_alignment(context, table_column)) {
+    switch (get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_OPT_TEXT_ALIGN)) {
         case LeftAligned:
             left = 0;
             right = (buf_len - 1) - content_width;

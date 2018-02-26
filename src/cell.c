@@ -41,7 +41,7 @@ int hint_width_cell(const fort_cell_t *cell, const context_t *context)
 {
     assert(cell);
     assert(context);
-    int result = context->cell_padding_left + context->cell_padding_right;
+    int result = context->table_options->cell_padding_left + context->table_options->cell_padding_right;
     if (cell->str_buffer && cell->str_buffer->str) {
         result += buffer_text_width(cell->str_buffer);
     }
@@ -52,10 +52,10 @@ int hint_height_cell(const fort_cell_t *cell, const context_t *context)
 {
     assert(cell);
     assert(context);
-    int result = context->cell_padding_top + context->cell_padding_bottom;
+    int result = context->table_options->cell_padding_top + context->table_options->cell_padding_bottom;
     if (cell->str_buffer && cell->str_buffer->str) {
         size_t text_height = buffer_text_height(cell->str_buffer);
-        result += text_height == 0 ? context->cell_empty_string_height : text_height;
+        result += text_height == 0 ? context->table_options->cell_empty_string_height : text_height;
     }
     return result;
 }
@@ -89,19 +89,19 @@ int cell_printf(fort_cell_t *cell, size_t row, size_t column, char *buf, size_t 
     }
 
     if (row >= hint_height_cell(cell, context)
-            || row < context->cell_padding_top
-            || row >= (context->cell_padding_top + buffer_text_height(cell->str_buffer))) {
+            || row < context->table_options->cell_padding_top
+            || row >= (context->table_options->cell_padding_top + buffer_text_height(cell->str_buffer))) {
         int k = snprint_n_chars(buf, buf_len, buf_len - 1, ' ');
         return k;
     } else {
         int written = 0;
-        int left = context->cell_padding_left;
-        int right = context->cell_padding_right;
+        int left = context->table_options->cell_padding_left;
+        int right = context->table_options->cell_padding_right;
 
         written += snprint_n_chars(buf + written, buf_len - written, left, ' ');
 
         if (cell->str_buffer)
-            written += buffer_printf(cell->str_buffer, row - context->cell_padding_top, column, buf + written, buf_len - written - right, context);
+            written += buffer_printf(cell->str_buffer, row - context->table_options->cell_padding_top, column, buf + written, buf_len - written - right, context);
         else
             written += snprint_n_chars(buf + written, buf_len - written, buf_len - written - right, ' ');
         written += snprint_n_chars(buf + written, buf_len - written, right, ' ');
