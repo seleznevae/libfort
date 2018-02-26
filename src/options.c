@@ -7,6 +7,37 @@
  *               COLUMN OPTIONS
  * ***************************************************************************/
 
+struct fort_cell_options g_default_cell_option =
+{
+    FT_ANY_ROW,    /* cell_row */
+    FT_ANY_COLUMN, /* cell_col */
+
+    /* options */
+    FT_OPT_MIN_WIDTH  | FT_OPT_TEXT_ALIGN | FT_OPT_TOP_PADDING | FT_OPT_BOTTOM_PADDING
+    | FT_OPT_LEFT_PADDING | FT_OPT_RIGHT_PADDING | FT_OPT_EMPTY_STR_HEIGHT ,
+
+    0,             /* col_min_width */
+    RightAligned   /* align */
+};
+
+static int get_option_value_if_exists_otherwise_default(const struct fort_cell_options *cell_opts, uint32_t option)
+{
+    if (cell_opts == NULL || !OPTION_IS_SET(cell_opts->options, option)) {
+        cell_opts = &g_default_cell_option;
+    }
+
+    switch (option) {
+        case FT_OPT_MIN_WIDTH:
+            return cell_opts->col_min_width;
+        case FT_OPT_TEXT_ALIGN:
+            return cell_opts->align;
+        default:
+            // todo: implement later
+            exit(333);
+    }
+}
+
+
 fort_column_options_t g_column_options =
 {
     0,           /* col_min_width*/
@@ -82,6 +113,34 @@ fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, uns
     }
 
     return F_SUCCESS;
+}
+
+
+int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t row, size_t column, uint32_t option)
+{
+    assert(options);
+
+    const fort_cell_options_t* opt = NULL;
+    if (options->cell_options != NULL) {
+        while (1) {
+            opt = cget_cell_opt(options->cell_options, row, column);
+            if (opt != NULL)
+                break;
+            if (row != FT_ANY_ROW) {
+                row = FT_ANY_ROW;
+                continue;
+            }
+            if (column != FT_ANY_COLUMN) {
+                column = FT_ANY_COLUMN;
+                continue;
+            }
+
+            opt = NULL;
+            break;
+        }
+    }
+
+    return get_option_value_if_exists_otherwise_default(opt, option);
 }
 
 
@@ -288,3 +347,4 @@ int fort_options_column_alignment(const fort_table_options_t *options, size_t co
         return col_opt->align;
     }
 }
+

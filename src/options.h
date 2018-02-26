@@ -67,6 +67,9 @@ fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_contain
 fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option, int value);
 fort_status_t unset_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option);
 
+int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t row, size_t column, uint32_t option);
+
+
 /*****************************************************************************
  *               TABLE BORDER
  *****************************************************************************/
@@ -150,5 +153,6 @@ void destroy_table_options(fort_table_options_t* options);
 //fort_status_t fort_options_set_column_alignment(fort_table_options_t *options, size_t column, enum TextAlignment al);
 int fort_options_column_width(const fort_table_options_t *options, size_t column);
 int fort_options_column_alignment(const fort_table_options_t *options, size_t column);
+
 
 #endif // OPTIONS_H
