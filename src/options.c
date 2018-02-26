@@ -304,19 +304,28 @@ void destroy_table_options(fort_table_options_t* options)
 //    return ((fort_column_options_t*)vector_at(options->col_options, column))->col_min_width;
 //}
 
-int fort_options_column_width(const fort_table_options_t *options, size_t column)
-{
-    assert(options);
-    if (options->cell_options == NULL)
-        return -1;
 
-    const fort_cell_options_t* col_opt = cget_cell_opt(options->cell_options, FT_ANY_ROW, column);
-    if (col_opt == NULL || ((col_opt->options & FT_OPT_MIN_WIDTH) == 0))
-        return -1;
-    else {
-        return col_opt->col_min_width;
-    }
-}
+
+
+//int fort_options_column_width(const fort_table_options_t *options, size_t column)
+//{
+//    assert(options);
+//    if (options->cell_options == NULL)
+//        return -1;
+
+//    const fort_cell_options_t* col_opt = cget_cell_opt(options->cell_options, FT_ANY_ROW, column);
+//    if (col_opt == NULL || ((col_opt->options & FT_OPT_MIN_WIDTH) == 0))
+//        return -1;
+//    else {
+//        return col_opt->col_min_width;
+//    }
+//}
+
+
+
+
+
+
 
 //int fort_options_column_alignment(const fort_table_options_t *options, size_t column)
 //{

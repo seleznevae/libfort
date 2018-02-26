@@ -132,11 +132,11 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
      * At the moment min width includes paddings. Maybe it is better that min width weren't include
      * paddings but be min width of the cell content without padding
      */
-    if (table->options) {
-        for (size_t i = 0; i < cols; ++i) {
-            col_width_arr[i] = MAX((int)col_width_arr[i], fort_options_column_width(table->options, i));
-        }
-    }
+//    if (table->options) {
+//        for (size_t i = 0; i < cols; ++i) {
+//            col_width_arr[i] = MAX((int)col_width_arr[i], fort_options_column_width(table->options, i));
+//        }
+//    }
 
     *col_width_arr_p = col_width_arr;
     *col_width_arr_sz = cols;

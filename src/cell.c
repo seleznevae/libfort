@@ -39,12 +39,18 @@ void destroy_cell(fort_cell_t *cell)
 
 int hint_width_cell(const fort_cell_t *cell, const context_t *context)
 {
+    /* todo:
+     * At the moment min width includes paddings. Maybe it is better that min width weren't include
+     * paddings but be min width of the cell content without padding
+     */
+
     assert(cell);
     assert(context);
     int result = context->table_options->cell_padding_left + context->table_options->cell_padding_right;
     if (cell->str_buffer && cell->str_buffer->str) {
         result += buffer_text_width(cell->str_buffer);
     }
+    result = MAX(result, get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_OPT_MIN_WIDTH));
     return result;
 }
 
