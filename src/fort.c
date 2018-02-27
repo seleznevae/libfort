@@ -296,17 +296,6 @@ FORT_EXTERN int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* 
 }
 
 
-FORT_EXTERN int ft_write_status(FTABLE *FORT_RESTRICT table, int status, const char* FORT_RESTRICT cell_content)
-{
-    assert(table);
-    if (IS_ERROR(status))
-        return status;
-
-    return ft_write(table, cell_content);
-}
-
-
-
 FORT_EXTERN int ft_row_write(FTABLE *FORT_RESTRICT table, size_t cols, const char* FORT_RESTRICT cells[])
 {
     assert(table);
@@ -332,12 +321,6 @@ FORT_EXTERN int ft_row_write_ln(FTABLE *FORT_RESTRICT table, size_t cols, const 
 
 
 
-//FORT_EXTERN int ft_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char** FORT_RESTRICT table_cells[]);
-//FORT_EXTERN int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char** FORT_RESTRICT table_cells[]);
-
-
-//int ft_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* FORT_RESTRICT table_cells[rows][cols]);
-//int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char** FORT_RESTRICT table_cells[rows][cols]);
 
 int ft_s_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* FORT_RESTRICT table_cells[rows][cols])
 {
@@ -394,47 +377,6 @@ int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, con
 
 
 
-//int ft_set_default_options(const fort_table_options_t *options)
-//{
-//    memcpy(&g_table_options, options, sizeof(fort_table_options_t));
-//    return 0;
-//}
-
-//int ft_get_default_options(fort_table_options_t *options)
-//{
-//    memcpy(options, &g_table_options, sizeof(fort_table_options_t));
-//    return 0;
-//}
-
-//int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_t * FORT_RESTRICT options)
-//{
-//    assert(table);
-//    if (options == NULL) {
-//        destroy_table_options(table->options);
-//        table->options = NULL;
-//        return 0;
-//    }
-
-
-
-//    fort_table_options_t *new_options = copy_table_options(options);
-//    if (new_options == NULL) {
-//        return -1;
-//    }
-//    destroy_table_options(table->options);
-//    table->options = new_options;
-//    return 0;
-
-
-////    fort_table_options_t *new_options = F_CALLOC(sizeof(fort_table_options_t), 1);
-////    if (new_options == NULL) {
-////        return -1;
-////    }
-////    memcpy(new_options, options, sizeof(fort_table_options_t));
-////    F_FREE(table->options);
-////    table->options = new_options;
-////    return 0;
-//}
 
 
 
@@ -575,30 +517,6 @@ int ft_add_separator(FTABLE *table)
     return F_SUCCESS;
 }
 
-//int ft_set_default_option(uint32_t option, int value)
-//{
-//    switch (option) {
-//    case FT_OPT_TOP_PADDING:
-//            g_table_options.cell_padding_top = value;
-//        break;
-//    case FT_OPT_BOTTOM_PADDING:
-//            g_table_options.cell_padding_bottom = value;
-//        break;
-//    case FT_OPT_LEFT_PADDING:
-//            g_table_options.cell_padding_left = value;
-//        break;
-//    case FT_OPT_RIGHT_PADDING:
-//            g_table_options.cell_padding_right = value;
-//        break;
-//    case FT_OPT_EMPTY_STR_HEIGHT:
-//            g_table_options.cell_empty_string_height = value;
-//        break;
-//    default:
-//        // todo
-//        exit(22);
-//    }
-//    return F_SUCCESS;
-//}
 
 
 static void set_border_options_for_options(fort_table_options_t *options, struct border_chars *border_chs, struct border_chars *header_border_chs)
@@ -666,38 +584,6 @@ int ft_set_table_borders(FTABLE *table, struct border_chars *border_chs, struct 
     set_border_options_for_options(table->options, border_chs, header_border_chs);
     return F_SUCCESS;
 }
-
-//int ft_set_table_option(FTABLE *table, uint32_t option, int value)
-//{
-//    assert(table);
-//    if (table->options == NULL) {
-//        table->options = create_table_options();
-//        if (table->options == NULL)
-//            return F_MEMORY_ERROR;
-//    }
-//    switch (option) {
-//    case FT_OPT_TOP_PADDING:
-//            table->options->cell_padding_top = value;
-//        break;
-//    case FT_OPT_BOTTOM_PADDING:
-//            table->options->cell_padding_bottom = value;
-//        break;
-//    case FT_OPT_LEFT_PADDING:
-//            table->options->cell_padding_left = value;
-//        break;
-//    case FT_OPT_RIGHT_PADDING:
-//            table->options->cell_padding_right = value;
-//        break;
-//    case FT_OPT_EMPTY_STR_HEIGHT:
-//            table->options->cell_empty_string_height = value;
-//        break;
-//    default:
-//        // todo
-//        exit(22);
-//    }
-//    return F_SUCCESS;
-
-//}
 
 
 

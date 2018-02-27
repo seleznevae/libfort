@@ -87,57 +87,14 @@ SOFTWARE.
 #endif
 
 
+/*
+ * Helper macros
+ */
+
 #define STR_2_CAT_(arg1, arg2) \
     arg1##arg2
 #define STR_2_CAT(arg1, arg2) \
     STR_2_CAT_(arg1, arg2)
-
-
-/*
- * libfort structures and functions declarations
- */
-
-FORT_BEGIN_DECLS
-
-struct fort_table;
-typedef struct fort_table FTABLE;
-
-FORT_EXTERN FTABLE * ft_create_table(void);
-FORT_EXTERN void ft_destroy_table(FTABLE *FORT_RESTRICT table);
-
-
-FORT_EXTERN void ft_ln(FTABLE *FORT_RESTRICT table);
-
-
-#if defined(FORT_CLANG_COMPILER) || defined(FORT_GCC_COMPILER)
-FORT_EXTERN int ft_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_hdr_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-
-#else
-
-
-FORT_EXTERN int ft_printf_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_printf_ln_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_hdr_printf_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_hdr_printf_ln_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-
-#define ft_printf(table, ...) \
-    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_impl(table, __VA_ARGS__))
-#define ft_printf_ln(table, ...) \
-    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_ln_impl(table, __VA_ARGS__))
-#define ft_hdr_printf(table, ...) \
-    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_hdr_printf_impl(table, __VA_ARGS__))
-#define ft_hdr_printf_ln(table, ...) \
-    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_hdr_printf_ln_impl(table, __VA_ARGS__))
-#endif
-
-
-
-FORT_EXTERN int ft_write(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content);
-FORT_EXTERN int ft_write_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content);
-
 
 
 static inline int fort_check_if_string_helper(const char*str)
@@ -198,6 +155,56 @@ static inline int fort_check_if_string_helper(const char*str)
 #define CHECK_IF_ARGS_ARE_STRINGS_(basis, n, ...) CHECK_IF_ARGS_ARE_STRINGS__(STR_2_CAT_(basis, n), __VA_ARGS__)
 #define CHECK_IF_ARGS_ARE_STRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(CHECK_IF_ARG_IS_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
 
+
+
+/*
+ * libfort structures and functions declarations
+ */
+
+FORT_BEGIN_DECLS
+
+struct fort_table;
+typedef struct fort_table FTABLE;
+
+FORT_EXTERN FTABLE * ft_create_table(void);
+FORT_EXTERN void ft_destroy_table(FTABLE *FORT_RESTRICT table);
+
+
+FORT_EXTERN void ft_ln(FTABLE *FORT_RESTRICT table);
+
+
+#if defined(FORT_CLANG_COMPILER) || defined(FORT_GCC_COMPILER)
+FORT_EXTERN int ft_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FORT_EXTERN int ft_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FORT_EXTERN int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FORT_EXTERN int ft_hdr_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+
+#else
+
+
+FORT_EXTERN int ft_printf_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FORT_EXTERN int ft_printf_ln_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FORT_EXTERN int ft_hdr_printf_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FORT_EXTERN int ft_hdr_printf_ln_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+
+#define ft_printf(table, ...) \
+    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_impl(table, __VA_ARGS__))
+#define ft_printf_ln(table, ...) \
+    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_ln_impl(table, __VA_ARGS__))
+#define ft_hdr_printf(table, ...) \
+    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_hdr_printf_impl(table, __VA_ARGS__))
+#define ft_hdr_printf_ln(table, ...) \
+    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_hdr_printf_ln_impl(table, __VA_ARGS__))
+#endif
+
+
+
+FORT_EXTERN int ft_write(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content);
+FORT_EXTERN int ft_write_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content);
+
+
+
+
 #define FT_NWRITE(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 
@@ -206,10 +213,6 @@ static inline int fort_check_if_string_helper(const char*str)
 
 FORT_EXTERN int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...);
 FORT_EXTERN int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...);
-
-
-FORT_EXTERN int ft_write_status(FTABLE *FORT_RESTRICT table, int status, const char* FORT_RESTRICT cell_content);
-
 
 
 
@@ -237,21 +240,11 @@ FORT_EXTERN int ft_add_separator(FTABLE *FORT_RESTRICT table);
 FORT_EXTERN const char* ft_to_string(const FTABLE *FORT_RESTRICT table);
 //FORT_EXTERN ssize_t ft_n_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
 
-//FORT_EXTERN char* ft_header_to_string(const FTABLE *FORT_RESTRICT table);
-//FORT_EXTERN ssize_t ft_n_header_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
-
-//FORT_EXTERN char* ft_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row);
-//FORT_EXTERN ssize_t ft_n_row_to_string(const FTABLE *FORT_RESTRICT table, size_t row, char *FORT_RESTRICT dst, size_t dst_len);
 
 
 
 
 
-
-//FORT_EXTERN int ft_set_default_options(const fort_table_options_t *options);
-//FORT_EXTERN int ft_get_default_options(fort_table_options_t *options);
-
-//FORT_EXTERN int ft_set_table_options(FTABLE * FORT_RESTRICT table, const fort_table_options_t * FORT_RESTRICT options);
 
 
 
@@ -267,11 +260,9 @@ struct border_chars
 
 FORT_EXTERN int ft_set_default_borders(struct border_chars *border_chs, struct border_chars *header_border_chs);
 FORT_EXTERN int ft_set_table_borders(FTABLE * FORT_RESTRICT table, struct border_chars *border_chs, struct border_chars *header_border_chs);
-//FORT_EXTERN int ft_set_default_option(uint32_t option, int value);
-//FORT_EXTERN int ft_set_table_option(FTABLE * FORT_RESTRICT table, uint32_t option, int value);
 
-FORT_EXTERN int ft_set_cell_option(FTABLE * FORT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
 FORT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
+FORT_EXTERN int ft_set_cell_option(FTABLE * FORT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
 
 
 FORT_END_DECLS
