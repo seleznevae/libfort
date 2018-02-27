@@ -438,62 +438,6 @@ int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, con
 
 
 
-//int ft_set_column_min_width(FTABLE *table, size_t column, size_t width)
-//{
-//    if (table->options == NULL) {
-//        table->options = create_table_options();
-//        if (table->options == NULL)
-//            return F_MEMORY_ERROR;
-//    }
-
-//    int status = fort_options_set_column_min_width(table->options, column, width);
-//    return status;
-//}
-
-int ft_set_column_min_width(FTABLE *table, size_t column, size_t width)
-{
-    if (table->options == NULL) {
-        table->options = create_table_options();
-        if (table->options == NULL)
-            return F_MEMORY_ERROR;
-    }
-    if (table->options->cell_options == NULL) {
-        table->options->cell_options = create_cell_opt_container();
-        if (table->options->cell_options == NULL) {
-            return F_ERROR;
-        }
-    }
-    return set_cell_option(table->options->cell_options, FT_ANY_ROW, column, FT_OPT_MIN_WIDTH, width);
-}
-
-//int ft_set_column_alignment(FTABLE * FORT_RESTRICT table, size_t column, enum TextAlignment align)
-//{
-//    if (table->options == NULL) {
-//        table->options = create_table_options();
-//        if (table->options == NULL)
-//            return F_MEMORY_ERROR;
-//    }
-
-//    int status = fort_options_set_column_alignment(table->options, column, align);
-//    return status;
-//}
-
-int ft_set_column_alignment(FTABLE *table, size_t column, enum TextAlignment align)
-{
-    if (table->options == NULL) {
-        table->options = create_table_options();
-        if (table->options == NULL)
-            return F_MEMORY_ERROR;
-    }
-    if (table->options->cell_options == NULL) {
-        table->options->cell_options = create_cell_opt_container();
-        if (table->options->cell_options == NULL) {
-            return F_ERROR;
-        }
-    }
-    return set_cell_option(table->options->cell_options, FT_ANY_ROW, column, FT_OPT_TEXT_ALIGN, align);
-}
-
 
 /*****************************************************************************
  *               TABLE

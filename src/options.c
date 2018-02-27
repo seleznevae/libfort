@@ -17,7 +17,12 @@ struct fort_cell_options g_default_cell_option =
     | FT_OPT_LEFT_PADDING | FT_OPT_RIGHT_PADDING | FT_OPT_EMPTY_STR_HEIGHT ,
 
     0,             /* col_min_width */
-    RightAligned   /* align */
+    RightAligned,  /* align */
+    0,      /* cell_padding_top         */
+    0,      /* cell_padding_bottom      */
+    1,      /* cell_padding_left        */
+    1,      /* cell_padding_right       */
+    1,      /* cell_empty_string_height */
 };
 
 static int get_option_value_if_exists_otherwise_default(const struct fort_cell_options *cell_opts, uint32_t option)
@@ -31,6 +36,16 @@ static int get_option_value_if_exists_otherwise_default(const struct fort_cell_o
             return cell_opts->col_min_width;
         case FT_OPT_TEXT_ALIGN:
             return cell_opts->align;
+        case FT_OPT_TOP_PADDING:
+            return cell_opts->cell_padding_top;
+        case FT_OPT_BOTTOM_PADDING:
+            return cell_opts->cell_padding_bottom;
+        case FT_OPT_LEFT_PADDING:
+            return cell_opts->cell_padding_left;
+        case FT_OPT_RIGHT_PADDING:
+            return cell_opts->cell_padding_right;
+        case FT_OPT_EMPTY_STR_HEIGHT:
+            return cell_opts->cell_empty_string_height;
         default:
             // todo: implement later
             exit(333);
@@ -99,21 +114,7 @@ fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_contain
     return NULL;
 }
 
-fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option, int value)
-{
-    fort_cell_options_t* opt = get_cell_opt_and_create_if_not_exists(cont, row, col);
-    if (opt == NULL)
-        return F_ERROR;
 
-    OPTION_SET(opt->options, option);
-    if (OPTION_IS_SET(option, FT_OPT_MIN_WIDTH)) {
-        opt->col_min_width = value;
-    } else if (OPTION_IS_SET(option, FT_OPT_TEXT_ALIGN)) {
-        opt->align = value;
-    }
-
-    return F_SUCCESS;
-}
 
 
 int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t row, size_t column, uint32_t option)
@@ -143,6 +144,53 @@ int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t ro
     return get_option_value_if_exists_otherwise_default(opt, option);
 }
 
+
+static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t option, int value)
+{
+    assert(opt);
+
+    OPTION_SET(opt->options, option);
+    if (OPTION_IS_SET(option, FT_OPT_MIN_WIDTH)) {
+        opt->col_min_width = value;
+    } else if (OPTION_IS_SET(option, FT_OPT_TEXT_ALIGN)) {
+        opt->align = value;
+    } else if (OPTION_IS_SET(option, FT_OPT_TOP_PADDING)) {
+        opt->cell_padding_top = value;
+    } else if (OPTION_IS_SET(option, FT_OPT_BOTTOM_PADDING)) {
+        opt->cell_padding_bottom = value;
+    } else if (OPTION_IS_SET(option, FT_OPT_LEFT_PADDING)) {
+        opt->cell_padding_left = value;
+    } else if (OPTION_IS_SET(option, FT_OPT_RIGHT_PADDING)) {
+        opt->cell_padding_right = value;
+    } else if (OPTION_IS_SET(option, FT_OPT_EMPTY_STR_HEIGHT)) {
+        opt->cell_empty_string_height = value;
+    }
+
+    return F_SUCCESS;
+}
+
+
+fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option, int value)
+{
+    fort_cell_options_t* opt = get_cell_opt_and_create_if_not_exists(cont, row, col);
+    if (opt == NULL)
+        return F_ERROR;
+
+    return set_cell_option_impl(opt, option, value);
+//    OPTION_SET(opt->options, option);
+//    if (OPTION_IS_SET(option, FT_OPT_MIN_WIDTH)) {
+//        opt->col_min_width = value;
+//    } else if (OPTION_IS_SET(option, FT_OPT_TEXT_ALIGN)) {
+//        opt->align = value;
+//    }
+
+//    return F_SUCCESS;
+}
+
+fort_status_t set_default_cell_option(uint32_t option, int value)
+{
+    return set_cell_option_impl(&g_default_cell_option, option, value);
+}
 
 /*****************************************************************************
  *               OPTIONS

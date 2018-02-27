@@ -53,6 +53,11 @@ struct fort_cell_options
     uint32_t options;
     int col_min_width;
     enum TextAlignment align;
+    int cell_padding_top;
+    int cell_padding_bottom;
+    int cell_padding_left;
+    int cell_padding_right;
+    int cell_empty_string_height;
 };
 
 typedef struct fort_cell_options fort_cell_options_t;
@@ -69,6 +74,7 @@ fort_status_t unset_cell_option(fort_cell_opt_container_t *cont, unsigned row, u
 
 int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t row, size_t column, uint32_t option);
 
+fort_status_t set_default_cell_option(uint32_t option, int value);
 
 /*****************************************************************************
  *               TABLE BORDER
