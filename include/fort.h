@@ -271,6 +271,7 @@ FORT_EXTERN int ft_set_default_option(uint32_t option, int value);
 FORT_EXTERN int ft_set_table_option(FTABLE * FORT_RESTRICT table, uint32_t option, int value);
 
 FORT_EXTERN int ft_set_cell_option(FTABLE * FORT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
+FORT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
 
 
 FORT_END_DECLS

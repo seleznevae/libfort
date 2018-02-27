@@ -74,6 +74,10 @@ int set_test_options_for_table(FTABLE *table)
 int set_test_options_as_default()
 {
     int status = F_SUCCESS;
+
+    status |= ft_set_default_cell_option(FT_OPT_MIN_WIDTH, 0);
+    status |= ft_set_default_cell_option(FT_OPT_TEXT_ALIGN, RightAligned);
+
     status |= ft_set_default_option(FT_OPT_BOTTOM_PADDING, 1);
     status |= ft_set_default_option(FT_OPT_TOP_PADDING, 1);
     status |= ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
@@ -805,22 +809,11 @@ void test_table_options(void **state)
 
 
     WHEN("Set table width and column alignment") {
-//        fort_table_options_t table_options;
-//        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
-//        table_options.cell_padding_bottom = 1;
-//        table_options.cell_padding_top = 1;
-//        table_options.cell_padding_left = 1;
-//        table_options.cell_padding_right = 1;
-//        ft_set_default_options(&table_options);
 
         set_test_options_as_default();
 
         table = create_test_int_table(0);
         int status = F_SUCCESS;
-//        status |= ft_set_column_min_width(table, 1, 7);
-//        status |= ft_set_column_alignment(table, 1, LeftAligned);
-//        status |= ft_set_column_min_width(table, 2, 8);
-//        status |= ft_set_column_alignment(table, 2, CenterAligned);
 
         status |= ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_MIN_WIDTH, 7);
         status |= ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
@@ -855,7 +848,41 @@ void test_table_options(void **state)
         ft_destroy_table(table);
     }
 
+    WHEN("Set table width and column alignment as default") {
+
+        set_test_options_as_default();
+
+        int status = F_SUCCESS;
+        status |= ft_set_default_cell_option(FT_OPT_MIN_WIDTH, 5);
+        status |= ft_set_default_cell_option(FT_OPT_TEXT_ALIGN, CenterAligned);
+        assert_true( status == F_SUCCESS);
+
+        table = create_test_int_table(0);
+
+        const char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "+-----+-----+-----+-----+\n"
+                "|     |     |     |     |\n"
+                "|  3  |  4  | 55  | 67  |\n"
+                "|     |     |     |     |\n"
+                "+-----+-----+-----+-----+\n"
+                "|     |     |     |     |\n"
+                "|  3  |  4  | 55  | 67  |\n"
+                "|     |     |     |     |\n"
+                "+-----+-----+-----+-----+\n"
+                "|     |     |     |     |\n"
+                "|  3  |  4  | 55  | 67  |\n"
+                "|     |     |     |     |\n"
+                "+-----+-----+-----+-----+\n";
+        assert_true( strcmp(table_str, table_str_etalon) == 0);
+
+        ft_destroy_table(table);
+    }
+
     WHEN("All columns are equal and not empty") {
+        set_test_options_as_default();
+
         table = ft_create_table();
 
         int n = ft_hdr_printf_ln(table, "%d|%c|%s|%f", 4, 'c', "234", 3.14);
