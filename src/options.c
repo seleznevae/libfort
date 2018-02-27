@@ -226,11 +226,11 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
 
 
 fort_table_options_t g_table_options = {
-    0,      /* cell_padding_top         */
-    0,      /* cell_padding_bottom      */
-    1,      /* cell_padding_left        */
-    1,      /* cell_padding_right       */
-    1,      /* cell_empty_string_height */
+//    0,      /* cell_padding_top         */
+//    0,      /* cell_padding_bottom      */
+//    1,      /* cell_padding_left        */
+//    1,      /* cell_padding_right       */
+//    1,      /* cell_empty_string_height */
 
     /* border_chars */
     {

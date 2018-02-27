@@ -45,11 +45,12 @@ int set_test_options_for_table(FTABLE *table)
 {
     assert(table);
     int status = F_SUCCESS;
-    status |= ft_set_table_option(table, FT_OPT_BOTTOM_PADDING, 1);
-    status |= ft_set_table_option(table, FT_OPT_TOP_PADDING, 1);
-    status |= ft_set_table_option(table, FT_OPT_LEFT_PADDING, 1);
-    status |= ft_set_table_option(table, FT_OPT_RIGHT_PADDING, 1);
-    status |= ft_set_table_option(table, FT_OPT_EMPTY_STR_HEIGHT, 1);
+    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 1);
+    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_TOP_PADDING, 1);
+    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_LEFT_PADDING, 1);
+    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_RIGHT_PADDING, 1);
+    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_EMPTY_STR_HEIGHT, 1);
+
     assert_true( status == F_SUCCESS );
 
 
@@ -78,11 +79,12 @@ int set_test_options_as_default()
     status |= ft_set_default_cell_option(FT_OPT_MIN_WIDTH, 0);
     status |= ft_set_default_cell_option(FT_OPT_TEXT_ALIGN, RightAligned);
 
-    status |= ft_set_default_option(FT_OPT_BOTTOM_PADDING, 1);
-    status |= ft_set_default_option(FT_OPT_TOP_PADDING, 1);
-    status |= ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
-    status |= ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
-    status |= ft_set_default_option(FT_OPT_EMPTY_STR_HEIGHT, 1);
+    status |= ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 1);
+    status |= ft_set_default_cell_option(FT_OPT_TOP_PADDING, 1);
+    status |= ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 1);
+    status |= ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 1);
+    status |= ft_set_default_cell_option(FT_OPT_EMPTY_STR_HEIGHT, 1);
+
     assert_true( status == F_SUCCESS );
 
 
@@ -391,19 +393,12 @@ void test_table_options(void **state)
 
 
     WHEN("All paddings = 1") {
-//        fort_table_options_t table_options;
-//        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
-//        table_options.cell_padding_bottom = 1;
-//        table_options.cell_padding_top = 1;
-//        table_options.cell_padding_left = 1;
-//        table_options.cell_padding_right = 1;
-//        ft_set_default_options(&table_options);
         set_test_options_as_default();
 
-        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 1);
-        ft_set_default_option(FT_OPT_TOP_PADDING, 1);
-        ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
-        ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 1);
 
         table = create_test_int_table(0);
 
@@ -465,17 +460,11 @@ void test_table_options(void **state)
     }
 
     WHEN("Top and bottom padding = 0") {
-//        fort_table_options_t table_options;
-//        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
-//        table_options.cell_padding_bottom = 0;
-//        table_options.cell_padding_top = 0;
-//        table_options.cell_padding_left = 1;
-//        table_options.cell_padding_right = 1;
-//        ft_set_default_options(&table_options);
-        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 0);
-        ft_set_default_option(FT_OPT_TOP_PADDING, 0);
-        ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
-        ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
+
+        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 0);
+        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 0);
+        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 1);
 
         table = create_test_int_table(0);
 
@@ -497,17 +486,11 @@ void test_table_options(void **state)
     }
 
     WHEN("Left and right padding = 0") {
-//        fort_table_options_t table_options;
-//        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
-//        table_options.cell_padding_bottom = 1;
-//        table_options.cell_padding_top = 1;
-//        table_options.cell_padding_left = 0;
-//        table_options.cell_padding_right = 0;
-//        ft_set_default_options(&table_options);
-        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 1);
-        ft_set_default_option(FT_OPT_TOP_PADDING, 1);
-        ft_set_default_option(FT_OPT_LEFT_PADDING, 0);
-        ft_set_default_option(FT_OPT_RIGHT_PADDING, 0);
+
+        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 0);
+        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 0);
 
         table = create_test_int_table(0);
 
@@ -535,17 +518,11 @@ void test_table_options(void **state)
     }
 
     WHEN("All paddings = 0") {
-//        fort_table_options_t table_options;
-//        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
-//        table_options.cell_padding_bottom = 0;
-//        table_options.cell_padding_top = 0;
-//        table_options.cell_padding_left = 0;
-//        table_options.cell_padding_right = 0;
-//        ft_set_default_options(&table_options);
-        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 0);
-        ft_set_default_option(FT_OPT_TOP_PADDING, 0);
-        ft_set_default_option(FT_OPT_LEFT_PADDING, 0);
-        ft_set_default_option(FT_OPT_RIGHT_PADDING, 0);
+
+        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 0);
+        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 0);
+        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 0);
+        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 0);
 
         table = create_test_int_table(0);
 
@@ -567,19 +544,12 @@ void test_table_options(void **state)
     }
 
     WHEN("Empty string has 0 heigt") {
-//        fort_table_options_t table_options;
-//        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
-//        table_options.cell_padding_bottom = 1;
-//        table_options.cell_padding_top = 1;
-//        table_options.cell_padding_left = 1;
-//        table_options.cell_padding_right = 1;
-//        table_options.cell_empty_string_height = 0;
-//        ft_set_default_options(&table_options);
-        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 1);
-        ft_set_default_option(FT_OPT_TOP_PADDING, 1);
-        ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
-        ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
-        ft_set_default_option(FT_OPT_EMPTY_STR_HEIGHT, 0);
+
+        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_EMPTY_STR_HEIGHT, 0);
 
         table = create_test_int_table(0);
         int n = ft_printf_ln(table, "|||");
@@ -612,27 +582,7 @@ void test_table_options(void **state)
     }
 
     WHEN("Changing cell separators") {
-//        fort_table_options_t table_options;
-//        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
 
-//#define BOR_CHARS table_options.border_chars
-//#define H_BOR_CHARS table_options.header_border_chars
-
-//        BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = '|';
-//        BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = '|';
-//        BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = '|';
-//        BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = '=';
-
-
-//        H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = '*';
-//        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = '*';
-//        H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = '*';
-//        H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = 'v';
-
-//#undef BOR_CHARS
-//#undef H_BOR_CHARS
-
-//        ft_set_default_options(&table_options);
         struct border_chars border_chs;
         border_chs.top_border_ch = '|';
         border_chs.separator_ch = '|';
@@ -677,29 +627,7 @@ void test_table_options(void **state)
 
 
 
-//#define BOR_CHARS table_options.border_chars
-//#define H_BOR_CHARS table_options.header_border_chars
 
-//        BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = '|';
-//        BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = '\0';
-//        BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = '|';
-//        BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = '=';
-
-
-//        H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = '*';
-//        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = '*';
-//        H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = '*';
-//        H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = 'v';
-
-//#undef BOR_CHARS
-//#undef H_BOR_CHARS
-
-//        table_options.cell_padding_bottom = 0;
-//        table_options.cell_padding_top = 0;
-//        table_options.cell_padding_left = 1;
-//        table_options.cell_padding_right = 1;
-//        table_options.cell_empty_string_height = 0;
-//        ft_set_default_options(&table_options);
 
         border_chs.top_border_ch = '|';
         border_chs.separator_ch = '\0';
@@ -717,11 +645,11 @@ void test_table_options(void **state)
 
         ft_set_default_borders(&border_chs, &header_border_chs);
 
-        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 0);
-        ft_set_default_option(FT_OPT_TOP_PADDING, 0);
-        ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
-        ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
-        ft_set_default_option(FT_OPT_EMPTY_STR_HEIGHT, 0);
+        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 0);
+        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 0);
+        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 1);
+        ft_set_default_cell_option(FT_OPT_EMPTY_STR_HEIGHT, 0);
 
 
         table = create_test_int_table(0);
@@ -742,21 +670,14 @@ void test_table_options(void **state)
     }
 
     WHEN("Setting options for a particular table") {
-//        fort_table_options_t table_options;
-//        memcpy(&table_options, &test_table_opts, sizeof(fort_table_options_t));
-//        table_options.cell_padding_bottom = 0;
-//        table_options.cell_padding_top = 0;
-//        table_options.cell_padding_left = 0;
-//        table_options.cell_padding_right = 0;
-//        ft_set_default_options(&table_options);
 
         table = create_test_int_table(0);
         set_test_options_for_table(table);
 
-        ft_set_table_option(table, FT_OPT_BOTTOM_PADDING, 0);
-        ft_set_table_option(table, FT_OPT_TOP_PADDING, 0);
-        ft_set_table_option(table, FT_OPT_LEFT_PADDING, 0);
-        ft_set_table_option(table, FT_OPT_RIGHT_PADDING, 0);
+        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 0);
+        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_TOP_PADDING, 0);
+        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_LEFT_PADDING, 0);
+        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_RIGHT_PADDING, 0);
 
         const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
@@ -772,17 +693,12 @@ void test_table_options(void **state)
 
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
-//        table_options.cell_padding_bottom = 1;
-//        table_options.cell_padding_top = 1;
-//        table_options.cell_padding_left = 0;
-//        table_options.cell_padding_right = 0;
-//        ft_set_table_options(table, &table_options);
 
-        ft_set_table_option(table, FT_OPT_BOTTOM_PADDING, 1);
-        ft_set_table_option(table, FT_OPT_TOP_PADDING, 1);
-        ft_set_table_option(table, FT_OPT_LEFT_PADDING, 0);
-        ft_set_table_option(table, FT_OPT_RIGHT_PADDING, 0);
-        ft_set_table_option(table, FT_OPT_EMPTY_STR_HEIGHT, 0);
+        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 1);
+        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_TOP_PADDING, 1);
+        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_LEFT_PADDING, 0);
+        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_RIGHT_PADDING, 0);
+        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_EMPTY_STR_HEIGHT, 0);
 
         table_str = ft_to_string(table);
         assert_true( table_str != NULL );

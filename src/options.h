@@ -133,11 +133,11 @@ enum SeparatorItemPos
 
 struct fort_table_options
 {
-    int cell_padding_top;
-    int cell_padding_bottom;
-    int cell_padding_left;
-    int cell_padding_right;
-    int cell_empty_string_height;
+//    int cell_padding_top;
+//    int cell_padding_bottom;
+//    int cell_padding_left;
+//    int cell_padding_right;
+//    int cell_empty_string_height;
 
     char border_chars[BorderItemPosSize];
     char header_border_chars[BorderItemPosSize];

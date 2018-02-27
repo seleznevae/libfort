@@ -267,8 +267,8 @@ struct border_chars
 
 FORT_EXTERN int ft_set_default_borders(struct border_chars *border_chs, struct border_chars *header_border_chs);
 FORT_EXTERN int ft_set_table_borders(FTABLE * FORT_RESTRICT table, struct border_chars *border_chs, struct border_chars *header_border_chs);
-FORT_EXTERN int ft_set_default_option(uint32_t option, int value);
-FORT_EXTERN int ft_set_table_option(FTABLE * FORT_RESTRICT table, uint32_t option, int value);
+//FORT_EXTERN int ft_set_default_option(uint32_t option, int value);
+//FORT_EXTERN int ft_set_table_option(FTABLE * FORT_RESTRICT table, uint32_t option, int value);
 
 FORT_EXTERN int ft_set_cell_option(FTABLE * FORT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
 FORT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);

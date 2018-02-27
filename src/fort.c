@@ -575,30 +575,30 @@ int ft_add_separator(FTABLE *table)
     return F_SUCCESS;
 }
 
-int ft_set_default_option(uint32_t option, int value)
-{
-    switch (option) {
-    case FT_OPT_TOP_PADDING:
-            g_table_options.cell_padding_top = value;
-        break;
-    case FT_OPT_BOTTOM_PADDING:
-            g_table_options.cell_padding_bottom = value;
-        break;
-    case FT_OPT_LEFT_PADDING:
-            g_table_options.cell_padding_left = value;
-        break;
-    case FT_OPT_RIGHT_PADDING:
-            g_table_options.cell_padding_right = value;
-        break;
-    case FT_OPT_EMPTY_STR_HEIGHT:
-            g_table_options.cell_empty_string_height = value;
-        break;
-    default:
-        // todo
-        exit(22);
-    }
-    return F_SUCCESS;
-}
+//int ft_set_default_option(uint32_t option, int value)
+//{
+//    switch (option) {
+//    case FT_OPT_TOP_PADDING:
+//            g_table_options.cell_padding_top = value;
+//        break;
+//    case FT_OPT_BOTTOM_PADDING:
+//            g_table_options.cell_padding_bottom = value;
+//        break;
+//    case FT_OPT_LEFT_PADDING:
+//            g_table_options.cell_padding_left = value;
+//        break;
+//    case FT_OPT_RIGHT_PADDING:
+//            g_table_options.cell_padding_right = value;
+//        break;
+//    case FT_OPT_EMPTY_STR_HEIGHT:
+//            g_table_options.cell_empty_string_height = value;
+//        break;
+//    default:
+//        // todo
+//        exit(22);
+//    }
+//    return F_SUCCESS;
+//}
 
 
 static void set_border_options_for_options(fort_table_options_t *options, struct border_chars *border_chs, struct border_chars *header_border_chs)
@@ -667,37 +667,37 @@ int ft_set_table_borders(FTABLE *table, struct border_chars *border_chs, struct 
     return F_SUCCESS;
 }
 
-int ft_set_table_option(FTABLE *table, uint32_t option, int value)
-{
-    assert(table);
-    if (table->options == NULL) {
-        table->options = create_table_options();
-        if (table->options == NULL)
-            return F_MEMORY_ERROR;
-    }
-    switch (option) {
-    case FT_OPT_TOP_PADDING:
-            table->options->cell_padding_top = value;
-        break;
-    case FT_OPT_BOTTOM_PADDING:
-            table->options->cell_padding_bottom = value;
-        break;
-    case FT_OPT_LEFT_PADDING:
-            table->options->cell_padding_left = value;
-        break;
-    case FT_OPT_RIGHT_PADDING:
-            table->options->cell_padding_right = value;
-        break;
-    case FT_OPT_EMPTY_STR_HEIGHT:
-            table->options->cell_empty_string_height = value;
-        break;
-    default:
-        // todo
-        exit(22);
-    }
-    return F_SUCCESS;
+//int ft_set_table_option(FTABLE *table, uint32_t option, int value)
+//{
+//    assert(table);
+//    if (table->options == NULL) {
+//        table->options = create_table_options();
+//        if (table->options == NULL)
+//            return F_MEMORY_ERROR;
+//    }
+//    switch (option) {
+//    case FT_OPT_TOP_PADDING:
+//            table->options->cell_padding_top = value;
+//        break;
+//    case FT_OPT_BOTTOM_PADDING:
+//            table->options->cell_padding_bottom = value;
+//        break;
+//    case FT_OPT_LEFT_PADDING:
+//            table->options->cell_padding_left = value;
+//        break;
+//    case FT_OPT_RIGHT_PADDING:
+//            table->options->cell_padding_right = value;
+//        break;
+//    case FT_OPT_EMPTY_STR_HEIGHT:
+//            table->options->cell_empty_string_height = value;
+//        break;
+//    default:
+//        // todo
+//        exit(22);
+//    }
+//    return F_SUCCESS;
 
-}
+//}
 
 
 
