@@ -171,7 +171,10 @@ int FT_HDR_PRINTF(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ..
     if (result >= 0 && table->rows) {
         int sz = vector_size(table->rows);
         if (sz != 0) {
-            set_row_type(*(fort_row_t**)vector_at(table->rows, sz - 1), Header);
+//            set_row_type(*(fort_row_t**)vector_at(table->rows, sz - 1), Header);
+            int ignore = ft_set_cell_option(table, sz - 1, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+            (void)ignore;
+            assert(ignore == F_SUCCESS);
         }
     }
     return result;
@@ -189,7 +192,10 @@ int FT_HDR_PRINTF_LN(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt,
     if (result >= 0 && table->rows) {
         int sz = vector_size(table->rows);
         if (sz != 0) {
-            set_row_type(*(fort_row_t**)vector_at(table->rows, sz - 1), Header);
+//            set_row_type(*(fort_row_t**)vector_at(table->rows, sz - 1), Header);
+            int ignore = ft_set_cell_option(table, sz - 1, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+            (void)ignore;
+            assert(ignore == F_SUCCESS);
         }
     }
     if (result >= 0) {
@@ -251,7 +257,32 @@ int ft_write_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_cont
     return status;
 }
 
-FORT_EXTERN int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...)
+int ft_wwrite(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_content)
+{
+    assert(table);
+    string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
+    if (str_buffer == NULL)
+        return F_ERROR;
+
+    int status = fill_buffer_from_wstring(str_buffer, cell_content);
+    if (IS_SUCCESS(status)) {
+        table->cur_col++;
+    }
+    return status;
+}
+
+int ft_wwrite_ln(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_content)
+{
+    assert(table);
+    int status = ft_wwrite(table, cell_content);
+    if (IS_SUCCESS(status)) {
+        ft_ln(table);
+    }
+    return status;
+}
+
+
+int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...)
 {
     assert(table);
     int status = ft_write(table, cell_content);
@@ -271,7 +302,7 @@ FORT_EXTERN int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FOR
     return status;
 }
 
-FORT_EXTERN int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...)
+int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...)
 {
     assert(table);
     int status = ft_write(table, cell_content);
@@ -284,6 +315,51 @@ FORT_EXTERN int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* 
     for (size_t i = 0; i < n; ++i) {
         const char *cell = va_arg(va, const char*);
         status = ft_write(table, cell);
+        if (IS_ERROR(status)) {
+            va_end(va);
+            return status;
+        }
+    }
+    va_end(va);
+
+    ft_ln(table);
+    return status;
+}
+
+
+int ft_nwwrite(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRICT cell_content, ...)
+{
+    assert(table);
+    int status = ft_wwrite(table, cell_content);
+    if (IS_ERROR(status))
+        return status;
+
+    va_list va;
+    va_start(va, cell_content);
+    --n;
+    for (size_t i = 0; i < n; ++i) {
+        const wchar_t *cell = va_arg(va, const wchar_t*);
+        status = ft_wwrite(table, cell);
+        if (IS_ERROR(status))
+            return status;
+    }
+    va_end(va);
+    return status;
+}
+
+int ft_nwwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRICT cell_content, ...)
+{
+    assert(table);
+    int status = ft_wwrite(table, cell_content);
+    if (IS_ERROR(status))
+        return status;
+
+    va_list va;
+    va_start(va, cell_content);
+    --n;
+    for (size_t i = 0; i < n; ++i) {
+        const wchar_t *cell = va_arg(va, const wchar_t*);
+        status = ft_wwrite(table, cell);
         if (IS_ERROR(status)) {
             va_end(va);
             return status;
@@ -396,6 +472,16 @@ const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
     } \
     dev += k;
 
+    typedef char char_type;
+    const char_type *empty_string = "";
+    const enum str_buf_type buf_type = CharBuf;
+#define cur_F_STRDUP F_STRDUP
+    int (*snprintf_row_)(const fort_row_t *, char *, size_t, size_t *, size_t, size_t, const context_t *) = snprintf_row;
+    int (*print_row_separator_)(char *, size_t ,
+                                   const size_t *, size_t ,
+                                   const fort_row_t *, const fort_row_t *,
+                                   enum HorSeparatorPos , const separator_t *,
+                                   const context_t *) = print_row_separator;
     assert(table);
 
     /* Determing size of table string representation */
@@ -409,16 +495,16 @@ const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
 
     /* Allocate string buffer for string representation */
     if (table->conv_buffer == NULL) {
-        ((FTABLE *)table)->conv_buffer = create_string_buffer(sz);
+        ((FTABLE *)table)->conv_buffer = create_string_buffer(sz, buf_type);
         if (table->conv_buffer == NULL)
             return NULL;
     }
-    while (table->conv_buffer->str_sz < sz) {
+    while (string_buffer_capacity(table->conv_buffer) < sz) {// table->conv_buffer->str_sz < sz) {
         if (IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
             return NULL;
         }
     }
-    char *buffer = table->conv_buffer->str;
+    char_type *buffer = buffer_get_data(table->conv_buffer);
 
 
     size_t cols = 0;
@@ -428,7 +514,7 @@ const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
     status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
 
     if (rows == 0)
-        return F_STRDUP("");
+        return cur_F_STRDUP(empty_string);
 
     if (IS_ERROR(status))
         return NULL;
@@ -446,14 +532,108 @@ const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
         cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
         cur_row = *(fort_row_t**)vector_at(table->rows, i);
         enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
-        CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
         context.row = i;
-        CHECK_RESULT_AND_MOVE_DEV(snprintf_row(cur_row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], &context));
+        CHECK_RESULT_AND_MOVE_DEV(print_row_separator_(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
+        CHECK_RESULT_AND_MOVE_DEV(snprintf_row_(cur_row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], &context));
         prev_row = cur_row;
     }
     cur_row = NULL;
     cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-    CHECK_RESULT_AND_MOVE_DEV(print_row_separator(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
+    CHECK_RESULT_AND_MOVE_DEV(print_row_separator_(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
+
+
+    F_FREE(col_width_arr);
+    F_FREE(row_height_arr);
+    return buffer;
+
+clear:
+    F_FREE(col_width_arr);
+    F_FREE(row_height_arr);
+    F_FREE(buffer);
+    return NULL;
+
+#undef cur_F_STRDUP
+#undef CHECK_RESULT_AND_MOVE_DEV
+}
+
+
+const wchar_t* ft_to_wstring(const FTABLE *FORT_RESTRICT table)
+{
+#define CHECK_RESULT_AND_MOVE_DEV(statement) \
+    k = statement; \
+    if (k < 0) {\
+        goto clear; \
+    } \
+    dev += k;
+
+    typedef wchar_t char_type;
+    const char_type *empty_string = L"";
+    const enum str_buf_type buf_type = WCharBuf;
+#define cur_F_STRDUP F_WCSDUP
+    int (*snprintf_row_)(const fort_row_t *, wchar_t *, size_t, size_t *, size_t, size_t, const context_t *) = wsnprintf_row;
+    int (*print_row_separator_)(wchar_t *, size_t ,
+                                   const size_t *, size_t ,
+                                   const fort_row_t *, const fort_row_t *,
+                                   enum HorSeparatorPos , const separator_t *,
+                                   const context_t *) = wprint_row_separator;
+    assert(table);
+
+    /* Determing size of table string representation */
+    size_t height = 0;
+    size_t width = 0;
+    int status = table_geometry(table, &height, &width);
+    if (IS_ERROR(status)) {
+        return NULL;
+    }
+    size_t sz = height * width + 1;
+
+    /* Allocate string buffer for string representation */
+    if (table->conv_buffer == NULL) {
+        ((FTABLE *)table)->conv_buffer = create_string_buffer(sz, buf_type);
+        if (table->conv_buffer == NULL)
+            return NULL;
+    }
+    while (string_buffer_capacity(table->conv_buffer) < sz) {// table->conv_buffer->str_sz < sz) {
+        if (IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
+            return NULL;
+        }
+    }
+    char_type *buffer = buffer_get_data(table->conv_buffer);
+
+
+    size_t cols = 0;
+    size_t rows = 0;
+    size_t *col_width_arr = NULL;
+    size_t *row_height_arr = NULL;
+    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
+
+    if (rows == 0)
+        return cur_F_STRDUP(empty_string);
+
+    if (IS_ERROR(status))
+        return NULL;
+
+    int dev = 0;
+    int k = 0;
+    context_t context;
+    context.table_options = (table->options ? table->options : &g_table_options);
+    fort_row_t *prev_row = NULL;
+    fort_row_t *cur_row = NULL;
+    separator_t *cur_sep = NULL;
+    size_t sep_size = vector_size(table->separators);
+    size_t i = 0;
+    for (i = 0; i < rows; ++i) {
+        cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+        cur_row = *(fort_row_t**)vector_at(table->rows, i);
+        enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
+        context.row = i;
+        CHECK_RESULT_AND_MOVE_DEV(print_row_separator_(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
+        CHECK_RESULT_AND_MOVE_DEV(snprintf_row_(cur_row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], &context));
+        prev_row = cur_row;
+    }
+    cur_row = NULL;
+    cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+    CHECK_RESULT_AND_MOVE_DEV(print_row_separator_(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
 
 
     F_FREE(col_width_arr);
@@ -468,7 +648,6 @@ clear:
 
 #undef CHECK_RESULT_AND_MOVE_DEV
 }
-
 
 
 

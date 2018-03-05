@@ -8,11 +8,11 @@
 struct fort_row;
 typedef struct fort_row fort_row_t;
 
-enum RowType
-{
-    Common,
-    Header
-};
+//enum RowType
+//{
+//    Common,
+//    Header
+//};
 
 
 fort_row_t * create_row();
@@ -36,6 +36,12 @@ int print_row_separator(char *buffer, size_t buffer_sz,
                                enum HorSeparatorPos separatorPos, const separator_t *sep,
                                const context_t *context);
 
+int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
+                               const size_t *col_width_arr, size_t cols,
+                               const fort_row_t *upper_row, const fort_row_t *lower_row,
+                               enum HorSeparatorPos separatorPos, const separator_t *sep,
+                               const context_t *context);
+
 
 
 
@@ -44,7 +50,9 @@ fort_row_t* create_row_from_fmt_string(const char* FORT_RESTRICT fmt, va_list *v
 
 int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                         size_t row_height, const context_t *context);
+int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
+                        size_t row_height, const context_t *context);
 
-void set_row_type(fort_row_t *row, enum RowType type);
+//void set_row_type(fort_row_t *row, enum RowType type);
 
 #endif // ROW_H

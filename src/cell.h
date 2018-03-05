@@ -25,6 +25,8 @@ int hint_height_cell(const fort_cell_t *cell, const context_t *context);
 //static int lines_number_cell(fort_cell_t *cell);
 
 int cell_printf(fort_cell_t *cell, size_t row, size_t column, char *buf, size_t buf_len, const context_t *context);
+int cell_wprintf(fort_cell_t *cell, size_t row, size_t column, wchar_t *buf, size_t buf_len, const context_t *context);
+
 
 fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str);
 

@@ -88,6 +88,11 @@ SOFTWARE.
 
 
 /*
+ *  Wchar support
+ */
+#define FORT_HAVE_WCHAR
+
+/*
  * Helper macros
  */
 
@@ -98,6 +103,12 @@ SOFTWARE.
 
 
 static inline int fort_check_if_string_helper(const char*str)
+{
+    (void)str;
+    return 0;
+}
+
+static inline int fort_check_if_wstring_helper(const wchar_t*str)
 {
     (void)str;
     return 0;
@@ -118,44 +129,47 @@ static inline int fort_check_if_string_helper(const char*str)
 #define PP_NARG(...) \
     PP_NARG_(__VA_ARGS__,PP_RSEQ_N())
 
-#define CHECK_IF_ARG_IS_STRING_32(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_31(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_31(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_30(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_30(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_29(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_29(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_28(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_28(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_27(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_27(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_26(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_26(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_25(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_25(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_24(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_24(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_23(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_23(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_22(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_22(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_21(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_21(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_20(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_20(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_19(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_19(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_18(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_18(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_17(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_17(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_16(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_16(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_15(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_15(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_14(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_14(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_13(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_13(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_12(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_12(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_11(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_11(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_10(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_10(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_9(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_9(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_8(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_8(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_7(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_7(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_6(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_6(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_5(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_5(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_4(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_4(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_3(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_3(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_2(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_2(arg,...) (fort_check_if_string_helper(arg),CHECK_IF_ARG_IS_STRING_1(__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_1(arg) (fort_check_if_string_helper(arg))
-
-#define CHECK_IF_ARGS_ARE_STRINGS__(func, ...) func(__VA_ARGS__)
-#define CHECK_IF_ARGS_ARE_STRINGS_(basis, n, ...) CHECK_IF_ARGS_ARE_STRINGS__(STR_2_CAT_(basis, n), __VA_ARGS__)
-#define CHECK_IF_ARGS_ARE_STRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(CHECK_IF_ARG_IS_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
 
 
+#define CHECK_IF_ARG_IS_STRING_32(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_31(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_31(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_30(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_30(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_29(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_29(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_28(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_28(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_27(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_27(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_26(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_26(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_25(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_25(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_24(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_24(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_23(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_23(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_22(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_22(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_21(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_21(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_20(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_20(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_19(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_19(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_18(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_18(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_17(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_17(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_16(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_16(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_15(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_15(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_14(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_14(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_13(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_13(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_12(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_12(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_11(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_11(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_10(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_10(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_9(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_9(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_8(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_8(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_7(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_7(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_6(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_6(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_5(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_5(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_4(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_4(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_3(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_3(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_2(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_2(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_1(checker,__VA_ARGS__))
+#define CHECK_IF_ARG_IS_STRING_1(checker,arg) (checker(arg))
+
+#define CHECK_IF_ARGS_ARE_STRINGS__(checker,func, ...) func(checker,__VA_ARGS__)
+#define CHECK_IF_ARGS_ARE_STRINGS_(checker,basis, n, ...) CHECK_IF_ARGS_ARE_STRINGS__(checker,STR_2_CAT_(basis, n), __VA_ARGS__)
+#define CHECK_IF_ARGS_ARE_STRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(fort_check_if_string_helper,CHECK_IF_ARG_IS_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
+#ifdef FORT_HAVE_WCHAR
+#define CHECK_IF_ARGS_ARE_WSTRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(fort_check_if_wstring_helper,CHECK_IF_ARG_IS_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
+#endif
 
 /*
  * libfort structures and functions declarations
@@ -202,17 +216,25 @@ FORT_EXTERN int ft_hdr_printf_ln_impl(FTABLE *FORT_RESTRICT table, const char* F
 FORT_EXTERN int ft_write(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content);
 FORT_EXTERN int ft_write_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content);
 
-
-
-
 #define FT_NWRITE(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-
 #define FT_NWRITE_LN(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-
 FORT_EXTERN int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...);
 FORT_EXTERN int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...);
+
+
+#ifdef FORT_HAVE_WCHAR
+FORT_EXTERN int ft_wwrite(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_content);
+FORT_EXTERN int ft_wwrite_ln(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_content);
+
+#define FT_NWWRITE(table, ...)\
+    (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
+#define FT_NWWRITE_LN(table, ...)\
+    (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
+FORT_EXTERN int ft_nwwrite(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRICT cell_content, ...);
+FORT_EXTERN int ft_nwwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRICT cell_content, ...);
+#endif
 
 
 
@@ -238,6 +260,7 @@ FORT_EXTERN int ft_add_separator(FTABLE *FORT_RESTRICT table);
 
 
 FORT_EXTERN const char* ft_to_string(const FTABLE *FORT_RESTRICT table);
+FORT_EXTERN const wchar_t* ft_to_wstring(const FTABLE *FORT_RESTRICT table);
 //FORT_EXTERN ssize_t ft_n_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
 
 

@@ -791,6 +791,7 @@ void test_table_options(void **state)
                 "|  3  |  4  | 55  | 67  |\n"
                 "|     |     |     |     |\n"
                 "+-----+-----+-----+-----+\n";
+        //        fprintf(stderr, "content:\n%s", table_str);
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
         ft_destroy_table(table);

@@ -23,6 +23,8 @@ struct fort_cell_options g_default_cell_option =
     1,      /* cell_padding_left        */
     1,      /* cell_padding_right       */
     1,      /* cell_empty_string_height */
+
+    Common, /* row_type */
 };
 
 static int get_option_value_if_exists_otherwise_default(const struct fort_cell_options *cell_opts, uint32_t option)
@@ -46,6 +48,8 @@ static int get_option_value_if_exists_otherwise_default(const struct fort_cell_o
             return cell_opts->cell_padding_right;
         case FT_OPT_EMPTY_STR_HEIGHT:
             return cell_opts->cell_empty_string_height;
+        case FT_OPT_ROW_TYPE:
+            return cell_opts->row_type;
         default:
             // todo: implement later
             exit(333);
@@ -164,6 +168,8 @@ static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t opt
         opt->cell_padding_right = value;
     } else if (OPTION_IS_SET(option, FT_OPT_EMPTY_STR_HEIGHT)) {
         opt->cell_empty_string_height = value;
+    } else if (OPTION_IS_SET(option, FT_OPT_ROW_TYPE)) {
+        opt->row_type = value;
     }
 
     return F_SUCCESS;

@@ -12,6 +12,12 @@ enum TextAlignment
     RightAligned
 };
 
+enum RowType
+{
+    Common,
+    Header
+};
+
 
 struct fort_column_options
 {
@@ -41,6 +47,7 @@ typedef struct vector vector_t;
 #define FT_OPT_LEFT_PADDING ((uint32_t)(0x01U << (4)))
 #define FT_OPT_RIGHT_PADDING ((uint32_t)(0x01U << (5)))
 #define FT_OPT_EMPTY_STR_HEIGHT ((uint32_t)(0x01U << (6)))
+#define FT_OPT_ROW_TYPE ((uint32_t)(0x01U << (7)))
 
 #define OPTION_IS_SET(ft_opts, option) ((ft_opts) & (option))
 #define OPTION_SET(ft_opts, option) ((ft_opts) |=(option))
@@ -58,6 +65,7 @@ struct fort_cell_options
     int cell_padding_left;
     int cell_padding_right;
     int cell_empty_string_height;
+    enum RowType row_type;
 };
 
 typedef struct fort_cell_options fort_cell_options_t;
