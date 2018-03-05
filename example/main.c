@@ -39,7 +39,10 @@ int main()
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, CenterAligned);
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
 
-    ft_hdr_printf_ln(table, "#|Planet|Avg. speed");
+//    ft_hdr_printf_ln(table, "#|Planet|Avg. speed");
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+    ft_printf_ln(table, "%d|%s|%5.2f km/s", 1, "Mercury", 47.362);
+
     ft_printf_ln(table, "%d|%s|%5.2f km/s", 1, "Mercury", 47.362);
     ft_printf_ln(table, "%d|%s|%5.2f km/s", 2, "Venus", 35.02);
     ft_printf_ln(table, "%d|%s|%5.2f km/s", 3, "Earth", 29.78);
@@ -54,7 +57,10 @@ int main()
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, CenterAligned);
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
 
-    ft_hdr_printf_ln(table, "Rank|Title|Year|Rating");
+//    ft_hdr_printf_ln(table, "Rank|Title|Year|Rating");
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+    ft_printf_ln(table, "Rank|Title|Year|Rating");
+
     FT_NWRITE_LN(table, "1", "The Shawshank Redemption", "1994", "9.5");
     FT_NWRITE_LN(table, "2", "12 Angry Men", "1957", "8.8");
     FT_NWRITE_LN(table, "3", "2001: A Space Odyssey", "1968", "8.5");
@@ -71,7 +77,10 @@ int main()
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, LeftAligned);
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, CenterAligned);
 
-    ft_hdr_printf_ln(table, "Commodity|Farm price|Avg. spread");
+//    ft_hdr_printf_ln(table, "Commodity|Farm price|Avg. spread");
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+    ft_printf_ln(table, "Commodity|Farm price|Avg. spread");
+
     const char *row1[] = {"Potatoes", "$1.60", "200.94%"};
     const char *row2[] = {"Carrots", "$0.32 ", "190.63%"};
     ft_row_write_ln(table, 3, row1);
@@ -87,7 +96,9 @@ int main()
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, LeftAligned);
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, CenterAligned);
 
-    ft_hdr_printf_ln(table, "No.|Name|Avg. Mark");
+//    ft_hdr_printf_ln(table, "No.|Name|Avg. Mark");
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+    ft_printf_ln(table, "No.|Name|Avg. Mark");
     const char *ctab[2][3] = {
             {"1", "Joe Public", "3.14"},
             {"2", "John Doe", "4.50"}
@@ -104,7 +115,9 @@ int main()
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, CenterAligned);
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
 
-    ft_hdr_printf_ln(table, "No.|Name|Avg. Mark");
+//    ft_hdr_printf_ln(table, "No.|Name|Avg. Mark");
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+    ft_printf_ln(table, "No.|Name|Avg. Mark");
     const char **tab[2] = {
         row1,
         row2

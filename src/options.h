@@ -163,10 +163,7 @@ extern fort_table_options_t g_table_options;
 fort_table_options_t* create_table_options();
 fort_table_options_t* copy_table_options(const fort_table_options_t *option);
 void destroy_table_options(fort_table_options_t* options);
-//fort_status_t fort_options_set_column_min_width(fort_table_options_t *options, size_t column, size_t width);
-//fort_status_t fort_options_set_column_alignment(fort_table_options_t *options, size_t column, enum TextAlignment al);
-//int fort_options_column_width(const fort_table_options_t *options, size_t column);
-//int fort_options_column_alignment(const fort_table_options_t *options, size_t column);
+
 
 
 #endif // OPTIONS_H

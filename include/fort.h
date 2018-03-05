@@ -190,25 +190,16 @@ FORT_EXTERN void ft_ln(FTABLE *FORT_RESTRICT table);
 #if defined(FORT_CLANG_COMPILER) || defined(FORT_GCC_COMPILER)
 FORT_EXTERN int ft_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 FORT_EXTERN int ft_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_hdr_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_hdr_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #else
 
-
 FORT_EXTERN int ft_printf_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 FORT_EXTERN int ft_printf_ln_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_hdr_printf_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_hdr_printf_ln_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)  FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #define ft_printf(table, ...) \
     (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_impl(table, __VA_ARGS__))
 #define ft_printf_ln(table, ...) \
     (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_ln_impl(table, __VA_ARGS__))
-#define ft_hdr_printf(table, ...) \
-    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_hdr_printf_impl(table, __VA_ARGS__))
-#define ft_hdr_printf_ln(table, ...) \
-    (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_hdr_printf_ln_impl(table, __VA_ARGS__))
 #endif
 
 

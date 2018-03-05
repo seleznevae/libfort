@@ -10,37 +10,6 @@
 #include "vector.h"
 
 
-//fort_table_options_t test_table_opts = {
-//    1,      /* cell_padding_top         */
-//    1,      /* cell_padding_bottom      */
-//    1,      /* cell_padding_left        */
-//    1,      /* cell_padding_right       */
-//    1,      /* cell_empty_string_height */
-
-//    /* border_chars */
-//    {
-//     '+', '-', '+', '+',
-//     '|', '|', '|',
-//     '+', '-', '+', '+',
-//     '+', '-', '+', '+'
-//    },
-
-//    /* header_border_chars */
-//    {
-//    '+', '-', '+', '+',
-//    '|', '|', '|',
-//    '+', '-', '+', '+',
-//    '+', '-', '+', '+'
-//    },
-
-//    /* separator_chars */
-//    {
-//    '+', '=', '+', '+',
-//    },
-
-//    NULL,     /* col_options */
-//};
-
 int set_test_options_for_table(FTABLE *table)
 {
     assert(table);
@@ -210,7 +179,9 @@ void test_table_basic(void **state)
 //        ft_set_table_options(table, &test_table_opts);
         assert_true( set_test_options_for_table(table) == F_SUCCESS);
 
-        int n = ft_hdr_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        int n = ft_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+
         assert_true( n == 4 );
         n = ft_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
@@ -248,7 +219,9 @@ void test_table_basic(void **state)
 //        ft_set_table_options(table, &test_table_opts);
         assert_true( set_test_options_for_table(table) == F_SUCCESS);
 
-        int n = ft_hdr_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        int n = ft_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+
         assert_true( n == 4 );
         n = ft_printf_ln(table, "%c|%s|%f|%d", 'c', "234", 3.14, 3);
         assert_true( n == 4 );
@@ -284,7 +257,9 @@ void test_table_basic(void **state)
 //        ft_set_table_options(table, &test_table_opts);
         assert_true( set_test_options_for_table(table) == F_SUCCESS);
 
-        int n = ft_hdr_printf_ln(table, "||%s|%f", "234", 3.14);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        int n = ft_printf_ln(table, "||%s|%f", "234", 3.14);
+
         assert_true( n == 4 );
         n = ft_printf_ln(table, "%c|%s|%f", 'c', "234", 3.14);
         assert_true( n == 3 );
@@ -320,7 +295,9 @@ void test_table_basic(void **state)
 //        ft_set_table_options(table, &test_table_opts);
         assert_true( set_test_options_for_table(table) == F_SUCCESS);
 
-        int n = ft_hdr_printf_ln(table, "|||");
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        int n = ft_printf_ln(table, "|||");
+
         assert_true( n == 4 );
         n = ft_printf_ln(table, "|||");
         assert_true( n == 4 );
@@ -367,7 +344,9 @@ FTABLE *create_test_int_table(int set_test_opts)
 
     assert_true (table != NULL);
 
-    int n = ft_hdr_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+    int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+
     assert_true( n == 4 );
 
     assert(ft_write(table, "3") == F_SUCCESS);
@@ -429,7 +408,9 @@ void test_table_options(void **state)
         table = create_test_int_table(0);
         ft_add_separator(table);
 
-        int n = ft_hdr_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+
         assert_true( n == 4 );
 
         const char *table_str = ft_to_string(table);
@@ -802,7 +783,9 @@ void test_table_options(void **state)
 
         table = ft_create_table();
 
-        int n = ft_hdr_printf_ln(table, "%d|%c|%s|%f", 4, 'c', "234", 3.14);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        int n = ft_printf_ln(table, "%d|%c|%s|%f", 4, 'c', "234", 3.14);
+
         assert_true( n == 4 );
         n = FT_NWRITE_LN(table, "5", "c", "234\n12", "3.140000");
         assert_true( n == F_SUCCESS );

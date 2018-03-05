@@ -150,59 +150,12 @@ clear:
 #if defined(FORT_CLANG_COMPILER) || defined(FORT_GCC_COMPILER)
 #define FT_PRINTF ft_printf
 #define FT_PRINTF_LN ft_printf_ln
-#define FT_HDR_PRINTF ft_hdr_printf
-#define FT_HDR_PRINTF_LN ft_hdr_printf_ln
 #else
 #define FT_PRINTF ft_printf_impl
 #define FT_PRINTF_LN ft_printf_ln_impl
-#define FT_HDR_PRINTF ft_hdr_printf_impl
-#define FT_HDR_PRINTF_LN ft_hdr_printf_ln_impl
 #endif
 
-int FT_HDR_PRINTF(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
-{
-    assert(table);
-    assert(fmt);
 
-    va_list va;
-    va_start(va, fmt);
-    int result = ft_row_printf_impl(table, table->cur_row, fmt, &va);
-    va_end(va);
-    if (result >= 0 && table->rows) {
-        int sz = vector_size(table->rows);
-        if (sz != 0) {
-//            set_row_type(*(fort_row_t**)vector_at(table->rows, sz - 1), Header);
-            int ignore = ft_set_cell_option(table, sz - 1, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
-            (void)ignore;
-            assert(ignore == F_SUCCESS);
-        }
-    }
-    return result;
-}
-
-int FT_HDR_PRINTF_LN(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
-{
-    assert(table);
-    assert(fmt);
-
-    va_list va;
-    va_start(va, fmt);
-    int result = ft_row_printf_impl(table, table->cur_row, fmt, &va);
-    va_end(va);
-    if (result >= 0 && table->rows) {
-        int sz = vector_size(table->rows);
-        if (sz != 0) {
-//            set_row_type(*(fort_row_t**)vector_at(table->rows, sz - 1), Header);
-            int ignore = ft_set_cell_option(table, sz - 1, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
-            (void)ignore;
-            assert(ignore == F_SUCCESS);
-        }
-    }
-    if (result >= 0) {
-        ft_ln(table);
-    }
-    return result;
-}
 
 int FT_PRINTF(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
 {
