@@ -16,13 +16,16 @@ int main()
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, CenterAligned);
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
 
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+    FT_NWWRITE_LN(table, L"Rank", L"Title", L"Year", L"Rating");
+
     FT_NWWRITE_LN(table, L"1", L"Побег из Шоушенка", L"1994", L"9.5");
     FT_NWWRITE_LN(table, L"2", L"12 разгневанных мужчин", L"1957", L"8.8");
     FT_NWWRITE_LN(table, L"3", L"Космическая одиссея 2001 года", L"1968", L"8.5");
     FT_NWWRITE_LN(table, L"4", L"Бегущий по лезвию", L"1982", L"8.1");
 
-    fwprintf(stderr, L"Table:\n");
-    fwprintf(stderr, L"%ls\n", ft_to_wstring(table));
+    fwprintf(stderr, L"Table:\n%ls\n ", ft_to_wstring(table));
+
     ft_destroy_table(table);
 #endif
 
