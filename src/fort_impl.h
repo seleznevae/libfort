@@ -114,4 +114,4 @@ int snprint_n_chars(char *buf, size_t length, size_t n, char ch);
 int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);
 
 
-#endif // FORT_IMPL_H
+#endif /* FORT_IMPL_H */

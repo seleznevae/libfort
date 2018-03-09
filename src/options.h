@@ -141,21 +141,14 @@ enum SeparatorItemPos
 
 struct fort_table_options
 {
-//    int cell_padding_top;
-//    int cell_padding_bottom;
-//    int cell_padding_left;
-//    int cell_padding_right;
-//    int cell_empty_string_height;
-
     char border_chars[BorderItemPosSize];
     char header_border_chars[BorderItemPosSize];
     char separator_chars[SepratorItemPosSize];
-//    vector_t *col_options;
 
     fort_cell_opt_container_t * cell_options;
 };
 typedef struct fort_table_options fort_table_options_t;
-//typedef fort_table_options_t context_t;
+/*typedef fort_table_options_t context_t;*/
 extern fort_table_options_t g_table_options;
 
 
@@ -166,4 +159,4 @@ void destroy_table_options(fort_table_options_t* options);
 
 
 
-#endif // OPTIONS_H
+#endif /* OPTIONS_H */

@@ -8,11 +8,13 @@
 struct fort_row;
 typedef struct fort_row fort_row_t;
 
-//enum RowType
-//{
-//    Common,
-//    Header
-//};
+/*
+enum RowType
+{
+    Common,
+    Header
+};
+*/
 
 
 fort_row_t * create_row();
@@ -53,6 +55,5 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
 int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                         size_t row_height, const context_t *context);
 
-//void set_row_type(fort_row_t *row, enum RowType type);
 
-#endif // ROW_H
+#endif /* ROW_H */

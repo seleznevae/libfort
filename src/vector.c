@@ -95,7 +95,8 @@ size_t vector_index_of(const vector_t* vector, const void *item)
     assert(vector);
     assert(item);
 
-    for (size_t i = 0; i < vector->m_size; ++i) {
+    size_t i = 0;
+    for (i = 0; i < vector->m_size; ++i) {
         void *data_pos = vector->m_data + i * vector->m_item_size;
         if (memcmp(data_pos, item, vector->m_item_size) == 0) {
             return i;

@@ -61,7 +61,8 @@ int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
     if (status < 0)
         return status;
 
-    for (size_t i = 0; i < n; ++i) {
+    size_t i = 0;
+    for (i = 0; i < n; ++i) {
         *buf = ch;
         buf++;
     }
@@ -81,7 +82,8 @@ int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
     if (status < 0)
         return status;
 
-    for (size_t i = 0; i < n; ++i) {
+    size_t i = 0;
+    for (i = 0; i < n; ++i) {
         *buf = ch;
         buf++;
     }

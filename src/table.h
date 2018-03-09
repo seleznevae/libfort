@@ -16,7 +16,7 @@ struct fort_table
     vector_t *separators;
 };
 
-static inline
+static FORT_INLINE
 separator_t *create_separator(int enabled)
 {
     separator_t *res = F_CALLOC(1, sizeof(separator_t));
@@ -26,7 +26,7 @@ separator_t *create_separator(int enabled)
     return res;
 }
 
-static inline
+static FORT_INLINE
 void destroy_separator(separator_t *sep)
 {
     F_FREE(sep);
@@ -49,4 +49,4 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
                                                   size_t **row_height_arr_p, size_t *row_height_arr_sz);
 fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t *width);
 
-#endif // TABLE_H
+#endif /* TABLE_H */

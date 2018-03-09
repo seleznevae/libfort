@@ -24,7 +24,7 @@ fort_cell_t * create_cell()
         return NULL;
     }
     cell->options = NULL;
-//    init_cell_options(&(cell->options));
+/*    init_cell_options(&(cell->options)); */
     return cell;
 }
 
@@ -76,21 +76,23 @@ int hint_height_cell(const fort_cell_t *cell, const context_t *context)
  * Returns number of lines in cell. If cell is empty or
  * contains empty string, then 0 is returned.
  */
-//static int lines_number_cell(fort_cell_t *cell)
-//{
-//    assert(cell);
-//    if (cell->str_buffer == NULL || cell->str_buffer->str == NULL || cell->str_buffer->str[0] == '\0') {
-//        return 0;
-//    }
+/*
+static int lines_number_cell(fort_cell_t *cell)
+{
+    assert(cell);
+    if (cell->str_buffer == NULL || cell->str_buffer->str == NULL || cell->str_buffer->str[0] == '\0') {
+        return 0;
+    }
 
-//    int result = 0;
-//    char *pos = cell->str_buffer->str;
-//    while ((pos = strchr(pos, '\n')) != NULL) {
-//        result++;
-//        pos++;
-//    }
-//    return result + 1;
-//}
+    int result = 0;
+    char *pos = cell->str_buffer->str;
+    while ((pos = strchr(pos, '\n')) != NULL) {
+        result++;
+        pos++;
+    }
+    return result + 1;
+}
+*/
 
 int cell_printf(fort_cell_t *cell, size_t row, size_t column, char *buf, size_t buf_len, const context_t *context)
 {

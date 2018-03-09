@@ -29,9 +29,10 @@ extern void* vector_at(vector_t*, size_t index);
 
 
 #define FOR_EACH_(type, item, vector, index_name) \
-    for (size_t index_name = 0; (index_name < vector_size(vector)) ? ((item = *(type*)vector_at(vector, index_name)), 1) : 0;  ++index_name)
+    size_t index_name = 0; \
+    for (index_name = 0; (index_name < vector_size(vector)) ? ((item = *(type*)vector_at(vector, index_name)), 1) : 0;  ++index_name)
 
 #define FOR_EACH(type, item, vector) \
     FOR_EACH_(type, item, vector, UNIQUE_NAME(i))
 
-#endif // VECTOR_H
+#endif /* VECTOR_H */

@@ -46,24 +46,38 @@ SOFTWARE.
 #define FORT_UNDEFINED_COMPILER
 #endif
 
+
+
 /*
  * Declare restrict
  */
-//#if defined(__cplusplus)
-//#if defined(FORT_CLANG_COMPILER)
-//#define FORT_RESTRICT __restrict__
-//#else
-//#define FORT_RESTRICT __restrict
-//#endif /* if defined(FORT_CLANG_COMPILER) */
-//#else
-//#if __STDC_VERSION__ < 199901L
-//#define FORT_RESTRICT restrict
-//#else
-//#define FORT_RESTRICT
-//#endif /* __STDC_VERSION__ < 199901L */
-//#endif /* if defined(__cplusplus) */
-
+#if defined(__cplusplus)
+#if defined(FORT_CLANG_COMPILER)
+#define FORT_RESTRICT __restrict__
+#else
+#define FORT_RESTRICT __restrict
+#endif /* if defined(FORT_CLANG_COMPILER) */
+#else
+#if __STDC_VERSION__ < 199901L
 #define FORT_RESTRICT
+#else
+#define FORT_RESTRICT restrict
+#endif /* __STDC_VERSION__ < 199901L */
+#endif /* if defined(__cplusplus) */
+
+/* #define FORT_RESTRICT*/
+
+
+/*
+ * Declare restrict
+ */
+#if defined(__cplusplus)
+#define FORT_INLINE inline
+#else
+#define FORT_INLINE __inline
+#endif /* if defined(__cplusplus) */
+
+/* #define FORT_RESTRICT*/
 
 
 /*
@@ -97,7 +111,6 @@ SOFTWARE.
 #define STRING2(x) #x
 #define STRING(x) STRING2(x)
 
-#pragma message(STRING(FORT_RESTRICT))
 
 /*
  *  Wchar support
@@ -114,13 +127,13 @@ SOFTWARE.
     STR_2_CAT_(arg1, arg2)
 
 
-static inline int fort_check_if_string_helper(const char*str)
+static FORT_INLINE int fort_check_if_string_helper(const char*str)
 {
     (void)str;
     return 0;
 }
 
-static inline int fort_check_if_wstring_helper(const wchar_t*str)
+static FORT_INLINE int fort_check_if_wstring_helper(const wchar_t*str)
 {
     (void)str;
     return 0;
@@ -264,7 +277,7 @@ FORT_EXTERN int ft_add_separator(FTABLE *FORT_RESTRICT table);
 
 FORT_EXTERN const char* ft_to_string(const FTABLE *FORT_RESTRICT table);
 FORT_EXTERN const wchar_t* ft_to_wstring(const FTABLE *FORT_RESTRICT table);
-//FORT_EXTERN ssize_t ft_n_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);
+/*FORT_EXTERN ssize_t ft_n_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);*/
 
 
 
@@ -293,4 +306,4 @@ FORT_EXTERN int ft_set_cell_option(FTABLE * FORT_RESTRICT table, unsigned row, u
 
 FORT_END_DECLS
 
-#endif // LIBFORT_H
+#endif /* LIBFORT_H */

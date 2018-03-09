@@ -45,4 +45,4 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, size_t table_colu
 
 
 
-#endif // STRING_BUFFER_H
+#endif /* STRING_BUFFER_H */

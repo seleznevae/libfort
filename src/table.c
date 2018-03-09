@@ -114,9 +114,11 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
 
     context_t context;
     context.table_options = (table->options ? table->options : &g_table_options);
-    for (size_t col = 0; col < cols; ++col) {
+    size_t col = 0;
+    for (col = 0; col < cols; ++col) {
         col_width_arr[col] = 0;
-        for (size_t row = 0; row < rows; ++row) {
+        size_t row = 0;
+        for (row = 0; row < rows; ++row) {
             const fort_row_t *row_p = get_row_c(table, row);
             const fort_cell_t *cell = get_cell_c(row_p, col);
             context.column = col;
@@ -132,11 +134,13 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
      * At the moment min width includes paddings. Maybe it is better that min width weren't include
      * paddings but be min width of the cell content without padding
      */
-//    if (table->options) {
-//        for (size_t i = 0; i < cols; ++i) {
-//            col_width_arr[i] = MAX((int)col_width_arr[i], fort_options_column_width(table->options, i));
-//        }
-//    }
+    /*
+    if (table->options) {
+        for (size_t i = 0; i < cols; ++i) {
+            col_width_arr[i] = MAX((int)col_width_arr[i], fort_options_column_width(table->options, i));
+        }
+    }
+    */
 
     *col_width_arr_p = col_width_arr;
     *col_width_arr_sz = cols;
@@ -164,14 +168,15 @@ fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t *width)
     if (IS_ERROR(status))
         return status;
 
-    *width = 1 + (cols == 0 ? 1 : cols) + 1; // for boundaries (that take 1 symbol) + newline
-    for (size_t i = 0; i < cols; ++i) {
+    *width = 1 + (cols == 0 ? 1 : cols) + 1; /* for boundaries (that take 1 symbol) + newline   */
+    size_t i = 0;
+    for (i = 0; i < cols; ++i) {
         *width += col_width_arr[i];
     }
 
     /* todo: add check for non printable horizontal row separators */
-    *height = 1 + (rows == 0 ? 1 : rows); // for boundaries (that take 1 symbol)
-    for (size_t i = 0; i < rows; ++i) {
+    *height = 1 + (rows == 0 ? 1 : rows); /* for boundaries (that take 1 symbol)  */
+    for (i = 0; i < rows; ++i) {
         *height += row_height_arr[i];
     }
     F_FREE(col_width_arr);

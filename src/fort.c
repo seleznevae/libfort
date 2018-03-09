@@ -74,19 +74,21 @@ FTABLE * ft_create_table(void)
 
 void ft_destroy_table(FTABLE *FORT_RESTRICT table)
 {
+    size_t i = 0;
+
     if (table == NULL)
         return;
 
     if (table->rows) {
         size_t row_n = vector_size(table->rows);
-        for (size_t i = 0; i < row_n; ++i) {
+        for (i = 0; i < row_n; ++i) {
             destroy_row(*(fort_row_t **)vector_at(table->rows, i));
         }
         destroy_vector(table->rows);
     }
     if (table->separators) {
         size_t row_n = vector_size(table->separators);
-        for (size_t i = 0; i < row_n; ++i) {
+        for (i = 0; i < row_n; ++i) {
             destroy_separator(*(separator_t **)vector_at(table->separators, i));
         }
         destroy_vector(table->separators);
@@ -106,6 +108,8 @@ void ft_ln(FTABLE *FORT_RESTRICT table)
 
 static int ft_row_printf_impl(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, va_list *va)
 {
+    size_t i = 0;
+
     if (table == NULL)
         return -1;
 
@@ -119,7 +123,7 @@ static int ft_row_printf_impl(FTABLE *FORT_RESTRICT table, size_t row, const cha
     size_t sz = vector_size(table->rows);
     if (row >= sz) {
         size_t push_n = row - sz + 1;
-        for (size_t i = 0; i < push_n; ++i) {
+        for (i = 0; i < push_n; ++i) {
             fort_row_t *new_row = create_row();
             if (new_row == NULL)
                 goto clear;
@@ -237,6 +241,7 @@ int ft_wwrite_ln(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_
 
 int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...)
 {
+    size_t i = 0;
     assert(table);
     int status = ft_write(table, cell_content);
     if (IS_ERROR(status))
@@ -245,7 +250,7 @@ int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT c
     va_list va;
     va_start(va, cell_content);
     --n;
-    for (size_t i = 0; i < n; ++i) {
+    for (i = 0; i < n; ++i) {
         const char *cell = va_arg(va, const char*);
         status = ft_write(table, cell);
         if (IS_ERROR(status))
@@ -257,6 +262,7 @@ int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT c
 
 int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...)
 {
+    size_t i = 0;
     assert(table);
     int status = ft_write(table, cell_content);
     if (IS_ERROR(status))
@@ -265,7 +271,7 @@ int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRIC
     va_list va;
     va_start(va, cell_content);
     --n;
-    for (size_t i = 0; i < n; ++i) {
+    for (i = 0; i < n; ++i) {
         const char *cell = va_arg(va, const char*);
         status = ft_write(table, cell);
         if (IS_ERROR(status)) {
@@ -282,6 +288,7 @@ int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRIC
 
 int ft_nwwrite(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRICT cell_content, ...)
 {
+    size_t i = 0;
     assert(table);
     int status = ft_wwrite(table, cell_content);
     if (IS_ERROR(status))
@@ -290,7 +297,7 @@ int ft_nwwrite(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRI
     va_list va;
     va_start(va, cell_content);
     --n;
-    for (size_t i = 0; i < n; ++i) {
+    for (i = 0; i < n; ++i) {
         const wchar_t *cell = va_arg(va, const wchar_t*);
         status = ft_wwrite(table, cell);
         if (IS_ERROR(status))
@@ -302,6 +309,7 @@ int ft_nwwrite(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRI
 
 int ft_nwwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRICT cell_content, ...)
 {
+    size_t i = 0;
     assert(table);
     int status = ft_wwrite(table, cell_content);
     if (IS_ERROR(status))
@@ -310,7 +318,7 @@ int ft_nwwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RES
     va_list va;
     va_start(va, cell_content);
     --n;
-    for (size_t i = 0; i < n; ++i) {
+    for (i = 0; i < n; ++i) {
         const wchar_t *cell = va_arg(va, const wchar_t*);
         status = ft_wwrite(table, cell);
         if (IS_ERROR(status)) {
@@ -327,11 +335,12 @@ int ft_nwwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RES
 
 FORT_EXTERN int ft_row_write(FTABLE *FORT_RESTRICT table, size_t cols, const char* FORT_RESTRICT cells[])
 {
+    size_t i = 0;
     assert(table);
-    for (size_t i = 0; i < cols; ++i) {
+    for (i = 0; i < cols; ++i) {
         int status = ft_write(table, cells[i]);
         if (IS_ERROR(status)) {
-            //todo: maybe current pos in case of error should be equal to the one before function call?
+            /* todo: maybe current pos in case of error should be equal to the one before function call? */
             return status;
         }
     }
@@ -353,11 +362,12 @@ FORT_EXTERN int ft_row_write_ln(FTABLE *FORT_RESTRICT table, size_t cols, const 
 
 int ft_s_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* FORT_RESTRICT table_cells[rows][cols])
 {
+    size_t i = 0;
     assert(table);
-    for (size_t i = 0; i < rows; ++i) {
+    for (i = 0; i < rows; ++i) {
         int status = ft_row_write(table, cols, table_cells[i]);
         if (IS_ERROR(status)) {
-            //todo: maybe current pos in case of error should be equal to the one before function call?
+            /* todo: maybe current pos in case of error should be equal to the one before function call? */
             return status;
         }
         if (i != rows - 1)
@@ -379,11 +389,12 @@ int ft_s_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, c
 
 int ft_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* * FORT_RESTRICT table_cells[rows])
 {
+    size_t i = 0;
     assert(table);
-    for (size_t i = 0; i < rows; ++i) {
+    for (i = 0; i < rows; ++i) {
         int status = ft_row_write(table, cols, table_cells[i]);
         if (IS_ERROR(status)) {
-            //todo: maybe current pos in case of error should be equal to the one before function call?
+            /* todo: maybe current pos in case of error should be equal to the one before function call? */
             return status;
         }
         if (i != rows - 1)
@@ -452,7 +463,7 @@ const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
         if (table->conv_buffer == NULL)
             return NULL;
     }
-    while (string_buffer_capacity(table->conv_buffer) < sz) {// table->conv_buffer->str_sz < sz) {
+    while (string_buffer_capacity(table->conv_buffer) < sz) {
         if (IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
             return NULL;
         }
@@ -546,7 +557,7 @@ const wchar_t* ft_to_wstring(const FTABLE *FORT_RESTRICT table)
         if (table->conv_buffer == NULL)
             return NULL;
     }
-    while (string_buffer_capacity(table->conv_buffer) < sz) {// table->conv_buffer->str_sz < sz) {
+    while (string_buffer_capacity(table->conv_buffer) < sz) {
         if (IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
             return NULL;
         }
@@ -656,15 +667,17 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
 #define BOR_CHARS options->border_chars
 #define H_BOR_CHARS options->header_border_chars
 
-//        BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->top_border_ch;
-//        BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = border_chs->separator_ch;
-//        BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->bottom_border_ch;
-//        BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
+        /*
+        BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->top_border_ch;
+        BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = border_chs->separator_ch;
+        BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->bottom_border_ch;
+        BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
 
-//    H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->top_border_ch;
-//    H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->separator_ch;
-//    H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->bottom_border_ch;
-//    H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
+        H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->top_border_ch;
+        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->separator_ch;
+        H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->bottom_border_ch;
+        H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
+        */
 
         BOR_CHARS[TT_bip] = border_chs->top_border_ch;
         BOR_CHARS[IH_bip] = border_chs->separator_ch;

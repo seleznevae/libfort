@@ -8,7 +8,7 @@
 struct fort_row
 {
     vector_t *cells;
-    enum RowType type;
+    /*enum RowType type;*/
 };
 
 
@@ -23,19 +23,23 @@ fort_row_t * create_row()
         F_FREE(row);
         return NULL;
     }
-//    row->is_header = F_FALSE;
-//    row->type = Common;
+
+    /*
+    row->is_header = F_FALSE;
+    row->type = Common;
+    */
     return row;
 }
 
 void destroy_row(fort_row_t *row)
 {
+    size_t i = 0;
     if (row == NULL)
         return;
 
     if (row->cells) {
         size_t cells_n = vector_size(row->cells);
-        for (size_t i = 0; i < cells_n; ++i) {
+        for (i = 0; i < cells_n; ++i) {
             fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, i);
             destroy_cell(cell);
         }
@@ -190,7 +194,8 @@ int print_row_separator(char *buffer, size_t buffer_sz,
     if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R))
         return 0;
 
-    for (size_t i = 0; i < cols; ++i) {
+    size_t i = 0;
+    for (i = 0; i < cols; ++i) {
         if (i == 0) {
             CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, 1, (char_type)*L));
         } else {
@@ -295,7 +300,8 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
     if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R))
         return 0;
 
-    for (size_t i = 0; i < cols; ++i) {
+    size_t i = 0;
+    for (i = 0; i < cols; ++i) {
         if (i == 0) {
             CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, 1, (char_type)*L));
         } else {
@@ -345,7 +351,7 @@ fort_row_t* create_row_from_string(const char *str)
         if (cell == NULL)
             goto clear;
 
-//        int status = fill_buffer_from_string(cell->str_buffer, base_pos);
+/*        int status = fill_buffer_from_string(cell->str_buffer, base_pos);  */
         int status = fill_cell_from_string(cell, base_pos);
         if (IS_ERROR(status)) {
             destroy_cell(cell);
@@ -369,7 +375,7 @@ fort_row_t* create_row_from_string(const char *str)
         if (cell == NULL)
             goto clear;
 
-//        int status = fill_buffer_from_string(cell->str_buffer, "");
+/*        int status = fill_buffer_from_string(cell->str_buffer, "");  */
         int status = fill_cell_from_string(cell, "");
         if (IS_ERROR(status)) {
             destroy_cell(cell);
@@ -413,7 +419,7 @@ fort_row_t* create_row_from_fmt_string(const char* FORT_RESTRICT fmt, va_list *v
             goto clear;
 
         /* Successful write */
-        if (virtual_sz < string_buffer_capacity(buffer))// buffer->str_sz)
+        if (virtual_sz < string_buffer_capacity(buffer))
             break;
 
         /* Otherwise buffer was too small, so incr. buffer size ant try again. */
@@ -474,9 +480,11 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
 
 
     int dev = 0;
-    for (size_t i = 0; i < row_height; ++i) {
+    size_t i = 0;
+    for (i = 0; i < row_height; ++i) {
         dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*L);
-        for (size_t j = 0; j < col_width_arr_sz; ++j) {
+        size_t j = 0;
+        for (j = 0; j < col_width_arr_sz; ++j) {
             ((context_t *)context)->column = j;
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
@@ -530,9 +538,11 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
 
 
     int dev = 0;
-    for (size_t i = 0; i < row_height; ++i) {
+    size_t i = 0;
+    for (i = 0; i < row_height; ++i) {
         dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*L);
-        for (size_t j = 0; j < col_width_arr_sz; ++j) {
+        size_t j = 0;
+        for (j = 0; j < col_width_arr_sz; ++j) {
             ((context_t *)context)->column = j;
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
@@ -551,10 +561,3 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
     return dev;
 }
 
-
-
-//void set_row_type(fort_row_t *row, enum RowType type)
-//{
-//    assert(row);
-//    row->type = type;
-//}
