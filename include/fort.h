@@ -87,6 +87,11 @@ SOFTWARE.
 #endif
 
 
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+
+#pragma message(STRING(FORT_RESTRICT))
+
 /*
  *  Wchar support
  */
