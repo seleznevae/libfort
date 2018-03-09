@@ -20,7 +20,6 @@ script:
   - printenv
   # Print version and available CMake generators to aid in CI development
   - cmake --version
-  - cmake --help
 
   # Build cmocka
   - mkdir -p tests/cmocka-1.1.0/build
@@ -28,7 +27,6 @@ script:
   - cmake ..
   - make
   - cd ../../..
-  - ls
 
   # Perform out-of-source build(CMake backend generation, build, and test)
   # Test build without optimizations
@@ -40,54 +38,3 @@ script:
   - LSAN_OPTIONS=verbosity=1:log_threads=1 ./libfort_test
 
 
-  # # Perform out-of-source build(CMake backend generation, build, and test)
-  # # Test build without optimizations
-  # - cd build
-  # - cmake .. -DCERAII_TEST_BUILD=ON -DCERAII_GCC_BUILD=${GCC_BUILD} -DCERAII_PERF_OPTIMIZED_BUILD=OFF
-  # - cmake --build . --target all 
-  # - ls
-  # - ./test_basic
-  # - ./test_multithread
-  # # Test build with optimizations
-  # - cd ..
-  # - rm -r build/*
-  # - cd build
-  # - cmake .. -DCERAII_TEST_BUILD=ON -DCERAII_GCC_BUILD=${GCC_BUILD} -DCERAII_PERF_OPTIMIZED_BUILD=ON
-  # - cmake --build . --target all 
-  # - ls
-  # - ./test_basic
-  # - ./test_multithread
-  # # Production build without optimizations
-  # - cd ..  
-  # - rm -r build/*
-  # - cd build
-  # - cmake .. -DCERAII_TEST_BUILD=OFF -DCERAII_GCC_BUILD=${GCC_BUILD} -DCERAII_PERF_OPTIMIZED_BUILD=OFF
-  # - cmake --build . --target all 
-  # - ls
-  # - ./test_basic
-  # - ./test_multithread
-  # # Production build with optimizations
-  # - cd ..  
-  # - rm -r build/*
-  # - cd build
-  # - cmake .. -DCERAII_TEST_BUILD=OFF -DCERAII_GCC_BUILD=${GCC_BUILD} -DCERAII_PERF_OPTIMIZED_BUILD=ON
-  # - cmake --build . --target all 
-  # - ls
-  # - ./test_basic
-  # - ./test_multithread
-  # # Build for coveralls
-  # - cd ..  
-  # # - rm -r build/*
-  # - cd build
-  # - if [ ${GCC_BUILD} == 'ON' ];
-  #   then
-  #   cd ..  ;
-  #   rm -r build/* ;
-  #   cd build ;
-  #   cmake .. -DCERAII_COVERALLS_BUILD=ON -DCERAII_TEST_BUILD=ON -DCERAII_GCC_BUILD=${GCC_BUILD} -DCERAII_PERF_OPTIMIZED_BUILD=OFF ;
-  #   cmake --build . --target all ;
-  #   ls ;
-  #   ./test_basic ;
-  #   ./test_multithread ;
-  #   fi
-  # - cd ..
