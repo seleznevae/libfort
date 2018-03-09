@@ -35,6 +35,7 @@ script:
   - cmake .. -DFORT_TEST_BUILD=ON -DFORT_GCC_BUILD=${GCC_BUILD} 
   - cmake --build . --target all 
   - ls
+  - LSAN_OPTIONS=verbosity=1:log_threads=1 ./libfort_example
   - LSAN_OPTIONS=verbosity=1:log_threads=1 ./libfort_test
 
 

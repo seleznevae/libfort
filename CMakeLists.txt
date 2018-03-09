@@ -30,7 +30,7 @@ set(FORT_SOURCES
     src/fort_impl.c)
 
 
-add_executable(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}_example
     example/main.c
     ${FORT_SOURCES})
 
@@ -38,7 +38,7 @@ add_executable(${PROJECT_NAME}
 include_directories(tests/cmocka-1.1.0/include)
 link_directories(${CMAKE_SOURCE_DIR}/tests/cmocka-1.1.0/build/src)
 
-add_executable(libfort_test
+add_executable(${PROJECT_NAME}_test
     ${FORT_SOURCES}
     tests/test.c
     tests/test_vector.c
@@ -55,8 +55,8 @@ target_link_libraries(libfort_test
 if(FORT_TEST_BUILD)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
     if(FORT_GCC_BUILD)
-        target_link_libraries(${PROJECT_NAME} asan)
-        target_link_libraries(libfort_test asan)
+        target_link_libraries(${PROJECT_NAME}_example asan)
+        target_link_libraries(${PROJECT_NAME}_test asan)
     endif(FORT_GCC_BUILD)
 endif(FORT_TEST_BUILD)
 
