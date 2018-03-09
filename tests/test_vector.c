@@ -7,6 +7,7 @@
 void test_vector_basic(void **state)
 {
     (void)state;
+    size_t i = 0;
 
     typedef short item_t;
     const size_t init_capacity = 10;
@@ -17,7 +18,7 @@ void test_vector_basic(void **state)
     assert_true( vector_capacity(vector) == init_capacity );
 
     WHEN("Pushing less items than initial capacity") {
-        for (size_t i = 0; i < init_capacity; ++i) {
+        for (i = 0; i < init_capacity; ++i) {
             item_t item = i;
             vector_push(vector, &item);
         }
@@ -37,7 +38,7 @@ void test_vector_basic(void **state)
     }
 
     WHEN("Pushing more items than initial capacity") {
-        for (size_t i = 0; i < 2 * init_capacity; ++i) {
+        for (i = 0; i < 2 * init_capacity; ++i) {
             item_t item = 2 * i;
             vector_push(vector, &item);
         }
