@@ -49,20 +49,21 @@ SOFTWARE.
 /*
  * Declare restrict
  */
-#if defined(__cplusplus)
-#if defined(FORT_CLANG_COMPILER)
-#define FORT_RESTRICT __restrict__
-#else
-#define FORT_RESTRICT __restrict
-#endif /* if defined(FORT_CLANG_COMPILER) */
-#else
-#if __STDC_VERSION__ < 199901L
-#define FORT_RESTRICT restrict
-#else
-#define FORT_RESTRICT
-#endif /* __STDC_VERSION__ < 199901L */
-#endif /* if defined(__cplusplus) */
+//#if defined(__cplusplus)
+//#if defined(FORT_CLANG_COMPILER)
+//#define FORT_RESTRICT __restrict__
+//#else
+//#define FORT_RESTRICT __restrict
+//#endif /* if defined(FORT_CLANG_COMPILER) */
+//#else
+//#if __STDC_VERSION__ < 199901L
+//#define FORT_RESTRICT restrict
+//#else
+//#define FORT_RESTRICT
+//#endif /* __STDC_VERSION__ < 199901L */
+//#endif /* if defined(__cplusplus) */
 
+#define FORT_RESTRICT
 
 
 /*
