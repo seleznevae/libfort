@@ -38,6 +38,7 @@ script:
   - cmake --build . --target all 
   - ls
   - export LSAN_OPTIONS=verbosity=1:log_threads=1
+  - printenv
   - ./libfort_test
 
 
