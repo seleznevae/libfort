@@ -282,12 +282,7 @@ FORT_EXTERN const wchar_t* ft_to_wstring(const FTABLE *FORT_RESTRICT table);
 
 
 
-
-
-
-
-
-struct border_chars
+struct ft_border_chars
 {
     char top_border_ch;
     char separator_ch;
@@ -297,8 +292,20 @@ struct border_chars
     char in_intersect_ch;
 };
 
-FORT_EXTERN int ft_set_default_borders(struct border_chars *border_chs, struct border_chars *header_border_chs);
-FORT_EXTERN int ft_set_table_borders(FTABLE * FORT_RESTRICT table, struct border_chars *border_chs, struct border_chars *header_border_chs);
+struct ft_border_style
+{
+    struct ft_border_chars border_chs;
+    struct ft_border_chars header_border_chs;
+};
+
+/* List of built-in table border styles */
+extern struct ft_border_style * FT_BASIC_STYLE;
+extern struct ft_border_style * FT_SIMPLE_STYLE;
+extern struct ft_border_style * FT_DOT_STYLE;
+
+
+FORT_EXTERN int ft_set_default_borders(struct ft_border_style *style);
+FORT_EXTERN int ft_set_table_borders(FTABLE * FORT_RESTRICT table, struct ft_border_style *style);
 
 FORT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
 FORT_EXTERN int ft_set_cell_option(FTABLE * FORT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);

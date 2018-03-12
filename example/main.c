@@ -110,6 +110,8 @@ int main()
 
     /*-------------------------------------------------------------*/
 
+
+
     table = ft_create_table();
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, CenterAligned);
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
@@ -126,9 +128,74 @@ int main()
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
 
-    /*-------------------------------------------------------------*/
 
-   table = NULL;
+    /*----------------  Different styles  --------------------*/
+
+    ft_set_default_borders(FT_BASIC_STYLE);
+
+    table = ft_create_table();
+    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, CenterAligned);
+    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
+
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+    FT_NWRITE_LN(table, "Rank", "Title", "Year", "Rating");
+
+    FT_NWRITE_LN(table, "1", "The Shawshank Redemption", "1994", "9.5");
+    FT_NWRITE_LN(table, "2", "12 Angry Men", "1957", "8.8");
+    FT_NWRITE_LN(table, "3", "2001: A Space Odyssey", "1968", "8.5");
+    FT_NWRITE_LN(table, "4", "Blade Runner", "1982", "8.1");
+
+
+    printf("Table:\n");
+    printf("%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+
+
+    /* ------------- */
+
+//    ft_set_default_borders(FT_SIMPLE_STYLE);
+
+//    table = ft_create_table();
+//    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, CenterAligned);
+//    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
+
+//    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+//    FT_NWRITE_LN(table, "Rank", "Title", "Year", "Rating");
+
+//    FT_NWRITE_LN(table, "1", "The Shawshank Redemption", "1994", "9.5");
+//    FT_NWRITE_LN(table, "2", "12 Angry Men", "1957", "8.8");
+//    FT_NWRITE_LN(table, "3", "2001: A Space Odyssey", "1968", "8.5");
+//    FT_NWRITE_LN(table, "4", "Blade Runner", "1982", "8.1");
+
+
+//    printf("Table:\n");
+//    printf("%s\n", ft_to_string(table));
+//    ft_destroy_table(table);
+
+//    table = NULL;
+
+//    /* ------------- */
+
+//    ft_set_default_borders(FT_DOT_STYLE);
+
+//    table = ft_create_table();
+//    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, CenterAligned);
+//    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
+
+//    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+//    FT_NWRITE_LN(table, "Rank", "Title", "Year", "Rating");
+
+//    FT_NWRITE_LN(table, "1", "The Shawshank Redemption", "1994", "9.5");
+//    FT_NWRITE_LN(table, "2", "12 Angry Men", "1957", "8.8");
+//    FT_NWRITE_LN(table, "3", "2001: A Space Odyssey", "1968", "8.5");
+//    FT_NWRITE_LN(table, "4", "Blade Runner", "1982", "8.1");
+
+
+//    printf("Table:\n");
+//    printf("%s\n", ft_to_string(table));
+//    ft_destroy_table(table);
+
+    table = NULL;
 
     return 0;
 }

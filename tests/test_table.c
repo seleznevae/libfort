@@ -23,22 +23,21 @@ int set_test_options_for_table(FTABLE *table)
     assert_true( status == F_SUCCESS );
 
 
-    struct border_chars border_chs;
-    border_chs.top_border_ch = '-';
-    border_chs.separator_ch = '-';
-    border_chs.bottom_border_ch = '-';
-    border_chs.side_border_ch = '|';
-    border_chs.out_intersect_ch = '+';
-    border_chs.in_intersect_ch = '+';
+    struct ft_border_style brdr_style;
+    brdr_style.border_chs.top_border_ch = '-';
+    brdr_style.border_chs.separator_ch = '-';
+    brdr_style.border_chs.bottom_border_ch = '-';
+    brdr_style.border_chs.side_border_ch = '|';
+    brdr_style.border_chs.out_intersect_ch = '+';
+    brdr_style.border_chs.in_intersect_ch = '+';
 
-    struct border_chars header_border_chs;
-    header_border_chs.top_border_ch = '-';
-    header_border_chs.separator_ch = '-';
-    header_border_chs.bottom_border_ch = '-';
-    header_border_chs.side_border_ch = '|';
-    header_border_chs.out_intersect_ch = '+';
-    header_border_chs.in_intersect_ch = '+';
-    return ft_set_table_borders(table, &border_chs, &header_border_chs);
+    brdr_style.header_border_chs.top_border_ch = '-';
+    brdr_style.header_border_chs.separator_ch = '-';
+    brdr_style.header_border_chs.bottom_border_ch = '-';
+    brdr_style.header_border_chs.side_border_ch = '|';
+    brdr_style.header_border_chs.out_intersect_ch = '+';
+    brdr_style.header_border_chs.in_intersect_ch = '+';
+    return ft_set_table_borders(table, &brdr_style);
 }
 
 int set_test_options_as_default()
@@ -57,22 +56,21 @@ int set_test_options_as_default()
     assert_true( status == F_SUCCESS );
 
 
-    struct border_chars border_chs;
-    border_chs.top_border_ch = '-';
-    border_chs.separator_ch = '-';
-    border_chs.bottom_border_ch = '-';
-    border_chs.side_border_ch = '|';
-    border_chs.out_intersect_ch = '+';
-    border_chs.in_intersect_ch = '+';
+    struct ft_border_style brdr_style;
+    brdr_style.border_chs.top_border_ch = '-';
+    brdr_style.border_chs.separator_ch = '-';
+    brdr_style.border_chs.bottom_border_ch = '-';
+    brdr_style.border_chs.side_border_ch = '|';
+    brdr_style.border_chs.out_intersect_ch = '+';
+    brdr_style.border_chs.in_intersect_ch = '+';
 
-    struct border_chars header_border_chs;
-    header_border_chs.top_border_ch = '-';
-    header_border_chs.separator_ch = '-';
-    header_border_chs.bottom_border_ch = '-';
-    header_border_chs.side_border_ch = '|';
-    header_border_chs.out_intersect_ch = '+';
-    header_border_chs.in_intersect_ch = '+';
-    return ft_set_default_borders(&border_chs, &header_border_chs);
+    brdr_style.header_border_chs.top_border_ch = '-';
+    brdr_style.header_border_chs.separator_ch = '-';
+    brdr_style.header_border_chs.bottom_border_ch = '-';
+    brdr_style.header_border_chs.side_border_ch = '|';
+    brdr_style.header_border_chs.out_intersect_ch = '+';
+    brdr_style.header_border_chs.in_intersect_ch = '+';
+    return ft_set_default_borders(&brdr_style);
 }
 
 void test_table_sizes(void **state)
@@ -564,22 +562,21 @@ void test_table_options(void **state)
 
     WHEN("Changing cell separators") {
 
-        struct border_chars border_chs;
-        border_chs.top_border_ch = '|';
-        border_chs.separator_ch = '|';
-        border_chs.bottom_border_ch = '|';
-        border_chs.side_border_ch = '=';
-        border_chs.out_intersect_ch = '+';
-        border_chs.in_intersect_ch = '#';
+        struct ft_border_style brdr_style;
+        brdr_style.border_chs.top_border_ch = '|';
+        brdr_style.border_chs.separator_ch = '|';
+        brdr_style.border_chs.bottom_border_ch = '|';
+        brdr_style.border_chs.side_border_ch = '=';
+        brdr_style.border_chs.out_intersect_ch = '+';
+        brdr_style.border_chs.in_intersect_ch = '#';
 
-        struct border_chars header_border_chs;
-        header_border_chs.top_border_ch = '*';
-        header_border_chs.separator_ch = '*';
-        header_border_chs.bottom_border_ch = '*';
-        header_border_chs.side_border_ch = 'v';
-        header_border_chs.out_intersect_ch = '+';
-        header_border_chs.in_intersect_ch = '#';
-        ft_set_default_borders(&border_chs, &header_border_chs);
+        brdr_style.header_border_chs.top_border_ch = '*';
+        brdr_style.header_border_chs.separator_ch = '*';
+        brdr_style.header_border_chs.bottom_border_ch = '*';
+        brdr_style.header_border_chs.side_border_ch = 'v';
+        brdr_style.header_border_chs.out_intersect_ch = '+';
+        brdr_style.header_border_chs.in_intersect_ch = '#';
+        ft_set_default_borders(&brdr_style);
 
 
 
@@ -608,23 +605,21 @@ void test_table_options(void **state)
 
 
 
+        brdr_style.border_chs.top_border_ch = '|';
+        brdr_style.border_chs.separator_ch = '\0';
+        brdr_style.border_chs.bottom_border_ch = '|';
+        brdr_style.border_chs.side_border_ch = '=';
+        brdr_style.border_chs.out_intersect_ch = '+';
+        brdr_style.border_chs.in_intersect_ch = '\0';
 
+        brdr_style.header_border_chs.top_border_ch = '*';
+        brdr_style.header_border_chs.separator_ch = '*';
+        brdr_style.header_border_chs.bottom_border_ch = '*';
+        brdr_style.header_border_chs.side_border_ch = 'v';
+        brdr_style.header_border_chs.out_intersect_ch = '+';
+        brdr_style.header_border_chs.in_intersect_ch = '#';
 
-        border_chs.top_border_ch = '|';
-        border_chs.separator_ch = '\0';
-        border_chs.bottom_border_ch = '|';
-        border_chs.side_border_ch = '=';
-        border_chs.out_intersect_ch = '+';
-        border_chs.in_intersect_ch = '\0';
-
-        header_border_chs.top_border_ch = '*';
-        header_border_chs.separator_ch = '*';
-        header_border_chs.bottom_border_ch = '*';
-        header_border_chs.side_border_ch = 'v';
-        header_border_chs.out_intersect_ch = '+';
-        header_border_chs.in_intersect_ch = '#';
-
-        ft_set_default_borders(&border_chs, &header_border_chs);
+        ft_set_default_borders(&brdr_style);
 
         ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 0);
         ft_set_default_cell_option(FT_OPT_TOP_PADDING, 0);

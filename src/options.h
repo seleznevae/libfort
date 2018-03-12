@@ -139,6 +139,13 @@ enum SeparatorItemPos
 };
 
 
+struct fort_border_style
+{
+    char border_chars[BorderItemPosSize];
+    char header_border_chars[BorderItemPosSize];
+    char separator_chars[SepratorItemPosSize];
+};
+
 struct fort_table_options
 {
     char border_chars[BorderItemPosSize];

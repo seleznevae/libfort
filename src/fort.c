@@ -662,8 +662,80 @@ int ft_add_separator(FTABLE *table)
 
 
 
-static void set_border_options_for_options(fort_table_options_t *options, struct border_chars *border_chs, struct border_chars *header_border_chs)
+
+/* ******************************************************************************* */
+
+struct ft_border_style ft_basic_style =
 {
+    {
+        '-',  /* top_border_ch */
+        '\0', /* separator_ch */
+        '-',  /* bottom_border_ch */
+        '|',  /* side_border_ch */
+        '+',  /* out_intersect_ch */
+        '\0', /* in_intersect_ch */
+    },
+    {
+        '-', /* top_border_ch */
+        '-', /* separator_ch */
+        '-', /* bottom_border_ch */
+        '|', /* side_border_ch */
+        '+', /* out_intersect_ch */
+        '+', /* in_intersect_ch */
+    }
+};
+
+//struct ft_border_style ft_simple_style =
+//{
+//    {
+//        ' ',  /* top_border_ch */
+//        '\0', /* separator_ch */
+//        ' ',  /* bottom_border_ch */
+//        ' ',  /* side_border_ch */
+//        ' ',  /* out_intersect_ch */
+//        '\0', /* in_intersect_ch */
+//    },
+//    {
+//        ' ', /* top_border_ch */
+//        '-', /* separator_ch */
+//        ' ', /* bottom_border_ch */
+//        ' ', /* side_border_ch */
+//        ' ', /* out_intersect_ch */
+//        ' ', /* in_intersect_ch */
+//    }
+//};
+
+//struct ft_border_style ft_dot_style =
+//{
+//    {
+//        '.',   /* top_border_ch */
+//        '\0',  /* separator_ch */
+//        '.',   /* bottom_border_ch */
+//        ':',   /* side_border_ch */
+//        '.',   /* out_intersect_ch */
+//        '\0',  /* in_intersect_ch */
+//    },
+//    {
+//        '.', /* top_border_ch */
+//        '.', /* separator_ch */
+//        '.', /* bottom_border_ch */
+//        ':', /* side_border_ch */
+//        '.', /* out_intersect_ch */
+//        '.', /* in_intersect_ch */
+//    }
+//};
+
+struct ft_border_style * FT_BASIC_STYLE = &ft_basic_style;
+//struct ft_border_style * FT_SIMPLE_STYLE = &ft_simple_style;
+//struct ft_border_style * FT_DOT_STYLE = &ft_dot_style;
+
+
+
+static void set_border_options_for_options(fort_table_options_t *options, struct ft_border_style *style)
+{
+        struct ft_border_chars *border_chs = &(style->border_chs);
+        struct ft_border_chars *header_border_chs = &(style->header_border_chs);
+
 #define BOR_CHARS options->border_chars
 #define H_BOR_CHARS options->header_border_chars
 
@@ -712,13 +784,14 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
 #undef H_BOR_CHARS
 }
 
-int ft_set_default_borders(struct border_chars *border_chs, struct border_chars *header_border_chs)
+
+int ft_set_default_borders(struct ft_border_style *style)
 {
-    set_border_options_for_options(&g_table_options, border_chs, header_border_chs);
+    set_border_options_for_options(&g_table_options, style);
     return F_SUCCESS;
 }
 
-int ft_set_table_borders(FTABLE *table, struct border_chars *border_chs, struct border_chars *header_border_chs)
+int ft_set_table_borders(FTABLE *table, struct ft_border_style *style)
 {
     assert(table);
     if (table->options == NULL) {
@@ -726,7 +799,7 @@ int ft_set_table_borders(FTABLE *table, struct border_chars *border_chs, struct 
         if (table->options == NULL)
             return F_MEMORY_ERROR;
     }
-    set_border_options_for_options(table->options, border_chs, header_border_chs);
+    set_border_options_for_options(table->options, style);
     return F_SUCCESS;
 }
 
@@ -754,3 +827,5 @@ int ft_set_default_cell_option(uint32_t option, int value)
 {
     return set_default_cell_option(option, value);
 }
+
+
