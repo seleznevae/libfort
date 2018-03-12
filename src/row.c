@@ -156,16 +156,16 @@ int print_row_separator(char *buffer, size_t buffer_sz,
 
     typedef const char (*border_chars_point_t)[BorderItemPosSize];
     const char (*border_chars)[BorderItemPosSize] = NULL;
-    border_chars = (border_chars_point_t)&context->table_options->border_chars;
+    border_chars = (border_chars_point_t)&context->table_options->border_style.border_chars;
     if (upper_row_type == Header || lower_row_type == Header) {
-        border_chars = (border_chars_point_t)&context->table_options->header_border_chars;
+        border_chars = (border_chars_point_t)&context->table_options->border_style.header_border_chars;
     }
 
     if (sep && sep->enabled) {
-        L = &(context->table_options->separator_chars[LH_sip]);
-        I = &(context->table_options->separator_chars[IH_sip]);
-        IV = &(context->table_options->separator_chars[II_sip]);
-        R = &(context->table_options->separator_chars[RH_sip]);
+        L = &(context->table_options->border_style.separator_chars[LH_sip]);
+        I = &(context->table_options->border_style.separator_chars[IH_sip]);
+        IV = &(context->table_options->border_style.separator_chars[II_sip]);
+        R = &(context->table_options->border_style.separator_chars[RH_sip]);
     } else {
         switch (separatorPos) {
             case TopSeparator:
@@ -262,17 +262,17 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
 
     typedef const char (*border_chars_point_t)[BorderItemPosSize];
     const char (*border_chars)[BorderItemPosSize] = NULL;
-    border_chars = (border_chars_point_t)&context->table_options->border_chars;
+    border_chars = (border_chars_point_t)&context->table_options->border_style.border_chars;
     if (upper_row_type == Header || lower_row_type == Header) {
-        border_chars = (border_chars_point_t)&context->table_options->header_border_chars;
+        border_chars = (border_chars_point_t)&context->table_options->border_style.header_border_chars;
     }
 
 
     if (sep && sep->enabled) {
-        L = &(context->table_options->separator_chars[LH_sip]);
-        I = &(context->table_options->separator_chars[IH_sip]);
-        IV = &(context->table_options->separator_chars[II_sip]);
-        R = &(context->table_options->separator_chars[RH_sip]);
+        L = &(context->table_options->border_style.separator_chars[LH_sip]);
+        I = &(context->table_options->border_style.separator_chars[IH_sip]);
+        IV = &(context->table_options->border_style.separator_chars[II_sip]);
+        R = &(context->table_options->border_style.separator_chars[RH_sip]);
     } else {
         switch (separatorPos) {
             case TopSeparator:
@@ -475,8 +475,8 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
     typedef const char (*border_chars_point_t)[BorderItemPosSize];
     enum RowType row_type = get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
     const char (*bord_chars)[BorderItemPosSize] = (row_type == Header)
-            ? (border_chars_point_t) (&context->table_options->header_border_chars)
-            : (border_chars_point_t) (&context->table_options->border_chars);
+            ? (border_chars_point_t) (&context->table_options->border_style.header_border_chars)
+            : (border_chars_point_t) (&context->table_options->border_style.border_chars);
     const char *L = &(*bord_chars)[LL_bip];
     const char *IV = &(*bord_chars)[IV_bip];
     const char *R = &(*bord_chars)[RR_bip];
@@ -534,8 +534,8 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
     typedef const char (*border_chars_point_t)[BorderItemPosSize];
     enum RowType row_type = get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
     const char (*bord_chars)[BorderItemPosSize] = (row_type)
-            ? (border_chars_point_t) (&context->table_options->header_border_chars)
-            : (border_chars_point_t) (&context->table_options->border_chars);
+            ? (border_chars_point_t) (&context->table_options->border_style.header_border_chars)
+            : (border_chars_point_t) (&context->table_options->border_style.border_chars);
     const char *L = &(*bord_chars)[LL_bip];
     const char *IV = &(*bord_chars)[IV_bip];
     const char *R = &(*bord_chars)[RR_bip];

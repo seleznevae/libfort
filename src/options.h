@@ -145,17 +145,17 @@ struct fort_border_style
     char header_border_chars[BorderItemPosSize];
     char separator_chars[SepratorItemPosSize];
 };
+extern struct fort_border_style FORT_BASIC_STYLE;
+extern struct fort_border_style FORT_SIMPLE_STYLE;
+extern struct fort_border_style FORT_DOT_STYLE;
+
 
 struct fort_table_options
 {
-    char border_chars[BorderItemPosSize];
-    char header_border_chars[BorderItemPosSize];
-    char separator_chars[SepratorItemPosSize];
-
+    struct fort_border_style border_style;
     fort_cell_opt_container_t * cell_options;
 };
 typedef struct fort_table_options fort_table_options_t;
-/*typedef fort_table_options_t context_t;*/
 extern fort_table_options_t g_table_options;
 
 

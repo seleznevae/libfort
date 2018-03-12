@@ -665,120 +665,69 @@ int ft_add_separator(FTABLE *table)
 
 /* ******************************************************************************* */
 
-struct ft_border_style ft_basic_style =
-{
-    {
-        '-',  /* top_border_ch */
-        '\0', /* separator_ch */
-        '-',  /* bottom_border_ch */
-        '|',  /* side_border_ch */
-        '+',  /* out_intersect_ch */
-        '\0', /* in_intersect_ch */
-    },
-    {
-        '-', /* top_border_ch */
-        '-', /* separator_ch */
-        '-', /* bottom_border_ch */
-        '|', /* side_border_ch */
-        '+', /* out_intersect_ch */
-        '+', /* in_intersect_ch */
-    }
-};
 
-//struct ft_border_style ft_simple_style =
-//{
-//    {
-//        ' ',  /* top_border_ch */
-//        '\0', /* separator_ch */
-//        ' ',  /* bottom_border_ch */
-//        ' ',  /* side_border_ch */
-//        ' ',  /* out_intersect_ch */
-//        '\0', /* in_intersect_ch */
-//    },
-//    {
-//        ' ', /* top_border_ch */
-//        '-', /* separator_ch */
-//        ' ', /* bottom_border_ch */
-//        ' ', /* side_border_ch */
-//        ' ', /* out_intersect_ch */
-//        ' ', /* in_intersect_ch */
-//    }
-//};
-
-//struct ft_border_style ft_dot_style =
-//{
-//    {
-//        '.',   /* top_border_ch */
-//        '\0',  /* separator_ch */
-//        '.',   /* bottom_border_ch */
-//        ':',   /* side_border_ch */
-//        '.',   /* out_intersect_ch */
-//        '\0',  /* in_intersect_ch */
-//    },
-//    {
-//        '.', /* top_border_ch */
-//        '.', /* separator_ch */
-//        '.', /* bottom_border_ch */
-//        ':', /* side_border_ch */
-//        '.', /* out_intersect_ch */
-//        '.', /* in_intersect_ch */
-//    }
-//};
-
-struct ft_border_style * FT_BASIC_STYLE = &ft_basic_style;
-//struct ft_border_style * FT_SIMPLE_STYLE = &ft_simple_style;
-//struct ft_border_style * FT_DOT_STYLE = &ft_dot_style;
+struct ft_border_style * FT_BASIC_STYLE = (struct ft_border_style *)&FORT_BASIC_STYLE;
+struct ft_border_style * FT_SIMPLE_STYLE = (struct ft_border_style *)&FORT_SIMPLE_STYLE;
+struct ft_border_style * FT_DOT_STYLE = (struct ft_border_style *)&FORT_DOT_STYLE;
 
 
 
 static void set_border_options_for_options(fort_table_options_t *options, struct ft_border_style *style)
 {
-        struct ft_border_chars *border_chs = &(style->border_chs);
-        struct ft_border_chars *header_border_chs = &(style->header_border_chs);
+    if ((struct fort_border_style *)style == &FORT_BASIC_STYLE
+        || (struct fort_border_style *)style == &FORT_SIMPLE_STYLE
+        || (struct fort_border_style *)style == &FORT_DOT_STYLE)
+    {
+        memcpy(&(options->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
+        return;
+    }
 
-#define BOR_CHARS options->border_chars
-#define H_BOR_CHARS options->header_border_chars
+    struct ft_border_chars *border_chs = &(style->border_chs);
+    struct ft_border_chars *header_border_chs = &(style->header_border_chs);
 
-        /*
-        BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->top_border_ch;
-        BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = border_chs->separator_ch;
-        BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->bottom_border_ch;
-        BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
+#define BOR_CHARS options->border_style.border_chars
+#define H_BOR_CHARS options->border_style.header_border_chars
 
-        H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->top_border_ch;
-        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->separator_ch;
-        H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->bottom_border_ch;
-        H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
-        */
+    /*
+    BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->top_border_ch;
+    BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = border_chs->separator_ch;
+    BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->bottom_border_ch;
+    BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
 
-        BOR_CHARS[TT_bip] = border_chs->top_border_ch;
-        BOR_CHARS[IH_bip] = border_chs->separator_ch;
-        BOR_CHARS[BB_bip] = border_chs->bottom_border_ch;
-        BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
+    H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->top_border_ch;
+    H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->separator_ch;
+    H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->bottom_border_ch;
+    H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
+    */
 
-        BOR_CHARS[TL_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->out_intersect_ch;
-        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = border_chs->out_intersect_ch;
-        BOR_CHARS[BL_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->out_intersect_ch;
-        BOR_CHARS[II_bip] = border_chs->in_intersect_ch;
+    BOR_CHARS[TT_bip] = border_chs->top_border_ch;
+    BOR_CHARS[IH_bip] = border_chs->separator_ch;
+    BOR_CHARS[BB_bip] = border_chs->bottom_border_ch;
+    BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
 
-        if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
-            BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
-        }
+    BOR_CHARS[TL_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->out_intersect_ch;
+    BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = border_chs->out_intersect_ch;
+    BOR_CHARS[BL_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->out_intersect_ch;
+    BOR_CHARS[II_bip] = border_chs->in_intersect_ch;
+
+    if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
+        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
+    }
 
 
-        H_BOR_CHARS[TT_bip] = header_border_chs->top_border_ch;
-        H_BOR_CHARS[IH_bip] = header_border_chs->separator_ch;
-        H_BOR_CHARS[BB_bip] = header_border_chs->bottom_border_ch;
-        H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
+    H_BOR_CHARS[TT_bip] = header_border_chs->top_border_ch;
+    H_BOR_CHARS[IH_bip] = header_border_chs->separator_ch;
+    H_BOR_CHARS[BB_bip] = header_border_chs->bottom_border_ch;
+    H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
 
-        H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->out_intersect_ch;
-        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->out_intersect_ch;
-        H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->out_intersect_ch;
-        H_BOR_CHARS[II_bip] = header_border_chs->in_intersect_ch;
+    H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->out_intersect_ch;
+    H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->out_intersect_ch;
+    H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->out_intersect_ch;
+    H_BOR_CHARS[II_bip] = header_border_chs->in_intersect_ch;
 
-        if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
-            H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
-        }
+    if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
+        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
+    }
 
 #undef BOR_CHARS
 #undef H_BOR_CHARS

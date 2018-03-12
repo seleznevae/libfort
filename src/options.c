@@ -207,31 +207,78 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
  * ***************************************************************************/
 
 
+#define BASIC_STYLE  {            \
+    /* border_chars */            \
+    {                             \
+     '+', '-', '+', '+',          \
+     '|', '|', '|',               \
+     '\0', '\0', '\0', '\0',      \
+     '+', '-', '+', '+'           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    '+', '-', '+', '+',           \
+    '|', '|', '|',                \
+    '+', '-', '+', '+',           \
+    '+', '-', '+', '+'            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    '+', '=', '+', '+',           \
+    },                            \
+}
+
+#define SIMPLE_STYLE  {           \
+    /* border_chars */            \
+    {                             \
+     ' ', ' ', ' ', ' ',          \
+     ' ', ' ', ' ',               \
+     '\0', '\0', '\0', '\0',      \
+     ' ', ' ', ' ', ' '           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    ' ', ' ', ' ', ' ',           \
+    ' ', ' ', ' ',                \
+    ' ', '-', ' ', ' ',           \
+    ' ', ' ', ' ', ' '            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    ' ', '=', ' ', ' ',           \
+    },                            \
+}
+
+#define DOT_STYLE  {              \
+    /* border_chars */            \
+    {                             \
+     '.', '.', '.', '.',          \
+     ':', ':', ':',               \
+     '\0', '\0', '\0', '\0',      \
+     ':', '.', ':', ':'           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    '.', '.', '.', '.',           \
+    ':', ':', ':',                \
+    ':', '.', ':', ':',           \
+    ':', '.', ':', ':'            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    '+', '=', '+', '+',           \
+    },                            \
+}
+
+struct fort_border_style FORT_BASIC_STYLE = BASIC_STYLE;
+struct fort_border_style FORT_SIMPLE_STYLE = SIMPLE_STYLE;
+struct fort_border_style FORT_DOT_STYLE = DOT_STYLE;
 
 
 
 fort_table_options_t g_table_options = {
-    /* border_chars */
-    {
-     '+', '-', '+', '+',
-     '|', '|', '|',
-     '\0', '\0', '\0', '\0',
-     '+', '-', '+', '+'
-    },
-
-    /* header_border_chars */
-    {
-    '+', '-', '+', '+',
-    '|', '|', '|',
-    '+', '-', '+', '+',
-    '+', '-', '+', '+'
-    },
-
-    /* separator_chars */
-    {
-    '+', '=', '+', '+',
-    },
-
+    /* border_style */
+    BASIC_STYLE,
     NULL,     /* cell_options */
 };
 
