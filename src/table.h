@@ -16,7 +16,7 @@ struct fort_table
     vector_t *separators;
 };
 
-static FORT_INLINE
+static FT_INLINE
 separator_t *create_separator(int enabled)
 {
     separator_t *res = F_CALLOC(1, sizeof(separator_t));
@@ -26,7 +26,7 @@ separator_t *create_separator(int enabled)
     return res;
 }
 
-static FORT_INLINE
+static FT_INLINE
 void destroy_separator(separator_t *sep)
 {
     F_FREE(sep);
@@ -40,7 +40,7 @@ fort_row_t *get_row(fort_table_t *table, size_t row);
 const fort_row_t *get_row_c(const fort_table_t *table, size_t row);
 fort_row_t *get_row_and_create_if_not_exists(fort_table_t *table, size_t row);
 
-string_buffer_t * get_cur_str_buffer_and_create_if_not_exists(FTABLE *FORT_RESTRICT table);
+string_buffer_t * get_cur_str_buffer_and_create_if_not_exists(FTABLE *FT_RESTRICT table);
 
 
 

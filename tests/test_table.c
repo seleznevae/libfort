@@ -1,4 +1,4 @@
-//#define FORT_EXTERN static
+//#define FT_EXTERN static
 #include "tests.h"
 #include "fort.h"
 #include <string.h>
@@ -37,6 +37,8 @@ int set_test_options_for_table(FTABLE *table)
     brdr_style.header_border_chs.side_border_ch = '|';
     brdr_style.header_border_chs.out_intersect_ch = '+';
     brdr_style.header_border_chs.in_intersect_ch = '+';
+
+    brdr_style.hor_separator_char = '=';
     return ft_set_table_borders(table, &brdr_style);
 }
 
@@ -70,6 +72,9 @@ int set_test_options_as_default()
     brdr_style.header_border_chs.side_border_ch = '|';
     brdr_style.header_border_chs.out_intersect_ch = '+';
     brdr_style.header_border_chs.in_intersect_ch = '+';
+
+    brdr_style.hor_separator_char = '=';
+
     return ft_set_default_borders(&brdr_style);
 }
 
@@ -403,7 +408,7 @@ void test_table_options(void **state)
     }
 
     WHEN("Separator testing") {
-        table = create_test_int_table(0);
+        table = create_test_int_table(1);
         ft_add_separator(table);
 
         ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);

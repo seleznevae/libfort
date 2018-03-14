@@ -403,7 +403,7 @@ clear:
 
 
 
-fort_row_t* create_row_from_fmt_string(const char* FORT_RESTRICT fmt, va_list *va_args)
+fort_row_t* create_row_from_fmt_string(const char* FT_RESTRICT fmt, va_list *va_args)
 {
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CharBuf);
     if (buffer == NULL)

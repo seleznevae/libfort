@@ -72,7 +72,7 @@ FTABLE * ft_create_table(void)
 }
 
 
-void ft_destroy_table(FTABLE *FORT_RESTRICT table)
+void ft_destroy_table(FTABLE *FT_RESTRICT table)
 {
     size_t i = 0;
 
@@ -98,7 +98,7 @@ void ft_destroy_table(FTABLE *FORT_RESTRICT table)
     F_FREE(table);
 }
 
-void ft_ln(FTABLE *FORT_RESTRICT table)
+void ft_ln(FTABLE *FT_RESTRICT table)
 {
     assert(table);
     table->cur_col = 0;
@@ -106,7 +106,7 @@ void ft_ln(FTABLE *FORT_RESTRICT table)
 }
 
 
-static int ft_row_printf_impl(FTABLE *FORT_RESTRICT table, size_t row, const char* FORT_RESTRICT fmt, va_list *va)
+static int ft_row_printf_impl(FTABLE *FT_RESTRICT table, size_t row, const char* FT_RESTRICT fmt, va_list *va)
 {
     size_t i = 0;
 
@@ -151,7 +151,7 @@ clear:
 }
 
 
-#if defined(FORT_CLANG_COMPILER) || defined(FORT_GCC_COMPILER)
+#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
 #define FT_PRINTF ft_printf
 #define FT_PRINTF_LN ft_printf_ln
 #else
@@ -161,7 +161,7 @@ clear:
 
 
 
-int FT_PRINTF(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
+int FT_PRINTF(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT fmt, ...)
 {
     assert(table);
     va_list va;
@@ -171,7 +171,7 @@ int FT_PRINTF(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
     return result;
 }
 
-int FT_PRINTF_LN(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...)
+int FT_PRINTF_LN(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT fmt, ...)
 {
     assert(table);
     va_list va;
@@ -190,7 +190,7 @@ int FT_PRINTF_LN(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...
 #undef FT_HDR_PRINTF_LN
 
 
-int ft_write(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content)
+int ft_write(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT cell_content)
 {
     assert(table);
     string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
@@ -204,7 +204,7 @@ int ft_write(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content
     return status;
 }
 
-int ft_write_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content)
+int ft_write_ln(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT cell_content)
 {
     assert(table);
     int status = ft_write(table, cell_content);
@@ -214,7 +214,7 @@ int ft_write_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_cont
     return status;
 }
 
-int ft_wwrite(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_content)
+int ft_wwrite(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content)
 {
     assert(table);
     string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
@@ -228,7 +228,7 @@ int ft_wwrite(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_con
     return status;
 }
 
-int ft_wwrite_ln(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_content)
+int ft_wwrite_ln(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content)
 {
     assert(table);
     int status = ft_wwrite(table, cell_content);
@@ -239,7 +239,7 @@ int ft_wwrite_ln(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_
 }
 
 
-int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...)
+int ft_nwrite(FTABLE *FT_RESTRICT table, size_t n, const char* FT_RESTRICT cell_content, ...)
 {
     size_t i = 0;
     assert(table);
@@ -260,7 +260,7 @@ int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT c
     return status;
 }
 
-int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...)
+int ft_nwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const char* FT_RESTRICT cell_content, ...)
 {
     size_t i = 0;
     assert(table);
@@ -286,7 +286,7 @@ int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRIC
 }
 
 
-int ft_nwwrite(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRICT cell_content, ...)
+int ft_nwwrite(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...)
 {
     size_t i = 0;
     assert(table);
@@ -307,7 +307,7 @@ int ft_nwwrite(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRI
     return status;
 }
 
-int ft_nwwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRICT cell_content, ...)
+int ft_nwwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...)
 {
     size_t i = 0;
     assert(table);
@@ -333,7 +333,7 @@ int ft_nwwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RES
 }
 
 
-FORT_EXTERN int ft_row_write(FTABLE *FORT_RESTRICT table, size_t cols, const char* FORT_RESTRICT cells[])
+FT_EXTERN int ft_row_write(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT cells[])
 {
     size_t i = 0;
     assert(table);
@@ -347,7 +347,7 @@ FORT_EXTERN int ft_row_write(FTABLE *FORT_RESTRICT table, size_t cols, const cha
     return F_SUCCESS;
 }
 
-FORT_EXTERN int ft_row_write_ln(FTABLE *FORT_RESTRICT table, size_t cols, const char* FORT_RESTRICT cells[])
+FT_EXTERN int ft_row_write_ln(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT cells[])
 {
     assert(table);
     int status = ft_row_write(table, cols, cells);
@@ -360,7 +360,7 @@ FORT_EXTERN int ft_row_write_ln(FTABLE *FORT_RESTRICT table, size_t cols, const 
 
 
 
-int ft_s_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* FORT_RESTRICT table_cells[rows][cols])
+int ft_s_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* FT_RESTRICT table_cells[rows][cols])
 {
     size_t i = 0;
     assert(table);
@@ -376,7 +376,7 @@ int ft_s_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, cons
     return F_SUCCESS;
 }
 
-int ft_s_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* FORT_RESTRICT table_cells[rows][cols])
+int ft_s_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* FT_RESTRICT table_cells[rows][cols])
 {
     assert(table);
     int status = ft_s_table_write(table, rows, cols, table_cells);
@@ -387,7 +387,7 @@ int ft_s_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, c
 }
 
 
-int ft_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* * FORT_RESTRICT table_cells[rows])
+int ft_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* * FT_RESTRICT table_cells[rows])
 {
     size_t i = 0;
     assert(table);
@@ -403,7 +403,7 @@ int ft_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const 
     return F_SUCCESS;
 }
 
-int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* * FORT_RESTRICT table_cells[rows])
+int ft_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* * FT_RESTRICT table_cells[rows])
 {
     assert(table);
     int status = ft_table_write(table, rows, cols, table_cells);
@@ -427,7 +427,7 @@ int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, con
 
 
 
-const char* ft_to_string(const FTABLE *FORT_RESTRICT table)
+const char* ft_to_string(const FTABLE *FT_RESTRICT table)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
     k = statement; \
@@ -521,7 +521,7 @@ clear:
 }
 
 
-const wchar_t* ft_to_wstring(const FTABLE *FORT_RESTRICT table)
+const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
     k = statement; \
@@ -668,7 +668,9 @@ int ft_add_separator(FTABLE *table)
 
 struct ft_border_style * FT_BASIC_STYLE = (struct ft_border_style *)&FORT_BASIC_STYLE;
 struct ft_border_style * FT_SIMPLE_STYLE = (struct ft_border_style *)&FORT_SIMPLE_STYLE;
+struct ft_border_style * FT_PLAIN_STYLE =  (struct ft_border_style *)&FORT_PLAIN_STYLE;
 struct ft_border_style * FT_DOT_STYLE = (struct ft_border_style *)&FORT_DOT_STYLE;
+struct ft_border_style * FT_EMPTY_STYLE  = (struct ft_border_style *)&FORT_EMPTY_STYLE;
 
 
 
@@ -676,7 +678,9 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
 {
     if ((struct fort_border_style *)style == &FORT_BASIC_STYLE
         || (struct fort_border_style *)style == &FORT_SIMPLE_STYLE
-        || (struct fort_border_style *)style == &FORT_DOT_STYLE)
+        || (struct fort_border_style *)style == &FORT_DOT_STYLE
+        || (struct fort_border_style *)style == &FORT_PLAIN_STYLE
+        || (struct fort_border_style *)style == &FORT_EMPTY_STYLE)
     {
         memcpy(&(options->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
         return;
@@ -687,6 +691,7 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
 
 #define BOR_CHARS options->border_style.border_chars
 #define H_BOR_CHARS options->border_style.header_border_chars
+#define SEP_CHARS options->border_style.separator_chars
 
     /*
     BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->top_border_ch;
@@ -729,8 +734,13 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
         H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
     }
 
+    SEP_CHARS[LH_sip] = SEP_CHARS[RH_sip] = SEP_CHARS[II_sip] = header_border_chs->out_intersect_ch;
+    SEP_CHARS[IH_sip] = style->hor_separator_char;
+
+
 #undef BOR_CHARS
 #undef H_BOR_CHARS
+#undef SEP_CHARS
 }
 
 

@@ -20,7 +20,7 @@ enum RowType
 fort_row_t * create_row();
 void destroy_row(fort_row_t *row);
 fort_row_t * create_row_from_string(const char *str);
-fort_row_t* create_row_from_fmt_string(const char* FORT_RESTRICT fmt, va_list *va_args);
+fort_row_t* create_row_from_fmt_string(const char* FT_RESTRICT fmt, va_list *va_args);
 
 
 int columns_in_row(const fort_row_t *row);
@@ -48,7 +48,7 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
 
 
 fort_row_t* create_row_from_string(const char *str);
-fort_row_t* create_row_from_fmt_string(const char* FORT_RESTRICT fmt, va_list *va_args);
+fort_row_t* create_row_from_fmt_string(const char* FT_RESTRICT fmt, va_list *va_args);
 
 int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                         size_t row_height, const context_t *context);

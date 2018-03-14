@@ -54,7 +54,7 @@ fort_row_t *get_row_and_create_if_not_exists(fort_table_t *table, size_t row)
 
 
 
-string_buffer_t * get_cur_str_buffer_and_create_if_not_exists(FTABLE *FORT_RESTRICT table)
+string_buffer_t * get_cur_str_buffer_and_create_if_not_exists(FTABLE *FT_RESTRICT table)
 {
     assert(table);
 

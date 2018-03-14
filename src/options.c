@@ -13,8 +13,9 @@ struct fort_cell_options g_default_cell_option =
     FT_ANY_COLUMN, /* cell_col */
 
     /* options */
-    FT_OPT_MIN_WIDTH  | FT_OPT_TEXT_ALIGN | FT_OPT_TOP_PADDING | FT_OPT_BOTTOM_PADDING
-    | FT_OPT_LEFT_PADDING | FT_OPT_RIGHT_PADDING | FT_OPT_EMPTY_STR_HEIGHT ,
+    FT_OPT_MIN_WIDTH  | FT_OPT_TEXT_ALIGN | FT_OPT_TOP_PADDING
+    | FT_OPT_BOTTOM_PADDING | FT_OPT_LEFT_PADDING | FT_OPT_RIGHT_PADDING
+    | FT_OPT_EMPTY_STR_HEIGHT ,
 
     0,             /* col_min_width */
     RightAligned,  /* align */
@@ -224,7 +225,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     },                            \
     /* separator_chars */         \
     {                             \
-    '+', '=', '+', '+',           \
+    '+', '-', '+', '+',           \
     },                            \
 }
 
@@ -245,7 +246,28 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     },                            \
     /* separator_chars */         \
     {                             \
-    ' ', '=', ' ', ' ',           \
+    ' ', '-', ' ', ' ',           \
+    },                            \
+}
+
+#define PLAIN_STYLE  {            \
+    /* border_chars */            \
+    {                             \
+     ' ', ' ', ' ', ' ',          \
+     ' ', ' ', ' ',               \
+     '\0', '\0', '\0', '\0',      \
+     ' ', ' ', ' ', ' '           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    ' ', '-', '-', ' ',           \
+    ' ', ' ', ' ',                \
+    ' ', '-', '-', ' ',           \
+    ' ', '-', '-', ' '            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    ' ', '-', '-', ' ',           \
     },                            \
 }
 
@@ -266,13 +288,36 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     },                            \
     /* separator_chars */         \
     {                             \
-    '+', '=', '+', '+',           \
+    ':', '.', ':', ':',           \
+    },                            \
+}
+
+#define EMPTY_STYLE  {              \
+    /* border_chars */            \
+    {                             \
+     ' ', ' ', ' ', ' ',          \
+     ' ', ' ', ' ',               \
+     '\0', '\0', '\0', '\0',      \
+     ' ', ' ', ' ', ' '           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    ' ', ' ', ' ', ' ',           \
+    ' ', ' ', ' ',                \
+    '\0', '\0', '\0', '\0',      \
+    ' ', ' ', ' ', ' '            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    ' ', ' ', ' ', ' ',           \
     },                            \
 }
 
 struct fort_border_style FORT_BASIC_STYLE = BASIC_STYLE;
 struct fort_border_style FORT_SIMPLE_STYLE = SIMPLE_STYLE;
+struct fort_border_style FORT_PLAIN_STYLE = PLAIN_STYLE;
 struct fort_border_style FORT_DOT_STYLE = DOT_STYLE;
+struct fort_border_style FORT_EMPTY_STYLE = EMPTY_STYLE;
 
 
 

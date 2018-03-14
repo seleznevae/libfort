@@ -37,13 +37,13 @@ SOFTWARE.
  * Determine compiler
  */
 #if defined(__clang__)
-#define FORT_CLANG_COMPILER
+#define FT_CLANG_COMPILER
 #elif defined(__GNUC__)
-#define FORT_GCC_COMPILER
+#define FT_GCC_COMPILER
 #elif defined(_MSC_VER)
-#define FORT_MICROSOFT_COMPILER
+#define FT_MICROSOFT_COMPILER
 #else
-#define FORT_UNDEFINED_COMPILER
+#define FT_UNDEFINED_COMPILER
 #endif
 
 
@@ -52,59 +52,59 @@ SOFTWARE.
  * Declare restrict
  */
 #if defined(__cplusplus)
-#if defined(FORT_CLANG_COMPILER)
-#define FORT_RESTRICT __restrict__
+#if defined(FT_CLANG_COMPILER)
+#define FT_RESTRICT __restrict__
 #else
-#define FORT_RESTRICT __restrict
-#endif /* if defined(FORT_CLANG_COMPILER) */
+#define FT_RESTRICT __restrict
+#endif /* if defined(FT_CLANG_COMPILER) */
 #else
 #if __STDC_VERSION__ < 199901L
-#define FORT_RESTRICT
+#define FT_RESTRICT
 #else
-#define FORT_RESTRICT restrict
+#define FT_RESTRICT restrict
 #endif /* __STDC_VERSION__ < 199901L */
 #endif /* if defined(__cplusplus) */
 
-/* #define FORT_RESTRICT*/
+/* #define FT_RESTRICT*/
 
 
 /*
  * Declare restrict
  */
 #if defined(__cplusplus)
-#define FORT_INLINE inline
+#define FT_INLINE inline
 #else
-#define FORT_INLINE __inline
+#define FT_INLINE __inline
 #endif /* if defined(__cplusplus) */
 
-/* #define FORT_RESTRICT*/
+/* #define FT_RESTRICT*/
 
 
 /*
  * Attribute format for argument checking
  */
-#if defined(FORT_CLANG_COMPILER) || defined(FORT_GCC_COMPILER)
-#define FORT_PRINTF_ATTRIBUTE_FORMAT(string_index, first_to_check) \
+#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
+#define FT_PRINTF_ATTRIBUTE_FORMAT(string_index, first_to_check) \
     __attribute__ ((format (printf, string_index, first_to_check)))
 #else
-#define FORT_PRINTF_ATTRIBUTE_FORMAT(string_index, first_to_check)
-#endif /* defined(FORT_CLANG_COMPILER) || defined(FORT_GCC_COMPILER) */
+#define FT_PRINTF_ATTRIBUTE_FORMAT(string_index, first_to_check)
+#endif /* defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER) */
 
 
 /*
  *  C++ needs to know that types and declarations are C, not C++.
  */
 #ifdef	__cplusplus
-# define FORT_BEGIN_DECLS	extern "C" {
-# define FORT_END_DECLS	}
+# define FT_BEGIN_DECLS	extern "C" {
+# define FT_END_DECLS	}
 #else
-# define FORT_BEGIN_DECLS
-# define FORT_END_DECLS
+# define FT_BEGIN_DECLS
+# define FT_END_DECLS
 #endif
 
 
-#ifndef FORT_EXTERN
-#define FORT_EXTERN extern
+#ifndef FT_EXTERN
+#define FT_EXTERN extern
 #endif
 
 
@@ -115,7 +115,7 @@ SOFTWARE.
 /*
  *  Wchar support
  */
-#define FORT_HAVE_WCHAR
+#define FT_HAVE_WCHAR
 
 /*
  * Helper macros
@@ -127,13 +127,13 @@ SOFTWARE.
     STR_2_CAT_(arg1, arg2)
 
 
-static FORT_INLINE int fort_check_if_string_helper(const char*str)
+static FT_INLINE int ft_check_if_string_helper(const char*str)
 {
     (void)str;
     return 0;
 }
 
-static FORT_INLINE int fort_check_if_wstring_helper(const wchar_t*str)
+static FT_INLINE int ft_check_if_wstring_helper(const wchar_t*str)
 {
     (void)str;
     return 0;
@@ -156,70 +156,70 @@ static FORT_INLINE int fort_check_if_wstring_helper(const wchar_t*str)
 
 
 
-#define CHECK_IF_ARG_IS_STRING_32(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_31(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_31(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_30(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_30(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_29(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_29(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_28(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_28(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_27(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_27(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_26(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_26(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_25(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_25(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_24(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_24(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_23(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_23(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_22(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_22(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_21(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_21(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_20(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_20(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_19(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_19(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_18(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_18(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_17(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_17(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_16(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_16(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_15(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_15(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_14(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_14(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_13(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_13(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_12(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_12(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_11(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_11(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_10(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_10(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_9(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_9(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_8(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_8(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_7(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_7(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_6(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_6(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_5(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_5(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_4(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_4(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_3(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_3(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_2(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_2(checker,arg,...) (checker(arg),CHECK_IF_ARG_IS_STRING_1(checker,__VA_ARGS__))
-#define CHECK_IF_ARG_IS_STRING_1(checker,arg) (checker(arg))
+#define CHECK_IF_STRING_32(checker,arg,...) (checker(arg),CHECK_IF_STRING_31(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_31(checker,arg,...) (checker(arg),CHECK_IF_STRING_30(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_30(checker,arg,...) (checker(arg),CHECK_IF_STRING_29(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_29(checker,arg,...) (checker(arg),CHECK_IF_STRING_28(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_28(checker,arg,...) (checker(arg),CHECK_IF_STRING_27(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_27(checker,arg,...) (checker(arg),CHECK_IF_STRING_26(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_26(checker,arg,...) (checker(arg),CHECK_IF_STRING_25(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_25(checker,arg,...) (checker(arg),CHECK_IF_STRING_24(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_24(checker,arg,...) (checker(arg),CHECK_IF_STRING_23(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_23(checker,arg,...) (checker(arg),CHECK_IF_STRING_22(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_22(checker,arg,...) (checker(arg),CHECK_IF_STRING_21(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_21(checker,arg,...) (checker(arg),CHECK_IF_STRING_20(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_20(checker,arg,...) (checker(arg),CHECK_IF_STRING_19(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_19(checker,arg,...) (checker(arg),CHECK_IF_STRING_18(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_18(checker,arg,...) (checker(arg),CHECK_IF_STRING_17(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_17(checker,arg,...) (checker(arg),CHECK_IF_STRING_16(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_16(checker,arg,...) (checker(arg),CHECK_IF_STRING_15(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_15(checker,arg,...) (checker(arg),CHECK_IF_STRING_14(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_14(checker,arg,...) (checker(arg),CHECK_IF_STRING_13(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_13(checker,arg,...) (checker(arg),CHECK_IF_STRING_12(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_12(checker,arg,...) (checker(arg),CHECK_IF_STRING_11(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_11(checker,arg,...) (checker(arg),CHECK_IF_STRING_10(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_10(checker,arg,...) (checker(arg),CHECK_IF_STRING_9(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_9(checker,arg,...) (checker(arg),CHECK_IF_STRING_8(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_8(checker,arg,...) (checker(arg),CHECK_IF_STRING_7(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_7(checker,arg,...) (checker(arg),CHECK_IF_STRING_6(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_6(checker,arg,...) (checker(arg),CHECK_IF_STRING_5(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_5(checker,arg,...) (checker(arg),CHECK_IF_STRING_4(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_4(checker,arg,...) (checker(arg),CHECK_IF_STRING_3(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_3(checker,arg,...) (checker(arg),CHECK_IF_STRING_2(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_2(checker,arg,...) (checker(arg),CHECK_IF_STRING_1(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_1(checker,arg) (checker(arg))
 
 #define CHECK_IF_ARGS_ARE_STRINGS__(checker,func, ...) func(checker,__VA_ARGS__)
 #define CHECK_IF_ARGS_ARE_STRINGS_(checker,basis, n, ...) CHECK_IF_ARGS_ARE_STRINGS__(checker,STR_2_CAT_(basis, n), __VA_ARGS__)
-#define CHECK_IF_ARGS_ARE_STRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(fort_check_if_string_helper,CHECK_IF_ARG_IS_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
-#ifdef FORT_HAVE_WCHAR
-#define CHECK_IF_ARGS_ARE_WSTRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(fort_check_if_wstring_helper,CHECK_IF_ARG_IS_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
+#define CHECK_IF_ARGS_ARE_STRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_string_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
+#ifdef FT_HAVE_WCHAR
+#define CHECK_IF_ARGS_ARE_WSTRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_wstring_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
 #endif
 
 /*
  * libfort structures and functions declarations
  */
 
-FORT_BEGIN_DECLS
+FT_BEGIN_DECLS
 
 struct fort_table;
 typedef struct fort_table FTABLE;
 
-FORT_EXTERN FTABLE * ft_create_table(void);
-FORT_EXTERN void ft_destroy_table(FTABLE *FORT_RESTRICT table);
+FT_EXTERN FTABLE * ft_create_table(void);
+FT_EXTERN void ft_destroy_table(FTABLE *FT_RESTRICT table);
 
 
-FORT_EXTERN void ft_ln(FTABLE *FORT_RESTRICT table);
+FT_EXTERN void ft_ln(FTABLE *FT_RESTRICT table);
 
 
-#if defined(FORT_CLANG_COMPILER) || defined(FORT_GCC_COMPILER)
-FORT_EXTERN int ft_printf(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_printf_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
+FT_EXTERN int ft_printf(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_EXTERN int ft_printf_ln(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #else
 
-FORT_EXTERN int ft_printf_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FORT_EXTERN int ft_printf_ln_impl(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT fmt, ...) FORT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_EXTERN int ft_printf_impl(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_EXTERN int ft_printf_ln_impl(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #define ft_printf(table, ...) \
     (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_impl(table, __VA_ARGS__))
@@ -229,55 +229,55 @@ FORT_EXTERN int ft_printf_ln_impl(FTABLE *FORT_RESTRICT table, const char* FORT_
 
 
 
-FORT_EXTERN int ft_write(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content);
-FORT_EXTERN int ft_write_ln(FTABLE *FORT_RESTRICT table, const char* FORT_RESTRICT cell_content);
+FT_EXTERN int ft_write(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT cell_content);
+FT_EXTERN int ft_write_ln(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT cell_content);
 
 #define FT_NWRITE(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 #define FT_NWRITE_LN(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-FORT_EXTERN int ft_nwrite(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...);
-FORT_EXTERN int ft_nwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const char* FORT_RESTRICT cell_content, ...);
+FT_EXTERN int ft_nwrite(FTABLE *FT_RESTRICT table, size_t n, const char* FT_RESTRICT cell_content, ...);
+FT_EXTERN int ft_nwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const char* FT_RESTRICT cell_content, ...);
 
 
-#ifdef FORT_HAVE_WCHAR
-FORT_EXTERN int ft_wwrite(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_content);
-FORT_EXTERN int ft_wwrite_ln(FTABLE *FORT_RESTRICT table, const wchar_t* FORT_RESTRICT cell_content);
+#ifdef FT_HAVE_WCHAR
+FT_EXTERN int ft_wwrite(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content);
+FT_EXTERN int ft_wwrite_ln(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content);
 
 #define FT_NWWRITE(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 #define FT_NWWRITE_LN(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-FORT_EXTERN int ft_nwwrite(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRICT cell_content, ...);
-FORT_EXTERN int ft_nwwrite_ln(FTABLE *FORT_RESTRICT table, size_t n, const wchar_t* FORT_RESTRICT cell_content, ...);
+FT_EXTERN int ft_nwwrite(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...);
+FT_EXTERN int ft_nwwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...);
 #endif
 
 
 
-FORT_EXTERN int ft_row_write(FTABLE *FORT_RESTRICT table, size_t cols, const char* FORT_RESTRICT row_cells[]);
-FORT_EXTERN int ft_row_write_ln(FTABLE *FORT_RESTRICT table, size_t cols, const char* FORT_RESTRICT row_cells[]);
+FT_EXTERN int ft_row_write(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT row_cells[]);
+FT_EXTERN int ft_row_write_ln(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT row_cells[]);
 
-FORT_EXTERN int ft_s_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* FORT_RESTRICT table_cells[rows][cols]);
-FORT_EXTERN int ft_s_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* FORT_RESTRICT table_cells[rows][cols]);
+FT_EXTERN int ft_s_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* FT_RESTRICT table_cells[rows][cols]);
+FT_EXTERN int ft_s_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* FT_RESTRICT table_cells[rows][cols]);
 
-FORT_EXTERN int ft_table_write(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* * FORT_RESTRICT table_cells[rows]);
-FORT_EXTERN int ft_table_write_ln(FTABLE *FORT_RESTRICT table, size_t rows, size_t cols, const char* * FORT_RESTRICT table_cells[rows]);
-
-
-
-
-
-
-FORT_EXTERN int ft_add_separator(FTABLE *FORT_RESTRICT table);
+FT_EXTERN int ft_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* * FT_RESTRICT table_cells[rows]);
+FT_EXTERN int ft_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* * FT_RESTRICT table_cells[rows]);
 
 
 
 
 
 
-FORT_EXTERN const char* ft_to_string(const FTABLE *FORT_RESTRICT table);
-FORT_EXTERN const wchar_t* ft_to_wstring(const FTABLE *FORT_RESTRICT table);
-/*FORT_EXTERN ssize_t ft_n_to_string(const FTABLE *FORT_RESTRICT table, char *FORT_RESTRICT dst, size_t dst_len);*/
+FT_EXTERN int ft_add_separator(FTABLE *FT_RESTRICT table);
+
+
+
+
+
+
+FT_EXTERN const char* ft_to_string(const FTABLE *FT_RESTRICT table);
+FT_EXTERN const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table);
+/*FT_EXTERN ssize_t ft_n_to_string(const FTABLE *FT_RESTRICT table, char *FT_RESTRICT dst, size_t dst_len);*/
 
 
 
@@ -296,21 +296,24 @@ struct ft_border_style
 {
     struct ft_border_chars border_chs;
     struct ft_border_chars header_border_chs;
+    char hor_separator_char;
 };
 
 /* List of built-in table border styles */
 extern struct ft_border_style * FT_BASIC_STYLE;
 extern struct ft_border_style * FT_SIMPLE_STYLE;
+extern struct ft_border_style * FT_PLAIN_STYLE;
 extern struct ft_border_style * FT_DOT_STYLE;
+extern struct ft_border_style * FT_EMPTY_STYLE;
 
 
-FORT_EXTERN int ft_set_default_borders(struct ft_border_style *style);
-FORT_EXTERN int ft_set_table_borders(FTABLE * FORT_RESTRICT table, struct ft_border_style *style);
+FT_EXTERN int ft_set_default_borders(struct ft_border_style *style);
+FT_EXTERN int ft_set_table_borders(FTABLE * FT_RESTRICT table, struct ft_border_style *style);
 
-FORT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
-FORT_EXTERN int ft_set_cell_option(FTABLE * FORT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
+FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
+FT_EXTERN int ft_set_cell_option(FTABLE * FT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
 
 
-FORT_END_DECLS
+FT_END_DECLS
 
 #endif /* LIBFORT_H */
