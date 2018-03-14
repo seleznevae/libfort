@@ -744,13 +744,13 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
 }
 
 
-int ft_set_default_borders(struct ft_border_style *style)
+int ft_set_default_border_style(struct ft_border_style *style)
 {
     set_border_options_for_options(&g_table_options, style);
     return F_SUCCESS;
 }
 
-int ft_set_table_borders(FTABLE *table, struct ft_border_style *style)
+int ft_set_border_style(FTABLE *table, struct ft_border_style *style)
 {
     assert(table);
     if (table->options == NULL) {
@@ -764,7 +764,7 @@ int ft_set_table_borders(FTABLE *table, struct ft_border_style *style)
 
 
 
-int ft_set_cell_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, int value)
+int ft_set_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, int value)
 {
     assert(table);
 
@@ -782,7 +782,7 @@ int ft_set_cell_option(FTABLE *table, unsigned row, unsigned col, uint32_t optio
     return set_cell_option(table->options->cell_options, row, col, option, value);
 }
 
-int ft_set_default_cell_option(uint32_t option, int value)
+int ft_set_default_option(uint32_t option, int value)
 {
     return set_default_cell_option(option, value);
 }

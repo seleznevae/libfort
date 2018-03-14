@@ -77,7 +77,6 @@ SOFTWARE.
 #define FT_INLINE __inline
 #endif /* if defined(__cplusplus) */
 
-/* #define FT_RESTRICT*/
 
 
 /*
@@ -240,17 +239,7 @@ FT_EXTERN int ft_nwrite(FTABLE *FT_RESTRICT table, size_t n, const char* FT_REST
 FT_EXTERN int ft_nwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const char* FT_RESTRICT cell_content, ...);
 
 
-#ifdef FT_HAVE_WCHAR
-FT_EXTERN int ft_wwrite(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content);
-FT_EXTERN int ft_wwrite_ln(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content);
 
-#define FT_NWWRITE(table, ...)\
-    (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-#define FT_NWWRITE_LN(table, ...)\
-    (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-FT_EXTERN int ft_nwwrite(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...);
-FT_EXTERN int ft_nwwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...);
-#endif
 
 
 
@@ -276,9 +265,6 @@ FT_EXTERN int ft_add_separator(FTABLE *FT_RESTRICT table);
 
 
 FT_EXTERN const char* ft_to_string(const FTABLE *FT_RESTRICT table);
-FT_EXTERN const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table);
-/*FT_EXTERN ssize_t ft_n_to_string(const FTABLE *FT_RESTRICT table, char *FT_RESTRICT dst, size_t dst_len);*/
-
 
 
 
@@ -307,11 +293,33 @@ extern struct ft_border_style * FT_DOT_STYLE;
 extern struct ft_border_style * FT_EMPTY_STYLE;
 
 
-FT_EXTERN int ft_set_default_borders(struct ft_border_style *style);
-FT_EXTERN int ft_set_table_borders(FTABLE * FT_RESTRICT table, struct ft_border_style *style);
+FT_EXTERN int ft_set_default_border_style(struct ft_border_style *style);
+FT_EXTERN int ft_set_border_style(FTABLE * FT_RESTRICT table, struct ft_border_style *style);
 
-FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
-FT_EXTERN int ft_set_cell_option(FTABLE * FT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
+FT_EXTERN int ft_set_default_option(uint32_t option, int value);
+FT_EXTERN int ft_set_option(FTABLE * FT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
+
+
+
+
+
+
+#ifdef FT_HAVE_WCHAR
+
+FT_EXTERN int ft_wwrite(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content);
+FT_EXTERN int ft_wwrite_ln(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content);
+
+#define FT_NWWRITE(table, ...)\
+    (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
+#define FT_NWWRITE_LN(table, ...)\
+    (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
+FT_EXTERN int ft_nwwrite(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...);
+FT_EXTERN int ft_nwwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...);
+
+
+FT_EXTERN const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table);
+#endif
+
 
 
 FT_END_DECLS

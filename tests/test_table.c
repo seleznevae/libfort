@@ -14,11 +14,11 @@ int set_test_options_for_table(FTABLE *table)
 {
     assert(table);
     int status = F_SUCCESS;
-    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 1);
-    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_TOP_PADDING, 1);
-    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_LEFT_PADDING, 1);
-    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_RIGHT_PADDING, 1);
-    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_EMPTY_STR_HEIGHT, 1);
+    status |= ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 1);
+    status |= ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_TOP_PADDING, 1);
+    status |= ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_LEFT_PADDING, 1);
+    status |= ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_RIGHT_PADDING, 1);
+    status |= ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_EMPTY_STR_HEIGHT, 1);
 
     assert_true( status == F_SUCCESS );
 
@@ -39,21 +39,21 @@ int set_test_options_for_table(FTABLE *table)
     brdr_style.header_border_chs.in_intersect_ch = '+';
 
     brdr_style.hor_separator_char = '=';
-    return ft_set_table_borders(table, &brdr_style);
+    return ft_set_border_style(table, &brdr_style);
 }
 
 int set_test_options_as_default()
 {
     int status = F_SUCCESS;
 
-    status |= ft_set_default_cell_option(FT_OPT_MIN_WIDTH, 0);
-    status |= ft_set_default_cell_option(FT_OPT_TEXT_ALIGN, RightAligned);
+    status |= ft_set_default_option(FT_OPT_MIN_WIDTH, 0);
+    status |= ft_set_default_option(FT_OPT_TEXT_ALIGN, RightAligned);
 
-    status |= ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 1);
-    status |= ft_set_default_cell_option(FT_OPT_TOP_PADDING, 1);
-    status |= ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 1);
-    status |= ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 1);
-    status |= ft_set_default_cell_option(FT_OPT_EMPTY_STR_HEIGHT, 1);
+    status |= ft_set_default_option(FT_OPT_BOTTOM_PADDING, 1);
+    status |= ft_set_default_option(FT_OPT_TOP_PADDING, 1);
+    status |= ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
+    status |= ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
+    status |= ft_set_default_option(FT_OPT_EMPTY_STR_HEIGHT, 1);
 
     assert_true( status == F_SUCCESS );
 
@@ -75,7 +75,7 @@ int set_test_options_as_default()
 
     brdr_style.hor_separator_char = '=';
 
-    return ft_set_default_borders(&brdr_style);
+    return ft_set_default_border_style(&brdr_style);
 }
 
 void test_table_sizes(void **state)
@@ -182,7 +182,7 @@ void test_table_basic(void **state)
 //        ft_set_table_options(table, &test_table_opts);
         assert_true( set_test_options_for_table(table) == F_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
         int n = ft_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
 
         assert_true( n == 4 );
@@ -222,7 +222,7 @@ void test_table_basic(void **state)
 //        ft_set_table_options(table, &test_table_opts);
         assert_true( set_test_options_for_table(table) == F_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
         int n = ft_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
 
         assert_true( n == 4 );
@@ -260,7 +260,7 @@ void test_table_basic(void **state)
 //        ft_set_table_options(table, &test_table_opts);
         assert_true( set_test_options_for_table(table) == F_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
         int n = ft_printf_ln(table, "||%s|%f", "234", 3.14);
 
         assert_true( n == 4 );
@@ -298,7 +298,7 @@ void test_table_basic(void **state)
 //        ft_set_table_options(table, &test_table_opts);
         assert_true( set_test_options_for_table(table) == F_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
         int n = ft_printf_ln(table, "|||");
 
         assert_true( n == 4 );
@@ -347,7 +347,7 @@ FTABLE *create_test_int_table(int set_test_opts)
 
     assert_true (table != NULL);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+    ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
     int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
 
     assert_true( n == 4 );
@@ -377,10 +377,10 @@ void test_table_options(void **state)
     WHEN("All paddings = 1") {
         set_test_options_as_default();
 
-        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 1);
+        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 1);
+        ft_set_default_option(FT_OPT_TOP_PADDING, 1);
+        ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
+        ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
 
         table = create_test_int_table(0);
 
@@ -411,7 +411,7 @@ void test_table_options(void **state)
         table = create_test_int_table(1);
         ft_add_separator(table);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
         int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
 
         assert_true( n == 4 );
@@ -445,10 +445,10 @@ void test_table_options(void **state)
 
     WHEN("Top and bottom padding = 0") {
 
-        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 0);
-        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 0);
-        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 1);
+        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 0);
+        ft_set_default_option(FT_OPT_TOP_PADDING, 0);
+        ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
+        ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
 
         table = create_test_int_table(0);
 
@@ -471,10 +471,10 @@ void test_table_options(void **state)
 
     WHEN("Left and right padding = 0") {
 
-        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 0);
-        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 0);
+        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 1);
+        ft_set_default_option(FT_OPT_TOP_PADDING, 1);
+        ft_set_default_option(FT_OPT_LEFT_PADDING, 0);
+        ft_set_default_option(FT_OPT_RIGHT_PADDING, 0);
 
         table = create_test_int_table(0);
 
@@ -503,10 +503,10 @@ void test_table_options(void **state)
 
     WHEN("All paddings = 0") {
 
-        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 0);
-        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 0);
-        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 0);
-        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 0);
+        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 0);
+        ft_set_default_option(FT_OPT_TOP_PADDING, 0);
+        ft_set_default_option(FT_OPT_LEFT_PADDING, 0);
+        ft_set_default_option(FT_OPT_RIGHT_PADDING, 0);
 
         table = create_test_int_table(0);
 
@@ -529,11 +529,11 @@ void test_table_options(void **state)
 
     WHEN("Empty string has 0 heigt") {
 
-        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_EMPTY_STR_HEIGHT, 0);
+        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 1);
+        ft_set_default_option(FT_OPT_TOP_PADDING, 1);
+        ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
+        ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
+        ft_set_default_option(FT_OPT_EMPTY_STR_HEIGHT, 0);
 
         table = create_test_int_table(0);
         int n = ft_printf_ln(table, "|||");
@@ -581,7 +581,7 @@ void test_table_options(void **state)
         brdr_style.header_border_chs.side_border_ch = 'v';
         brdr_style.header_border_chs.out_intersect_ch = '+';
         brdr_style.header_border_chs.in_intersect_ch = '#';
-        ft_set_default_borders(&brdr_style);
+        ft_set_default_border_style(&brdr_style);
 
 
 
@@ -624,13 +624,13 @@ void test_table_options(void **state)
         brdr_style.header_border_chs.out_intersect_ch = '+';
         brdr_style.header_border_chs.in_intersect_ch = '#';
 
-        ft_set_default_borders(&brdr_style);
+        ft_set_default_border_style(&brdr_style);
 
-        ft_set_default_cell_option(FT_OPT_BOTTOM_PADDING, 0);
-        ft_set_default_cell_option(FT_OPT_TOP_PADDING, 0);
-        ft_set_default_cell_option(FT_OPT_LEFT_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_RIGHT_PADDING, 1);
-        ft_set_default_cell_option(FT_OPT_EMPTY_STR_HEIGHT, 0);
+        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 0);
+        ft_set_default_option(FT_OPT_TOP_PADDING, 0);
+        ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
+        ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
+        ft_set_default_option(FT_OPT_EMPTY_STR_HEIGHT, 0);
 
 
         table = create_test_int_table(0);
@@ -655,10 +655,10 @@ void test_table_options(void **state)
         table = create_test_int_table(0);
         set_test_options_for_table(table);
 
-        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 0);
-        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_TOP_PADDING, 0);
-        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_LEFT_PADDING, 0);
-        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_RIGHT_PADDING, 0);
+        ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 0);
+        ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_TOP_PADDING, 0);
+        ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_LEFT_PADDING, 0);
+        ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_RIGHT_PADDING, 0);
 
         const char *table_str = ft_to_string(table);
         assert_true( table_str != NULL );
@@ -675,11 +675,11 @@ void test_table_options(void **state)
         assert_true( strcmp(table_str, table_str_etalon) == 0);
 
 
-        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 1);
-        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_TOP_PADDING, 1);
-        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_LEFT_PADDING, 0);
-        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_RIGHT_PADDING, 0);
-        ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_EMPTY_STR_HEIGHT, 0);
+        ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 1);
+        ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_TOP_PADDING, 1);
+        ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_LEFT_PADDING, 0);
+        ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_RIGHT_PADDING, 0);
+        ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_EMPTY_STR_HEIGHT, 0);
 
         table_str = ft_to_string(table);
         assert_true( table_str != NULL );
@@ -712,13 +712,13 @@ void test_table_options(void **state)
         table = create_test_int_table(0);
         int status = F_SUCCESS;
 
-        status |= ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_MIN_WIDTH, 7);
-        status |= ft_set_cell_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
-        status |= ft_set_cell_option(table, FT_ANY_ROW, 2, FT_OPT_MIN_WIDTH, 8);
-        status |= ft_set_cell_option(table, FT_ANY_ROW, 2, FT_OPT_TEXT_ALIGN, CenterAligned);
+        status |= ft_set_option(table, FT_ANY_ROW, 1, FT_OPT_MIN_WIDTH, 7);
+        status |= ft_set_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, LeftAligned);
+        status |= ft_set_option(table, FT_ANY_ROW, 2, FT_OPT_MIN_WIDTH, 8);
+        status |= ft_set_option(table, FT_ANY_ROW, 2, FT_OPT_TEXT_ALIGN, CenterAligned);
 
-        status |= ft_set_cell_option(table, 2, 3, FT_OPT_MIN_WIDTH, 6);
-        status |= ft_set_cell_option(table, 2, 3, FT_OPT_TEXT_ALIGN, LeftAligned);
+        status |= ft_set_option(table, 2, 3, FT_OPT_MIN_WIDTH, 6);
+        status |= ft_set_option(table, 2, 3, FT_OPT_TEXT_ALIGN, LeftAligned);
         assert_true( status == F_SUCCESS);
 
 
@@ -750,8 +750,8 @@ void test_table_options(void **state)
         set_test_options_as_default();
 
         int status = F_SUCCESS;
-        status |= ft_set_default_cell_option(FT_OPT_MIN_WIDTH, 5);
-        status |= ft_set_default_cell_option(FT_OPT_TEXT_ALIGN, CenterAligned);
+        status |= ft_set_default_option(FT_OPT_MIN_WIDTH, 5);
+        status |= ft_set_default_option(FT_OPT_TEXT_ALIGN, CenterAligned);
         assert_true( status == F_SUCCESS);
 
         table = create_test_int_table(0);
@@ -783,7 +783,7 @@ void test_table_options(void **state)
 
         table = ft_create_table();
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
         int n = ft_printf_ln(table, "%d|%c|%s|%f", 4, 'c', "234", 3.14);
 
         assert_true( n == 4 );
