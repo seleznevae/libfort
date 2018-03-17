@@ -1,8 +1,9 @@
 language: C
-sudo: required # to prevent fail of executables build with clang and sanitizers
+#sudo: required # to prevent fail of executables build with clang and sanitizers
 matrix:
   include:
     - os: linux
+      sudo: false
       compiler: gcc
       env: GCC_BUILD=ON
       before_script:
@@ -10,8 +11,11 @@ matrix:
       after_success:
         - coveralls --build-root build --include src --include tests  --gcov-options '\-lp'
     - os: linux
+      sudo: required # to prevent fail of executables build with clang and sanitizers
       compiler: clang
       env: GCC_BUILD=OFF
+      
+
 
 
 
