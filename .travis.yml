@@ -1,5 +1,4 @@
 language: C
-#sudo: required # to prevent fail of executables build with clang and sanitizers
 matrix:
   include:
     - os: linux
@@ -39,8 +38,7 @@ script:
   - cmake .. -DFORT_TEST_BUILD=ON -DFORT_GCC_BUILD=${GCC_BUILD} 
   - cmake --build . --target all 
   - ls
-  - LSAN_OPTIONS=verbosity=1:log_threads=1 ./libfort_dummy
-  - LSAN_OPTIONS=verbosity=1:log_threads=1 ./libfort_example
-  - LSAN_OPTIONS=verbosity=1:log_threads=1 ./libfort_test
+  - ./libfort_example
+  - ./libfort_test
 
 
