@@ -1,0 +1,24 @@
+version: '{build}'
+
+image: Visual Studio 2017
+
+platform:
+  - x64
+  
+configuration:
+  - Debug
+
+install:
+  - git submodule update --init --recursive
+
+before_build:
+  - dir
+  - cd build
+  - dir
+  - cmake -G "Visual Studio 15 2017 Win64" .. -DFORT_TEST_BUILD=OFF -DFORT_GCC_BUILD=OFF -DFORT_MSVC_BUILD=ON
+  
+build:
+  project: $(APPVEYOR_BUILD_FOLDER)\build\$(APPVEYOR_PROJECT_NAME).sln
+
+test_script:
+- '%APPVEYOR_BUILD_FOLDER%\build\Debug\libfort_test.exe'

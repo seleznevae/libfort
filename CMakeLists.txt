@@ -4,6 +4,7 @@ project(libfort)
 
 option(FORT_TEST_BUILD "Test build with sanitizers and small library stack size" ON)
 option(FORT_GCC_BUILD "Build with gcc" ON)
+option(CERAII_MSVC_BUILD "Build with msvc" OFF)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -49,11 +50,11 @@ target_link_libraries(libfort_test
     cmocka)
 
 
-if(FORT_TEST_BUILD)
+if(FORT_TEST_BUILD AND NOT CERAII_MSVC_BUILD)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
     if(FORT_GCC_BUILD)
         target_link_libraries(${PROJECT_NAME}_example asan)
         target_link_libraries(${PROJECT_NAME}_test asan)
     endif(FORT_GCC_BUILD)
-endif(FORT_TEST_BUILD)
+endif(FORT_TEST_BUILD AND NOT CERAII_MSVC_BUILD)
 
