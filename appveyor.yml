@@ -13,6 +13,7 @@ install:
 
 before_build:
   - dir
+  - mkdir build
   - cd build
   - dir
   - cmake -G "Visual Studio 15 2017 Win64" .. -DFORT_TEST_BUILD=OFF -DFORT_GCC_BUILD=OFF -DFORT_MSVC_BUILD=ON
