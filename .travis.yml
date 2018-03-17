@@ -1,5 +1,5 @@
 language: C
-sudo: false
+sudo: required # to prevent fail of executables build with clang and sanitizers
 matrix:
   include:
     - os: linux
