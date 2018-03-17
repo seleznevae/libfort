@@ -333,7 +333,7 @@ int ft_nwwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRIC
 }
 
 
-FT_EXTERN int ft_row_write(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT cells[])
+int ft_row_write(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT cells[])
 {
     size_t i = 0;
     assert(table);
@@ -347,7 +347,7 @@ FT_EXTERN int ft_row_write(FTABLE *FT_RESTRICT table, size_t cols, const char* F
     return F_SUCCESS;
 }
 
-FT_EXTERN int ft_row_write_ln(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT cells[])
+int ft_row_write_ln(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT cells[])
 {
     assert(table);
     int status = ft_row_write(table, cols, cells);

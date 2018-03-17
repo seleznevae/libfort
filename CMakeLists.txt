@@ -49,6 +49,8 @@ target_link_libraries(libfort_test
     cmocka)
 
 
+add_executable(${PROJECT_NAME}_dummy
+    example/main2.c)
 
 
 
