@@ -1,5 +1,6 @@
 #include "vector.h"
 #include <assert.h>
+#include <string.h>
 
 /*****************************************************************************
  *               VECTOR IMPLEMENTATIONS
@@ -29,7 +30,7 @@ static int vector_reallocate_(vector_t *vector, size_t new_capacity)
 
 vector_t* create_vector(size_t item_size, size_t capacity)
 {
-    vector_t *vector = malloc(sizeof(vector_t));
+    vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
     if (vector == NULL) {
         SYS_LOG_ERROR("Failed to allocate memory for asock vector");
         return NULL;
@@ -97,7 +98,7 @@ size_t vector_index_of(const vector_t* vector, const void *item)
 
     size_t i = 0;
     for (i = 0; i < vector->m_size; ++i) {
-        void *data_pos = vector->m_data + i * vector->m_item_size;
+        void *data_pos = (char*)vector->m_data + i * vector->m_item_size;
         if (memcmp(data_pos, item, vector->m_item_size) == 0) {
             return i;
         }
@@ -120,7 +121,7 @@ int vector_push (vector_t* vector, const void* item)
     }
 
     ptrdiff_t deviation = vector->m_size * vector->m_item_size;
-    memcpy(vector->m_data + deviation, item, vector->m_item_size);
+    memcpy((char*)vector->m_data + deviation, item, vector->m_item_size);
 
     ++(vector->m_size);
 
@@ -135,8 +136,8 @@ int vector_erase(vector_t *vector, size_t index)
     if (vector->m_size == 0 || index >= vector->m_size)
         return F_ERROR;
 
-    memmove(vector->m_data + vector->m_item_size * index,
-            vector->m_data + vector->m_item_size * (index + 1),
+    memmove((char*)vector->m_data + vector->m_item_size * index,
+            (char*)vector->m_data + vector->m_item_size * (index + 1),
             (vector->m_size - 1 - index) * vector->m_item_size);
     vector->m_size--;
     return F_SUCCESS;
@@ -153,7 +154,7 @@ const void *vector_at_c(const vector_t *vector, size_t index)
     if (index >= vector->m_size)
         return NULL;
 
-    return vector->m_data + index * vector->m_item_size;
+    return (char*)vector->m_data + index * vector->m_item_size;
 }
 
 
@@ -162,7 +163,7 @@ void *vector_at(vector_t *vector, size_t index)
     if (index >= vector->m_size)
         return NULL;
 
-    return vector->m_data + index * vector->m_item_size;
+    return (char*)vector->m_data + index * vector->m_item_size;
 }
 
 

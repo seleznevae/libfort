@@ -64,7 +64,7 @@ fort_column_options_t g_column_options =
     RightAligned, /* align */
 };
 
-fort_column_options_t create_column_options()
+fort_column_options_t create_column_options(void)
 {
     fort_column_options_t result;
     memset(&result, '\0', sizeof(result));
@@ -73,9 +73,9 @@ fort_column_options_t create_column_options()
 }
 
 
-#define DEFAULT_CELL_OPTION  {FT_ROW_UNSPEC, FT_COLUMN_UNSPEC, 0, 0, 0}
+//#define DEFAULT_CELL_OPTION  {FT_ROW_UNSPEC, FT_COLUMN_UNSPEC, 0, 0, 0}
 
-fort_cell_opt_container_t *create_cell_opt_container()
+fort_cell_opt_container_t *create_cell_opt_container(void)
 {
     fort_cell_opt_container_t *ret = create_vector(sizeof(fort_cell_options_t), DEFAULT_VECTOR_CAPACITY);
     return ret;
@@ -111,7 +111,7 @@ fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_contain
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
-    fort_cell_options_t opt = DEFAULT_CELL_OPTION;
+    fort_cell_options_t opt = g_default_cell_option;// DEFAULT_CELL_OPTION;
     opt.cell_row = row;
     opt.cell_col = col;
     if (IS_SUCCESS(vector_push(cont, &opt))) {
@@ -160,7 +160,7 @@ static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t opt
     if (OPTION_IS_SET(option, FT_OPT_MIN_WIDTH)) {
         opt->col_min_width = value;
     } else if (OPTION_IS_SET(option, FT_OPT_TEXT_ALIGN)) {
-        opt->align = value;
+        opt->align = (enum TextAlignment)value;
     } else if (OPTION_IS_SET(option, FT_OPT_TOP_PADDING)) {
         opt->cell_padding_top = value;
     } else if (OPTION_IS_SET(option, FT_OPT_BOTTOM_PADDING)) {
@@ -172,7 +172,7 @@ static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t opt
     } else if (OPTION_IS_SET(option, FT_OPT_EMPTY_STR_HEIGHT)) {
         opt->cell_empty_string_height = value;
     } else if (OPTION_IS_SET(option, FT_OPT_ROW_TYPE)) {
-        opt->row_type = value;
+        opt->row_type = (enum RowType)value;
     }
 
     return F_SUCCESS;
@@ -330,7 +330,7 @@ fort_table_options_t g_table_options = {
 
 fort_table_options_t* create_table_options()
 {
-    fort_table_options_t* options = F_CALLOC(sizeof(fort_table_options_t), 1);
+    fort_table_options_t* options = (fort_table_options_t*)F_CALLOC(sizeof(fort_table_options_t), 1);
     if (options == NULL) {
         return NULL;
     }

@@ -111,7 +111,7 @@ int main()
     ft_destroy_table(table);
 
     /*-------------------------------------------------------------*/
-
+#if !defined(__cplusplus) && !defined(FT_MICROSOFT_COMPILER)
     table = ft_create_table();
     ft_set_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, LeftAligned);
     ft_set_option(table, FT_ANY_ROW, 1, FT_OPT_TEXT_ALIGN, CenterAligned);
@@ -147,7 +147,7 @@ int main()
     printf("Table:\n");
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
-
+#endif
 
     /*----------------  Different styles  --------------------*/
 

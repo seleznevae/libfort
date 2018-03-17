@@ -49,7 +49,7 @@ SOFTWARE.
 
 FTABLE * ft_create_table(void)
 {
-    FTABLE *result = F_CALLOC(1, sizeof(FTABLE));
+    FTABLE *result = (FTABLE *)F_CALLOC(1, sizeof(FTABLE));
     if (result == NULL)
         return NULL;
 
@@ -109,6 +109,7 @@ void ft_ln(FTABLE *FT_RESTRICT table)
 static int ft_row_printf_impl(FTABLE *FT_RESTRICT table, size_t row, const char* FT_RESTRICT fmt, va_list *va)
 {
     size_t i = 0;
+    size_t new_cols = 0;
 
     if (table == NULL)
         return -1;
@@ -124,12 +125,12 @@ static int ft_row_printf_impl(FTABLE *FT_RESTRICT table, size_t row, const char*
     if (row >= sz) {
         size_t push_n = row - sz + 1;
         for (i = 0; i < push_n; ++i) {
-            fort_row_t *new_row = create_row();
-            if (new_row == NULL)
+            fort_row_t *padding_row = create_row();
+            if (padding_row == NULL)
                 goto clear;
 
-            if (IS_ERROR(vector_push(table->rows, &new_row))) {
-                destroy_row(new_row);
+            if (IS_ERROR(vector_push(table->rows, &padding_row))) {
+                destroy_row(padding_row);
                 goto clear;
             }
         }
@@ -141,7 +142,7 @@ static int ft_row_printf_impl(FTABLE *FT_RESTRICT table, size_t row, const char*
 
     destroy_row(*cur_row_p);
     *cur_row_p = new_row;
-    size_t new_cols = columns_in_row(new_row);
+    new_cols = columns_in_row(new_row);
     table->cur_col += new_cols;
     return new_cols;
 
@@ -359,6 +360,7 @@ int ft_row_write_ln(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTR
 
 
 
+#if !defined(__cplusplus) && !defined(FT_MICROSOFT_COMPILER)
 
 int ft_s_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* FT_RESTRICT table_cells[rows][cols])
 {
@@ -412,7 +414,7 @@ int ft_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const
     }
     return status;
 }
-
+#endif
 
 
 
@@ -468,7 +470,7 @@ const char* ft_to_string(const FTABLE *FT_RESTRICT table)
             return NULL;
         }
     }
-    char_type *buffer = buffer_get_data(table->conv_buffer);
+    char_type *buffer = (char_type *)buffer_get_data(table->conv_buffer);
 
 
     size_t cols = 0;
@@ -562,7 +564,7 @@ const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table)
             return NULL;
         }
     }
-    char_type *buffer = buffer_get_data(table->conv_buffer);
+    char_type *buffer = (char_type *)buffer_get_data(table->conv_buffer);
 
 
     size_t cols = 0;
@@ -618,7 +620,11 @@ clear:
 /*
  *  TMP
  */
-static int dummy_function() __attribute__ ((unused));
+static int dummy_function()
+#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
+__attribute__ ((unused))
+#endif
+;
 
 static int dummy_function()
 {

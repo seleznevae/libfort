@@ -27,7 +27,7 @@ struct fort_column_options
 typedef struct fort_column_options fort_column_options_t;
 
 extern fort_column_options_t g_column_options;
-fort_column_options_t create_column_options();
+fort_column_options_t create_column_options(void);
 
 
 
@@ -73,7 +73,7 @@ typedef struct fort_cell_options fort_cell_options_t;
 
 
 typedef vector_t fort_cell_opt_container_t;
-fort_cell_opt_container_t *create_cell_opt_container();
+fort_cell_opt_container_t *create_cell_opt_container(void);
 void destroy_cell_opt_container(fort_cell_opt_container_t *cont);
 const fort_cell_options_t* cget_cell_opt(const fort_cell_opt_container_t *cont, unsigned row, unsigned col);
 fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, unsigned row, unsigned col);

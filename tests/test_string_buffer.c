@@ -200,51 +200,51 @@ void test_buffer_text_width(void)
 {
     string_buffer_t *buffer = create_string_buffer(200, CharBuf);
     buffer->type = CharBuf;
-    char *old_value = buffer->cstr;
+    char *old_value = buffer->str.cstr;
 
-    buffer->cstr = "";
+    buffer->str.cstr = "";
     assert_true(buffer_text_width(buffer) == 0);
 
-    buffer->cstr = "\n\n\n\n";
+    buffer->str.cstr = "\n\n\n\n";
     assert_true(buffer_text_width(buffer) == 0);
 
-    buffer->cstr = "12345";
+    buffer->str.cstr = "12345";
     assert_true(buffer_text_width(buffer) == 5);
 
-    buffer->cstr = "12345\n1234567";
+    buffer->str.cstr = "12345\n1234567";
     assert_true(buffer_text_width(buffer) == 7);
 
-    buffer->cstr = "12345\n1234567\n";
+    buffer->str.cstr = "12345\n1234567\n";
     assert_true(buffer_text_width(buffer) == 7);
 
-    buffer->cstr = "12345\n1234567\n123";
+    buffer->str.cstr = "12345\n1234567\n123";
     assert_true(buffer_text_width(buffer) == 7);
 
 
 
     buffer->type = WCharBuf;
 
-    buffer->wstr = L"";
+    buffer->str.wstr = L"";
     assert_true(buffer_text_width(buffer) == 0);
 
-    buffer->wstr = L"\n\n\n\n";
+    buffer->str.wstr = L"\n\n\n\n";
     assert_true(buffer_text_width(buffer) == 0);
 
-    buffer->wstr = L"12345";
+    buffer->str.wstr = L"12345";
     assert_true(buffer_text_width(buffer) == 5);
 
-    buffer->wstr = L"12345\n1234567";
+    buffer->str.wstr = L"12345\n1234567";
     assert_true(buffer_text_width(buffer) == 7);
 
-    buffer->wstr = L"12345\n1234567\n";
+    buffer->str.wstr = L"12345\n1234567\n";
     assert_true(buffer_text_width(buffer) == 7);
 
-    buffer->wstr = L"12345\n1234567\n123";
+    buffer->str.wstr = L"12345\n1234567\n123";
     assert_true(buffer_text_width(buffer) == 7);
 
 
     buffer->type = CharBuf;
-    buffer->cstr = old_value;
+    buffer->str.cstr = old_value;
     destroy_string_buffer(buffer);
 }
 
@@ -253,54 +253,54 @@ void test_buffer_text_height(void)
 {
     string_buffer_t *buffer = create_string_buffer(200, CharBuf);
     buffer->type = CharBuf;
-    char *old_value = buffer->cstr;
+    char *old_value = buffer->str.cstr;
 
-    buffer->cstr = "";
+    buffer->str.cstr = "";
     assert_true(buffer_text_height(buffer) == 0);
 
-    buffer->cstr = "\n";
+    buffer->str.cstr = "\n";
     assert_true(buffer_text_height(buffer) == 2);
 
-    buffer->cstr = "\n\n";
+    buffer->str.cstr = "\n\n";
     assert_true(buffer_text_height(buffer) == 3);
 
-    buffer->cstr = "\n\n\n\n";
+    buffer->str.cstr = "\n\n\n\n";
     assert_true(buffer_text_height(buffer) == 5);
 
-    buffer->cstr = "12345";
+    buffer->str.cstr = "12345";
     assert_true(buffer_text_height(buffer) == 1);
 
-    buffer->cstr = "\n12345";
+    buffer->str.cstr = "\n12345";
     assert_true(buffer_text_height(buffer) == 2);
 
-    buffer->cstr = "\n12345\n\n2";
+    buffer->str.cstr = "\n12345\n\n2";
     assert_true(buffer_text_height(buffer) == 4);
 
 
     buffer->type = WCharBuf;
-    buffer->wstr = L"";
+    buffer->str.wstr = L"";
     assert_true(buffer_text_height(buffer) == 0);
 
-    buffer->wstr = L"\n";
+    buffer->str.wstr = L"\n";
     assert_true(buffer_text_height(buffer) == 2);
 
-    buffer->wstr = L"\n\n";
+    buffer->str.wstr = L"\n\n";
     assert_true(buffer_text_height(buffer) == 3);
 
-    buffer->wstr = L"\n\n\n\n";
+    buffer->str.wstr = L"\n\n\n\n";
     assert_true(buffer_text_height(buffer) == 5);
 
-    buffer->wstr = L"\xff0fy2345\xff0f";
+    buffer->str.wstr = L"\xff0fy2345\xff0f";
     assert_true(buffer_text_height(buffer) == 1);
 
-    buffer->wstr = L"\n12345";
+    buffer->str.wstr = L"\n12345";
     assert_true(buffer_text_height(buffer) == 2);
 
-    buffer->wstr = L"\n12345\n\n2";
+    buffer->str.wstr = L"\n12345\n\n2";
     assert_true(buffer_text_height(buffer) == 4);
 
 
     buffer->type = CharBuf;
-    buffer->cstr = old_value;
+    buffer->str.cstr = old_value;
     destroy_string_buffer(buffer);
 }

@@ -1,15 +1,25 @@
 #include "tests.h"
+#include <stdio.h>
 
+struct test_case test_suit [] = {
+    {"test_vector_basic", test_vector_basic},
+    {"test_table_sizes", test_table_sizes},
+    {"test_table_geometry", test_table_geometry},
+    {"test_table_basic", test_table_basic},
+    {"test_table_options", test_table_options},
+    {"test_string_buffer", test_string_buffer},
+};
 
 int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_vector_basic),
-        cmocka_unit_test(test_table_sizes),
-        cmocka_unit_test(test_table_geometry),
-        cmocka_unit_test(test_table_basic),
-        cmocka_unit_test(test_table_options),
-        cmocka_unit_test(test_string_buffer),
-
-    };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    int n_tests = sizeof(test_suit) / sizeof(test_suit[0]);
+    fprintf(stderr, "[==========] Running %d test(s).\n", n_tests);
+    int i;
+    for (i = 0; i < n_tests; ++i) {
+        fprintf(stderr, "[ RUN      ] %s\n", test_suit[i].name);
+        test_suit[i].test(NULL);
+        fprintf(stderr, "[       OK ] %s\n", test_suit[i].name);
+    }
+    fprintf(stderr, "[==========] %d test(s) run.\n", n_tests);
+    fprintf(stderr, "[  PASSED  ] %d test(s).\n", n_tests);
+    return 0;
 }

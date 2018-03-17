@@ -51,21 +51,21 @@ SOFTWARE.
 /*
  * Declare restrict
  */
-#if defined(__cplusplus)
-#if defined(FT_CLANG_COMPILER)
-#define FT_RESTRICT __restrict__
-#else
-#define FT_RESTRICT __restrict
-#endif /* if defined(FT_CLANG_COMPILER) */
-#else
-#if __STDC_VERSION__ < 199901L
-#define FT_RESTRICT
-#else
-#define FT_RESTRICT restrict
-#endif /* __STDC_VERSION__ < 199901L */
-#endif /* if defined(__cplusplus) */
+//#if defined(__cplusplus)
+//#if defined(FT_CLANG_COMPILER)
+//#define FT_RESTRICT __restrict__
+//#else
+//#define FT_RESTRICT __restrict
+//#endif /* if defined(FT_CLANG_COMPILER) */
+//#else
+//#if __STDC_VERSION__ < 199901L
+//#define FT_RESTRICT
+//#else
+//#define FT_RESTRICT restrict
+//#endif /* __STDC_VERSION__ < 199901L */
+//#endif /* if defined(__cplusplus) */
 
-/* #define FT_RESTRICT*/
+ #define FT_RESTRICT
 
 
 /*
@@ -138,6 +138,7 @@ static FT_INLINE int ft_check_if_wstring_helper(const wchar_t*str)
     return 0;
 }
 
+/*
 #define PP_ARG_N( \
      _1, _2, _3, _4, _5, _6, _7, _8, _9,_10, \
     _11,_12,_13,_14,_15,_16,_17,_18,_19,_20, \
@@ -152,43 +153,47 @@ static FT_INLINE int ft_check_if_wstring_helper(const wchar_t*str)
     PP_ARG_N(__VA_ARGS__)
 #define PP_NARG(...) \
     PP_NARG_(__VA_ARGS__,PP_RSEQ_N())
+*/
 
+#define FORT_NARGS_IMPL_(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,N,...) N
+#define FT_EXPAND_(x) x
+#define PP_NARG(...) \
+    FT_EXPAND_(FORT_NARGS_IMPL_(__VA_ARGS__,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0))
 
-
-#define CHECK_IF_STRING_32(checker,arg,...) (checker(arg),CHECK_IF_STRING_31(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_31(checker,arg,...) (checker(arg),CHECK_IF_STRING_30(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_30(checker,arg,...) (checker(arg),CHECK_IF_STRING_29(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_29(checker,arg,...) (checker(arg),CHECK_IF_STRING_28(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_28(checker,arg,...) (checker(arg),CHECK_IF_STRING_27(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_27(checker,arg,...) (checker(arg),CHECK_IF_STRING_26(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_26(checker,arg,...) (checker(arg),CHECK_IF_STRING_25(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_25(checker,arg,...) (checker(arg),CHECK_IF_STRING_24(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_24(checker,arg,...) (checker(arg),CHECK_IF_STRING_23(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_23(checker,arg,...) (checker(arg),CHECK_IF_STRING_22(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_22(checker,arg,...) (checker(arg),CHECK_IF_STRING_21(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_21(checker,arg,...) (checker(arg),CHECK_IF_STRING_20(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_20(checker,arg,...) (checker(arg),CHECK_IF_STRING_19(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_19(checker,arg,...) (checker(arg),CHECK_IF_STRING_18(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_18(checker,arg,...) (checker(arg),CHECK_IF_STRING_17(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_17(checker,arg,...) (checker(arg),CHECK_IF_STRING_16(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_16(checker,arg,...) (checker(arg),CHECK_IF_STRING_15(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_15(checker,arg,...) (checker(arg),CHECK_IF_STRING_14(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_14(checker,arg,...) (checker(arg),CHECK_IF_STRING_13(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_13(checker,arg,...) (checker(arg),CHECK_IF_STRING_12(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_12(checker,arg,...) (checker(arg),CHECK_IF_STRING_11(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_11(checker,arg,...) (checker(arg),CHECK_IF_STRING_10(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_10(checker,arg,...) (checker(arg),CHECK_IF_STRING_9(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_9(checker,arg,...) (checker(arg),CHECK_IF_STRING_8(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_8(checker,arg,...) (checker(arg),CHECK_IF_STRING_7(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_7(checker,arg,...) (checker(arg),CHECK_IF_STRING_6(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_6(checker,arg,...) (checker(arg),CHECK_IF_STRING_5(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_5(checker,arg,...) (checker(arg),CHECK_IF_STRING_4(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_4(checker,arg,...) (checker(arg),CHECK_IF_STRING_3(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_3(checker,arg,...) (checker(arg),CHECK_IF_STRING_2(checker,__VA_ARGS__))
-#define CHECK_IF_STRING_2(checker,arg,...) (checker(arg),CHECK_IF_STRING_1(checker,__VA_ARGS__))
+#define CHECK_IF_STRING_32(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_31(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_31(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_30(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_30(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_29(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_29(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_28(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_28(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_27(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_27(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_26(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_26(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_25(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_25(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_24(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_24(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_23(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_23(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_22(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_22(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_21(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_21(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_20(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_20(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_19(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_19(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_18(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_18(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_17(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_17(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_16(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_16(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_15(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_15(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_14(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_14(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_13(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_13(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_12(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_12(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_11(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_11(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_10(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_10(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_9(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_9(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_8(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_8(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_7(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_7(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_6(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_6(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_5(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_5(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_4(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_4(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_3(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_3(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_2(checker,__VA_ARGS__)))
+#define CHECK_IF_STRING_2(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_1(checker,__VA_ARGS__)))
 #define CHECK_IF_STRING_1(checker,arg) (checker(arg))
 
-#define CHECK_IF_ARGS_ARE_STRINGS__(checker,func, ...) func(checker,__VA_ARGS__)
+#define CHECK_IF_ARGS_ARE_STRINGS__(checker,func, ...) FT_EXPAND_(func(checker,__VA_ARGS__))
 #define CHECK_IF_ARGS_ARE_STRINGS_(checker,basis, n, ...) CHECK_IF_ARGS_ARE_STRINGS__(checker,STR_2_CAT_(basis, n), __VA_ARGS__)
 #define CHECK_IF_ARGS_ARE_STRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_string_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
 #ifdef FT_HAVE_WCHAR
@@ -246,12 +251,13 @@ FT_EXTERN int ft_nwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const char* FT_R
 FT_EXTERN int ft_row_write(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT row_cells[]);
 FT_EXTERN int ft_row_write_ln(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT row_cells[]);
 
+#if !defined(__cplusplus) && !defined(FT_MICROSOFT_COMPILER)
 FT_EXTERN int ft_s_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* FT_RESTRICT table_cells[rows][cols]);
 FT_EXTERN int ft_s_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* FT_RESTRICT table_cells[rows][cols]);
 
 FT_EXTERN int ft_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* * FT_RESTRICT table_cells[rows]);
 FT_EXTERN int ft_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* * FT_RESTRICT table_cells[rows]);
-
+#endif
 
 
 

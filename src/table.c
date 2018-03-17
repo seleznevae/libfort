@@ -104,8 +104,8 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
     if (IS_ERROR(status))
         return status;
 
-    size_t *col_width_arr = F_CALLOC(sizeof(size_t), cols);
-    size_t *row_height_arr = F_CALLOC(sizeof(size_t), rows);
+    size_t *col_width_arr = (size_t *)F_CALLOC(sizeof(size_t), cols);
+    size_t *row_height_arr = (size_t *)F_CALLOC(sizeof(size_t), rows);
     if (col_width_arr == NULL || row_height_arr == NULL) {
         F_FREE(col_width_arr);
         F_FREE(row_height_arr);

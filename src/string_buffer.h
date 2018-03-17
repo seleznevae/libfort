@@ -21,7 +21,7 @@ struct string_buffer
         char *cstr;
         wchar_t *wstr;
         void *data;
-    };
+    }str;
     size_t data_sz;
     enum str_buf_type type;
 };

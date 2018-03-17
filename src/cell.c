@@ -7,6 +7,7 @@
  *               CELL
  * ***************************************************************************/
 
+
 struct fort_cell
 {
     string_buffer_t *str_buffer;
@@ -15,7 +16,7 @@ struct fort_cell
 
 fort_cell_t * create_cell()
 {
-    fort_cell_t *cell = F_CALLOC(sizeof(fort_cell_t), 1);
+    fort_cell_t *cell = (fort_cell_t *)F_CALLOC(sizeof(fort_cell_t), 1);
     if (cell == NULL)
         return NULL;
     cell->str_buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CharBuf);
@@ -49,7 +50,7 @@ int hint_width_cell(const fort_cell_t *cell, const context_t *context)
     int cell_padding_left = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_OPT_LEFT_PADDING);
     int cell_padding_right = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_OPT_RIGHT_PADDING);
     int result = cell_padding_left + cell_padding_right;
-    if (cell->str_buffer && cell->str_buffer->data) {
+    if (cell->str_buffer && cell->str_buffer->str.data) {
         result += buffer_text_width(cell->str_buffer);
     }
     result = MAX(result, get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_OPT_MIN_WIDTH));
@@ -64,7 +65,7 @@ int hint_height_cell(const fort_cell_t *cell, const context_t *context)
     int cell_padding_bottom = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_OPT_BOTTOM_PADDING);
     int cell_empty_string_height = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_OPT_EMPTY_STR_HEIGHT);
     int result = cell_padding_top + cell_padding_bottom;
-    if (cell->str_buffer && cell->str_buffer->data) {
+    if (cell->str_buffer && cell->str_buffer->str.data) {
         size_t text_height = buffer_text_height(cell->str_buffer);
         result += text_height == 0 ? cell_empty_string_height : text_height;
     }
@@ -185,3 +186,4 @@ string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
     assert(cell->str_buffer);
     return cell->str_buffer;
 }
+

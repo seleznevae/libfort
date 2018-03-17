@@ -15,7 +15,7 @@ struct fort_row
 
 fort_row_t * create_row()
 {
-    fort_row_t * row = F_CALLOC(sizeof(fort_row_t), 1);
+    fort_row_t * row = (fort_row_t *)F_CALLOC(sizeof(fort_row_t), 1);
     if (row == NULL)
         return NULL;
     row->cells = create_vector(sizeof(fort_cell_t*), DEFAULT_VECTOR_CAPACITY);
@@ -137,11 +137,11 @@ int print_row_separator(char *buffer, size_t buffer_sz,
 
     enum RowType lower_row_type = Common;
     if (lower_row != NULL) {
-        lower_row_type = get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
+        lower_row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
     }
     enum RowType upper_row_type = Common;
     if (upper_row != NULL) {
-        upper_row_type = get_cell_opt_value_hierarcial(context->table_options, context->row-1, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
+        upper_row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row-1, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
     }
 
 
@@ -244,11 +244,11 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
 
     enum RowType lower_row_type = Common;
     if (lower_row != NULL) {
-        lower_row_type = get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
+        lower_row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
     }
     enum RowType upper_row_type = Common;
     if (upper_row != NULL) {
-        upper_row_type = get_cell_opt_value_hierarcial(context->table_options, context->row-1, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
+        upper_row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row-1, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
     }
 
     /*  Row separator anatomy
@@ -327,6 +327,10 @@ clear:
 
 fort_row_t* create_row_from_string(const char *str)
 {
+    char *pos = NULL;
+    char *base_pos = NULL;
+    int number_of_separators = 0;
+
     fort_row_t * row = create_row();
     if (row == NULL)
         return NULL;
@@ -338,9 +342,9 @@ fort_row_t* create_row_from_string(const char *str)
     if (str_copy == NULL)
         goto clear;
 
-    char *pos = str_copy;
-    char *base_pos = str_copy;
-    int number_of_separators = 0;
+    pos = str_copy;
+    base_pos = str_copy;
+    number_of_separators = 0;
     while (*pos) {
         pos = strchr(pos, FORT_COL_SEPARATOR);
         if (pos != NULL) {
@@ -410,11 +414,12 @@ fort_row_t* create_row_from_fmt_string(const char* FT_RESTRICT fmt, va_list *va_
         return NULL;
 
     int cols_origin = number_of_columns_in_format_string(fmt);
+    int cols = 0;
 
     while (1) {
         va_list va;
         va_copy(va, *va_args);
-        int virtual_sz = vsnprintf(buffer->cstr, string_buffer_capacity(buffer)/*buffer->str_sz*/, fmt, va);
+        int virtual_sz = vsnprintf(buffer->str.cstr, string_buffer_capacity(buffer)/*buffer->str_sz*/, fmt, va);
         va_end(va);
         /* If error encountered */
         if (virtual_sz == -1)
@@ -429,10 +434,10 @@ fort_row_t* create_row_from_fmt_string(const char* FT_RESTRICT fmt, va_list *va_
             goto clear;
     }
 
-    int cols = number_of_columns_in_format_string(buffer->cstr);
+    cols = number_of_columns_in_format_string(buffer->str.cstr);
     if (cols == cols_origin) {
 
-        fort_row_t *row = create_row_from_string(buffer->cstr);
+        fort_row_t *row = create_row_from_string(buffer->str.cstr);
         if (row == NULL) {
             goto clear;
         }
@@ -473,7 +478,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
      */
 
     typedef const char (*border_chars_point_t)[BorderItemPosSize];
-    enum RowType row_type = get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
+    enum RowType row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
     const char (*bord_chars)[BorderItemPosSize] = (row_type == Header)
             ? (border_chars_point_t) (&context->table_options->border_style.header_border_chars)
             : (border_chars_point_t) (&context->table_options->border_style.border_chars);
@@ -532,7 +537,7 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
      */
 
     typedef const char (*border_chars_point_t)[BorderItemPosSize];
-    enum RowType row_type = get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
+    enum RowType row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_OPT_ROW_TYPE);
     const char (*bord_chars)[BorderItemPosSize] = (row_type)
             ? (border_chars_point_t) (&context->table_options->border_style.header_border_chars)
             : (border_chars_point_t) (&context->table_options->border_style.border_chars);

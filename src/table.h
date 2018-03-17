@@ -19,7 +19,7 @@ struct fort_table
 static FT_INLINE
 separator_t *create_separator(int enabled)
 {
-    separator_t *res = F_CALLOC(1, sizeof(separator_t));
+    separator_t *res = (separator_t *)F_CALLOC(1, sizeof(separator_t));
     if (res == NULL)
         return NULL;
     res->enabled = enabled;

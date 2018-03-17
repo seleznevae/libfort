@@ -11,9 +11,9 @@ static size_t buf_str_len(const string_buffer_t*buf)
 {
     assert(buf);
     if (buf->type == CharBuf) {
-        return strlen(buf->cstr);
+        return strlen(buf->str.cstr);
     } else {
-        return wcslen(buf->wstr);
+        return wcslen(buf->str.wstr);
     }
 }
 
@@ -132,8 +132,8 @@ string_buffer_t* create_string_buffer(size_t number_of_chars, enum str_buf_type 
     string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
     if (result == NULL)
         return NULL;
-    result->data = F_MALLOC(sz);
-    if (result->data == NULL) {
+    result->str.data = F_MALLOC(sz);
+    if (result->str.data == NULL) {
         F_FREE(result);
         return NULL;
     }
@@ -147,8 +147,8 @@ void destroy_string_buffer(string_buffer_t *buffer)
 {
     if (buffer == NULL)
         return;
-    F_FREE(buffer->data);
-    buffer->data = NULL;
+    F_FREE(buffer->str.data);
+    buffer->str.data = NULL;
     F_FREE(buffer);
 }
 
@@ -159,8 +159,8 @@ fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
     if (new_str == NULL) {
         return F_MEMORY_ERROR;
     }
-    F_FREE(buffer->data);
-    buffer->data = new_str;
+    F_FREE(buffer->str.data);
+    buffer->str.data = new_str;
     buffer->data_sz *= 2;
     return F_SUCCESS;
 }
@@ -181,8 +181,8 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
             return status;
         }
     }
-    F_FREE(buffer->data);
-    buffer->cstr = copy;
+    F_FREE(buffer->str.data);
+    buffer->str.cstr = copy;
     buffer->type = CharBuf;
 
     return F_SUCCESS;
@@ -204,8 +204,8 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
             return status;
         }
     }
-    F_FREE(buffer->data);
-    buffer->wstr = copy;
+    F_FREE(buffer->str.data);
+    buffer->str.wstr = copy;
     buffer->type = WCharBuf;
 
     return F_SUCCESS;
@@ -215,13 +215,13 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
 
 size_t buffer_text_height(string_buffer_t *buffer)
 {
-    if (buffer == NULL || buffer->data == NULL || buf_str_len(buffer) == 0) {
+    if (buffer == NULL || buffer->str.data == NULL || buf_str_len(buffer) == 0) {
         return 0;
     }
     if (buffer->type == CharBuf)
-        return 1 + strchr_count(buffer->cstr, '\n');
+        return 1 + strchr_count(buffer->str.cstr, '\n');
     else
-        return 1 + wstrchr_count(buffer->wstr, L'\n');
+        return 1 + wstrchr_count(buffer->str.wstr, L'\n');
 }
 
 size_t buffer_text_width(string_buffer_t *buffer)
@@ -232,18 +232,18 @@ size_t buffer_text_width(string_buffer_t *buffer)
         while (1) {
             const char *beg = NULL;
             const char *end = NULL;
-            str_n_substring(buffer->cstr, '\n', n, &beg, &end);
+            str_n_substring(buffer->str.cstr, '\n', n, &beg, &end);
             if (beg == NULL || end == NULL)
                 return max_length;
 
-            max_length = MAX(max_length, (end - beg));
+            max_length = MAX(max_length, (size_t)(end - beg));
             ++n;
         }
     } else {
         while (1) {
             const wchar_t *beg = NULL;
             const wchar_t *end = NULL;
-            wstr_n_substring(buffer->wstr, L'\n', n, &beg, &end);
+            wstr_n_substring(buffer->str.wstr, L'\n', n, &beg, &end);
             if (beg == NULL || end == NULL)
                 return max_length;
 
@@ -263,11 +263,11 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_colum
 #define SPACE_CHAR ' '
 #define SNPRINTF_FMT_STR "%*s"
 #define SNPRINTF snprintf
-#define BUFFER_STR cstr
+#define BUFFER_STR str.cstr
 #define SNPRINT_N_CHARS  snprint_n_chars
 #define STR_N_SUBSTRING str_n_substring
 
-    if (buffer == NULL || buffer->data == NULL
+    if (buffer == NULL || buffer->str.data == NULL
             || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
         return -1;
     }
@@ -345,11 +345,11 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, size_t table_colu
 #define SPACE_CHAR L' '
 #define SNPRINTF_FMT_STR L"%*ls"
 #define SNPRINTF swprintf
-#define BUFFER_STR wstr
+#define BUFFER_STR str.wstr
 #define SNPRINT_N_CHARS  wsnprint_n_chars
 #define STR_N_SUBSTRING wstr_n_substring
 
-    if (buffer == NULL || buffer->data == NULL
+    if (buffer == NULL || buffer->str.data == NULL
             || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
         return -1;
     }
@@ -430,5 +430,5 @@ size_t string_buffer_capacity(const string_buffer_t *buffer)
 void *buffer_get_data(string_buffer_t *buffer)
 {
     assert(buffer);
-    return buffer->data;
+    return buffer->str.data;
 }
