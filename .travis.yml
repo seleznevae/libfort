@@ -25,25 +25,37 @@ script:
   - cmake --version
 
   # Perform out-of-source build(CMake backend generation, build, and test)
-  # Test build without optimizations
+  # Test build without optimizations and with asan
   - mkdir -p build
   - cd build
-  - cmake .. -DFORT_BUILD_TYPE=asan -DFORT_COMPILER=${FORT_COMPILER} 
+  - cmake .. -DFORT_BUILD_TYPE=asan  
   - cmake --build . --target all 
   - ls
   - ./libfort_example
   - ./libfort_test
 
- # Build for coveralls
-  - if [ ${GCC_BUILD} == 'ON' ];
+  # Test build without optimizations and with ubsan
+  - cd ..
+  - rm -r build/*
+  - cd build
+  - cmake .. -DFORT_BUILD_TYPE=ubsan  
+  - cmake --build . --target all 
+  - ls
+  - ./libfort_example
+  - ./libfort_test
+
+  # Build for coveralls
+  - if [ ${FORT_COMPILER} == 'gcc' ];
     then
     cd ..  ;
     rm -r build/* ;
     cd build ;
-    cmake .. -DFORT_COVERALLS_BUILD=ON -DFORT_BUILD_TYPE=asan -DFORT_COMPILER=${FORT_COMPILER} ;
+    cmake .. -DFORT_BUILD_TYPE=coveralls ;
     cmake --build . --target all ;
     ls ;
     ./libfort_test ;
     fi
   - cd ..
+
+
 

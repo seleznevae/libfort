@@ -4,13 +4,18 @@ project(libfort)
 cmake_minimum_required(VERSION 2.8)
 
 # Built options
-#option(FORT_GCC_BUILD "Build with gcc" ON)
-#option(FORT_MSVC_BUILD "Build with msvc" OFF)
 option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
-option(FORT_COVERALLS_BUILD "Build for coveralls" OFF)
-set(FORT_BUILD_TYPE "common" CACHE STRING "Built types (possible values: common, asan, ubsan, msan)")
-set(FORT_COMPILER "gcc" CACHE STRING "Compiler (possible values: gcc, clang, msvc)")
+#option(FORT_COVERALLS_BUILD "Build for coveralls" OFF)
+set(FORT_BUILD_TYPE "common" CACHE STRING "Built types (possible values: common, asan, ubsan, coveralls)")
+#set(FORT_COMPILER "gcc" CACHE STRING "Compiler (possible values: gcc, clang, msvc)")
 
+
+# Determine compiler (pos. values Clang, GNU, Intel, MSVC, AppleClang... (https://cmake.org/cmake/help/v3.0/variable/CMAKE_LANG_COMPILER_ID.html)
+if(FORT_CXX_BUILD)
+    set(FORT_COMPILER ${CMAKE_CXX_COMPILER_ID})
+else(FORT_CXX_BUILD)
+    set(FORT_COMPILER ${CMAKE_C_COMPILER_ID})
+endif(FORT_CXX_BUILD)
 
 
 
@@ -21,18 +26,11 @@ include_directories(src)
 
 
 # Turn on warnings
-#if(FORT_MSVC_BUILD)
-#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
-#else(FORT_MSVC_BUILD)
-#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
-#endif(FORT_MSVC_BUILD)
-
-
-if(FORT_COMPILER STREQUAL "msvc")
+if(FORT_COMPILER STREQUAL "MSVC")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
-else(FORT_COMPILER STREQUAL "msvc")
+else(FORT_COMPILER STREQUAL "MSVC")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
-endif(FORT_COMPILER STREQUAL "msvc")
+endif(FORT_COMPILER STREQUAL "MSVC")
 
 
 
@@ -82,27 +80,35 @@ endif(FORT_CXX_BUILD)
 
 
 # Adding sanitizers
-if(FORT_COMPILER STREQUAL "gcc" OR FORT_COMPILER STREQUAL "clang")
+if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
+    # asan case
     if(FORT_BUILD_TYPE STREQUAL "asan")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
-        if(FORT_COMPILER STREQUAL "gcc")
+        if(FORT_COMPILER STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example asan)
             target_link_libraries(${PROJECT_NAME}_test asan)
-        endif(FORT_COMPILER STREQUAL "gcc")
+        endif(FORT_COMPILER STREQUAL "GNU")
     endif(FORT_BUILD_TYPE STREQUAL "asan")
+
+    #ubsan case
     if(FORT_BUILD_TYPE STREQUAL "ubsan")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover") #to force fail
-        if(FORT_COMPILER STREQUAL "gcc")
+        if(FORT_COMPILER STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example ubsan)
             target_link_libraries(${PROJECT_NAME}_test ubsan)
-        endif(FORT_COMPILER STREQUAL "gcc")
+        endif(FORT_COMPILER STREQUAL "GNU")
     endif(FORT_BUILD_TYPE STREQUAL "ubsan")
 
-endif(FORT_COMPILER STREQUAL "gcc" OR FORT_COMPILER STREQUAL "clang")
+    #coveralls case
+    if(FORT_BUILD_TYPE STREQUAL "coveralls")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")
+    endif(FORT_BUILD_TYPE STREQUAL "coveralls")
+
+endif(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
 
 
 # Coveralls support
-if(FORT_COVERALLS_BUILD)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")
-endif(FORT_COVERALLS_BUILD)
+#if(FORT_COVERALLS_BUILD)
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")
+#endif(FORT_COVERALLS_BUILD)
