@@ -4,11 +4,12 @@ project(libfort)
 cmake_minimum_required(VERSION 2.8)
 
 # Built options
-option(FORT_GCC_BUILD "Build with gcc" ON)
-option(FORT_MSVC_BUILD "Build with msvc" OFF)
+#option(FORT_GCC_BUILD "Build with gcc" ON)
+#option(FORT_MSVC_BUILD "Build with msvc" OFF)
 option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
 option(FORT_COVERALLS_BUILD "Build for coveralls" OFF)
 set(FORT_BUILD_TYPE "common" CACHE STRING "Built types (possible values: common, asan, ubsan, msan)")
+set(FORT_COMPILER "gcc" CACHE STRING "Compiler (possible values: gcc, clang, msvc)")
 
 
 
@@ -20,13 +21,18 @@ include_directories(src)
 
 
 # Turn on warnings
-if(FORT_MSVC_BUILD)
+#if(FORT_MSVC_BUILD)
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
+#else(FORT_MSVC_BUILD)
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
+#endif(FORT_MSVC_BUILD)
+
+
+if(FORT_COMPILER STREQUAL "msvc")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
-else(FORT_MSVC_BUILD)
+else(FORT_COMPILER STREQUAL "msvc")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
-endif(FORT_MSVC_BUILD)
-
-
+endif(FORT_COMPILER STREQUAL "msvc")
 
 
 
@@ -76,24 +82,24 @@ endif(FORT_CXX_BUILD)
 
 
 # Adding sanitizers
-if(NOT FORT_MSVC_BUILD)
+if(FORT_COMPILER STREQUAL "gcc" OR FORT_COMPILER STREQUAL "clang")
     if(FORT_BUILD_TYPE STREQUAL "asan")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
-        if(FORT_GCC_BUILD)
+        if(FORT_COMPILER STREQUAL "gcc")
             target_link_libraries(${PROJECT_NAME}_example asan)
             target_link_libraries(${PROJECT_NAME}_test asan)
-        endif(FORT_GCC_BUILD)
+        endif(FORT_COMPILER STREQUAL "gcc")
     endif(FORT_BUILD_TYPE STREQUAL "asan")
     if(FORT_BUILD_TYPE STREQUAL "ubsan")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover") #to force fail
-        if(FORT_GCC_BUILD)
+        if(FORT_COMPILER STREQUAL "gcc")
             target_link_libraries(${PROJECT_NAME}_example ubsan)
             target_link_libraries(${PROJECT_NAME}_test ubsan)
-        endif(FORT_GCC_BUILD)
+        endif(FORT_COMPILER STREQUAL "gcc")
     endif(FORT_BUILD_TYPE STREQUAL "ubsan")
 
-endif(NOT FORT_MSVC_BUILD)
+endif(FORT_COMPILER STREQUAL "gcc" OR FORT_COMPILER STREQUAL "clang")
 
 
 # Coveralls support

@@ -4,7 +4,7 @@ matrix:
     - os: linux
       sudo: false
       compiler: gcc
-      env: GCC_BUILD=ON
+      env: FORT_COMPILER=gcc
       before_script:
         - pip install --user cpp-coveralls
       after_success:
@@ -12,7 +12,7 @@ matrix:
     - os: linux
       sudo: required # to prevent fail of executables build with clang and sanitizers
       compiler: clang
-      env: GCC_BUILD=OFF
+      env: FORT_COMPILER=clang
       
 
 
@@ -28,7 +28,7 @@ script:
   # Test build without optimizations
   - mkdir -p build
   - cd build
-  - cmake .. -DFORT_BUILD_TYPE=asan -DFORT_GCC_BUILD=${GCC_BUILD} 
+  - cmake .. -DFORT_BUILD_TYPE=asan -DFORT_COMPILER=${FORT_COMPILER} 
   - cmake --build . --target all 
   - ls
   - ./libfort_example
@@ -40,7 +40,7 @@ script:
     cd ..  ;
     rm -r build/* ;
     cd build ;
-    cmake .. -DFORT_COVERALLS_BUILD=ON -DFORT_BUILD_TYPE=asan -DFORT_GCC_BUILD=${GCC_BUILD} ;
+    cmake .. -DFORT_COVERALLS_BUILD=ON -DFORT_BUILD_TYPE=asan -DFORT_COMPILER=${FORT_COMPILER} ;
     cmake --build . --target all ;
     ls ;
     ./libfort_test ;
