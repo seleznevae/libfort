@@ -108,6 +108,11 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
 endif(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
 
 
+# Hack for some gcc versions
+if(FORT_COMPILER STREQUAL "GNU")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=gold")
+endif(FORT_COMPILER STREQUAL "GNU")
+
 # Coveralls support
 #if(FORT_COVERALLS_BUILD)
 #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")

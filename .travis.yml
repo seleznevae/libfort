@@ -4,7 +4,6 @@ matrix:
     - os: linux
       sudo: false
       compiler: gcc
-      env: FORT_COMPILER=gcc
       before_script:
         - pip install --user cpp-coveralls
       after_success:
@@ -12,13 +11,66 @@ matrix:
     - os: linux
       sudo: required # to prevent fail of executables build with clang and sanitizers
       compiler: clang
-      env: FORT_COMPILER=clang
+      env: CC=clang
+
+
+    # Linux / GCC
+    - os: linux
+      sudo: false
+      compiler: gcc
+      env: 
+        - FORT_C_COMPILER=gcc-4.9
+        - FORT_CXX_COMPILER=g++-4.9
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-4.9']
+
+    - os: linux
+      sudo: false
+      compiler: gcc
+      env: 
+        - FORT_C_COMPILER=gcc-5
+        - FORT_CXX_COMPILER=g++-5
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-5']
+
+    - os: linux
+      sudo: false
+      compiler: gcc
+      env: 
+        - FORT_C_COMPILER=gcc-6
+        - FORT_CXX_COMPILER=g++-6
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6']
+
+    - os: linux
+      sudo: required
+      compiler: gcc
+      env: 
+        - FORT_C_COMPILER=gcc-7
+        - FORT_CXX_COMPILER=g++-7
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-7']
       
 
 
 
 
 script:
+  # make sure CC is correctly set
+  - if [[ "${FORT_C_COMPILER}" != "" ]];
+    then
+    export CC=${FORT_C_COMPILER}; 
+    export CXX=${FORT_CXX_COMPILER}; 
+    fi
+
   # Print all environment variables to aid in CI development
   - printenv
   # Print version and available CMake generators to aid in CI development
@@ -35,17 +87,20 @@ script:
   - ./libfort_test
 
   # Test build without optimizations and with ubsan
-  - cd ..
-  - rm -r build/*
-  - cd build
-  - cmake .. -DFORT_BUILD_TYPE=ubsan  
-  - cmake --build . --target all 
-  - ls
-  - ./libfort_example
-  - ./libfort_test
+  - if [ "${CC}" == 'gcc-7' ];
+    then
+    cd .. ;
+    rm -r build/* ;
+    cd build ;
+    cmake .. -DFORT_BUILD_TYPE=ubsan  ; 
+    cmake --build . --target all ;
+    ls ;
+    ./libfort_example ;
+    ./libfort_test ;
+    fi
 
   # Build for coveralls
-  - if [ ${FORT_COMPILER} == 'gcc' ];
+  - if [ "${CC}" == 'gcc' ];
     then
     cd ..  ;
     rm -r build/* ;
