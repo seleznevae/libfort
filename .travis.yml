@@ -34,4 +34,16 @@ script:
   - ./libfort_example
   - ./libfort_test
 
+ # Build for coveralls
+  - if [ ${GCC_BUILD} == 'ON' ];
+    then
+    cd ..  ;
+    rm -r build/* ;
+    cd build ;
+    cmake .. -DFORT_COVERALLS_BUILD=ON -DFORT_TEST_BUILD=ON -DFORT_GCC_BUILD=${GCC_BUILD} ;
+    cmake --build . --target all ;
+    ls ;
+    ./libfort_test ;
+    fi
+  - cd ..
 

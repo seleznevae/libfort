@@ -8,6 +8,7 @@ option(FORT_TEST_BUILD "Test build with sanitizers and small library stack size"
 option(FORT_GCC_BUILD "Build with gcc" ON)
 option(FORT_MSVC_BUILD "Build with msvc" OFF)
 option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
+option(FORT_COVERALLS_BUILD "Build for coveralls" OFF)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -74,3 +75,7 @@ if(FORT_TEST_BUILD AND NOT FORT_MSVC_BUILD)
     endif(FORT_GCC_BUILD)
 endif(FORT_TEST_BUILD AND NOT FORT_MSVC_BUILD)
 
+
+if(FORT_COVERALLS_BUILD) #for coveralls
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")
+endif(FORT_COVERALLS_BUILD)
