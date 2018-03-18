@@ -3,18 +3,23 @@ project(libfort)
 # Required cmake version
 cmake_minimum_required(VERSION 2.8)
 
-
-option(FORT_TEST_BUILD "Test build with sanitizers and small library stack size" ON)
+# Built options
 option(FORT_GCC_BUILD "Build with gcc" ON)
 option(FORT_MSVC_BUILD "Build with msvc" OFF)
 option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
 option(FORT_COVERALLS_BUILD "Build for coveralls" OFF)
+set(FORT_BUILD_TYPE "common" CACHE STRING "Built types (possible values: common, asan, ubsan, msan)")
+
+
+
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 include_directories(include)
 include_directories(src)
 
+
+# Turn on warnings
 if(FORT_MSVC_BUILD)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
 else(FORT_MSVC_BUILD)
@@ -67,15 +72,31 @@ if(FORT_CXX_BUILD)
     SET_SOURCE_FILES_PROPERTIES( ${TEST_SOURCES} PROPERTIES LANGUAGE CXX)
 endif(FORT_CXX_BUILD)
 
-if(FORT_TEST_BUILD AND NOT FORT_MSVC_BUILD)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
-    if(FORT_GCC_BUILD)
-        target_link_libraries(${PROJECT_NAME}_example asan)
-        target_link_libraries(${PROJECT_NAME}_test asan)
-    endif(FORT_GCC_BUILD)
-endif(FORT_TEST_BUILD AND NOT FORT_MSVC_BUILD)
 
 
-if(FORT_COVERALLS_BUILD) #for coveralls
+
+# Adding sanitizers
+if(NOT FORT_MSVC_BUILD)
+    if(FORT_BUILD_TYPE STREQUAL "asan")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
+        if(FORT_GCC_BUILD)
+            target_link_libraries(${PROJECT_NAME}_example asan)
+            target_link_libraries(${PROJECT_NAME}_test asan)
+        endif(FORT_GCC_BUILD)
+    endif(FORT_BUILD_TYPE STREQUAL "asan")
+    if(FORT_BUILD_TYPE STREQUAL "ubsan")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover") #to force fail
+        if(FORT_GCC_BUILD)
+            target_link_libraries(${PROJECT_NAME}_example ubsan)
+            target_link_libraries(${PROJECT_NAME}_test ubsan)
+        endif(FORT_GCC_BUILD)
+    endif(FORT_BUILD_TYPE STREQUAL "ubsan")
+
+endif(NOT FORT_MSVC_BUILD)
+
+
+# Coveralls support
+if(FORT_COVERALLS_BUILD)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")
 endif(FORT_COVERALLS_BUILD)

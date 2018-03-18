@@ -28,7 +28,7 @@ script:
   # Test build without optimizations
   - mkdir -p build
   - cd build
-  - cmake .. -DFORT_TEST_BUILD=ON -DFORT_GCC_BUILD=${GCC_BUILD} 
+  - cmake .. -DFORT_BUILD_TYPE=asan -DFORT_GCC_BUILD=${GCC_BUILD} 
   - cmake --build . --target all 
   - ls
   - ./libfort_example
@@ -40,7 +40,7 @@ script:
     cd ..  ;
     rm -r build/* ;
     cd build ;
-    cmake .. -DFORT_COVERALLS_BUILD=ON -DFORT_TEST_BUILD=ON -DFORT_GCC_BUILD=${GCC_BUILD} ;
+    cmake .. -DFORT_COVERALLS_BUILD=ON -DFORT_BUILD_TYPE=asan -DFORT_GCC_BUILD=${GCC_BUILD} ;
     cmake --build . --target all ;
     ls ;
     ./libfort_test ;
