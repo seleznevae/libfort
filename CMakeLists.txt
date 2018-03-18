@@ -41,28 +41,30 @@ set(FORT_SOURCES
     src/table.c
     src/fort_impl.c)
 
-if(FORT_CXX_BUILD)
-    SET_SOURCE_FILES_PROPERTIES( ${FORT_SOURCES} PROPERTIES LANGUAGE CXX)
-endif(FORT_CXX_BUILD)
 
 
-
-
-
+set(EXAMPLE_SOURCES
+    example/main.c)
 add_executable(${PROJECT_NAME}_example
-    example/main.c
+    ${EXAMPLE_SOURCES}
     ${FORT_SOURCES})
 
 
-
-add_executable(${PROJECT_NAME}_test
-    ${FORT_SOURCES}
+set(TEST_SOURCES
     tests/test.c
     tests/test_vector.c
     tests/test_table.c
     tests/test_string_buffer.c)
+add_executable(${PROJECT_NAME}_test
+    ${FORT_SOURCES}
+    ${TEST_SOURCES})
 
 
+if(FORT_CXX_BUILD)
+    SET_SOURCE_FILES_PROPERTIES( ${FORT_SOURCES} PROPERTIES LANGUAGE CXX)
+    SET_SOURCE_FILES_PROPERTIES( ${EXAMPLE_SOURCES} PROPERTIES LANGUAGE CXX)
+    SET_SOURCE_FILES_PROPERTIES( ${TEST_SOURCES} PROPERTIES LANGUAGE CXX)
+endif(FORT_CXX_BUILD)
 
 if(FORT_TEST_BUILD AND NOT FORT_MSVC_BUILD)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")

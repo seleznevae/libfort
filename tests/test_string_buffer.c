@@ -5,10 +5,10 @@
 #include "wchar.h"
 
 
-size_t strchr_count(const char* str, int ch);
+size_t strchr_count(const char* str, char ch);
 size_t wstrchr_count(const wchar_t* str, wchar_t ch);
 
-const char* str_n_substring_beg(const char* str, int ch, int n);
+const char* str_n_substring_beg(const char* str, char ch_separator, size_t n);
 const wchar_t* wstr_n_substring_beg(const wchar_t* str, wchar_t ch_separator, size_t n);
 
 fort_status_t str_n_substring(const char* str, char ch_separator, size_t n, const char **begin, const char **end);
@@ -202,44 +202,44 @@ void test_buffer_text_width(void)
     buffer->type = CharBuf;
     char *old_value = buffer->str.cstr;
 
-    buffer->str.cstr = "";
+    buffer->str.cstr = (char*)"";
     assert_true(buffer_text_width(buffer) == 0);
 
-    buffer->str.cstr = "\n\n\n\n";
+    buffer->str.cstr = (char*)"\n\n\n\n";
     assert_true(buffer_text_width(buffer) == 0);
 
-    buffer->str.cstr = "12345";
+    buffer->str.cstr = (char*)"12345";
     assert_true(buffer_text_width(buffer) == 5);
 
-    buffer->str.cstr = "12345\n1234567";
+    buffer->str.cstr = (char*)"12345\n1234567";
     assert_true(buffer_text_width(buffer) == 7);
 
-    buffer->str.cstr = "12345\n1234567\n";
+    buffer->str.cstr = (char*)"12345\n1234567\n";
     assert_true(buffer_text_width(buffer) == 7);
 
-    buffer->str.cstr = "12345\n1234567\n123";
+    buffer->str.cstr = (char*)"12345\n1234567\n123";
     assert_true(buffer_text_width(buffer) == 7);
 
 
 
     buffer->type = WCharBuf;
 
-    buffer->str.wstr = L"";
+    buffer->str.wstr = (wchar_t *)L"";
     assert_true(buffer_text_width(buffer) == 0);
 
-    buffer->str.wstr = L"\n\n\n\n";
+    buffer->str.wstr = (wchar_t *)L"\n\n\n\n";
     assert_true(buffer_text_width(buffer) == 0);
 
-    buffer->str.wstr = L"12345";
+    buffer->str.wstr = (wchar_t *)L"12345";
     assert_true(buffer_text_width(buffer) == 5);
 
-    buffer->str.wstr = L"12345\n1234567";
+    buffer->str.wstr = (wchar_t *)L"12345\n1234567";
     assert_true(buffer_text_width(buffer) == 7);
 
-    buffer->str.wstr = L"12345\n1234567\n";
+    buffer->str.wstr = (wchar_t *)L"12345\n1234567\n";
     assert_true(buffer_text_width(buffer) == 7);
 
-    buffer->str.wstr = L"12345\n1234567\n123";
+    buffer->str.wstr = (wchar_t *)L"12345\n1234567\n123";
     assert_true(buffer_text_width(buffer) == 7);
 
 
@@ -255,48 +255,48 @@ void test_buffer_text_height(void)
     buffer->type = CharBuf;
     char *old_value = buffer->str.cstr;
 
-    buffer->str.cstr = "";
+    buffer->str.cstr = (char*)"";
     assert_true(buffer_text_height(buffer) == 0);
 
-    buffer->str.cstr = "\n";
+    buffer->str.cstr = (char*)"\n";
     assert_true(buffer_text_height(buffer) == 2);
 
-    buffer->str.cstr = "\n\n";
+    buffer->str.cstr = (char*)"\n\n";
     assert_true(buffer_text_height(buffer) == 3);
 
-    buffer->str.cstr = "\n\n\n\n";
+    buffer->str.cstr = (char*)"\n\n\n\n";
     assert_true(buffer_text_height(buffer) == 5);
 
-    buffer->str.cstr = "12345";
+    buffer->str.cstr = (char*)"12345";
     assert_true(buffer_text_height(buffer) == 1);
 
-    buffer->str.cstr = "\n12345";
+    buffer->str.cstr = (char*)"\n12345";
     assert_true(buffer_text_height(buffer) == 2);
 
-    buffer->str.cstr = "\n12345\n\n2";
+    buffer->str.cstr = (char*)"\n12345\n\n2";
     assert_true(buffer_text_height(buffer) == 4);
 
 
     buffer->type = WCharBuf;
-    buffer->str.wstr = L"";
+    buffer->str.wstr = (wchar_t *)L"";
     assert_true(buffer_text_height(buffer) == 0);
 
-    buffer->str.wstr = L"\n";
+    buffer->str.wstr = (wchar_t *)L"\n";
     assert_true(buffer_text_height(buffer) == 2);
 
-    buffer->str.wstr = L"\n\n";
+    buffer->str.wstr = (wchar_t *)L"\n\n";
     assert_true(buffer_text_height(buffer) == 3);
 
-    buffer->str.wstr = L"\n\n\n\n";
+    buffer->str.wstr = (wchar_t *)L"\n\n\n\n";
     assert_true(buffer_text_height(buffer) == 5);
 
-    buffer->str.wstr = L"\xff0fy2345\xff0f";
+    buffer->str.wstr = (wchar_t *)L"\xff0fy2345\xff0f";
     assert_true(buffer_text_height(buffer) == 1);
 
-    buffer->str.wstr = L"\n12345";
+    buffer->str.wstr = (wchar_t *)L"\n12345";
     assert_true(buffer_text_height(buffer) == 2);
 
-    buffer->str.wstr = L"\n12345\n\n2";
+    buffer->str.wstr = (wchar_t *)L"\n12345\n\n2";
     assert_true(buffer_text_height(buffer) == 4);
 
 

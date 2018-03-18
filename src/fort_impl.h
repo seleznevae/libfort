@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#include "fort.h"
 
 #define FORT_COL_SEPARATOR '|'
 

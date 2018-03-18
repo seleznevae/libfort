@@ -5,18 +5,18 @@
 #include <stdint.h>
 #include <limits.h>
 
-enum TextAlignment
-{
-    LeftAligned,
-    CenterAligned,
-    RightAligned
-};
+//enum TextAlignment
+//{
+//    LeftAligned,
+//    CenterAligned,
+//    RightAligned
+//};
 
-enum RowType
-{
-    Common,
-    Header
-};
+//enum RowType
+//{
+//    Common,
+//    Header
+//};
 
 
 struct fort_column_options

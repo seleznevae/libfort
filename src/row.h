@@ -4,6 +4,7 @@
 #include "fort_impl.h"
 #include "fort.h"
 #include "stdarg.h"
+#include "options.h"
 
 struct fort_row;
 typedef struct fort_row fort_row_t;
