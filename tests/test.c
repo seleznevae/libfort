@@ -3,11 +3,12 @@
 
 struct test_case test_suit [] = {
     {"test_vector_basic", test_vector_basic},
+    {"test_string_buffer", test_string_buffer},
     {"test_table_sizes", test_table_sizes},
     {"test_table_geometry", test_table_geometry},
     {"test_table_basic", test_table_basic},
+    {"test_table_border_style", test_table_border_style},
     {"test_table_options", test_table_options},
-    {"test_string_buffer", test_string_buffer},
 };
 
 int main(void) {
@@ -16,7 +17,7 @@ int main(void) {
     int i;
     for (i = 0; i < n_tests; ++i) {
         fprintf(stderr, "[ RUN      ] %s\n", test_suit[i].name);
-        test_suit[i].test(NULL);
+        test_suit[i].test();
         fprintf(stderr, "[       OK ] %s\n", test_suit[i].name);
     }
     fprintf(stderr, "[==========] %d test(s) run.\n", n_tests);

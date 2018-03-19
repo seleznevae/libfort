@@ -5,9 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 
 # Built options
 option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
-#option(FORT_COVERALLS_BUILD "Build for coveralls" OFF)
 set(FORT_BUILD_TYPE "common" CACHE STRING "Built types (possible values: common, asan, ubsan, coveralls)")
-#set(FORT_COMPILER "gcc" CACHE STRING "Compiler (possible values: gcc, clang, msvc)")
 
 
 # Determine compiler (pos. values Clang, GNU, Intel, MSVC, AppleClang... (https://cmake.org/cmake/help/v3.0/variable/CMAKE_LANG_COMPILER_ID.html)
@@ -63,8 +61,12 @@ add_executable(${PROJECT_NAME}_example
 set(TEST_SOURCES
     tests/test.c
     tests/test_vector.c
-    tests/test_table.c
-    tests/test_string_buffer.c)
+    tests/test_string_buffer.c
+    tests/test_table_geometry.c
+    tests/test_table_basic.c
+    tests/test_table_border_style.c
+    tests/test_table_options.c
+    tests/test_utility.c)
 add_executable(${PROJECT_NAME}_test
     ${FORT_SOURCES}
     ${TEST_SOURCES})
@@ -113,7 +115,4 @@ if(FORT_COMPILER STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=gold")
 endif(FORT_COMPILER STREQUAL "GNU")
 
-# Coveralls support
-#if(FORT_COVERALLS_BUILD)
-#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")
-#endif(FORT_COVERALLS_BUILD)
+

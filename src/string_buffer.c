@@ -157,12 +157,12 @@ fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
     assert(buffer);
     char *new_str = (char*)F_MALLOC(buffer->data_sz * 2);
     if (new_str == NULL) {
-        return F_MEMORY_ERROR;
+        return FT_MEMORY_ERROR;
     }
     F_FREE(buffer->str.data);
     buffer->str.data = new_str;
     buffer->data_sz *= 2;
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
@@ -173,7 +173,7 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
     size_t sz = strlen(str);
     char * copy = F_STRDUP(str);
     if (copy == NULL)
-        return F_MEMORY_ERROR;
+        return FT_MEMORY_ERROR;
 
     while (sz >= string_buffer_capacity(buffer)) {
         int status = realloc_string_buffer_without_copy(buffer);
@@ -185,7 +185,7 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
     buffer->str.cstr = copy;
     buffer->type = CharBuf;
 
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *str)
@@ -196,7 +196,7 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
     size_t sz = wcslen(str);
     wchar_t * copy = F_WCSDUP(str);
     if (copy == NULL)
-        return F_MEMORY_ERROR;
+        return FT_MEMORY_ERROR;
 
     while (sz >= string_buffer_capacity(buffer)) {
         int status = realloc_string_buffer_without_copy(buffer);
@@ -208,7 +208,7 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
     buffer->str.wstr = copy;
     buffer->type = WCharBuf;
 
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 

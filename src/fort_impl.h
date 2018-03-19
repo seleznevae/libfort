@@ -61,9 +61,9 @@ enum F_BOOL
  *               RETURN CODES
  * ***************************************************************************/
 typedef int fort_status_t;
-#define F_SUCCESS        0
-#define F_MEMORY_ERROR   -1
-#define F_ERROR          -2
+#define FT_SUCCESS        0
+#define FT_MEMORY_ERROR   -1
+#define FT_ERROR          -2
 #define IS_SUCCESS(arg) ((arg) >= 0)
 #define IS_ERROR(arg) ((arg) < 0)
 

@@ -24,10 +24,8 @@ void test_buffer_text_width(void);
 void test_buffer_text_height(void);
 
 
-void test_string_buffer(void **state)
+void test_string_buffer(void)
 {
-    (void)state;
-
     test_strchr_count();
     test_str_n_substring();
     test_buffer_text_width();

@@ -4,9 +4,8 @@
 //#include "../src/fort.c"
 
 
-void test_vector_basic(void **state)
+void test_vector_basic(void)
 {
-    (void)state;
     size_t i = 0;
 
     typedef short item_t;
@@ -64,10 +63,10 @@ void test_vector_basic(void **state)
         }
 
         WHEN("Erasing items") {
-            assert_true( vector_erase(vector, 20) != F_SUCCESS );
+            assert_true( vector_erase(vector, 20) != FT_SUCCESS );
 
-            assert_true( vector_erase(vector,  0) == F_SUCCESS );
-            assert_true( vector_erase(vector, 10) == F_SUCCESS );
+            assert_true( vector_erase(vector,  0) == FT_SUCCESS );
+            assert_true( vector_erase(vector, 10) == FT_SUCCESS );
 
             item_t first_item = *(item_t*)vector_at(vector, 0);
             assert_true( first_item == 2 );

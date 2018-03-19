@@ -196,7 +196,7 @@ int ft_write(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT cell_content)
     assert(table);
     string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
     if (str_buffer == NULL)
-        return F_ERROR;
+        return FT_ERROR;
 
     int status = fill_buffer_from_string(str_buffer, cell_content);
     if (IS_SUCCESS(status)) {
@@ -220,7 +220,7 @@ int ft_wwrite(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content
     assert(table);
     string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
     if (str_buffer == NULL)
-        return F_ERROR;
+        return FT_ERROR;
 
     int status = fill_buffer_from_wstring(str_buffer, cell_content);
     if (IS_SUCCESS(status)) {
@@ -345,7 +345,7 @@ int ft_row_write(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT
             return status;
         }
     }
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 int ft_row_write_ln(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT cells[])
@@ -375,7 +375,7 @@ int ft_s_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const 
         if (i != rows - 1)
             ft_ln(table);
     }
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 int ft_s_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* FT_RESTRICT table_cells[rows][cols])
@@ -402,7 +402,7 @@ int ft_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const ch
         if (i != rows - 1)
             ft_ln(table);
     }
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 int ft_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* * FT_RESTRICT table_cells[rows])
@@ -649,7 +649,7 @@ int ft_add_separator(FTABLE *table)
     while(vector_size(table->separators) <= table->cur_row) {
         separator_t *sep_p = create_separator(F_FALSE);
         if (sep_p == NULL)
-            return F_MEMORY_ERROR;
+            return FT_MEMORY_ERROR;
         int status = vector_push(table->separators, &sep_p);
         if (IS_ERROR(status))
             return status;
@@ -662,8 +662,8 @@ int ft_add_separator(FTABLE *table)
         (*sep_p)->enabled = F_TRUE;
 
     if (*sep_p == NULL)
-        return F_ERROR;
-    return F_SUCCESS;
+        return FT_ERROR;
+    return FT_SUCCESS;
 }
 
 
@@ -753,7 +753,7 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
 int ft_set_default_border_style(struct ft_border_style *style)
 {
     set_border_options_for_options(&g_table_options, style);
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 int ft_set_border_style(FTABLE *table, struct ft_border_style *style)
@@ -762,10 +762,10 @@ int ft_set_border_style(FTABLE *table, struct ft_border_style *style)
     if (table->options == NULL) {
         table->options = create_table_options();
         if (table->options == NULL)
-            return F_MEMORY_ERROR;
+            return FT_MEMORY_ERROR;
     }
     set_border_options_for_options(table->options, style);
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 
@@ -777,12 +777,12 @@ int ft_set_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, in
     if (table->options == NULL) {
         table->options = create_table_options();
         if (table->options == NULL)
-            return F_MEMORY_ERROR;
+            return FT_MEMORY_ERROR;
     }
     if (table->options->cell_options == NULL) {
         table->options->cell_options = create_cell_opt_container();
         if (table->options->cell_options == NULL) {
-            return F_ERROR;
+            return FT_ERROR;
         }
     }
     return set_cell_option(table->options->cell_options, row, col, option, value);

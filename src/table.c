@@ -85,7 +85,7 @@ fort_status_t get_table_sizes(const FTABLE *table, size_t *rows, size_t *cols)
                 *cols = cols_in_row;
         }
     }
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
@@ -93,7 +93,7 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
                                                   size_t **row_height_arr_p, size_t *row_height_arr_sz)
 {
     if (table == NULL) {
-        return F_ERROR;
+        return FT_ERROR;
     }
 
 
@@ -109,7 +109,7 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
     if (col_width_arr == NULL || row_height_arr == NULL) {
         F_FREE(col_width_arr);
         F_FREE(row_height_arr);
-        return F_ERROR;
+        return FT_ERROR;
     }
 
     context_t context;
@@ -146,7 +146,7 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
     *col_width_arr_sz = cols;
     *row_height_arr_p = row_height_arr;
     *row_height_arr_sz = rows;
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 /*
@@ -155,7 +155,7 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
 fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t *width)
 {
     if (table == NULL)
-        return F_ERROR;
+        return FT_ERROR;
 
     *height = 0;
     *width = 0;
@@ -181,7 +181,7 @@ fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t *width)
     }
     F_FREE(col_width_arr);
     F_FREE(row_height_arr);
-    return F_SUCCESS;
+    return FT_SUCCESS;
 
 }
 

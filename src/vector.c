@@ -116,7 +116,7 @@ int vector_push (vector_t* vector, const void* item)
 
     if (vector->m_size == vector->m_capacity) {
         if (vector_reallocate_(vector, vector->m_capacity * 2) == -1)
-            return F_ERROR;
+            return FT_ERROR;
         vector->m_capacity = vector->m_capacity * 2;
     }
 
@@ -125,7 +125,7 @@ int vector_push (vector_t* vector, const void* item)
 
     ++(vector->m_size);
 
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 
@@ -134,13 +134,13 @@ int vector_erase(vector_t *vector, size_t index)
     assert(vector);
 
     if (vector->m_size == 0 || index >= vector->m_size)
-        return F_ERROR;
+        return FT_ERROR;
 
     memmove((char*)vector->m_data + vector->m_item_size * index,
             (char*)vector->m_data + vector->m_item_size * (index + 1),
             (vector->m_size - 1 - index) * vector->m_item_size);
     vector->m_size--;
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 

@@ -175,7 +175,7 @@ static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t opt
         opt->row_type = (enum RowType)value;
     }
 
-    return F_SUCCESS;
+    return FT_SUCCESS;
 }
 
 
@@ -183,7 +183,7 @@ fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, uns
 {
     fort_cell_options_t* opt = get_cell_opt_and_create_if_not_exists(cont, row, col);
     if (opt == NULL)
-        return F_ERROR;
+        return FT_ERROR;
 
     return set_cell_option_impl(opt, option, value);
     /*
@@ -194,7 +194,7 @@ fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, uns
         opt->align = value;
     }
 
-    return F_SUCCESS;
+    return FT_SUCCESS;
     */
 }
 
