@@ -48,8 +48,6 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
 
 
 
-fort_row_t* create_row_from_string(const char *str);
-fort_row_t* create_row_from_fmt_string(const char* FT_RESTRICT fmt, va_list *va_args);
 
 int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                         size_t row_height, const context_t *context);

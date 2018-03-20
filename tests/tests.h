@@ -9,6 +9,7 @@
 
 #define WHEN(...)
 #define THEN(...)
+#define SCENARIO(...)
 
 /* Test cases */
 void test_vector_basic(void);
@@ -16,6 +17,7 @@ void test_string_buffer(void);
 void test_table_sizes(void);
 void test_table_geometry(void);
 void test_table_basic(void);
+void test_table_write(void);
 void test_table_border_style(void);
 void test_table_options(void);
 
