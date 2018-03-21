@@ -35,7 +35,7 @@ endif(FORT_COMPILER STREQUAL "MSVC")
 
 
 
-FILE(GLOB_RECURSE FortHeaders "include/*.h" "tests/*.h" "src/*.h" "src/*.h" "src/*.h" "src/*.h" "src/*.h" "src/*.h")
+FILE(GLOB_RECURSE FortHeaders "include/*.h" "tests/*.h" "src/*.h")
 add_custom_target(headers SOURCES ${FortHeaders})
 
 
@@ -47,7 +47,9 @@ set(FORT_SOURCES
     src/cell.c
     src/row.c
     src/table.c
-    src/fort_impl.c)
+    src/fort_impl.c
+    src/wcwidth.c)
+
 
 
 

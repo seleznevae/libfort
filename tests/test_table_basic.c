@@ -1,5 +1,5 @@
 #include "tests.h"
-#include "wchar.h"
+#include <wchar.h>
 
 void test_table_basic(void)
 {
@@ -188,7 +188,7 @@ void test_table_basic(void)
                 L"| 234 | 3.140000 |          |          |\n"
                 L"|     |          |          |          |\n"
                 L"+-----+----------+----------+----------+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
+        fwprintf(stdout, L"content:\n%ls", table_str);
         assert_true( wcscmp(table_str, table_str_etalon) == 0);
         ft_destroy_table(table);
     }

@@ -2,10 +2,22 @@
 #include "options.h"
 #include "assert.h"
 #include "wchar.h"
-
+#include "wcwidth.h"
 /*****************************************************************************
  *               STRING BUFFER
  * ***************************************************************************/
+
+
+static int str_iter_width(const char *beg, const char *end)
+{
+    return end - beg;
+}
+
+static int wcs_iter_width(const wchar_t *beg, const wchar_t *end)
+{
+    return mk_wcswidth(beg, (end - beg));
+}
+
 
 static size_t buf_str_len(const string_buffer_t*buf)
 {
@@ -247,7 +259,10 @@ size_t buffer_text_width(string_buffer_t *buffer)
             if (beg == NULL || end == NULL)
                 return max_length;
 
-            max_length = MAX(max_length, (end - beg));
+            int line_width = mk_wcswidth(beg, end - beg);
+            max_length = MAX(max_length, line_width);
+//            max_length = MAX(max_length, (end - beg));
+
             ++n;
         }
     }
@@ -266,6 +281,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_colum
 #define BUFFER_STR str.cstr
 #define SNPRINT_N_CHARS  snprint_n_chars
 #define STR_N_SUBSTRING str_n_substring
+#define STR_ITER_WIDTH str_iter_width
 
     if (buffer == NULL || buffer->str.data == NULL
             || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
@@ -317,7 +333,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_colum
     *(CHAR_TYPE *)end = old_value;
     if (written < 0)
         return written;
-    written += SNPRINT_N_CHARS(buf + written,  buf_len - written, (int)(content_width - (end - beg)), SPACE_CHAR);
+    written += SNPRINT_N_CHARS(buf + written,  buf_len - written, (int)(content_width - STR_ITER_WIDTH(beg, end)), SPACE_CHAR);
     if (written < 0)
         return written;
 
@@ -334,6 +350,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_colum
 #undef BUFFER_STR
 #undef SNPRINT_N_CHARS
 #undef STR_N_SUBSTRING
+#undef STR_ITER_WIDTH
 }
 
 
@@ -348,6 +365,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, size_t table_colu
 #define BUFFER_STR str.wstr
 #define SNPRINT_N_CHARS  wsnprint_n_chars
 #define STR_N_SUBSTRING wstr_n_substring
+#define STR_ITER_WIDTH wcs_iter_width
 
     if (buffer == NULL || buffer->str.data == NULL
             || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
@@ -381,7 +399,6 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, size_t table_colu
     if (left < 0 || right < 0)
         return -1;
 
-
     int  written = 0;
     written += SNPRINT_N_CHARS(buf + written, buf_len - written, left, SPACE_CHAR);
     if (written < 0)
@@ -399,10 +416,9 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, size_t table_colu
     *(CHAR_TYPE *)end = old_value;
     if (written < 0)
         return written;
-    written += SNPRINT_N_CHARS(buf + written,  buf_len - written, (int)(content_width - (end - beg)), SPACE_CHAR);
+    written += SNPRINT_N_CHARS(buf + written,  buf_len - written, (int)(content_width - STR_ITER_WIDTH(beg, end)), SPACE_CHAR);
     if (written < 0)
         return written;
-
 
     written += SNPRINT_N_CHARS(buf + written, buf_len - written, right, SPACE_CHAR);
     return written;
@@ -416,6 +432,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, size_t table_colu
 #undef BUFFER_STR
 #undef SNPRINT_N_CHARS
 #undef STR_N_SUBSTRING
+#undef STR_ITER_WIDTH
 }
 
 size_t string_buffer_capacity(const string_buffer_t *buffer)
@@ -432,3 +449,4 @@ void *buffer_get_data(string_buffer_t *buffer)
     assert(buffer);
     return buffer->str.data;
 }
+

@@ -3,6 +3,11 @@
 #include <wchar.h>
 #include <locale.h>
 
+//#ifdef FT_MICROSOFT_COMPILER
+//#include <fcntl.h>
+//#include <io.h>
+//#endif
+#include "wcwidth.h"
 
 static FTABLE *create_basic_table()
 {
@@ -29,8 +34,12 @@ int main()
     FTABLE *table = NULL;
 
 #ifdef FT_HAVE_WCHAR
-    setlocale(LC_CTYPE, "");
 
+//#ifdef FT_MICROSOFT_COMPILER
+//    _setmode(_fileno(stdout), _O_U16TEXT);
+//#else
+    setlocale(LC_CTYPE, "");
+//#endif
 
     table = ft_create_table();
     ft_set_option(table, FT_ANY_ROW, 0, FT_OPT_TEXT_ALIGN, CenterAligned);
@@ -39,7 +48,7 @@ int main()
     ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
     FT_NWWRITE_LN(table, L"Rank", L"Title", L"Year", L"Rating");
 
-    FT_NWWRITE_LN(table, L"1", L"Побег из Шоушенка", L"1994", L"9.5");
+    FT_NWWRITE_LN(table, L"1", L"Побег из Шоушенка \x7788\x7788\x7788", L"1994", L"9.5");
     FT_NWWRITE_LN(table, L"2", L"12 разгневанных мужчин", L"1957", L"8.8");
     FT_NWWRITE_LN(table, L"3", L"Космическая одиссея 2001 года", L"1968", L"8.5");
     FT_NWWRITE_LN(table, L"4", L"Бегущий по лезвию", L"1982", L"8.1");
