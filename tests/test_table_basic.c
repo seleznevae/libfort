@@ -188,7 +188,7 @@ void test_table_basic(void)
                 L"| 234 | 3.140000 |          |          |\n"
                 L"|     |          |          |          |\n"
                 L"+-----+----------+----------+----------+\n";
-        fwprintf(stdout, L"content:\n%ls", table_str);
+//        fwprintf(stdout, L"content:\n%ls", table_str);
         assert_true( wcscmp(table_str, table_str_etalon) == 0);
         ft_destroy_table(table);
     }
@@ -252,6 +252,46 @@ void test_table_basic(void)
                 L"+--+--+--+--+\n";
 //        fprintf(stderr, "content:\n%s", table_str);
         assert_true( wcscmp(table_str, table_str_etalon) == 0);
+        ft_destroy_table(table);
+    }
+}
+
+
+
+
+void test_wcs_table_boundaries(void)
+{
+    FTABLE *table = NULL;
+
+    WHEN("All columns are not equal and not empty (wide strings)") {
+        table = ft_create_table();
+        assert_true( table != NULL );
+        assert_true( set_test_options_for_table(table) == FT_SUCCESS);
+
+        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        assert_true( FT_NWWRITE_LN(table, L"3", L"12345\x8888\x8888", L"c") == FT_SUCCESS);  /* \x8888,\x8888  - occupy 2 columns each */
+        assert_true( FT_NWWRITE_LN(table, L"c", L"12345678\x500", L"c") == FT_SUCCESS); /* \x500  - occupies 1 column */
+        assert_true( FT_NWWRITE_LN(table, L"234", L"123456789", L"c") == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true( table_str != NULL );
+        const wchar_t *table_str_etalon =
+                L"+-----+-----------+---+\n"
+                L"|     |           |   |\n"
+                L"|   3 | 12345\x8888\x8888 | c |\n"
+                L"|     |           |   |\n"
+                L"+-----+-----------+---+\n"
+                L"|     |           |   |\n"
+                L"|   c | 12345678\x500 | c |\n"
+                L"|     |           |   |\n"
+                L"+-----+-----------+---+\n"
+                L"|     |           |   |\n"
+                L"| 234 | 123456789 | c |\n"
+                L"|     |           |   |\n"
+                L"+-----+-----------+---+\n";
+//        setlocale(LC_CTYPE, "");
+//        fprintf(stdout, "content:\n%ls", table_str);
+        assert_wcs_equal( table_str, table_str_etalon );
         ft_destroy_table(table);
     }
 }

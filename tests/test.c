@@ -7,6 +7,7 @@ struct test_case test_suit [] = {
     {"test_table_sizes", test_table_sizes},
     {"test_table_geometry", test_table_geometry},
     {"test_table_basic", test_table_basic},
+    {"test_wcs_table_boundaries", test_wcs_table_boundaries},
     {"test_table_write", test_table_write},
     {"test_table_border_style", test_table_border_style},
     {"test_table_options", test_table_options},
