@@ -43,10 +43,7 @@ void test_table_options(void)
                 "| 3 | 4 | 55 | 67 |\n"
                 "|   |   |    |    |\n"
                 "+---+---+----+----+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -71,10 +68,7 @@ void test_table_options(void)
                 "+---+---+----+----+\n"
                 "| 3 | 4 | 55 | 67 |\n"
                 "+---+---+----+----+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -103,10 +97,7 @@ void test_table_options(void)
                 "|3|4|55|67|\n"
                 "| | |  |  |\n"
                 "+-+-+--+--+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -129,10 +120,7 @@ void test_table_options(void)
                 "+-+-+--+--+\n"
                 "|3|4|55|67|\n"
                 "+-+-+--+--+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -167,10 +155,7 @@ void test_table_options(void)
                 "|   |   |    |    |\n"
                 "|   |   |    |    |\n"
                 "+---+---+----+----+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -195,9 +180,7 @@ void test_table_options(void)
                 "+-+-+--+--+\n"
                 "|3|4|55|67|\n"
                 "+-+-+--+--+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
+        assert_str_equal(table_str, table_str_etalon);
 
 
         ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 1);
@@ -222,9 +205,7 @@ void test_table_options(void)
                 "|3|4|55|67|\n"
                 "| | |  |  |\n"
                 "+-+-+--+--+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -263,10 +244,7 @@ void test_table_options(void)
                 "| 3 | 4     |   55   | 67   |\n"
                 "|   |       |        |      |\n"
                 "+---+-------+--------+------+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -297,9 +275,7 @@ void test_table_options(void)
                 "|  3  |  4  | 55  | 67  |\n"
                 "|     |     |     |     |\n"
                 "+-----+-----+-----+-----+\n";
-        //        fprintf(stderr, "content:\n%s", table_str);
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -334,11 +310,7 @@ void test_table_options(void)
                 "| 3 | c | 234 | 3.140000 |\n"
                 "|   |   |     |          |\n"
                 "+---+---+-----+----------+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
-
 }

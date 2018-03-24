@@ -37,11 +37,6 @@ struct test_case
 
 #define assert_true(args) assert(args)
 
-int set_test_options_for_table(FTABLE *table);
-int set_test_options_as_default();
-FTABLE *create_test_int_table(int set_test_opts);
-
-
 #define assert_str_equal(str1, str2) \
     if (strcmp(str1, str2) != 0) \
     { \
@@ -51,8 +46,6 @@ FTABLE *create_test_int_table(int set_test_opts);
         exit(EXIT_FAILURE); \
     }
 
-
-
 #define assert_wcs_equal(str1, str2) \
     if (wcscmp(str1, str2) != 0) \
     { \
@@ -61,7 +54,14 @@ FTABLE *create_test_int_table(int set_test_opts);
         fwprintf(stdout, L"Left string:\n%ls\n", str1); \
         fwprintf(stdout, L"Right string:\n%ls\n", str2); \
         exit(EXIT_FAILURE); \
-    } \
+    }
+
+int set_test_options_for_table(FTABLE *table);
+int set_test_options_as_default();
+FTABLE *create_test_int_table(int set_test_opts);
+
+
+
 
 
 

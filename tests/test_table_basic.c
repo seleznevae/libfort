@@ -31,8 +31,7 @@ void test_table_basic(void)
                 "| 3 | c | 234 | 3.140000 |\n"
                 "|   |   |     |          |\n"
                 "+---+---+-----+----------+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -62,8 +61,7 @@ void test_table_basic(void)
                 L"| 3 | c | 234 | 3.140000 |\n"
                 L"|   |   |     |          |\n"
                 L"+---+---+-----+----------+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-        assert_true( wcscmp(table_str, table_str_etalon) == 0);
+        assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -95,8 +93,7 @@ void test_table_basic(void)
                 "| 234 | 3.140000 |        3 |        c |\n"
                 "|     |          |          |          |\n"
                 "+-----+----------+----------+----------+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -126,8 +123,7 @@ void test_table_basic(void)
                 L"| 234 | 3.140000 |        3 |        c |\n"
                 L"|     |          |          |          |\n"
                 L"+-----+----------+----------+----------+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-        assert_true( wcscmp(table_str, table_str_etalon) == 0);
+        assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -157,8 +153,7 @@ void test_table_basic(void)
                 "| 234 | 3.140000 |          |          |\n"
                 "|     |          |          |          |\n"
                 "+-----+----------+----------+----------+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -188,8 +183,7 @@ void test_table_basic(void)
                 L"| 234 | 3.140000 |          |          |\n"
                 L"|     |          |          |          |\n"
                 L"+-----+----------+----------+----------+\n";
-//        fwprintf(stdout, L"content:\n%ls", table_str);
-        assert_true( wcscmp(table_str, table_str_etalon) == 0);
+        assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -219,8 +213,7 @@ void test_table_basic(void)
                 "|  |  |  |  |\n"
                 "|  |  |  |  |\n"
                 "+--+--+--+--+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -250,8 +243,7 @@ void test_table_basic(void)
                 L"|  |  |  |  |\n"
                 L"|  |  |  |  |\n"
                 L"+--+--+--+--+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-        assert_true( wcscmp(table_str, table_str_etalon) == 0);
+        assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 }
@@ -289,9 +281,7 @@ void test_wcs_table_boundaries(void)
                 L"| 234 | 123456789 | c |\n"
                 L"|     |           |   |\n"
                 L"+-----+-----------+---+\n";
-//        setlocale(LC_CTYPE, "");
-//        fprintf(stdout, "content:\n%ls", table_str);
-        assert_wcs_equal( table_str, table_str_etalon );
+        assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 }

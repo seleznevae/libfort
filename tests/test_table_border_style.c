@@ -49,10 +49,7 @@ void test_table_border_style(void)
                 "= 3 = 4 = 55 = 67 =\n"
                 "=   =   =    =    =\n"
                 "+|||+|||+||||+||||+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
 
 
@@ -90,10 +87,7 @@ void test_table_border_style(void)
                 "= 3 = 4 = 55 = 67 =\n"
                 "= 3 = 4 = 55 = 67 =\n"
                 "+|||+|||+||||+||||+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 
@@ -127,18 +121,7 @@ void test_table_border_style(void)
                 "| 3 | 4 | 55 | 67 |\n"
                 "|   |   |    |    |\n"
                 "+---+---+----+----+\n";
-//        fprintf(stderr, "content:\n%s", table_str);
-
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
-
-
-
-
-
-
-
-
 }
