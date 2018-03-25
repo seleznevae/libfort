@@ -5,11 +5,11 @@ int set_test_options_for_table(FTABLE *table)
 {
     assert(table);
     int status = FT_SUCCESS;
-    status |= ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_BOTTOM_PADDING, 1);
-    status |= ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_TOP_PADDING, 1);
-    status |= ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_LEFT_PADDING, 1);
-    status |= ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_RIGHT_PADDING, 1);
-    status |= ft_set_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_OPT_EMPTY_STR_HEIGHT, 1);
+    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_BOTTOM_PADDING, 1);
+    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_TOP_PADDING, 1);
+    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_LEFT_PADDING, 1);
+    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_RIGHT_PADDING, 1);
+    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_EMPTY_STR_HEIGHT, 1);
 
     assert_true( status == FT_SUCCESS );
 
@@ -37,14 +37,14 @@ int set_test_options_as_default()
 {
     int status = FT_SUCCESS;
 
-    status |= ft_set_default_option(FT_OPT_MIN_WIDTH, 0);
-    status |= ft_set_default_option(FT_OPT_TEXT_ALIGN, RightAligned);
+    status |= ft_set_default_cell_option(FT_COPT_MIN_WIDTH, 0);
+    status |= ft_set_default_cell_option(FT_COPT_TEXT_ALIGN, RightAligned);
 
-    status |= ft_set_default_option(FT_OPT_BOTTOM_PADDING, 1);
-    status |= ft_set_default_option(FT_OPT_TOP_PADDING, 1);
-    status |= ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
-    status |= ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
-    status |= ft_set_default_option(FT_OPT_EMPTY_STR_HEIGHT, 1);
+    status |= ft_set_default_cell_option(FT_COPT_BOTTOM_PADDING, 1);
+    status |= ft_set_default_cell_option(FT_COPT_TOP_PADDING, 1);
+    status |= ft_set_default_cell_option(FT_COPT_LEFT_PADDING, 1);
+    status |= ft_set_default_cell_option(FT_COPT_RIGHT_PADDING, 1);
+    status |= ft_set_default_cell_option(FT_COPT_EMPTY_STR_HEIGHT, 1);
 
     assert_true( status == FT_SUCCESS );
 
@@ -84,7 +84,7 @@ FTABLE *create_test_int_table(int set_test_opts)
 
     assert_true (table != NULL);
 
-    ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
     int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
 
     assert_true( n == 4 );

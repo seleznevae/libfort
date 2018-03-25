@@ -10,7 +10,7 @@ void test_table_basic(void)
         assert_true( table != NULL );
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         assert_true( FT_NWRITE_LN(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
         assert_true( FT_NWRITE_LN(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
         assert_true( FT_NWRITE_LN(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
@@ -40,7 +40,7 @@ void test_table_basic(void)
         assert_true( table != NULL );
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         assert_true( FT_NWWRITE_LN(table, L"3", L"c", L"234", L"3.140000") == FT_SUCCESS);
         assert_true( FT_NWWRITE_LN(table, L"3", L"c", L"234", L"3.140000") == FT_SUCCESS);
         assert_true( FT_NWWRITE_LN(table, L"3", L"c", L"234", L"3.140000") == FT_SUCCESS);
@@ -72,7 +72,7 @@ void test_table_basic(void)
         assert_true( table != NULL );
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         assert_true( FT_NWRITE_LN(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
         assert_true( FT_NWRITE_LN(table, "c", "234", "3.140000", "3") == FT_SUCCESS);
         assert_true( FT_NWRITE_LN(table, "234", "3.140000", "3", "c") == FT_SUCCESS);
@@ -102,7 +102,7 @@ void test_table_basic(void)
         assert_true( table != NULL );
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         assert_true( FT_NWWRITE_LN(table, L"3", L"c", L"234", L"3.140000") == FT_SUCCESS);
         assert_true( FT_NWWRITE_LN(table, L"c", L"234", L"3.140000", L"3") == FT_SUCCESS);
         assert_true( FT_NWWRITE_LN(table, L"234", L"3.140000", L"3", L"c") == FT_SUCCESS);
@@ -132,7 +132,7 @@ void test_table_basic(void)
         assert_true( table != NULL );
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         assert_true( FT_NWRITE_LN(table, "", "", "234", "3.140000") == FT_SUCCESS);
         assert_true( FT_NWRITE_LN(table, "c", "234", "3.140000", "") == FT_SUCCESS);
         assert_true( FT_NWRITE_LN(table, "234", "3.140000", "", "") == FT_SUCCESS);
@@ -162,7 +162,7 @@ void test_table_basic(void)
         assert_true( table != NULL );
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         assert_true( FT_NWWRITE_LN(table, L"", L"", L"234", L"3.140000") == FT_SUCCESS);
         assert_true( FT_NWWRITE_LN(table, L"c", L"234", L"3.140000", L"") == FT_SUCCESS);
         assert_true( FT_NWWRITE_LN(table, L"234", L"3.140000", L"", L"") == FT_SUCCESS);
@@ -192,7 +192,7 @@ void test_table_basic(void)
         assert_true( table != NULL );
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         assert_true( FT_NWRITE_LN(table, "", "", "", "") == FT_SUCCESS);
         assert_true( FT_NWRITE_LN(table, "", "", "", "") == FT_SUCCESS);
         assert_true( FT_NWRITE_LN(table, "", "", "", "") == FT_SUCCESS);
@@ -222,7 +222,7 @@ void test_table_basic(void)
         assert_true( table != NULL );
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         assert_true( FT_NWWRITE_LN(table, L"", L"", L"", L"") == FT_SUCCESS);
         assert_true( FT_NWWRITE_LN(table, L"", L"", L"", L"") == FT_SUCCESS);
         assert_true( FT_NWWRITE_LN(table, L"", L"", L"", L"") == FT_SUCCESS);
@@ -260,7 +260,7 @@ void test_wcs_table_boundaries(void)
         assert_true( table != NULL );
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         assert_true( FT_NWWRITE_LN(table, L"3", L"12345\x8888\x8888", L"c") == FT_SUCCESS);  /* \x8888,\x8888  - occupy 2 columns each */
         assert_true( FT_NWWRITE_LN(table, L"c", L"12345678\x500", L"c") == FT_SUCCESS); /* \x500  - occupies 1 column */
         assert_true( FT_NWWRITE_LN(table, L"234", L"123456789", L"c") == FT_SUCCESS);
@@ -297,7 +297,7 @@ void test_table_write(void)
         assert_true( table != NULL );
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         int n = ft_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true( n == 4 );
         n = ft_printf_ln(table, "%c|%s|%f|%d", 'c', "234", 3.14, 3);

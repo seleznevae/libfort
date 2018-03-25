@@ -280,14 +280,25 @@ FT_EXTERN const char* ft_to_string(const FTABLE *FT_RESTRICT table);
 #define FT_ROW_UNSPEC  (UINT_MAX-1)
 #define FT_COLUMN_UNSPEC  (UINT_MAX-1)
 
-#define FT_OPT_MIN_WIDTH  ((uint32_t)(0x01U << (0)))
-#define FT_OPT_TEXT_ALIGN ((uint32_t)(0x01U << (1)))
-#define FT_OPT_TOP_PADDING  ((uint32_t)(0x01U << (2)))
-#define FT_OPT_BOTTOM_PADDING ((uint32_t)(0x01U << (3)))
-#define FT_OPT_LEFT_PADDING ((uint32_t)(0x01U << (4)))
-#define FT_OPT_RIGHT_PADDING ((uint32_t)(0x01U << (5)))
-#define FT_OPT_EMPTY_STR_HEIGHT ((uint32_t)(0x01U << (6)))
-#define FT_OPT_ROW_TYPE ((uint32_t)(0x01U << (7)))
+/*
+ *  Cell options
+ */
+#define FT_COPT_MIN_WIDTH  ((uint32_t)(0x01U << (0)))
+#define FT_COPT_TEXT_ALIGN ((uint32_t)(0x01U << (1)))
+#define FT_COPT_TOP_PADDING  ((uint32_t)(0x01U << (2)))
+#define FT_COPT_BOTTOM_PADDING ((uint32_t)(0x01U << (3)))
+#define FT_COPT_LEFT_PADDING ((uint32_t)(0x01U << (4)))
+#define FT_COPT_RIGHT_PADDING ((uint32_t)(0x01U << (5)))
+#define FT_COPT_EMPTY_STR_HEIGHT ((uint32_t)(0x01U << (6)))
+#define FT_COPT_ROW_TYPE ((uint32_t)(0x01U << (7)))
+
+/*
+ *  Table options
+ */
+#define FT_TOPT_LEFT_MARGIN ((uint32_t)(0x01U << (0)))
+#define FT_TOPT_TOP_MARGIN ((uint32_t)(0x01U << (1)))
+#define FT_TOPT_RIGHT_MARGIN ((uint32_t)(0x01U << (2)))
+#define FT_TOPT_BOTTOM_MARGIN ((uint32_t)(0x01U << (3)))
 
 enum TextAlignment
 {
@@ -330,8 +341,11 @@ extern struct ft_border_style * FT_EMPTY_STYLE;
 FT_EXTERN int ft_set_default_border_style(struct ft_border_style *style);
 FT_EXTERN int ft_set_border_style(FTABLE * FT_RESTRICT table, struct ft_border_style *style);
 
-FT_EXTERN int ft_set_default_option(uint32_t option, int value);
-FT_EXTERN int ft_set_option(FTABLE * FT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
+FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
+FT_EXTERN int ft_set_cell_option(FTABLE * FT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
+
+FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value);
+FT_EXTERN int ft_set_tbl_option(FTABLE * FT_RESTRICT table, uint32_t option, int value);
 
 
 

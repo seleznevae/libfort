@@ -40,14 +40,14 @@ typedef struct vector vector_t;
 #define FT_ROW_UNSPEC  (UINT_MAX-1)
 #define FT_COLUMN_UNSPEC  (UINT_MAX-1)
 
-#define FT_OPT_MIN_WIDTH  ((uint32_t)(0x01U << (0)))
-#define FT_OPT_TEXT_ALIGN ((uint32_t)(0x01U << (1)))
-#define FT_OPT_TOP_PADDING  ((uint32_t)(0x01U << (2)))
-#define FT_OPT_BOTTOM_PADDING ((uint32_t)(0x01U << (3)))
-#define FT_OPT_LEFT_PADDING ((uint32_t)(0x01U << (4)))
-#define FT_OPT_RIGHT_PADDING ((uint32_t)(0x01U << (5)))
-#define FT_OPT_EMPTY_STR_HEIGHT ((uint32_t)(0x01U << (6)))
-#define FT_OPT_ROW_TYPE ((uint32_t)(0x01U << (7)))
+#define FT_COPT_MIN_WIDTH  ((uint32_t)(0x01U << (0)))
+#define FT_COPT_TEXT_ALIGN ((uint32_t)(0x01U << (1)))
+#define FT_COPT_TOP_PADDING  ((uint32_t)(0x01U << (2)))
+#define FT_COPT_BOTTOM_PADDING ((uint32_t)(0x01U << (3)))
+#define FT_COPT_LEFT_PADDING ((uint32_t)(0x01U << (4)))
+#define FT_COPT_RIGHT_PADDING ((uint32_t)(0x01U << (5)))
+#define FT_COPT_EMPTY_STR_HEIGHT ((uint32_t)(0x01U << (6)))
+#define FT_COPT_ROW_TYPE ((uint32_t)(0x01U << (7)))
 
 #define OPTION_IS_SET(ft_opts, option) ((ft_opts) & (option))
 #define OPTION_SET(ft_opts, option) ((ft_opts) |=(option))
@@ -152,11 +152,23 @@ extern struct fort_border_style FORT_DOT_STYLE;
 extern struct fort_border_style FORT_EMPTY_STYLE;
 
 
+struct fort_entire_table_options
+{
+    int left_margin;
+    int top_margin;
+    int right_margin;
+    int bottom_margin;
+};
+typedef fort_entire_table_options fort_entire_table_options_t;
+extern fort_entire_table_options_t g_entire_table_options;
+fort_status_t set_entire_table_option(fort_table_options_t *table_options, uint32_t option, int value);
+fort_status_t set_default_entire_table_option(uint32_t option, int value);
 
 struct fort_table_options
 {
     struct fort_border_style border_style;
     fort_cell_opt_container_t * cell_options;
+    fort_entire_table_options_t entire_table_options;
 };
 typedef struct fort_table_options fort_table_options_t;
 extern fort_table_options_t g_table_options;

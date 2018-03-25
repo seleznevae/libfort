@@ -441,6 +441,8 @@ const char* ft_to_string(const FTABLE *FT_RESTRICT table)
     typedef char char_type;
     const char_type *empty_string = "";
     const enum str_buf_type buf_type = CharBuf;
+    char space_char = ' ';
+    char new_line_char = '\n';
 #define cur_F_STRDUP F_STRDUP
     int (*snprintf_row_)(const fort_row_t *, char *, size_t, size_t *, size_t, size_t, const context_t *) = snprintf_row;
     int (*print_row_separator_)(char *, size_t ,
@@ -448,6 +450,7 @@ const char* ft_to_string(const FTABLE *FT_RESTRICT table)
                                    const fort_row_t *, const fort_row_t *,
                                    enum HorSeparatorPos , const separator_t *,
                                    const context_t *) = print_row_separator;
+    int (*snprint_n_chars_)(char *, size_t , size_t , char) = snprint_n_chars;
     assert(table);
 
     /* Determing size of table string representation */
@@ -487,13 +490,20 @@ const char* ft_to_string(const FTABLE *FT_RESTRICT table)
 
     int dev = 0;
     int k = 0;
+    size_t i = 0;
     context_t context;
     context.table_options = (table->options ? table->options : &g_table_options);
     fort_row_t *prev_row = NULL;
     fort_row_t *cur_row = NULL;
     separator_t *cur_sep = NULL;
     size_t sep_size = vector_size(table->separators);
-    size_t i = 0;
+
+    /* Print top margin */
+    for (i = 0; i < context.table_options->entire_table_options.top_margin; ++i) {
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, width - 1/* minus new_line*/, space_char));
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, 1, new_line_char));
+    }
+
     for (i = 0; i < rows; ++i) {
         cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
         cur_row = *(fort_row_t**)vector_at(table->rows, i);
@@ -506,6 +516,12 @@ const char* ft_to_string(const FTABLE *FT_RESTRICT table)
     cur_row = NULL;
     cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
     CHECK_RESULT_AND_MOVE_DEV(print_row_separator_(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
+
+    /* Print bottom margin */
+    for (i = 0; i < context.table_options->entire_table_options.bottom_margin; ++i) {
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, width - 1/* minus new_line*/, space_char));
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, 1, new_line_char));
+    }
 
 
     F_FREE(col_width_arr);
@@ -535,6 +551,8 @@ const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table)
     typedef wchar_t char_type;
     const char_type *empty_string = L"";
     const enum str_buf_type buf_type = WCharBuf;
+    wchar_t space_char = L' ';
+    wchar_t new_line_char = L'\n';
 #define cur_F_STRDUP F_WCSDUP
     int (*snprintf_row_)(const fort_row_t *, wchar_t *, size_t, size_t *, size_t, size_t, const context_t *) = wsnprintf_row;
     int (*print_row_separator_)(wchar_t *, size_t ,
@@ -542,6 +560,8 @@ const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table)
                                    const fort_row_t *, const fort_row_t *,
                                    enum HorSeparatorPos , const separator_t *,
                                    const context_t *) = wprint_row_separator;
+    int (*snprint_n_chars_)(wchar_t *, size_t , size_t , wchar_t) = wsnprint_n_chars;
+
     assert(table);
 
     /* Determing size of table string representation */
@@ -581,13 +601,20 @@ const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table)
 
     int dev = 0;
     int k = 0;
+    size_t i = 0;
     context_t context;
     context.table_options = (table->options ? table->options : &g_table_options);
     fort_row_t *prev_row = NULL;
     fort_row_t *cur_row = NULL;
     separator_t *cur_sep = NULL;
     size_t sep_size = vector_size(table->separators);
-    size_t i = 0;
+
+    /* Print top margin */
+    for (i = 0; i < context.table_options->entire_table_options.top_margin; ++i) {
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, width - 1/* minus new_line*/, space_char));
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, 1, new_line_char));
+    }
+
     for (i = 0; i < rows; ++i) {
         cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
         cur_row = *(fort_row_t**)vector_at(table->rows, i);
@@ -601,6 +628,11 @@ const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table)
     cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
     CHECK_RESULT_AND_MOVE_DEV(print_row_separator_(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
 
+    /* Print bottom margin */
+    for (i = 0; i < context.table_options->entire_table_options.bottom_margin; ++i) {
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, width - 1/* minus new_line*/, space_char));
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, 1, new_line_char));
+    }
 
     F_FREE(col_width_arr);
     F_FREE(row_height_arr);
@@ -770,7 +802,7 @@ int ft_set_border_style(FTABLE *table, struct ft_border_style *style)
 
 
 
-int ft_set_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, int value)
+int ft_set_cell_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, int value)
 {
     assert(table);
 
@@ -788,9 +820,25 @@ int ft_set_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, in
     return set_cell_option(table->options->cell_options, row, col, option, value);
 }
 
-int ft_set_default_option(uint32_t option, int value)
+int ft_set_default_cell_option(uint32_t option, int value)
 {
     return set_default_cell_option(option, value);
 }
 
 
+FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value)
+{
+    return set_default_entire_table_option(option, value);
+}
+
+FT_EXTERN int ft_set_tbl_option(FTABLE * FT_RESTRICT table, uint32_t option, int value)
+{
+    assert(table);
+
+    if (table->options == NULL) {
+        table->options = create_table_options();
+        if (table->options == NULL)
+            return FT_MEMORY_ERROR;
+    }
+    return set_entire_table_option(table->options, option, value);
+}

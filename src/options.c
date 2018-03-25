@@ -13,9 +13,9 @@ struct fort_cell_options g_default_cell_option =
     FT_ANY_COLUMN, /* cell_col */
 
     /* options */
-    FT_OPT_MIN_WIDTH  | FT_OPT_TEXT_ALIGN | FT_OPT_TOP_PADDING
-    | FT_OPT_BOTTOM_PADDING | FT_OPT_LEFT_PADDING | FT_OPT_RIGHT_PADDING
-    | FT_OPT_EMPTY_STR_HEIGHT ,
+    FT_COPT_MIN_WIDTH  | FT_COPT_TEXT_ALIGN | FT_COPT_TOP_PADDING
+    | FT_COPT_BOTTOM_PADDING | FT_COPT_LEFT_PADDING | FT_COPT_RIGHT_PADDING
+    | FT_COPT_EMPTY_STR_HEIGHT ,
 
     0,             /* col_min_width */
     RightAligned,  /* align */
@@ -35,21 +35,21 @@ static int get_option_value_if_exists_otherwise_default(const struct fort_cell_o
     }
 
     switch (option) {
-        case FT_OPT_MIN_WIDTH:
+        case FT_COPT_MIN_WIDTH:
             return cell_opts->col_min_width;
-        case FT_OPT_TEXT_ALIGN:
+        case FT_COPT_TEXT_ALIGN:
             return cell_opts->align;
-        case FT_OPT_TOP_PADDING:
+        case FT_COPT_TOP_PADDING:
             return cell_opts->cell_padding_top;
-        case FT_OPT_BOTTOM_PADDING:
+        case FT_COPT_BOTTOM_PADDING:
             return cell_opts->cell_padding_bottom;
-        case FT_OPT_LEFT_PADDING:
+        case FT_COPT_LEFT_PADDING:
             return cell_opts->cell_padding_left;
-        case FT_OPT_RIGHT_PADDING:
+        case FT_COPT_RIGHT_PADDING:
             return cell_opts->cell_padding_right;
-        case FT_OPT_EMPTY_STR_HEIGHT:
+        case FT_COPT_EMPTY_STR_HEIGHT:
             return cell_opts->cell_empty_string_height;
-        case FT_OPT_ROW_TYPE:
+        case FT_COPT_ROW_TYPE:
             return cell_opts->row_type;
         default:
             /* todo: implement later */
@@ -157,21 +157,21 @@ static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t opt
     assert(opt);
 
     OPTION_SET(opt->options, option);
-    if (OPTION_IS_SET(option, FT_OPT_MIN_WIDTH)) {
+    if (OPTION_IS_SET(option, FT_COPT_MIN_WIDTH)) {
         opt->col_min_width = value;
-    } else if (OPTION_IS_SET(option, FT_OPT_TEXT_ALIGN)) {
+    } else if (OPTION_IS_SET(option, FT_COPT_TEXT_ALIGN)) {
         opt->align = (enum TextAlignment)value;
-    } else if (OPTION_IS_SET(option, FT_OPT_TOP_PADDING)) {
+    } else if (OPTION_IS_SET(option, FT_COPT_TOP_PADDING)) {
         opt->cell_padding_top = value;
-    } else if (OPTION_IS_SET(option, FT_OPT_BOTTOM_PADDING)) {
+    } else if (OPTION_IS_SET(option, FT_COPT_BOTTOM_PADDING)) {
         opt->cell_padding_bottom = value;
-    } else if (OPTION_IS_SET(option, FT_OPT_LEFT_PADDING)) {
+    } else if (OPTION_IS_SET(option, FT_COPT_LEFT_PADDING)) {
         opt->cell_padding_left = value;
-    } else if (OPTION_IS_SET(option, FT_OPT_RIGHT_PADDING)) {
+    } else if (OPTION_IS_SET(option, FT_COPT_RIGHT_PADDING)) {
         opt->cell_padding_right = value;
-    } else if (OPTION_IS_SET(option, FT_OPT_EMPTY_STR_HEIGHT)) {
+    } else if (OPTION_IS_SET(option, FT_COPT_EMPTY_STR_HEIGHT)) {
         opt->cell_empty_string_height = value;
-    } else if (OPTION_IS_SET(option, FT_OPT_ROW_TYPE)) {
+    } else if (OPTION_IS_SET(option, FT_COPT_ROW_TYPE)) {
         opt->row_type = (enum RowType)value;
     }
 
@@ -188,9 +188,9 @@ fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, uns
     return set_cell_option_impl(opt, option, value);
     /*
     OPTION_SET(opt->options, option);
-    if (OPTION_IS_SET(option, FT_OPT_MIN_WIDTH)) {
+    if (OPTION_IS_SET(option, FT_COPT_MIN_WIDTH)) {
         opt->col_min_width = value;
-    } else if (OPTION_IS_SET(option, FT_OPT_TEXT_ALIGN)) {
+    } else if (OPTION_IS_SET(option, FT_COPT_TEXT_ALIGN)) {
         opt->align = value;
     }
 
@@ -321,6 +321,44 @@ struct fort_border_style FORT_EMPTY_STYLE = EMPTY_STYLE;
 
 
 
+fort_entire_table_options_t g_entire_table_options = {
+    0, /* left_margin */
+    0, /* top_margin */
+    0, /* right_margin */
+    0, /* bottom_margin */
+};
+
+static fort_status_t set_entire_table_option_internal(fort_entire_table_options_t *options, uint32_t option, int value)
+{
+    assert(options);
+    if (OPTION_IS_SET(option, FT_TOPT_LEFT_MARGIN)) {
+        options->left_margin = value;
+    } else if (OPTION_IS_SET(option, FT_TOPT_TOP_MARGIN)) {
+        options->top_margin = value;
+    } else if (OPTION_IS_SET(option, FT_TOPT_RIGHT_MARGIN)) {
+        options->right_margin = value;
+    } else if (OPTION_IS_SET(option, FT_TOPT_BOTTOM_MARGIN)) {
+        options->bottom_margin = value;
+    } else {
+        return FT_EINVAL;
+    }
+    return FT_SUCCESS;
+}
+
+fort_status_t set_entire_table_option(fort_table_options_t *table_options, uint32_t option, int value)
+{
+    assert(table_options);
+    return set_entire_table_option_internal(&table_options->entire_table_options, option, value);
+}
+
+fort_status_t set_default_entire_table_option(uint32_t option, int value)
+{
+    return set_entire_table_option_internal(&g_entire_table_options, option, value);
+}
+
+
+
+
 fort_table_options_t g_table_options = {
     /* border_style */
     BASIC_STYLE,
@@ -340,7 +378,7 @@ fort_table_options_t* create_table_options()
         destroy_table_options(options);
         options = NULL;
     }
-
+    memcpy(&options->entire_table_options, &g_entire_table_options, sizeof(fort_entire_table_options_t));
     return options;
 }
 

@@ -181,6 +181,14 @@ fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t *width)
     }
     F_FREE(col_width_arr);
     F_FREE(row_height_arr);
+
+    if (table->options) {
+        *height += table->options->entire_table_options.top_margin;
+        *height += table->options->entire_table_options.bottom_margin;
+        *width += table->options->entire_table_options.left_margin;
+        *width += table->options->entire_table_options.right_margin;
+    }
+
     return FT_SUCCESS;
 
 }

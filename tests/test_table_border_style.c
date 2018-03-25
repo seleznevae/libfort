@@ -70,11 +70,11 @@ void test_table_border_style(void)
 
         ft_set_default_border_style(&brdr_style);
 
-        ft_set_default_option(FT_OPT_BOTTOM_PADDING, 0);
-        ft_set_default_option(FT_OPT_TOP_PADDING, 0);
-        ft_set_default_option(FT_OPT_LEFT_PADDING, 1);
-        ft_set_default_option(FT_OPT_RIGHT_PADDING, 1);
-        ft_set_default_option(FT_OPT_EMPTY_STR_HEIGHT, 0);
+        ft_set_default_cell_option(FT_COPT_BOTTOM_PADDING, 0);
+        ft_set_default_cell_option(FT_COPT_TOP_PADDING, 0);
+        ft_set_default_cell_option(FT_COPT_LEFT_PADDING, 1);
+        ft_set_default_cell_option(FT_COPT_RIGHT_PADDING, 1);
+        ft_set_default_cell_option(FT_COPT_EMPTY_STR_HEIGHT, 0);
 
 
         table = create_test_int_table(0);
@@ -96,7 +96,7 @@ void test_table_border_style(void)
         table = create_test_int_table(1);
         ft_add_separator(table);
 
-        ft_set_option(table, 0, FT_ANY_COLUMN, FT_OPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
 
         assert_true( n == 4 );
