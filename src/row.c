@@ -516,27 +516,27 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
         /* Print left margin */
         CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, context->table_options->entire_table_options.left_margin, space_char));
 
-        dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*L);
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*L));
         size_t j = 0;
         for (j = 0; j < col_width_arr_sz; ++j) {
             ((context_t *)context)->column = j;
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
-                dev += cell_printf_(cell, i, j, buffer + dev, col_width_arr[j] + 1, context);
+                CHECK_RESULT_AND_MOVE_DEV(cell_printf_(cell, i, j, buffer + dev, col_width_arr[j] + 1, context));
             } else {
-                dev += snprint_n_chars_(buffer + dev, buf_sz - dev, col_width_arr[j], space_char);
+                CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, col_width_arr[j], space_char));
             }
             if (j == col_width_arr_sz - 1) {
-                dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*R);
+                CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*R));
             } else {
-                dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*IV);
+                CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*IV));
             }
         }
 
         /* Print right margin */
         CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, context->table_options->entire_table_options.right_margin, space_char));
 
-        dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, new_line_char);
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, 1, new_line_char));
     }
     return dev;
 
@@ -594,27 +594,27 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
         /* Print left margin */
         CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, context->table_options->entire_table_options.left_margin, space_char));
 
-        dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*L);
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*L));
         size_t j = 0;
         for (j = 0; j < col_width_arr_sz; ++j) {
             ((context_t *)context)->column = j;
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
-                dev += cell_printf_(cell, i, j, buffer + dev, col_width_arr[j] + 1, context);
+                CHECK_RESULT_AND_MOVE_DEV(cell_printf_(cell, i, j, buffer + dev, col_width_arr[j] + 1, context));
             } else {
-                dev += snprint_n_chars_(buffer + dev, buf_sz - dev, col_width_arr[j], space_char);
+                CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, col_width_arr[j], space_char));
             }
             if (j == col_width_arr_sz - 1) {
-                dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*R);
+                CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*R));
             } else {
-                dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*IV);
+                CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*IV));
             }
         }
 
         /* Print right margin */
         CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, context->table_options->entire_table_options.right_margin, space_char));
 
-        dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, new_line_char);
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, 1, new_line_char));
     }
     return dev;
 

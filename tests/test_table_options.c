@@ -70,7 +70,7 @@ void test_table_tbl_options(void)
     }
 
 
-    WHEN("Test setting entire table options") {
+    WHEN("Test setting entire table options(wide strings case)") {
         set_test_options_as_default();
 
         table = create_test_int_wtable(0);
