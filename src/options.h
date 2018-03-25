@@ -159,7 +159,7 @@ struct fort_entire_table_options
     int right_margin;
     int bottom_margin;
 };
-typedef fort_entire_table_options fort_entire_table_options_t;
+typedef struct fort_entire_table_options fort_entire_table_options_t;
 extern fort_entire_table_options_t g_entire_table_options;
 fort_status_t set_entire_table_option(fort_table_options_t *table_options, uint32_t option, int value);
 fort_status_t set_default_entire_table_option(uint32_t option, int value);
