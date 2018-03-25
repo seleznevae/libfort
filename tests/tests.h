@@ -60,6 +60,8 @@ struct test_case
 int set_test_options_for_table(FTABLE *table);
 int set_test_options_as_default();
 FTABLE *create_test_int_table(int set_test_opts);
+FTABLE *create_test_int_wtable(int set_test_opts);
+
 
 
 

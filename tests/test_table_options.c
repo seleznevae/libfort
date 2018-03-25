@@ -39,32 +39,89 @@ void test_table_tbl_options(void)
         /* Now set table options */
         ft_set_tbl_option(table, FT_TOPT_TOP_MARGIN, 3);
         ft_set_tbl_option(table, FT_TOPT_BOTTOM_MARGIN, 4);
-//        ft_set_tbl_option(table, FT_TOPT_LEFT_MARGIN, 1);
-//        ft_set_tbl_option(table, FT_TOPT_RIGHT_MARGIN, 2);
+        ft_set_tbl_option(table, FT_TOPT_LEFT_MARGIN, 1);
+        ft_set_tbl_option(table, FT_TOPT_RIGHT_MARGIN, 2);
         table_str = ft_to_string(table);
         assert_true( table_str != NULL );
         table_str_etalon =
-                "                   \n"
-                "                   \n"
-                "                   \n"
-                "+---+---+----+----+\n"
-                "|   |   |    |    |\n"
-                "| 3 | 4 | 55 | 67 |\n"
-                "|   |   |    |    |\n"
-                "+---+---+----+----+\n"
-                "|   |   |    |    |\n"
-                "| 3 | 4 | 55 | 67 |\n"
-                "|   |   |    |    |\n"
-                "+---+---+----+----+\n"
-                "|   |   |    |    |\n"
-                "| 3 | 4 | 55 | 67 |\n"
-                "|   |   |    |    |\n"
-                "+---+---+----+----+\n"
-                "                   \n"
-                "                   \n"
-                "                   \n"
-                "                   \n";
+                "                      \n"
+                "                      \n"
+                "                      \n"
+                " +---+---+----+----+  \n"
+                " |   |   |    |    |  \n"
+                " | 3 | 4 | 55 | 67 |  \n"
+                " |   |   |    |    |  \n"
+                " +---+---+----+----+  \n"
+                " |   |   |    |    |  \n"
+                " | 3 | 4 | 55 | 67 |  \n"
+                " |   |   |    |    |  \n"
+                " +---+---+----+----+  \n"
+                " |   |   |    |    |  \n"
+                " | 3 | 4 | 55 | 67 |  \n"
+                " |   |   |    |    |  \n"
+                " +---+---+----+----+  \n"
+                "                      \n"
+                "                      \n"
+                "                      \n"
+                "                      \n";
         assert_str_equal(table_str, table_str_etalon);
+
+        ft_destroy_table(table);
+    }
+
+
+    WHEN("Test setting entire table options") {
+        set_test_options_as_default();
+
+        table = create_test_int_wtable(0);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true( table_str != NULL );
+        const wchar_t *table_str_etalon =
+                L"+---+---+----+----+\n"
+                L"|   |   |    |    |\n"
+                L"| 3 | 4 | 55 | 67 |\n"
+                L"|   |   |    |    |\n"
+                L"+---+---+----+----+\n"
+                L"|   |   |    |    |\n"
+                L"| 3 | 4 | 55 | 67 |\n"
+                L"|   |   |    |    |\n"
+                L"+---+---+----+----+\n"
+                L"|   |   |    |    |\n"
+                L"| 3 | 4 | 55 | 67 |\n"
+                L"|   |   |    |    |\n"
+                L"+---+---+----+----+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+
+        /* Now set table options */
+        ft_set_tbl_option(table, FT_TOPT_TOP_MARGIN, 3);
+        ft_set_tbl_option(table, FT_TOPT_BOTTOM_MARGIN, 4);
+        ft_set_tbl_option(table, FT_TOPT_LEFT_MARGIN, 1);
+        ft_set_tbl_option(table, FT_TOPT_RIGHT_MARGIN, 2);
+        table_str = ft_to_wstring(table);
+        assert_true( table_str != NULL );
+        table_str_etalon =
+                L"                      \n"
+                L"                      \n"
+                L"                      \n"
+                L" +---+---+----+----+  \n"
+                L" |   |   |    |    |  \n"
+                L" | 3 | 4 | 55 | 67 |  \n"
+                L" |   |   |    |    |  \n"
+                L" +---+---+----+----+  \n"
+                L" |   |   |    |    |  \n"
+                L" | 3 | 4 | 55 | 67 |  \n"
+                L" |   |   |    |    |  \n"
+                L" +---+---+----+----+  \n"
+                L" |   |   |    |    |  \n"
+                L" | 3 | 4 | 55 | 67 |  \n"
+                L" |   |   |    |    |  \n"
+                L" +---+---+----+----+  \n"
+                L"                      \n"
+                L"                      \n"
+                L"                      \n"
+                L"                      \n";
+        assert_wcs_equal(table_str, table_str_etalon);
 
         ft_destroy_table(table);
     }

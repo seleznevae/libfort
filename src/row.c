@@ -127,7 +127,7 @@ int print_row_separator(char *buffer, size_t buffer_sz,
     typedef char char_type;
     char new_line_char = '\n';
     int (*snprint_n_chars_)(char *, size_t , size_t , char) = snprint_n_chars;
-
+    char space_char = ' ';
 
     assert(buffer);
     assert(context);
@@ -196,6 +196,10 @@ int print_row_separator(char *buffer, size_t buffer_sz,
         return 0;
 
     size_t i = 0;
+
+    /* Print left margin */
+    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, context->table_options->entire_table_options.left_margin, space_char));
+
     for (i = 0; i < cols; ++i) {
         if (i == 0) {
             CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, 1, (char_type)*L));
@@ -205,6 +209,9 @@ int print_row_separator(char *buffer, size_t buffer_sz,
         CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, col_width_arr[i], (char_type)*I));
     }
     CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, 1, (char_type)*R));
+
+    /* Print right margin */
+    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, context->table_options->entire_table_options.right_margin, space_char));
 
     CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, 1, new_line_char));
 
@@ -234,6 +241,7 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
     typedef wchar_t char_type;
     char new_line_char = L'\n';
     int (*snprint_n_chars_)(wchar_t*, size_t , size_t , wchar_t) = wsnprint_n_chars;
+    wchar_t space_char = L' ';
 
 
     assert(buffer);
@@ -303,6 +311,10 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
         return 0;
 
     size_t i = 0;
+
+    /* Print left margin */
+    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, context->table_options->entire_table_options.left_margin, space_char));
+
     for (i = 0; i < cols; ++i) {
         if (i == 0) {
             CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, 1, (char_type)*L));
@@ -312,6 +324,9 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
         CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, col_width_arr[i], (char_type)*I));
     }
     CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, 1, (char_type)*R));
+
+    /* Print right margin */
+    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, context->table_options->entire_table_options.right_margin, space_char));
 
     CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buffer_sz - dev, 1, new_line_char));
 
@@ -457,6 +472,13 @@ clear:
 int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                         size_t row_height, const context_t *context)
 {
+#define CHECK_RESULT_AND_MOVE_DEV(statement) \
+    k = statement; \
+    if (k < 0) {\
+        goto clear; \
+    } \
+    dev += k;
+
     typedef char char_type;
     char space_char = ' ';
     char new_line_char = '\n';
@@ -488,8 +510,12 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
 
 
     int dev = 0;
+    int k = 0;
     size_t i = 0;
     for (i = 0; i < row_height; ++i) {
+        /* Print left margin */
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, context->table_options->entire_table_options.left_margin, space_char));
+
         dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*L);
         size_t j = 0;
         for (j = 0; j < col_width_arr_sz; ++j) {
@@ -506,9 +532,17 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
                 dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*IV);
             }
         }
+
+        /* Print right margin */
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, context->table_options->entire_table_options.right_margin, space_char));
+
         dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, new_line_char);
     }
     return dev;
+
+clear:
+    return -1;
+#undef CHECK_RESULT_AND_MOVE_DEV
 }
 
 
@@ -516,6 +550,13 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
 int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                         size_t row_height, const context_t *context)
 {
+#define CHECK_RESULT_AND_MOVE_DEV(statement) \
+    k = statement; \
+    if (k < 0) {\
+        goto clear; \
+    } \
+    dev += k;
+
     typedef wchar_t char_type;
     char space_char = L' ';
     char new_line_char = L'\n';
@@ -547,8 +588,12 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
 
 
     int dev = 0;
+    int k = 0;
     size_t i = 0;
     for (i = 0; i < row_height; ++i) {
+        /* Print left margin */
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, context->table_options->entire_table_options.left_margin, space_char));
+
         dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*L);
         size_t j = 0;
         for (j = 0; j < col_width_arr_sz; ++j) {
@@ -565,8 +610,16 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
                 dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, (char_type)*IV);
             }
         }
+
+        /* Print right margin */
+        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, context->table_options->entire_table_options.right_margin, space_char));
+
         dev += snprint_n_chars_(buffer + dev, buf_sz - dev, 1, new_line_char);
     }
     return dev;
+
+clear:
+    return -1;
+#undef CHECK_RESULT_AND_MOVE_DEV
 }
 

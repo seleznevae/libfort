@@ -80,24 +80,53 @@ FTABLE *create_test_int_table(int set_test_opts)
     if (set_test_opts) {
         assert_true( set_test_options_for_table(table) == FT_SUCCESS);
     }
-//        ft_set_table_options(table, &test_table_opts);
 
     assert_true (table != NULL);
 
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
-    int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+//    int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+    int n = FT_NWRITE_LN(table, "3", "4", "55", "67");
+    assert(n == FT_SUCCESS);
 
-    assert_true( n == 4 );
+    assert(ft_write(table, "3") == FT_SUCCESS);
+    assert(ft_write(table, "4") == FT_SUCCESS);
+    assert(ft_write(table, "55") == FT_SUCCESS);
+    assert(ft_write_ln(table, "67") == FT_SUCCESS);
 
     assert(ft_write(table, "3") == FT_SUCCESS);
     assert(ft_write(table, "4") == FT_SUCCESS);
     assert(ft_write(table, "55") == FT_SUCCESS);
     assert(ft_write_ln(table, "67") == FT_SUCCESS);
 
-    assert(ft_write(table, "3") == FT_SUCCESS);
-    assert(ft_write(table, "4") == FT_SUCCESS);
-    assert(ft_write(table, "55") == FT_SUCCESS);
-    assert(ft_write_ln(table, "67") == FT_SUCCESS);
+    return table;
+}
+
+FTABLE *create_test_int_wtable(int set_test_opts)
+{
+    FTABLE *table = NULL;
+
+    table = ft_create_table();
+    assert_true( table != NULL );
+    if (set_test_opts) {
+        assert_true( set_test_options_for_table(table) == FT_SUCCESS);
+    }
+
+    assert_true (table != NULL);
+
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
+//    int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
+    int n = FT_NWWRITE_LN(table, L"3", L"4", L"55", L"67");
+    assert(n == FT_SUCCESS);
+
+    assert(ft_wwrite(table, L"3") == FT_SUCCESS);
+    assert(ft_wwrite(table, L"4") == FT_SUCCESS);
+    assert(ft_wwrite(table, L"55") == FT_SUCCESS);
+    assert(ft_wwrite_ln(table, L"67") == FT_SUCCESS);
+
+    assert(ft_wwrite(table, L"3") == FT_SUCCESS);
+    assert(ft_wwrite(table, L"4") == FT_SUCCESS);
+    assert(ft_wwrite(table, L"55") == FT_SUCCESS);
+    assert(ft_wwrite_ln(table, L"67") == FT_SUCCESS);
 
     return table;
 }
