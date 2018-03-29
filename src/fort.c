@@ -462,11 +462,13 @@ int ft_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const
 const char* ft_to_string(const FTABLE *FT_RESTRICT table)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
-    k = statement; \
-    if (k < 0) {\
-        goto clear; \
-    } \
-    dev += k;
+    do { \
+        k = statement; \
+        if (k < 0) {\
+            goto clear; \
+        } \
+        dev += k; \
+    } while(0)
 
     typedef char char_type;
     const char_type *empty_string = "";
@@ -572,11 +574,13 @@ clear:
 const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
-    k = statement; \
-    if (k < 0) {\
-        goto clear; \
-    } \
-    dev += k;
+    do { \
+        k = statement; \
+        if (k < 0) {\
+            goto clear; \
+        } \
+        dev += k; \
+    } while(0)
 
     typedef wchar_t char_type;
     const char_type *empty_string = L"";

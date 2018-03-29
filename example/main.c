@@ -21,8 +21,11 @@ static FTABLE *create_basic_table()
     return table;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    (void)argc;
+    (void)argv;
+
     FTABLE *table = NULL;
 
     table = ft_create_table();

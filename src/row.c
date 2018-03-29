@@ -118,11 +118,13 @@ int print_row_separator(char *buffer, size_t buffer_sz,
                                const separator_t *sep, const context_t *context)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
-    k = statement; \
-    if (k < 0) {\
-        goto clear; \
-    } \
-    dev += k;
+    do { \
+        k = statement; \
+        if (k < 0) {\
+            goto clear; \
+        } \
+        dev += k; \
+    } while(0)
 
     typedef char char_type;
     char new_line_char = '\n';
@@ -232,11 +234,13 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
                                const context_t *context)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
-    k = statement; \
-    if (k < 0) {\
-        goto clear; \
-    } \
-    dev += k;
+    do { \
+        k = statement; \
+        if (k < 0) {\
+            goto clear; \
+        } \
+        dev += k; \
+    } while(0)
 
     typedef wchar_t char_type;
     char new_line_char = L'\n';
@@ -473,11 +477,13 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
                         size_t row_height, const context_t *context)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
-    k = statement; \
-    if (k < 0) {\
-        goto clear; \
-    } \
-    dev += k;
+    do { \
+        k = statement; \
+        if (k < 0) {\
+            goto clear; \
+        } \
+        dev += k; \
+    } while(0)
 
     typedef char char_type;
     char space_char = ' ';
@@ -551,11 +557,13 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
                         size_t row_height, const context_t *context)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
-    k = statement; \
-    if (k < 0) {\
-        goto clear; \
-    } \
-    dev += k;
+    do { \
+        k = statement; \
+        if (k < 0) {\
+            goto clear; \
+        } \
+        dev += k; \
+    } while(0)
 
     typedef wchar_t char_type;
     char space_char = L' ';

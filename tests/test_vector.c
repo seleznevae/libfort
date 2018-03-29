@@ -18,7 +18,7 @@ void test_vector_basic(void)
 
     WHEN("Pushing less items than initial capacity") {
         for (i = 0; i < init_capacity; ++i) {
-            item_t item = i;
+            item_t item = (item_t)i;
             vector_push(vector, &item);
         }
 
@@ -38,7 +38,7 @@ void test_vector_basic(void)
 
     WHEN("Pushing more items than initial capacity") {
         for (i = 0; i < 2 * init_capacity; ++i) {
-            item_t item = 2 * i;
+            item_t item = (item_t)(2 * i);
             vector_push(vector, &item);
         }
 
