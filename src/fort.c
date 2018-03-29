@@ -682,23 +682,23 @@ clear:
 /*
  *  TMP
  */
-static int dummy_function()
-#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
-__attribute__ ((unused))
-#endif
-;
+//static int dummy_function(void)
+//#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
+//__attribute__ ((unused))
+//#endif
+//;
 
-static int dummy_function()
-{
-    if (0) {
-        vector_t *v = create_vector(1, DEFAULT_VECTOR_CAPACITY);
-        vector_clear(v);
-        vector_erase(v, 0);
-        vector_index_of(v, NULL);
-        vector_capacity(v);
-    }
-    return 0;
-}
+//static int dummy_function(void)
+//{
+//    if (0) {
+//        vector_t *v = create_vector(1, DEFAULT_VECTOR_CAPACITY);
+//        vector_clear(v);
+//        vector_erase(v, 0);
+//        vector_index_of(v, NULL);
+//        vector_capacity(v);
+//    }
+//    return 0;
+//}
 
 
 

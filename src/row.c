@@ -13,7 +13,7 @@ struct fort_row
 
 
 
-fort_row_t * create_row()
+fort_row_t * create_row(void)
 {
     fort_row_t * row = (fort_row_t *)F_CALLOC(sizeof(fort_row_t), 1);
     if (row == NULL)
@@ -428,8 +428,8 @@ fort_row_t* create_row_from_fmt_string(const char* FT_RESTRICT fmt, va_list *va_
     if (buffer == NULL)
         return NULL;
 
-    int cols_origin = number_of_columns_in_format_string(fmt);
-    int cols = 0;
+    size_t cols_origin = number_of_columns_in_format_string(fmt);
+    size_t cols = 0;
 
     while (1) {
         va_list va;
@@ -483,7 +483,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
     char space_char = ' ';
     char new_line_char = '\n';
     int (*snprint_n_chars_)(char *, size_t , size_t , char) = snprint_n_chars;
-    int (*cell_printf_)(fort_cell_t *, size_t, size_t, char *, size_t, const context_t *) = cell_printf;
+    int (*cell_printf_)(fort_cell_t *, size_t, char *, size_t, const context_t *) = cell_printf;
 
 
     assert(context);
@@ -522,7 +522,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
             ((context_t *)context)->column = j;
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
-                CHECK_RESULT_AND_MOVE_DEV(cell_printf_(cell, i, j, buffer + dev, col_width_arr[j] + 1, context));
+                CHECK_RESULT_AND_MOVE_DEV(cell_printf_(cell, i, buffer + dev, col_width_arr[j] + 1, context));
             } else {
                 CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, col_width_arr[j], space_char));
             }
@@ -561,7 +561,7 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
     char space_char = L' ';
     char new_line_char = L'\n';
     int (*snprint_n_chars_)(wchar_t *, size_t , size_t , wchar_t) = wsnprint_n_chars;
-    int (*cell_printf_)(fort_cell_t *, size_t, size_t, wchar_t *, size_t, const context_t *) = cell_wprintf;
+    int (*cell_printf_)(fort_cell_t *, size_t, wchar_t *, size_t, const context_t *) = cell_wprintf;
 
 
     assert(context);
@@ -600,7 +600,7 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
             ((context_t *)context)->column = j;
             if (j < cols_in_row) {
                 fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
-                CHECK_RESULT_AND_MOVE_DEV(cell_printf_(cell, i, j, buffer + dev, col_width_arr[j] + 1, context));
+                CHECK_RESULT_AND_MOVE_DEV(cell_printf_(cell, i, buffer + dev, col_width_arr[j] + 1, context));
             } else {
                 CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, col_width_arr[j], space_char));
             }

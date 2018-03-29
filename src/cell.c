@@ -14,7 +14,7 @@ struct fort_cell
     fort_table_options_t *options;
 };
 
-fort_cell_t * create_cell()
+fort_cell_t * create_cell(void)
 {
     fort_cell_t *cell = (fort_cell_t *)F_CALLOC(sizeof(fort_cell_t), 1);
     if (cell == NULL)
@@ -95,10 +95,10 @@ static int lines_number_cell(fort_cell_t *cell)
 }
 */
 
-int cell_printf(fort_cell_t *cell, size_t row, size_t column, char *buf, size_t buf_len, const context_t *context)
+int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context)
 {
     char space_char = ' ';
-    int (*buffer_printf_)(string_buffer_t *, size_t , size_t , char *, size_t , const context_t *) = buffer_printf;
+    int (*buffer_printf_)(string_buffer_t *, size_t ,char *, size_t , const context_t *) = buffer_printf;
     int (*snprint_n_chars_)(char *, size_t , size_t , char) = snprint_n_chars;
 
 
@@ -124,7 +124,7 @@ int cell_printf(fort_cell_t *cell, size_t row, size_t column, char *buf, size_t 
         written += snprint_n_chars_(buf + written, buf_len - written, left, space_char);
 
         if (cell->str_buffer)
-            written += buffer_printf_(cell->str_buffer, row - cell_padding_top, column, buf + written, buf_len - written - right, context);
+            written += buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + written, buf_len - written - right, context);
         else
             written += snprint_n_chars_(buf + written, buf_len - written, buf_len - written - right, space_char);
         written += snprint_n_chars_(buf + written, buf_len - written, right, space_char);
@@ -133,10 +133,10 @@ int cell_printf(fort_cell_t *cell, size_t row, size_t column, char *buf, size_t 
     }
 }
 
-int cell_wprintf(fort_cell_t *cell, size_t row, size_t column, wchar_t *buf, size_t buf_len, const context_t *context)
+int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context)
 {
     wchar_t space_char = L' ';
-    int (*buffer_printf_)(string_buffer_t *, size_t , size_t , wchar_t *, size_t , const context_t *) = buffer_wprintf;
+    int (*buffer_printf_)(string_buffer_t *, size_t , wchar_t *, size_t , const context_t *) = buffer_wprintf;
     int (*snprint_n_chars_)(wchar_t *, size_t , size_t , wchar_t) = wsnprint_n_chars;
 
 
@@ -162,7 +162,7 @@ int cell_wprintf(fort_cell_t *cell, size_t row, size_t column, wchar_t *buf, siz
         written += snprint_n_chars_(buf + written, buf_len - written, left, space_char);
 
         if (cell->str_buffer)
-            written += buffer_printf_(cell->str_buffer, row - cell_padding_top, column, buf + written, buf_len - written - right, context);
+            written += buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + written, buf_len - written - right, context);
         else
             written += snprint_n_chars_(buf + written, buf_len - written, buf_len - written - right, space_char);
         written += snprint_n_chars_(buf + written, buf_len - written, right, space_char);

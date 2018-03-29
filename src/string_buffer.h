@@ -40,7 +40,7 @@ void *buffer_get_data(string_buffer_t *buffer);
 
 
 size_t buffer_text_width(string_buffer_t *buffer);
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_column, char *buf, size_t buf_len, const context_t *context);
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, size_t table_column, wchar_t *buf, size_t buf_len, const context_t *context);
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t buf_len, const context_t *context);
+int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t buf_len, const context_t *context);
 
 #endif /* STRING_BUFFER_H */

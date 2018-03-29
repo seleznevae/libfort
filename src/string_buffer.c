@@ -261,7 +261,6 @@ size_t buffer_text_width(string_buffer_t *buffer)
 
             int line_width = mk_wcswidth(beg, end - beg);
             max_length = MAX(max_length, line_width);
-//            max_length = MAX(max_length, (end - beg));
 
             ++n;
         }
@@ -270,7 +269,7 @@ size_t buffer_text_width(string_buffer_t *buffer)
 
 
 
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_column, char *buf, size_t buf_len, const context_t *context)
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t buf_len, const context_t *context)
 {
 #define CHAR_TYPE char
 #define NULL_CHAR '\0'
@@ -354,7 +353,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, size_t table_colum
 }
 
 
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, size_t table_column, wchar_t *buf, size_t buf_len, const context_t *context)
+int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t buf_len, const context_t *context)
 {
 #define CHAR_TYPE wchar_t
 #define NULL_CHAR L'\0'
