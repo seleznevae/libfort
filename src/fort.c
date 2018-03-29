@@ -215,6 +215,8 @@ int ft_write_ln(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT cell_content)
     return status;
 }
 
+#ifdef FT_HAVE_WCHAR
+
 int ft_wwrite(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content)
 {
     assert(table);
@@ -238,6 +240,7 @@ int ft_wwrite_ln(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_cont
     }
     return status;
 }
+#endif
 
 
 int ft_nwrite(FTABLE *FT_RESTRICT table, size_t n, const char* FT_RESTRICT cell_content, ...)
@@ -286,6 +289,7 @@ int ft_nwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const char* FT_RESTRICT ce
     return status;
 }
 
+#ifdef FT_HAVE_WCHAR
 
 int ft_nwwrite(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...)
 {
@@ -332,6 +336,7 @@ int ft_nwwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRIC
     ft_ln(table);
     return status;
 }
+#endif
 
 
 int ft_row_write(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT cells[])
@@ -358,6 +363,31 @@ int ft_row_write_ln(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTR
     return status;
 }
 
+#ifdef FT_HAVE_WCHAR
+int ft_row_wwrite(FTABLE *FT_RESTRICT table, size_t cols, const wchar_t* FT_RESTRICT cells[])
+{
+    size_t i = 0;
+    assert(table);
+    for (i = 0; i < cols; ++i) {
+        int status = ft_wwrite(table, cells[i]);
+        if (IS_ERROR(status)) {
+            /* todo: maybe current pos in case of error should be equal to the one before function call? */
+            return status;
+        }
+    }
+    return FT_SUCCESS;
+}
+
+int ft_row_wwrite_ln(FTABLE *FT_RESTRICT table, size_t cols, const wchar_t* FT_RESTRICT cells[])
+{
+    assert(table);
+    int status = ft_row_wwrite(table, cols, cells);
+    if (IS_SUCCESS(status)) {
+        ft_ln(table);
+    }
+    return status;
+}
+#endif
 
 
 #if !defined(__cplusplus) && !defined(FT_MICROSOFT_COMPILER)

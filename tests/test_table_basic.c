@@ -291,6 +291,72 @@ void test_table_write(void)
 {
     FTABLE *table = NULL;
 
+    SCENARIO("Test row_write functions") {
+        table = ft_create_table();
+        assert_true( table != NULL );
+        assert_true( set_test_options_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
+        const char *row_0[4] = {"3", "c", "234", "3.140000"};
+        const char *row_1[4] = {"c", "234", "3.140000", "3"};
+        const char *row_2[4] = {"234", "3.140000", "3", "c"};
+        assert_true(ft_row_write_ln(table, 4, row_0) == FT_SUCCESS);
+        assert_true(ft_row_write_ln(table, 4, row_1) == FT_SUCCESS);
+        assert_true(ft_row_write_ln(table, 4, row_2) == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true( table_str != NULL );
+        const char *table_str_etalon =
+                "+-----+----------+----------+----------+\n"
+                "|     |          |          |          |\n"
+                "|   3 |        c |      234 | 3.140000 |\n"
+                "|     |          |          |          |\n"
+                "+-----+----------+----------+----------+\n"
+                "|     |          |          |          |\n"
+                "|   c |      234 | 3.140000 |        3 |\n"
+                "|     |          |          |          |\n"
+                "+-----+----------+----------+----------+\n"
+                "|     |          |          |          |\n"
+                "| 234 | 3.140000 |        3 |        c |\n"
+                "|     |          |          |          |\n"
+                "+-----+----------+----------+----------+\n";
+        assert_str_equal( table_str, table_str_etalon );
+        ft_destroy_table(table);
+    }
+
+    SCENARIO("Test row_write functions(wide strings)") {
+        table = ft_create_table();
+        assert_true( table != NULL );
+        assert_true( set_test_options_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
+        const wchar_t *row_0[4] = {L"3", L"c", L"234", L"3.140000"};
+        const wchar_t *row_1[4] = {L"c", L"234", L"3.140000", L"3"};
+        const wchar_t *row_2[4] = {L"234", L"3.140000", L"3", L"c"};
+        assert_true(ft_row_wwrite_ln(table, 4, row_0) == FT_SUCCESS);
+        assert_true(ft_row_wwrite_ln(table, 4, row_1) == FT_SUCCESS);
+        assert_true(ft_row_wwrite_ln(table, 4, row_2) == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true( table_str != NULL );
+        const wchar_t *table_str_etalon =
+                L"+-----+----------+----------+----------+\n"
+                L"|     |          |          |          |\n"
+                L"|   3 |        c |      234 | 3.140000 |\n"
+                L"|     |          |          |          |\n"
+                L"+-----+----------+----------+----------+\n"
+                L"|     |          |          |          |\n"
+                L"|   c |      234 | 3.140000 |        3 |\n"
+                L"|     |          |          |          |\n"
+                L"+-----+----------+----------+----------+\n"
+                L"|     |          |          |          |\n"
+                L"| 234 | 3.140000 |        3 |        c |\n"
+                L"|     |          |          |          |\n"
+                L"+-----+----------+----------+----------+\n";
+        assert_wcs_equal( table_str, table_str_etalon );
+        ft_destroy_table(table);
+    }
+
 
     SCENARIO("Test printf functions") {
         table = ft_create_table();
@@ -321,10 +387,12 @@ void test_table_write(void)
                 "| 234 | 3.140000 |        3 |        c |\n"
                 "|     |          |          |          |\n"
                 "+-----+----------+----------+----------+\n";
-
-//        fprintf(stderr, "content:\n%s", table_str);
-        assert_true( strcmp(table_str, table_str_etalon) == 0);
-
+        assert_str_equal( table_str, table_str_etalon );
         ft_destroy_table(table);
     }
+
+    SCENARIO("Test printf functions(wide strings)") {
+        /* todo: need to implement */
+    }
+
 }

@@ -366,6 +366,8 @@ FT_EXTERN int ft_wwrite_ln(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT
 FT_EXTERN int ft_nwwrite(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...);
 FT_EXTERN int ft_nwwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...);
 
+FT_EXTERN int ft_row_wwrite(FTABLE *FT_RESTRICT table, size_t cols, const wchar_t* FT_RESTRICT row_cells[]);
+FT_EXTERN int ft_row_wwrite_ln(FTABLE *FT_RESTRICT table, size_t cols, const wchar_t* FT_RESTRICT row_cells[]);
 
 FT_EXTERN const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table);
 #endif
