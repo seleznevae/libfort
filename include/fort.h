@@ -58,16 +58,11 @@ SOFTWARE.
 #define FT_RESTRICT __restrict
 #endif /* if defined(FT_CLANG_COMPILER) */
 #else
-
-#if defined(FT_MICROSOFT_COMPILER)
-#define FT_RESTRICT restrict
-#else
 #if __STDC_VERSION__ < 199901L
 #define FT_RESTRICT
 #else
 #define FT_RESTRICT restrict
 #endif /* __STDC_VERSION__ < 199901L */
-#endif /* if defined(FT_MICROSOFT_COMPILER) */
 #endif /* if defined(__cplusplus) */
 
 
