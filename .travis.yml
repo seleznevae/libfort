@@ -100,18 +100,6 @@ script:
       ./libfort_test ;
     fi
 
-  # Build for coveralls
-  - |
-    if [ "${CC}" = 'gcc' ]; then
-      cd ..  ;
-      rm -r build/* ;
-      cd build ;
-      cmake .. -DFORT_BUILD_TYPE=coveralls ;
-      cmake --build . --target all ;
-      ls ;
-      ./libfort_test ;
-    fi
-
   # Astyle Format
   - |
     if [ "${CC}" = 'gcc' ]; then
@@ -144,6 +132,19 @@ script:
       cmake .. ;
       scan-build make ;
     fi
+
+  # Build for coveralls (should be the last)
+  - |
+    if [ "${CC}" = 'gcc' ]; then
+      cd ..  ;
+      rm -r build/* ;
+      cd build ;
+      cmake .. -DFORT_BUILD_TYPE=coveralls ;
+      cmake --build . --target all ;
+      ls ;
+      ./libfort_test ;
+    fi
+  - cd ..
 
 
 
