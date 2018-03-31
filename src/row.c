@@ -5,20 +5,19 @@
 #include "vector.h"
 #include "ctype.h"
 
-struct fort_row
-{
+struct fort_row {
     vector_t *cells;
     /*enum RowType type;*/
 };
 
 
 
-fort_row_t * create_row(void)
+fort_row_t *create_row(void)
 {
-    fort_row_t * row = (fort_row_t *)F_CALLOC(sizeof(fort_row_t), 1);
+    fort_row_t *row = (fort_row_t *)F_CALLOC(sizeof(fort_row_t), 1);
     if (row == NULL)
         return NULL;
-    row->cells = create_vector(sizeof(fort_cell_t*), DEFAULT_VECTOR_CAPACITY);
+    row->cells = create_vector(sizeof(fort_cell_t *), DEFAULT_VECTOR_CAPACITY);
     if (row->cells == NULL) {
         F_FREE(row);
         return NULL;
@@ -71,12 +70,12 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
     switch (policy) {
         case DoNotCreate:
             if (col < columns_in_row(row)) {
-                return *(fort_cell_t**)vector_at(row->cells, col);
+                return *(fort_cell_t **)vector_at(row->cells, col);
             }
             return NULL;
             break;
         case Create:
-            while(col >= columns_in_row(row)) {
+            while (col >= columns_in_row(row)) {
                 fort_cell_t *new_cell = create_cell();
                 if (new_cell == NULL)
                     return NULL;
@@ -85,7 +84,7 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
                     return NULL;
                 }
             }
-            return *(fort_cell_t**)vector_at(row->cells, col);
+            return *(fort_cell_t **)vector_at(row->cells, col);
             break;
     }
     return NULL;
@@ -112,10 +111,10 @@ fort_cell_t *get_cell_and_create_if_not_exists(fort_row_t *row, size_t col)
 
 
 int print_row_separator(char *buffer, size_t buffer_sz,
-                               const size_t *col_width_arr, size_t cols,
-                               const fort_row_t *upper_row, const fort_row_t *lower_row,
-                               enum HorSeparatorPos separatorPos,
-                               const separator_t *sep, const context_t *context)
+                        const size_t *col_width_arr, size_t cols,
+                        const fort_row_t *upper_row, const fort_row_t *lower_row,
+                        enum HorSeparatorPos separatorPos,
+                        const separator_t *sep, const context_t *context)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
     do { \
@@ -128,7 +127,7 @@ int print_row_separator(char *buffer, size_t buffer_sz,
 
     typedef char char_type;
     char new_line_char = '\n';
-    int (*snprint_n_chars_)(char *, size_t , size_t , char) = snprint_n_chars;
+    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
     char space_char = ' ';
 
     assert(buffer);
@@ -143,7 +142,7 @@ int print_row_separator(char *buffer, size_t buffer_sz,
     }
     enum RowType upper_row_type = Common;
     if (upper_row != NULL) {
-        upper_row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row-1, FT_ANY_COLUMN, FT_COPT_ROW_TYPE);
+        upper_row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row - 1, FT_ANY_COLUMN, FT_COPT_ROW_TYPE);
     }
 
 
@@ -228,10 +227,10 @@ clear:
 
 
 int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
-                               const size_t *col_width_arr, size_t cols,
-                               const fort_row_t *upper_row, const fort_row_t *lower_row,
-                               enum HorSeparatorPos separatorPos, const separator_t *sep,
-                               const context_t *context)
+                         const size_t *col_width_arr, size_t cols,
+                         const fort_row_t *upper_row, const fort_row_t *lower_row,
+                         enum HorSeparatorPos separatorPos, const separator_t *sep,
+                         const context_t *context)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
     do { \
@@ -244,7 +243,7 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
 
     typedef wchar_t char_type;
     char new_line_char = L'\n';
-    int (*snprint_n_chars_)(wchar_t*, size_t , size_t , wchar_t) = wsnprint_n_chars;
+    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
     wchar_t space_char = L' ';
 
 
@@ -260,7 +259,7 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
     }
     enum RowType upper_row_type = Common;
     if (upper_row != NULL) {
-        upper_row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row-1, FT_ANY_COLUMN, FT_COPT_ROW_TYPE);
+        upper_row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row - 1, FT_ANY_COLUMN, FT_COPT_ROW_TYPE);
     }
 
     /*  Row separator anatomy
@@ -344,13 +343,13 @@ clear:
 
 
 
-fort_row_t* create_row_from_string(const char *str)
+fort_row_t *create_row_from_string(const char *str)
 {
     char *pos = NULL;
     char *base_pos = NULL;
     int number_of_separators = 0;
 
-    fort_row_t * row = create_row();
+    fort_row_t *row = create_row();
     if (row == NULL)
         return NULL;
 
@@ -376,7 +375,7 @@ fort_row_t* create_row_from_string(const char *str)
         if (cell == NULL)
             goto clear;
 
-/*        int status = fill_buffer_from_string(cell->str_buffer, base_pos);  */
+        /*        int status = fill_buffer_from_string(cell->str_buffer, base_pos);  */
         int status = fill_cell_from_string(cell, base_pos);
         if (IS_ERROR(status)) {
             destroy_cell(cell);
@@ -400,7 +399,7 @@ fort_row_t* create_row_from_string(const char *str)
         if (cell == NULL)
             goto clear;
 
-/*        int status = fill_buffer_from_string(cell->str_buffer, "");  */
+        /*        int status = fill_buffer_from_string(cell->str_buffer, "");  */
         int status = fill_cell_from_string(cell, "");
         if (IS_ERROR(status)) {
             destroy_cell(cell);
@@ -426,7 +425,7 @@ clear:
 
 
 
-fort_row_t* create_row_from_fmt_string(const char* FT_RESTRICT fmt, va_list *va_args)
+fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 {
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CharBuf);
     if (buffer == NULL)
@@ -474,7 +473,7 @@ clear:
 
 
 int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
-                        size_t row_height, const context_t *context)
+                 size_t row_height, const context_t *context)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
     do { \
@@ -488,7 +487,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
     typedef char char_type;
     char space_char = ' ';
     char new_line_char = '\n';
-    int (*snprint_n_chars_)(char *, size_t , size_t , char) = snprint_n_chars;
+    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
     int (*cell_printf_)(fort_cell_t *, size_t, char *, size_t, const context_t *) = cell_printf;
 
 
@@ -508,8 +507,8 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
     typedef const char (*border_chars_point_t)[BorderItemPosSize];
     enum RowType row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_COPT_ROW_TYPE);
     const char (*bord_chars)[BorderItemPosSize] = (row_type == Header)
-            ? (border_chars_point_t) (&context->table_options->border_style.header_border_chars)
-            : (border_chars_point_t) (&context->table_options->border_style.border_chars);
+            ? (border_chars_point_t)(&context->table_options->border_style.header_border_chars)
+            : (border_chars_point_t)(&context->table_options->border_style.border_chars);
     const char *L = &(*bord_chars)[LL_bip];
     const char *IV = &(*bord_chars)[IV_bip];
     const char *R = &(*bord_chars)[RR_bip];
@@ -527,7 +526,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
         for (j = 0; j < col_width_arr_sz; ++j) {
             ((context_t *)context)->column = j;
             if (j < cols_in_row) {
-                fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
+                fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, j);
                 CHECK_RESULT_AND_MOVE_DEV(cell_printf_(cell, i, buffer + dev, col_width_arr[j] + 1, context));
             } else {
                 CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, col_width_arr[j], space_char));
@@ -554,7 +553,7 @@ clear:
 
 
 int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
-                        size_t row_height, const context_t *context)
+                  size_t row_height, const context_t *context)
 {
 #define CHECK_RESULT_AND_MOVE_DEV(statement) \
     do { \
@@ -568,7 +567,7 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
     typedef wchar_t char_type;
     char space_char = L' ';
     char new_line_char = L'\n';
-    int (*snprint_n_chars_)(wchar_t *, size_t , size_t , wchar_t) = wsnprint_n_chars;
+    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
     int (*cell_printf_)(fort_cell_t *, size_t, wchar_t *, size_t, const context_t *) = cell_wprintf;
 
 
@@ -588,8 +587,8 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
     typedef const char (*border_chars_point_t)[BorderItemPosSize];
     enum RowType row_type = (enum RowType)get_cell_opt_value_hierarcial(context->table_options, context->row, FT_ANY_COLUMN, FT_COPT_ROW_TYPE);
     const char (*bord_chars)[BorderItemPosSize] = (row_type)
-            ? (border_chars_point_t) (&context->table_options->border_style.header_border_chars)
-            : (border_chars_point_t) (&context->table_options->border_style.border_chars);
+            ? (border_chars_point_t)(&context->table_options->border_style.header_border_chars)
+            : (border_chars_point_t)(&context->table_options->border_style.border_chars);
     const char *L = &(*bord_chars)[LL_bip];
     const char *IV = &(*bord_chars)[IV_bip];
     const char *R = &(*bord_chars)[RR_bip];
@@ -607,7 +606,7 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
         for (j = 0; j < col_width_arr_sz; ++j) {
             ((context_t *)context)->column = j;
             if (j < cols_in_row) {
-                fort_cell_t *cell = *(fort_cell_t**)vector_at(row->cells, j);
+                fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, j);
                 CHECK_RESULT_AND_MOVE_DEV(cell_printf_(cell, i, buffer + dev, col_width_arr[j] + 1, context));
             } else {
                 CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, buf_sz - dev, col_width_arr[j], space_char));

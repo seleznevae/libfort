@@ -12,6 +12,7 @@ matrix:
       sudo: required # to prevent fail of executables build with clang and sanitizers
       compiler: clang
       env: CC=clang
+      
 
 
     # Linux / GCC
@@ -87,30 +88,63 @@ script:
   - ./libfort_test
 
   # Test build without optimizations and with ubsan
-  - if [ "${CC}" == 'gcc-7' ];
-    then
-    cd .. ;
-    rm -r build/* ;
-    cd build ;
-    cmake .. -DFORT_BUILD_TYPE=ubsan  ; 
-    cmake --build . --target all ;
-    ls ;
-    ./libfort_example ;
-    ./libfort_test ;
+  - |
+    if [ "${CC}" = 'gcc-7' ]; then
+      cd .. ;
+      rm -r build/* ;
+      cd build ;
+      cmake .. -DFORT_BUILD_TYPE=ubsan  ; 
+      cmake --build . --target all ;
+      ls ;
+      ./libfort_example ;
+      ./libfort_test ;
     fi
 
   # Build for coveralls
-  - if [ "${CC}" == 'gcc' ];
-    then
-    cd ..  ;
-    rm -r build/* ;
-    cd build ;
-    cmake .. -DFORT_BUILD_TYPE=coveralls ;
-    cmake --build . --target all ;
-    ls ;
-    ./libfort_test ;
+  - |
+    if [ "${CC}" = 'gcc' ]; then
+      cd ..  ;
+      rm -r build/* ;
+      cd build ;
+      cmake .. -DFORT_BUILD_TYPE=coveralls ;
+      cmake --build . --target all ;
+      ls ;
+      ./libfort_test ;
     fi
-  - cd ..
+
+  # Astyle Format
+  - |
+    if [ "${CC}" = 'gcc' ]; then
+      ls
+      cd ..  ;
+      rm -r build/* ;
+      cd build ;
+      cmake .. -DFORT_ENABLE_ASTYLE=ON ;
+      make ;
+      make format ;
+      cd .. ;
+      if [[ -n $(git diff) ]]; then
+          echo "You must run make format before submitting a pull request" ;
+          echo "" ;
+          git diff ;
+          exit -1 ;
+      fi
+      cd build ;
+    fi
+
+
+  # Clang static analyzer
+  - |
+    if [ "${CC}" = 'clang' ]; then
+      cd ..  ;
+      pwd ;
+      ls ;
+      rm -rf build/* ;
+      cd build ;
+      cmake .. ;
+      scan-build make ;
+    fi
+
 
 
 

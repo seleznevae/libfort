@@ -14,7 +14,8 @@ struct test_case test_suit [] = {
     {"test_table_tbl_options", test_table_tbl_options},
 };
 
-int main(void) {
+int main(void)
+{
     int n_tests = sizeof(test_suit) / sizeof(test_suit[0]);
     fprintf(stderr, "[==========] Running %d test(s).\n", n_tests);
     int i;

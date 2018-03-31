@@ -40,7 +40,7 @@ fort_row_t *get_row(fort_table_t *table, size_t row);
 const fort_row_t *get_row_c(const fort_table_t *table, size_t row);
 fort_row_t *get_row_and_create_if_not_exists(fort_table_t *table, size_t row);
 
-string_buffer_t * get_cur_str_buffer_and_create_if_not_exists(FTABLE *FT_RESTRICT table);
+string_buffer_t * get_cur_str_buffer_and_create_if_not_exists(FTABLE * table);
 
 
 

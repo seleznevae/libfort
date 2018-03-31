@@ -21,7 +21,7 @@ enum RowType
 fort_row_t * create_row(void);
 void destroy_row(fort_row_t *row);
 fort_row_t * create_row_from_string(const char *str);
-fort_row_t* create_row_from_fmt_string(const char* FT_RESTRICT fmt, va_list *va_args);
+fort_row_t* create_row_from_fmt_string(const char*  fmt, va_list *va_args);
 
 
 int columns_in_row(const fort_row_t *row);

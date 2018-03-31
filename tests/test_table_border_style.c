@@ -34,21 +34,21 @@ void test_table_border_style(void)
 
         table = create_test_int_table(0);
         const char *table_str = ft_to_string(table);
-        assert_true( table_str != NULL );
+        assert_true(table_str != NULL);
         const char *table_str_etalon =
-                "+***+***+****+****+\n"
-                "v   v   v    v    v\n"
-                "v 3 v 4 v 55 v 67 v\n"
-                "v   v   v    v    v\n"
-                "+***#***#****#****+\n"
-                "=   =   =    =    =\n"
-                "= 3 = 4 = 55 = 67 =\n"
-                "=   =   =    =    =\n"
-                "+|||#|||#||||#||||+\n"
-                "=   =   =    =    =\n"
-                "= 3 = 4 = 55 = 67 =\n"
-                "=   =   =    =    =\n"
-                "+|||+|||+||||+||||+\n";
+            "+***+***+****+****+\n"
+            "v   v   v    v    v\n"
+            "v 3 v 4 v 55 v 67 v\n"
+            "v   v   v    v    v\n"
+            "+***#***#****#****+\n"
+            "=   =   =    =    =\n"
+            "= 3 = 4 = 55 = 67 =\n"
+            "=   =   =    =    =\n"
+            "+|||#|||#||||#||||+\n"
+            "=   =   =    =    =\n"
+            "= 3 = 4 = 55 = 67 =\n"
+            "=   =   =    =    =\n"
+            "+|||+|||+||||+||||+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
 
@@ -79,14 +79,14 @@ void test_table_border_style(void)
 
         table = create_test_int_table(0);
         table_str = ft_to_string(table);
-        assert_true( table_str != NULL );
+        assert_true(table_str != NULL);
         table_str_etalon =
-                "+***+***+****+****+\n"
-                "v 3 v 4 v 55 v 67 v\n"
-                "+***#***#****#****+\n"
-                "= 3 = 4 = 55 = 67 =\n"
-                "= 3 = 4 = 55 = 67 =\n"
-                "+|||+|||+||||+||||+\n";
+            "+***+***+****+****+\n"
+            "v 3 v 4 v 55 v 67 v\n"
+            "+***#***#****#****+\n"
+            "= 3 = 4 = 55 = 67 =\n"
+            "= 3 = 4 = 55 = 67 =\n"
+            "+|||+|||+||||+||||+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
@@ -99,28 +99,28 @@ void test_table_border_style(void)
         ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
         int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
 
-        assert_true( n == 4 );
+        assert_true(n == 4);
 
         const char *table_str = ft_to_string(table);
-        assert_true( table_str != NULL );
+        assert_true(table_str != NULL);
         const char *table_str_etalon =
-                "+---+---+----+----+\n"
-                "|   |   |    |    |\n"
-                "| 3 | 4 | 55 | 67 |\n"
-                "|   |   |    |    |\n"
-                "+---+---+----+----+\n"
-                "|   |   |    |    |\n"
-                "| 3 | 4 | 55 | 67 |\n"
-                "|   |   |    |    |\n"
-                "+---+---+----+----+\n"
-                "|   |   |    |    |\n"
-                "| 3 | 4 | 55 | 67 |\n"
-                "|   |   |    |    |\n"
-                "+===+===+====+====+\n"
-                "|   |   |    |    |\n"
-                "| 3 | 4 | 55 | 67 |\n"
-                "|   |   |    |    |\n"
-                "+---+---+----+----+\n";
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+===+===+====+====+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }

@@ -8,13 +8,12 @@
  * ***************************************************************************/
 
 
-struct fort_cell
-{
+struct fort_cell {
     string_buffer_t *str_buffer;
     fort_table_options_t *options;
 };
 
-fort_cell_t * create_cell(void)
+fort_cell_t *create_cell(void)
 {
     fort_cell_t *cell = (fort_cell_t *)F_CALLOC(sizeof(fort_cell_t), 1);
     if (cell == NULL)
@@ -25,7 +24,7 @@ fort_cell_t * create_cell(void)
         return NULL;
     }
     cell->options = NULL;
-/*    init_cell_options(&(cell->options)); */
+    /*init_cell_options(&(cell->options));*/
     return cell;
 }
 
@@ -98,12 +97,12 @@ static int lines_number_cell(fort_cell_t *cell)
 int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context)
 {
     char space_char = ' ';
-    int (*buffer_printf_)(string_buffer_t *, size_t ,char *, size_t , const context_t *) = buffer_printf;
-    int (*snprint_n_chars_)(char *, size_t , size_t , char) = snprint_n_chars;
+    int (*buffer_printf_)(string_buffer_t *, size_t, char *, size_t, const context_t *) = buffer_printf;
+    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
 
 
     if (cell == NULL || buf_len == 0
-            || (buf_len <= hint_width_cell(cell, context))) {
+        || (buf_len <= hint_width_cell(cell, context))) {
         return -1;
     }
 
@@ -112,8 +111,8 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     int cell_padding_right = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_RIGHT_PADDING);
 
     if (row >= hint_height_cell(cell, context)
-            || row < cell_padding_top
-            || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
+        || row < cell_padding_top
+        || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
         return snprint_n_chars_(buf, buf_len, buf_len - 1, space_char);
     }
 
@@ -150,12 +149,12 @@ clear:
 int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context)
 {
     wchar_t space_char = L' ';
-    int (*buffer_printf_)(string_buffer_t *, size_t , wchar_t *, size_t , const context_t *) = buffer_wprintf;
-    int (*snprint_n_chars_)(wchar_t *, size_t , size_t , wchar_t) = wsnprint_n_chars;
+    int (*buffer_printf_)(string_buffer_t *, size_t, wchar_t *, size_t, const context_t *) = buffer_wprintf;
+    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
 
 
     if (cell == NULL || buf_len == 0
-            || (buf_len <= hint_width_cell(cell, context))) {
+        || (buf_len <= hint_width_cell(cell, context))) {
         return -1;
     }
 
@@ -164,8 +163,8 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
     int cell_padding_right = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_RIGHT_PADDING);
 
     if (row >= hint_height_cell(cell, context)
-            || row < cell_padding_top
-            || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
+        || row < cell_padding_top
+        || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
         return snprint_n_chars_(buf, buf_len, buf_len - 1, space_char);
     }
 

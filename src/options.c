@@ -7,15 +7,14 @@
  *               COLUMN OPTIONS
  * ***************************************************************************/
 
-struct fort_cell_options g_default_cell_option =
-{
+struct fort_cell_options g_default_cell_option = {
     FT_ANY_ROW,    /* cell_row */
     FT_ANY_COLUMN, /* cell_col */
 
     /* options */
     FT_COPT_MIN_WIDTH  | FT_COPT_TEXT_ALIGN | FT_COPT_TOP_PADDING
     | FT_COPT_BOTTOM_PADDING | FT_COPT_LEFT_PADDING | FT_COPT_RIGHT_PADDING
-    | FT_COPT_EMPTY_STR_HEIGHT ,
+    | FT_COPT_EMPTY_STR_HEIGHT,
 
     0,             /* col_min_width */
     RightAligned,  /* align */
@@ -58,8 +57,7 @@ static int get_option_value_if_exists_otherwise_default(const struct fort_cell_o
 }
 
 
-fort_column_options_t g_column_options =
-{
+fort_column_options_t g_column_options = {
     0,           /* col_min_width*/
     RightAligned, /* align */
 };
@@ -88,26 +86,26 @@ void destroy_cell_opt_container(fort_cell_opt_container_t *cont)
         destroy_vector(cont);
 }
 
-const fort_cell_options_t* cget_cell_opt(const fort_cell_opt_container_t *cont, unsigned row, unsigned col)
+const fort_cell_options_t *cget_cell_opt(const fort_cell_opt_container_t *cont, unsigned row, unsigned col)
 {
     assert(cont);
     size_t sz = vector_size(cont);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        const fort_cell_options_t* opt = (const fort_cell_options_t*)vector_at_c(cont, i);
+        const fort_cell_options_t *opt = (const fort_cell_options_t *)vector_at_c(cont, i);
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
     return NULL;
 }
 
-fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, unsigned row, unsigned col)
+fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, unsigned row, unsigned col)
 {
     assert(cont);
     size_t sz = vector_size(cont);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        fort_cell_options_t* opt = (fort_cell_options_t*)vector_at(cont, i);
+        fort_cell_options_t *opt = (fort_cell_options_t *)vector_at(cont, i);
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
@@ -115,7 +113,7 @@ fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_contain
     opt.cell_row = row;
     opt.cell_col = col;
     if (IS_SUCCESS(vector_push(cont, &opt))) {
-        return (fort_cell_options_t*)vector_at(cont, sz);
+        return (fort_cell_options_t *)vector_at(cont, sz);
     }
 
     return NULL;
@@ -128,7 +126,7 @@ int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t ro
 {
     assert(options);
 
-    const fort_cell_options_t* opt = NULL;
+    const fort_cell_options_t *opt = NULL;
     if (options->cell_options != NULL) {
         while (1) {
             opt = cget_cell_opt(options->cell_options, row, column);
@@ -181,7 +179,7 @@ static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t opt
 
 fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option, int value)
 {
-    fort_cell_options_t* opt = get_cell_opt_and_create_if_not_exists(cont, row, col);
+    fort_cell_options_t *opt = get_cell_opt_and_create_if_not_exists(cont, row, col);
     if (opt == NULL)
         return FT_ERROR;
 
@@ -292,7 +290,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     },                            \
 }
 
-#define EMPTY_STYLE  {              \
+#define EMPTY_STYLE  {            \
     /* border_chars */            \
     {                             \
      ' ', ' ', ' ', ' ',          \
@@ -304,7 +302,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     {                             \
     ' ', ' ', ' ', ' ',           \
     ' ', ' ', ' ',                \
-    '\0', '\0', '\0', '\0',      \
+    '\0', '\0', '\0', '\0',       \
     ' ', ' ', ' ', ' '            \
     },                            \
     /* separator_chars */         \
@@ -366,9 +364,9 @@ fort_table_options_t g_table_options = {
 };
 
 
-fort_table_options_t* create_table_options()
+fort_table_options_t *create_table_options()
 {
-    fort_table_options_t* options = (fort_table_options_t*)F_CALLOC(sizeof(fort_table_options_t), 1);
+    fort_table_options_t *options = (fort_table_options_t *)F_CALLOC(sizeof(fort_table_options_t), 1);
     if (options == NULL) {
         return NULL;
     }
@@ -382,11 +380,11 @@ fort_table_options_t* create_table_options()
     return options;
 }
 
-fort_table_options_t* copy_table_options(const fort_table_options_t *option)
+fort_table_options_t *copy_table_options(const fort_table_options_t *option)
 {
     /* todo: normal implementation, do deep copy of col options */
 
-    fort_table_options_t* new_opt = create_table_options();
+    fort_table_options_t *new_opt = create_table_options();
     if (new_opt == NULL)
         return NULL;
 
@@ -404,7 +402,7 @@ fort_table_options_t* copy_table_options(const fort_table_options_t *option)
 }
 
 
-void destroy_table_options(fort_table_options_t* options)
+void destroy_table_options(fort_table_options_t *options)
 {
     if (options == NULL)
         return;

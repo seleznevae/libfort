@@ -16,12 +16,12 @@ fort_row_t *get_row_implementation(fort_table_t *table, size_t row, enum PolicyO
     switch (policy) {
         case DoNotCreate:
             if (row < vector_size(table->rows)) {
-                return *(fort_row_t**)vector_at(table->rows, row);
+                return *(fort_row_t **)vector_at(table->rows, row);
             }
             return NULL;
             break;
         case Create:
-            while(row >= vector_size(table->rows)) {
+            while (row >= vector_size(table->rows)) {
                 fort_row_t *new_row = create_row();
                 if (new_row == NULL)
                     return NULL;
@@ -30,7 +30,7 @@ fort_row_t *get_row_implementation(fort_table_t *table, size_t row, enum PolicyO
                     return NULL;
                 }
             }
-            return *(fort_row_t**)vector_at(table->rows, row);
+            return *(fort_row_t **)vector_at(table->rows, row);
             break;
     }
     return NULL;
@@ -54,7 +54,7 @@ fort_row_t *get_row_and_create_if_not_exists(fort_table_t *table, size_t row)
 
 
 
-string_buffer_t * get_cur_str_buffer_and_create_if_not_exists(FTABLE *FT_RESTRICT table)
+string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(FTABLE *table)
 {
     assert(table);
 
@@ -79,7 +79,7 @@ fort_status_t get_table_sizes(const FTABLE *table, size_t *rows, size_t *cols)
     if (table && table->rows) {
         *rows = vector_size(table->rows);
         fort_row_t *row = NULL;
-        FOR_EACH(fort_row_t*, row, table->rows) {
+        FOR_EACH(fort_row_t *, row, table->rows) {
             size_t cols_in_row = columns_in_row(row);
             if (cols_in_row > *cols)
                 *cols = cols_in_row;
@@ -89,8 +89,8 @@ fort_status_t get_table_sizes(const FTABLE *table, size_t *rows, size_t *cols)
 }
 
 fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
-                                                  size_t **col_width_arr_p, size_t *col_width_arr_sz,
-                                                  size_t **row_height_arr_p, size_t *row_height_arr_sz)
+        size_t **col_width_arr_p, size_t *col_width_arr_sz,
+        size_t **row_height_arr_p, size_t *row_height_arr_sz)
 {
     if (table == NULL) {
         return FT_ERROR;

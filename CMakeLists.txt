@@ -2,9 +2,11 @@ project(libfort)
 
 # Required cmake version
 cmake_minimum_required(VERSION 2.8)
+include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 # Built options
 option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
+option(FORT_ENABLE_ASTYLE "Enable astyle" OFF)
 set(FORT_BUILD_TYPE "common" CACHE STRING "Built types (possible values: common, asan, ubsan, coveralls)")
 
 
@@ -19,11 +21,21 @@ endif(FORT_CXX_BUILD)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+
+# ------------------------------------------------------------------------------
+# Includes
+# ------------------------------------------------------------------------------
+
 include_directories(include)
 include_directories(src)
 
 
-# Turn on warnings
+
+
+# ------------------------------------------------------------------------------
+# Warnings
+# ------------------------------------------------------------------------------
+
 if(FORT_COMPILER STREQUAL "MSVC")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
 else(FORT_COMPILER STREQUAL "MSVC")
@@ -34,6 +46,9 @@ endif(FORT_COMPILER STREQUAL "MSVC")
 
 
 
+# ------------------------------------------------------------------------------
+# Sources and executables
+# ------------------------------------------------------------------------------
 
 FILE(GLOB_RECURSE FortHeaders "include/*.h" "tests/*.h" "src/*.h")
 add_custom_target(headers SOURCES ${FortHeaders})
@@ -82,8 +97,10 @@ endif(FORT_CXX_BUILD)
 
 
 
+# ------------------------------------------------------------------------------
+# sanitizers
+# ------------------------------------------------------------------------------
 
-# Adding sanitizers
 if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
     # asan case
     if(FORT_BUILD_TYPE STREQUAL "asan")
@@ -118,3 +135,62 @@ if(FORT_COMPILER STREQUAL "GNU")
 endif(FORT_COMPILER STREQUAL "GNU")
 
 
+
+# ------------------------------------------------------------------------------
+# Astyle
+# ------------------------------------------------------------------------------
+
+if(FORT_ENABLE_ASTYLE)
+    list(APPEND ASTYLE_CMAKE_ARGS
+        "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}"
+    )
+
+    ExternalProject_Add(
+        astyle
+        GIT_REPOSITORY      https://github.com/Bareflank/astyle.git
+        GIT_TAG             v1.2
+        GIT_SHALLOW         1
+        CMAKE_ARGS          ${ASTYLE_CMAKE_ARGS}
+        PREFIX              ${CMAKE_BINARY_DIR}/external/astyle/prefix
+        TMP_DIR             ${CMAKE_BINARY_DIR}/external/astyle/tmp
+        STAMP_DIR           ${CMAKE_BINARY_DIR}/external/astyle/stamp
+        DOWNLOAD_DIR        ${CMAKE_BINARY_DIR}/external/astyle/download
+        SOURCE_DIR          ${CMAKE_BINARY_DIR}/external/astyle/src
+        BINARY_DIR          ${CMAKE_BINARY_DIR}/external/astyle/build
+    )
+
+    list(APPEND ASTYLE_ARGS
+        --style=kr
+        --lineend=linux
+        --suffix=none
+        --pad-oper
+        --unpad-paren
+        --align-pointer=name
+        --align-reference=name
+        --indent-switches
+        --keep-one-line-statements
+        --keep-one-line-blocks
+        --pad-header
+        --convert-tabs
+        --min-conditional-indent=0
+        --indent=spaces=4
+        ${CMAKE_SOURCE_DIR}/include/*.h
+        ${CMAKE_SOURCE_DIR}/src/*.c
+        ${CMAKE_SOURCE_DIR}/tests/*.c
+    )
+
+    if(NOT WIN32 STREQUAL "1")
+        add_custom_target(
+            format
+            COMMAND ${CMAKE_BINARY_DIR}/bin/astyle ${ASTYLE_ARGS}
+            COMMENT "running astyle"
+        )
+    else()
+        add_custom_target(
+            format
+            COMMAND ${CMAKE_BINARY_DIR}/bin/astyle.exe ${ASTYLE_ARGS}
+            COMMENT "running astyle"
+        )
+    endif()
+
+endif()

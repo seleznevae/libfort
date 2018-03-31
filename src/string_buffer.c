@@ -19,7 +19,7 @@ static int wcs_iter_width(const wchar_t *beg, const wchar_t *end)
 }
 
 
-static size_t buf_str_len(const string_buffer_t*buf)
+static size_t buf_str_len(const string_buffer_t *buf)
 {
     assert(buf);
     if (buf->type == CharBuf) {
@@ -29,7 +29,7 @@ static size_t buf_str_len(const string_buffer_t*buf)
     }
 }
 
-size_t strchr_count(const char* str, char ch)
+size_t strchr_count(const char *str, char ch)
 {
     if (str == NULL)
         return 0;
@@ -44,7 +44,7 @@ size_t strchr_count(const char* str, char ch)
     return count;
 }
 
-size_t wstrchr_count(const wchar_t* str, wchar_t ch)
+size_t wstrchr_count(const wchar_t *str, wchar_t ch)
 {
     if (str == NULL)
         return 0;
@@ -59,7 +59,7 @@ size_t wstrchr_count(const wchar_t* str, wchar_t ch)
     return count;
 }
 
-const char* str_n_substring_beg(const char* str, char ch_separator, size_t n)
+const char *str_n_substring_beg(const char *str, char ch_separator, size_t n)
 {
     if (str == NULL)
         return NULL;
@@ -79,7 +79,7 @@ const char* str_n_substring_beg(const char* str, char ch_separator, size_t n)
     return str ? (str + 1) : NULL;
 }
 
-const wchar_t* wstr_n_substring_beg(const wchar_t* str, wchar_t ch_separator, size_t n)
+const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, size_t n)
 {
     if (str == NULL)
         return NULL;
@@ -99,7 +99,7 @@ const wchar_t* wstr_n_substring_beg(const wchar_t* str, wchar_t ch_separator, si
     return str ? (str + 1) : NULL;
 }
 
-void str_n_substring(const char* str, char ch_separator, size_t n, const char **begin, const char **end)
+void str_n_substring(const char *str, char ch_separator, size_t n, const char **begin, const char **end)
 {
     const char *beg = str_n_substring_beg(str, ch_separator, n);
     if (beg == NULL) {
@@ -118,7 +118,7 @@ void str_n_substring(const char* str, char ch_separator, size_t n, const char **
     return;
 }
 
-void wstr_n_substring(const wchar_t* str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end)
+void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end)
 {
     const wchar_t *beg = wstr_n_substring_beg(str, ch_separator, n);
     if (beg == NULL) {
@@ -138,7 +138,7 @@ void wstr_n_substring(const wchar_t* str, wchar_t ch_separator, size_t n, const 
 }
 
 
-string_buffer_t* create_string_buffer(size_t number_of_chars, enum str_buf_type type)
+string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type type)
 {
     size_t sz = (number_of_chars) * (type == CharBuf ? sizeof(char) : sizeof(wchar_t));
     string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
@@ -167,7 +167,7 @@ void destroy_string_buffer(string_buffer_t *buffer)
 fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
 {
     assert(buffer);
-    char *new_str = (char*)F_MALLOC(buffer->data_sz * 2);
+    char *new_str = (char *)F_MALLOC(buffer->data_sz * 2);
     if (new_str == NULL) {
         return FT_MEMORY_ERROR;
     }
@@ -183,7 +183,7 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
     assert(str);
 
     size_t sz = strlen(str);
-    char * copy = F_STRDUP(str);
+    char *copy = F_STRDUP(str);
     if (copy == NULL)
         return FT_MEMORY_ERROR;
 
@@ -206,7 +206,7 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
     assert(str);
 
     size_t sz = wcslen(str);
-    wchar_t * copy = F_WCSDUP(str);
+    wchar_t *copy = F_WCSDUP(str);
     if (copy == NULL)
         return FT_MEMORY_ERROR;
 
@@ -283,7 +283,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
 #define STR_ITER_WIDTH str_iter_width
 
     if (buffer == NULL || buffer->str.data == NULL
-            || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
+        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
         return -1;
     }
 
@@ -367,7 +367,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 #define STR_ITER_WIDTH wcs_iter_width
 
     if (buffer == NULL || buffer->str.data == NULL
-            || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
+        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
         return -1;
     }
 

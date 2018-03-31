@@ -5,14 +5,14 @@
 #include "wchar.h"
 
 
-size_t strchr_count(const char* str, char ch);
-size_t wstrchr_count(const wchar_t* str, wchar_t ch);
+size_t strchr_count(const char *str, char ch);
+size_t wstrchr_count(const wchar_t *str, wchar_t ch);
 
-const char* str_n_substring_beg(const char* str, char ch_separator, size_t n);
-const wchar_t* wstr_n_substring_beg(const wchar_t* str, wchar_t ch_separator, size_t n);
+const char *str_n_substring_beg(const char *str, char ch_separator, size_t n);
+const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, size_t n);
 
-fort_status_t str_n_substring(const char* str, char ch_separator, size_t n, const char **begin, const char **end);
-void wstr_n_substring(const wchar_t* str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end);
+fort_status_t str_n_substring(const char *str, char ch_separator, size_t n, const char **begin, const char **end);
+void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end);
 
 
 size_t buffer_text_width(string_buffer_t *buffer);
@@ -149,14 +149,14 @@ void test_str_n_substring(void)
     assert_true(wbeg == wstr && wend == wstr + 1);
 
     str_n_substring(str, '\n', 1, &beg, &end);
-    assert_true(beg == str +4 && end == str + 8);
+    assert_true(beg == str + 4 && end == str + 8);
     str_n_substring(str, '\n', 2, &beg, &end);
     assert_true(beg == str + 9 && end == str + strlen(str));
     str_n_substring(str, '\n', 3, &beg, &end);
     assert_true(beg == NULL && end == NULL);
 
     wstr_n_substring(wstr, L'\n', 1, &wbeg, &wend);
-    assert_true(wbeg == wstr +4 && wend == wstr + 8);
+    assert_true(wbeg == wstr + 4 && wend == wstr + 8);
     wstr_n_substring(wstr, L'\n', 2, &wbeg, &wend);
     assert_true(wbeg == wstr + 9 && wend == wstr + wcslen(wstr));
     wstr_n_substring(wstr, L'\n', 3, &wbeg, &wend);
@@ -200,22 +200,22 @@ void test_buffer_text_width(void)
     buffer->type = CharBuf;
     char *old_value = buffer->str.cstr;
 
-    buffer->str.cstr = (char*)"";
+    buffer->str.cstr = (char *)"";
     assert_true(buffer_text_width(buffer) == 0);
 
-    buffer->str.cstr = (char*)"\n\n\n\n";
+    buffer->str.cstr = (char *)"\n\n\n\n";
     assert_true(buffer_text_width(buffer) == 0);
 
-    buffer->str.cstr = (char*)"12345";
+    buffer->str.cstr = (char *)"12345";
     assert_true(buffer_text_width(buffer) == 5);
 
-    buffer->str.cstr = (char*)"12345\n1234567";
+    buffer->str.cstr = (char *)"12345\n1234567";
     assert_true(buffer_text_width(buffer) == 7);
 
-    buffer->str.cstr = (char*)"12345\n1234567\n";
+    buffer->str.cstr = (char *)"12345\n1234567\n";
     assert_true(buffer_text_width(buffer) == 7);
 
-    buffer->str.cstr = (char*)"12345\n1234567\n123";
+    buffer->str.cstr = (char *)"12345\n1234567\n123";
     assert_true(buffer_text_width(buffer) == 7);
 
 
@@ -253,25 +253,25 @@ void test_buffer_text_height(void)
     buffer->type = CharBuf;
     char *old_value = buffer->str.cstr;
 
-    buffer->str.cstr = (char*)"";
+    buffer->str.cstr = (char *)"";
     assert_true(buffer_text_height(buffer) == 0);
 
-    buffer->str.cstr = (char*)"\n";
+    buffer->str.cstr = (char *)"\n";
     assert_true(buffer_text_height(buffer) == 2);
 
-    buffer->str.cstr = (char*)"\n\n";
+    buffer->str.cstr = (char *)"\n\n";
     assert_true(buffer_text_height(buffer) == 3);
 
-    buffer->str.cstr = (char*)"\n\n\n\n";
+    buffer->str.cstr = (char *)"\n\n\n\n";
     assert_true(buffer_text_height(buffer) == 5);
 
-    buffer->str.cstr = (char*)"12345";
+    buffer->str.cstr = (char *)"12345";
     assert_true(buffer_text_height(buffer) == 1);
 
-    buffer->str.cstr = (char*)"\n12345";
+    buffer->str.cstr = (char *)"\n12345";
     assert_true(buffer_text_height(buffer) == 2);
 
-    buffer->str.cstr = (char*)"\n12345\n\n2";
+    buffer->str.cstr = (char *)"\n12345\n\n2";
     assert_true(buffer_text_height(buffer) == 4);
 
 

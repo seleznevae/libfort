@@ -51,20 +51,21 @@ SOFTWARE.
 /*
  * Declare restrict
  */
+/*
 #if defined(__cplusplus)
 #if defined(FT_CLANG_COMPILER)
 #define FT_RESTRICT __restrict__
 #else
 #define FT_RESTRICT __restrict
-#endif /* if defined(FT_CLANG_COMPILER) */
+#endif // if defined(FT_CLANG_COMPILER)
 #else
 #if __STDC_VERSION__ < 199901L
 #define FT_RESTRICT
 #else
 #define FT_RESTRICT restrict
-#endif /* __STDC_VERSION__ < 199901L */
-#endif /* if defined(__cplusplus) */
-
+#endif // __STDC_VERSION__ < 199901L
+#endif // if defined(__cplusplus)
+*/
 
 
 /*
@@ -92,9 +93,9 @@ SOFTWARE.
 /*
  *  C++ needs to know that types and declarations are C, not C++.
  */
-#ifdef	__cplusplus
-# define FT_BEGIN_DECLS	extern "C" {
-# define FT_END_DECLS	}
+#ifdef __cplusplus
+# define FT_BEGIN_DECLS extern "C" {
+# define FT_END_DECLS }
 #else
 # define FT_BEGIN_DECLS
 # define FT_END_DECLS
@@ -125,13 +126,13 @@ SOFTWARE.
     STR_2_CAT_(arg1, arg2)
 
 
-static FT_INLINE int ft_check_if_string_helper(const char*str)
+static FT_INLINE int ft_check_if_string_helper(const char *str)
 {
     (void)str;
     return 0;
 }
 
-static FT_INLINE int ft_check_if_wstring_helper(const wchar_t*str)
+static FT_INLINE int ft_check_if_wstring_helper(const wchar_t *str)
 {
     (void)str;
     return 0;
@@ -208,21 +209,21 @@ FT_BEGIN_DECLS
 struct fort_table;
 typedef struct fort_table FTABLE;
 
-FT_EXTERN FTABLE * ft_create_table(void);
-FT_EXTERN void ft_destroy_table(FTABLE *FT_RESTRICT table);
+FT_EXTERN FTABLE *ft_create_table(void);
+FT_EXTERN void ft_destroy_table(FTABLE *table);
 
 
-FT_EXTERN void ft_ln(FTABLE *FT_RESTRICT table);
+FT_EXTERN void ft_ln(FTABLE *table);
 
 
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
-FT_EXTERN int ft_printf(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FT_EXTERN int ft_printf_ln(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_EXTERN int ft_printf(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_EXTERN int ft_printf_ln(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #else
 
-FT_EXTERN int ft_printf_impl(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FT_EXTERN int ft_printf_ln_impl(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_EXTERN int ft_printf_impl(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_EXTERN int ft_printf_ln_impl(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #define ft_printf(table, ...) \
     (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_impl(table, __VA_ARGS__))
@@ -232,43 +233,43 @@ FT_EXTERN int ft_printf_ln_impl(FTABLE *FT_RESTRICT table, const char* FT_RESTRI
 
 
 
-FT_EXTERN int ft_write(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT cell_content);
-FT_EXTERN int ft_write_ln(FTABLE *FT_RESTRICT table, const char* FT_RESTRICT cell_content);
+FT_EXTERN int ft_write(FTABLE *table, const char *cell_content);
+FT_EXTERN int ft_write_ln(FTABLE *table, const char *cell_content);
 
 #define FT_NWRITE(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 #define FT_NWRITE_LN(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-FT_EXTERN int ft_nwrite(FTABLE *FT_RESTRICT table, size_t n, const char* FT_RESTRICT cell_content, ...);
-FT_EXTERN int ft_nwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const char* FT_RESTRICT cell_content, ...);
+FT_EXTERN int ft_nwrite(FTABLE *table, size_t n, const char *cell_content, ...);
+FT_EXTERN int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ...);
 
 
 
 
 
 
-FT_EXTERN int ft_row_write(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT row_cells[]);
-FT_EXTERN int ft_row_write_ln(FTABLE *FT_RESTRICT table, size_t cols, const char* FT_RESTRICT row_cells[]);
+FT_EXTERN int ft_row_write(FTABLE *table, size_t cols, const char *row_cells[]);
+FT_EXTERN int ft_row_write_ln(FTABLE *table, size_t cols, const char *row_cells[]);
 
 #if !defined(__cplusplus) && !defined(FT_MICROSOFT_COMPILER)
-FT_EXTERN int ft_s_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* FT_RESTRICT table_cells[rows][cols]);
-FT_EXTERN int ft_s_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* FT_RESTRICT table_cells[rows][cols]);
+FT_EXTERN int ft_s_table_write(FTABLE *table, size_t rows, size_t cols, const char *table_cells[rows][cols]);
+FT_EXTERN int ft_s_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char *table_cells[rows][cols]);
 
-FT_EXTERN int ft_table_write(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* * FT_RESTRICT table_cells[rows]);
-FT_EXTERN int ft_table_write_ln(FTABLE *FT_RESTRICT table, size_t rows, size_t cols, const char* * FT_RESTRICT table_cells[rows]);
+FT_EXTERN int ft_table_write(FTABLE *table, size_t rows, size_t cols, const char * *  table_cells[rows]);
+FT_EXTERN int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char * *  table_cells[rows]);
 #endif
 
 
 
 
 
-FT_EXTERN int ft_add_separator(FTABLE *FT_RESTRICT table);
+FT_EXTERN int ft_add_separator(FTABLE *table);
 
 
 
 
 
-FT_EXTERN const char* ft_to_string(const FTABLE *FT_RESTRICT table);
+FT_EXTERN const char *ft_to_string(const FTABLE *table);
 
 
 /*
@@ -300,21 +301,18 @@ FT_EXTERN const char* ft_to_string(const FTABLE *FT_RESTRICT table);
 #define FT_TOPT_RIGHT_MARGIN ((uint32_t)(0x01U << (2)))
 #define FT_TOPT_BOTTOM_MARGIN ((uint32_t)(0x01U << (3)))
 
-enum TextAlignment
-{
+enum TextAlignment {
     LeftAligned,
     CenterAligned,
     RightAligned
 };
 
-enum RowType
-{
+enum RowType {
     Common,
     Header
 };
 
-struct ft_border_chars
-{
+struct ft_border_chars {
     char top_border_ch;
     char separator_ch;
     char bottom_border_ch;
@@ -323,29 +321,28 @@ struct ft_border_chars
     char in_intersect_ch;
 };
 
-struct ft_border_style
-{
+struct ft_border_style {
     struct ft_border_chars border_chs;
     struct ft_border_chars header_border_chs;
     char hor_separator_char;
 };
 
 /* List of built-in table border styles */
-extern struct ft_border_style * FT_BASIC_STYLE;
-extern struct ft_border_style * FT_SIMPLE_STYLE;
-extern struct ft_border_style * FT_PLAIN_STYLE;
-extern struct ft_border_style * FT_DOT_STYLE;
-extern struct ft_border_style * FT_EMPTY_STYLE;
+extern struct ft_border_style *FT_BASIC_STYLE;
+extern struct ft_border_style *FT_SIMPLE_STYLE;
+extern struct ft_border_style *FT_PLAIN_STYLE;
+extern struct ft_border_style *FT_DOT_STYLE;
+extern struct ft_border_style *FT_EMPTY_STYLE;
 
 
 FT_EXTERN int ft_set_default_border_style(struct ft_border_style *style);
-FT_EXTERN int ft_set_border_style(FTABLE * FT_RESTRICT table, struct ft_border_style *style);
+FT_EXTERN int ft_set_border_style(FTABLE *table, struct ft_border_style *style);
 
 FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
-FT_EXTERN int ft_set_cell_option(FTABLE * FT_RESTRICT table, unsigned row, unsigned col, uint32_t option, int value);
+FT_EXTERN int ft_set_cell_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, int value);
 
 FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value);
-FT_EXTERN int ft_set_tbl_option(FTABLE * FT_RESTRICT table, uint32_t option, int value);
+FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
 
 
 
@@ -356,20 +353,20 @@ FT_EXTERN int ft_set_tbl_option(FTABLE * FT_RESTRICT table, uint32_t option, int
 
 #ifdef FT_HAVE_WCHAR
 
-FT_EXTERN int ft_wwrite(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content);
-FT_EXTERN int ft_wwrite_ln(FTABLE *FT_RESTRICT table, const wchar_t* FT_RESTRICT cell_content);
+FT_EXTERN int ft_wwrite(FTABLE *table, const wchar_t *cell_content);
+FT_EXTERN int ft_wwrite_ln(FTABLE *table, const wchar_t *cell_content);
 
 #define FT_NWWRITE(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 #define FT_NWWRITE_LN(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-FT_EXTERN int ft_nwwrite(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...);
-FT_EXTERN int ft_nwwrite_ln(FTABLE *FT_RESTRICT table, size_t n, const wchar_t* FT_RESTRICT cell_content, ...);
+FT_EXTERN int ft_nwwrite(FTABLE *table, size_t n, const wchar_t *cell_content, ...);
+FT_EXTERN int ft_nwwrite_ln(FTABLE *table, size_t n, const wchar_t *cell_content, ...);
 
-FT_EXTERN int ft_row_wwrite(FTABLE *FT_RESTRICT table, size_t cols, const wchar_t* FT_RESTRICT row_cells[]);
-FT_EXTERN int ft_row_wwrite_ln(FTABLE *FT_RESTRICT table, size_t cols, const wchar_t* FT_RESTRICT row_cells[]);
+FT_EXTERN int ft_row_wwrite(FTABLE *table, size_t cols, const wchar_t *row_cells[]);
+FT_EXTERN int ft_row_wwrite_ln(FTABLE *table, size_t cols, const wchar_t *row_cells[]);
 
-FT_EXTERN const wchar_t* ft_to_wstring(const FTABLE *FT_RESTRICT table);
+FT_EXTERN const wchar_t *ft_to_wstring(const FTABLE *table);
 #endif
 
 

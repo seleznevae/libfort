@@ -6,8 +6,7 @@
  *               VECTOR IMPLEMENTATIONS
  * ***************************************************************************/
 
-struct vector
-{
+struct vector {
     size_t m_size;
     void  *m_data;
     size_t m_capacity;
@@ -28,7 +27,7 @@ static int vector_reallocate_(vector_t *vector, size_t new_capacity)
 
 /* ------------ Constructors & Destructors ----------------------------- */
 
-vector_t* create_vector(size_t item_size, size_t capacity)
+vector_t *create_vector(size_t item_size, size_t capacity)
 {
     vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
     if (vector == NULL) {
@@ -52,19 +51,19 @@ vector_t* create_vector(size_t item_size, size_t capacity)
 }
 
 
-void destroy_vector(vector_t* vector)
+void destroy_vector(vector_t *vector)
 {
     assert(vector);
     free(vector->m_data);
     free(vector);
 }
 
-vector_t* copy_vector(vector_t *v)
+vector_t *copy_vector(vector_t *v)
 {
     if (v == NULL)
         return NULL;
 
-    vector_t* new_vector = create_vector(v->m_item_size, v->m_capacity);
+    vector_t *new_vector = create_vector(v->m_item_size, v->m_capacity);
     if (new_vector == NULL)
         return NULL;
 
@@ -78,27 +77,27 @@ vector_t* copy_vector(vector_t *v)
 
 /* ----------- Nonmodifying functions --------------------------------- */
 
-size_t vector_size(const vector_t* vector)
+size_t vector_size(const vector_t *vector)
 {
     assert(vector);
     return vector->m_size;
 }
 
 
-size_t vector_capacity(const vector_t* vector)
+size_t vector_capacity(const vector_t *vector)
 {
     assert(vector);
     return vector->m_capacity;
 }
 
-size_t vector_index_of(const vector_t* vector, const void *item)
+size_t vector_index_of(const vector_t *vector, const void *item)
 {
     assert(vector);
     assert(item);
 
     size_t i = 0;
     for (i = 0; i < vector->m_size; ++i) {
-        void *data_pos = (char*)vector->m_data + i * vector->m_item_size;
+        void *data_pos = (char *)vector->m_data + i * vector->m_item_size;
         if (memcmp(data_pos, item, vector->m_item_size) == 0) {
             return i;
         }
@@ -109,7 +108,7 @@ size_t vector_index_of(const vector_t* vector, const void *item)
 
 /* ----------- Modifying functions ------------------------------------- */
 
-int vector_push (vector_t* vector, const void* item)
+int vector_push(vector_t *vector, const void *item)
 {
     assert(vector);
     assert(item);
@@ -121,7 +120,7 @@ int vector_push (vector_t* vector, const void* item)
     }
 
     ptrdiff_t deviation = vector->m_size * vector->m_item_size;
-    memcpy((char*)vector->m_data + deviation, item, vector->m_item_size);
+    memcpy((char *)vector->m_data + deviation, item, vector->m_item_size);
 
     ++(vector->m_size);
 
@@ -136,8 +135,8 @@ int vector_erase(vector_t *vector, size_t index)
     if (vector->m_size == 0 || index >= vector->m_size)
         return FT_ERROR;
 
-    memmove((char*)vector->m_data + vector->m_item_size * index,
-            (char*)vector->m_data + vector->m_item_size * (index + 1),
+    memmove((char *)vector->m_data + vector->m_item_size * index,
+            (char *)vector->m_data + vector->m_item_size * (index + 1),
             (vector->m_size - 1 - index) * vector->m_item_size);
     vector->m_size--;
     return FT_SUCCESS;
@@ -154,7 +153,7 @@ const void *vector_at_c(const vector_t *vector, size_t index)
     if (index >= vector->m_size)
         return NULL;
 
-    return (char*)vector->m_data + index * vector->m_item_size;
+    return (char *)vector->m_data + index * vector->m_item_size;
 }
 
 
@@ -163,7 +162,7 @@ void *vector_at(vector_t *vector, size_t index)
     if (index >= vector->m_size)
         return NULL;
 
-    return (char*)vector->m_data + index * vector->m_item_size;
+    return (char *)vector->m_data + index * vector->m_item_size;
 }
 
 

@@ -6,13 +6,13 @@
 /*****************************************************************************
  *               LIBFORT helpers
  *****************************************************************************/
-char *fort_strdup(const char* str)
+char *fort_strdup(const char *str)
 {
     if (str == NULL)
         return NULL;
 
     size_t sz = strlen(str);
-    char *str_copy = (char*)F_MALLOC((sz + 1)*sizeof(char));
+    char *str_copy = (char *)F_MALLOC((sz + 1) * sizeof(char));
     if (str_copy == NULL)
         return NULL;
 
@@ -20,13 +20,13 @@ char *fort_strdup(const char* str)
     return str_copy;
 }
 
-wchar_t *fort_wcsdup(const wchar_t* str)
+wchar_t *fort_wcsdup(const wchar_t *str)
 {
     if (str == NULL)
         return NULL;
 
     size_t sz = wcslen(str);
-    wchar_t *str_copy = (wchar_t*)F_MALLOC((sz + 1)*sizeof(wchar_t));
+    wchar_t *str_copy = (wchar_t *)F_MALLOC((sz + 1) * sizeof(wchar_t));
     if (str_copy == NULL)
         return NULL;
 

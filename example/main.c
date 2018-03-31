@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
 {
     (void)argc;
     (void)argv;
+    int result = 0;
 
     FTABLE *table = NULL;
 
@@ -170,13 +171,16 @@ int main(int argc, char *argv[])
     /*FT_NWWRITE_LN(table, L"3", L"\x41a\x43e\x441\x43c\x438\x447\x435\x441\x43a\x430\x44f \x43e\x434\x438\x441\x441\x435\x44f 2001 \x433\x43e\x434\x430", L"1968", L"8.5");*/ /* Космическая одиссея 2001 года */
     /*FT_NWWRITE_LN(table, L"4", L"\x411\x435\x433\x443\x449\x438\x439 \x43f\x43e \x43b\x435\x437\x432\x438\x44e", L"1982", L"8.1");*/ /* Бегущий по лезвию */
 
-    fwprintf(stderr, L"Table:\n%ls\n ", ft_to_wstring(table));
+    const wchar_t* table_wstr = ft_to_wstring(table);
+    if (table_wstr) {
+        fwprintf(stderr, L"Table:\n%ls\n ", table_wstr);
+    } else {
+        fwprintf(stderr, L"Table conversion failed !!!\n ");
+        result += 1;
+    }
 
     ft_destroy_table(table);
 #endif
 
-
-    table = NULL;
-
-    return 0;
+    return result;
 }
