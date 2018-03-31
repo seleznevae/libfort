@@ -116,4 +116,13 @@ int snprint_n_chars(char *buf, size_t length, size_t n, char ch);
 int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);
 
 
+#define CHCK_RSLT_ADD_TO_WRITTEN(statement) \
+    do { \
+        tmp = statement; \
+        if (tmp < 0) {\
+            goto clear; \
+        } \
+        written += tmp; \
+    } while(0)
+
 #endif /* FORT_IMPL_H */

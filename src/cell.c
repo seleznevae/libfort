@@ -117,33 +117,23 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     }
 
 
-#define CHECK_RESULT_AND_MOVE_DEV(statement) \
-    do { \
-        k = statement; \
-        if (k < 0) {\
-            goto clear; \
-        } \
-        dev += k; \
-    } while(0)
-
-    int dev = 0;
-    int k = 0;
+    int written = 0;
+    int tmp = 0;
     int left = cell_padding_left;
     int right = cell_padding_right;
 
-    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buf + dev, buf_len - dev, left, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, left, space_char));
 
     if (cell->str_buffer)
-        CHECK_RESULT_AND_MOVE_DEV(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + dev, buf_len - dev - right, context));
+        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + written, buf_len - written - right, context));
     else
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buf + dev, buf_len - dev, buf_len - dev - right, space_char));
-    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buf + dev, buf_len - dev, right, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, buf_len - written - right, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, right, space_char));
 
-    return dev;
+    return written;
 
 clear:
     return -1;
-#undef CHECK_RESULT_AND_MOVE_DEV
 }
 
 int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context)
@@ -168,33 +158,23 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
         return snprint_n_chars_(buf, buf_len, buf_len - 1, space_char);
     }
 
-#define CHECK_RESULT_AND_MOVE_DEV(statement) \
-    do { \
-        k = statement; \
-        if (k < 0) {\
-            goto clear; \
-        } \
-        dev += k; \
-    } while(0)
-
-    int dev = 0;
-    int k = 0;
+    int written = 0;
+    int tmp = 0;
     int left = cell_padding_left;
     int right = cell_padding_right;
 
-    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buf + dev, buf_len - dev, left, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, left, space_char));
 
     if (cell->str_buffer)
-        CHECK_RESULT_AND_MOVE_DEV(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + dev, buf_len - dev - right, context));
+        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + written, buf_len - written - right, context));
     else
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buf + dev, buf_len - dev, buf_len - dev - right, space_char));
-    CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buf + dev, buf_len - dev, right, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, buf_len - written - right, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, right, space_char));
 
-    return dev;
+    return written;
 
 clear:
     return -1;
-#undef CHECK_RESULT_AND_MOVE_DEV
 }
 
 

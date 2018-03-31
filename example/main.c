@@ -21,10 +21,8 @@ static FTABLE *create_basic_table()
     return table;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
-    (void)argc;
-    (void)argv;
     int result = 0;
 
     FTABLE *table = NULL;

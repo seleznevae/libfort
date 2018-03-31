@@ -461,15 +461,6 @@ int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char **tabl
 
 const char *ft_to_string(const FTABLE *table)
 {
-#define CHECK_RESULT_AND_MOVE_DEV(statement) \
-    do { \
-        k = statement; \
-        if (k < 0) {\
-            goto clear; \
-        } \
-        dev += k; \
-    } while(0)
-
     typedef char char_type;
     const char_type *empty_string = "";
     const enum str_buf_type buf_type = CharBuf;
@@ -520,8 +511,8 @@ const char *ft_to_string(const FTABLE *table)
     if (IS_ERROR(status))
         return NULL;
 
-    int dev = 0;
-    int k = 0;
+    int written = 0;
+    int tmp = 0;
     size_t i = 0;
     context_t context;
     context.table_options = (table->options ? table->options : &g_table_options);
@@ -532,8 +523,8 @@ const char *ft_to_string(const FTABLE *table)
 
     /* Print top margin */
     for (i = 0; i < context.table_options->entire_table_options.top_margin; ++i) {
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, width - 1/* minus new_line*/, space_char));
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, 1, new_line_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, 1, new_line_char));
     }
 
     for (i = 0; i < rows; ++i) {
@@ -541,18 +532,18 @@ const char *ft_to_string(const FTABLE *table)
         cur_row = *(fort_row_t **)vector_at(table->rows, i);
         enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
         context.row = i;
-        CHECK_RESULT_AND_MOVE_DEV(print_row_separator_(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
-        CHECK_RESULT_AND_MOVE_DEV(snprintf_row_(cur_row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], &context));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprintf_row_(cur_row, buffer + written, sz - written, col_width_arr, cols, row_height_arr[i], &context));
         prev_row = cur_row;
     }
     cur_row = NULL;
     cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-    CHECK_RESULT_AND_MOVE_DEV(print_row_separator_(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
 
     /* Print bottom margin */
     for (i = 0; i < context.table_options->entire_table_options.bottom_margin; ++i) {
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, width - 1/* minus new_line*/, space_char));
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, 1, new_line_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, 1, new_line_char));
     }
 
 
@@ -565,23 +556,12 @@ clear:
     F_FREE(row_height_arr);
     F_FREE(buffer);
     return NULL;
-
 #undef cur_F_STRDUP
-#undef CHECK_RESULT_AND_MOVE_DEV
 }
 
 
 const wchar_t *ft_to_wstring(const FTABLE *table)
 {
-#define CHECK_RESULT_AND_MOVE_DEV(statement) \
-    do { \
-        k = statement; \
-        if (k < 0) {\
-            goto clear; \
-        } \
-        dev += k; \
-    } while(0)
-
     typedef wchar_t char_type;
     const char_type *empty_string = L"";
     const enum str_buf_type buf_type = WCharBuf;
@@ -633,8 +613,8 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
     if (IS_ERROR(status))
         return NULL;
 
-    int dev = 0;
-    int k = 0;
+    int written = 0;
+    int tmp = 0;
     size_t i = 0;
     context_t context;
     context.table_options = (table->options ? table->options : &g_table_options);
@@ -645,8 +625,8 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
 
     /* Print top margin */
     for (i = 0; i < context.table_options->entire_table_options.top_margin; ++i) {
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, width - 1/* minus new_line*/, space_char));
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, 1, new_line_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, 1, new_line_char));
     }
 
     for (i = 0; i < rows; ++i) {
@@ -654,18 +634,18 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
         cur_row = *(fort_row_t **)vector_at(table->rows, i);
         enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
         context.row = i;
-        CHECK_RESULT_AND_MOVE_DEV(print_row_separator_(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
-        CHECK_RESULT_AND_MOVE_DEV(snprintf_row_(cur_row, buffer + dev, sz - dev, col_width_arr, cols, row_height_arr[i], &context));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprintf_row_(cur_row, buffer + written, sz - written, col_width_arr, cols, row_height_arr[i], &context));
         prev_row = cur_row;
     }
     cur_row = NULL;
     cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-    CHECK_RESULT_AND_MOVE_DEV(print_row_separator_(buffer + dev, sz - dev, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
 
     /* Print bottom margin */
     for (i = 0; i < context.table_options->entire_table_options.bottom_margin; ++i) {
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, width - 1/* minus new_line*/, space_char));
-        CHECK_RESULT_AND_MOVE_DEV(snprint_n_chars_(buffer + dev, sz - dev, 1, new_line_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, 1, new_line_char));
     }
 
     F_FREE(col_width_arr);
@@ -677,8 +657,7 @@ clear:
     F_FREE(row_height_arr);
     F_FREE(buffer);
     return NULL;
-
-#undef CHECK_RESULT_AND_MOVE_DEV
+#undef cur_F_STRDUP
 }
 
 
