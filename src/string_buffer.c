@@ -316,29 +316,27 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
 
 
     int  written = 0;
-    written += SNPRINT_N_CHARS(buf + written, buf_len - written, left, SPACE_CHAR);
-    if (written < 0)
-        return written;
-
+    int tmp = 0;
     const CHAR_TYPE *beg = NULL;
     const CHAR_TYPE *end = NULL;
+    CHAR_TYPE old_value;
+
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_CHARS(buf + written, buf_len - written, left, SPACE_CHAR));
+
     STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
     if (beg == NULL || end == NULL)
         return -1;
-    CHAR_TYPE old_value = *end;
+    old_value = *end;
     *(CHAR_TYPE *)end = NULL_CHAR;
 
-    written += SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg);
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
     *(CHAR_TYPE *)end = old_value;
-    if (written < 0)
-        return written;
-    written += SNPRINT_N_CHARS(buf + written,  buf_len - written, (int)(content_width - STR_ITER_WIDTH(beg, end)), SPACE_CHAR);
-    if (written < 0)
-        return written;
-
-
-    written += SNPRINT_N_CHARS(buf + written, buf_len - written, right, SPACE_CHAR);
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_CHARS(buf + written,  buf_len - written, (int)(content_width - STR_ITER_WIDTH(beg, end)), SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_CHARS(buf + written, buf_len - written, right, SPACE_CHAR));
     return written;
+
+clear:
+    return -1;
 
 #undef CHAR_TYPE
 #undef NULL_CHAR
@@ -399,28 +397,27 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
         return -1;
 
     int  written = 0;
-    written += SNPRINT_N_CHARS(buf + written, buf_len - written, left, SPACE_CHAR);
-    if (written < 0)
-        return written;
-
+    int tmp = 0;
     const CHAR_TYPE *beg = NULL;
     const CHAR_TYPE *end = NULL;
+    CHAR_TYPE old_value;
+
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_CHARS(buf + written, buf_len - written, left, SPACE_CHAR));
+
     STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
     if (beg == NULL || end == NULL)
         return -1;
-    CHAR_TYPE old_value = *end;
+    old_value = *end;
     *(CHAR_TYPE *)end = NULL_CHAR;
 
-    written += SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg);
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
     *(CHAR_TYPE *)end = old_value;
-    if (written < 0)
-        return written;
-    written += SNPRINT_N_CHARS(buf + written,  buf_len - written, (int)(content_width - STR_ITER_WIDTH(beg, end)), SPACE_CHAR);
-    if (written < 0)
-        return written;
-
-    written += SNPRINT_N_CHARS(buf + written, buf_len - written, right, SPACE_CHAR);
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_CHARS(buf + written,  buf_len - written, (int)(content_width - STR_ITER_WIDTH(beg, end)), SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_CHARS(buf + written, buf_len - written, right, SPACE_CHAR));
     return written;
+
+clear:
+    return -1;
 
 #undef CHAR_TYPE
 #undef NULL_CHAR

@@ -146,7 +146,7 @@ int main(void)
     ft_destroy_table(table);
 
     /*-------------------------------------------------------------*/
-#ifdef FT_HAVE_WCHAR
+#if defined(FT_HAVE_WCHAR) && !defined(FT_MICROSOFT_COMPILER)
     setlocale(LC_CTYPE, "");
 
     table = ft_create_table();
