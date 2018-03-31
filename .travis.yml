@@ -118,6 +118,7 @@ script:
           exit -1 ;
       fi
       cd build ;
+      rm -rf external
     fi
 
 
