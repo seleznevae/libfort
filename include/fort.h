@@ -302,49 +302,17 @@ FT_EXTERN int ft_add_separator(FTABLE *table);
 FT_EXTERN const char *ft_to_string(const FTABLE *table);
 
 
-/*
- *  Setting table appearance
- */
-#define FT_ANY_COLUMN    (UINT_MAX)
-#define FT_ANY_ROW       (UINT_MAX)
-
-#define FT_CUR_COLUMN    (UINT_MAX - 1)
-#define FT_CUR_ROW       (UINT_MAX - 1)
-
-#define FT_ROW_UNSPEC    (UINT_MAX - 2)
-#define FT_COLUMN_UNSPEC (UINT_MAX - 2)
-
-/**
- *  Cell options
- */
-#define FT_COPT_MIN_WIDTH        (0x01U << 0) /**< Minimum width */
-#define FT_COPT_TEXT_ALIGN       (0x01U << 1) /**< Text alignmemnt */
-#define FT_COPT_TOP_PADDING      (0x01U << 2) /**< Top padding for cell content */
-#define FT_COPT_BOTTOM_PADDING   (0x01U << 3) /**< Bottom padding for cell content */
-#define FT_COPT_LEFT_PADDING     (0x01U << 4) /**< Left padding for cell content */
-#define FT_COPT_RIGHT_PADDING    (0x01U << 5) /**< Right padding for cell content */
-#define FT_COPT_EMPTY_STR_HEIGHT (0x01U << 6) /**< Height of empty cell */
-#define FT_COPT_ROW_TYPE         (0x01U << 7) /**< Row type */
-
-/**
- *  Table options
- */
-#define FT_TOPT_LEFT_MARGIN   (0x01U << 0)
-#define FT_TOPT_TOP_MARGIN    (0x01U << 1)
-#define FT_TOPT_RIGHT_MARGIN  (0x01U << 2)
-#define FT_TOPT_BOTTOM_MARGIN (0x01U << 3)
 
 
-enum TextAlignment {
-    LeftAligned,
-    CenterAligned,
-    RightAligned
-};
 
-enum RowType {
-    Common,
-    Header
-};
+
+
+
+
+
+
+
+
 
 struct ft_border_chars {
     char top_border_ch;
@@ -361,19 +329,86 @@ struct ft_border_style {
     char hor_separator_char;
 };
 
-/* List of built-in table border styles */
+/**
+ *  Built-in table border styles
+ */
 extern struct ft_border_style *FT_BASIC_STYLE;
 extern struct ft_border_style *FT_SIMPLE_STYLE;
 extern struct ft_border_style *FT_PLAIN_STYLE;
 extern struct ft_border_style *FT_DOT_STYLE;
 extern struct ft_border_style *FT_EMPTY_STYLE;
 
-
+/**
+ * Set default border style for all new formatted tables.
+ *
+ * @param style
+ *   Pointer to border style
+ * @return
+ *   - 0: Success; default border style was changed.
+ *   - (-1): !!!!!!!!  todo
+ */
 FT_EXTERN int ft_set_default_border_style(struct ft_border_style *style);
+
+/**
+ * Set border style for the table.
+ *
+ * @param table
+ *   A pointer to the FTABLE structure
+ * @param style
+ *   Pointer to border style
+ * @return
+ *   - 0: Success; table border style was changed.
+ *   - (-1): !!!!!!!!  todo
+ */
 FT_EXTERN int ft_set_border_style(FTABLE *table, struct ft_border_style *style);
+
+/**
+ *  Special macros to define cell position (row and column)
+ */
+#define FT_ANY_COLUMN    (UINT_MAX)
+#define FT_CUR_COLUMN    (UINT_MAX - 1)
+#define FT_ANY_ROW       (UINT_MAX)
+#define FT_CUR_ROW       (UINT_MAX - 1)
+
+/**
+ *  Cell options
+ */
+#define FT_COPT_MIN_WIDTH        (0x01U << 0) /**< Minimum width */
+#define FT_COPT_TEXT_ALIGN       (0x01U << 1) /**< Text alignmemnt */
+#define FT_COPT_TOP_PADDING      (0x01U << 2) /**< Top padding for cell content */
+#define FT_COPT_BOTTOM_PADDING   (0x01U << 3) /**< Bottom padding for cell content */
+#define FT_COPT_LEFT_PADDING     (0x01U << 4) /**< Left padding for cell content */
+#define FT_COPT_RIGHT_PADDING    (0x01U << 5) /**< Right padding for cell content */
+#define FT_COPT_EMPTY_STR_HEIGHT (0x01U << 6) /**< Height of empty cell */
+#define FT_COPT_ROW_TYPE         (0x01U << 7) /**< Row type */
+
+/**
+ *  Alignment of cell content
+ */
+enum ft_text_alignment {
+    FT_ALIGNED_LEFT,
+    FT_ALIGNED_CENTER,
+    FT_ALIGNED_RIGHT
+};
+
+/**
+ *  Type of table row
+ */
+enum ft_row_type {
+    FT_ROW_COMMON,
+    FT_ROW_HEADER
+};
 
 FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
 FT_EXTERN int ft_set_cell_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, int value);
+
+/**
+ *  Table options
+ */
+#define FT_TOPT_LEFT_MARGIN   (0x01U << 0)
+#define FT_TOPT_TOP_MARGIN    (0x01U << 1)
+#define FT_TOPT_RIGHT_MARGIN  (0x01U << 2)
+#define FT_TOPT_BOTTOM_MARGIN (0x01U << 3)
 
 FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value);
 FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);

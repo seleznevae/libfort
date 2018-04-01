@@ -336,12 +336,12 @@ void test_table_cell_options(void)
         int status = FT_SUCCESS;
 
         status |= ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_MIN_WIDTH, 7);
-        status |= ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, LeftAligned);
+        status |= ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
         status |= ft_set_cell_option(table, FT_ANY_ROW, 2, FT_COPT_MIN_WIDTH, 8);
-        status |= ft_set_cell_option(table, FT_ANY_ROW, 2, FT_COPT_TEXT_ALIGN, CenterAligned);
+        status |= ft_set_cell_option(table, FT_ANY_ROW, 2, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
 
         status |= ft_set_cell_option(table, 2, 3, FT_COPT_MIN_WIDTH, 6);
-        status |= ft_set_cell_option(table, 2, 3, FT_COPT_TEXT_ALIGN, LeftAligned);
+        status |= ft_set_cell_option(table, 2, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
         assert_true(status == FT_SUCCESS);
 
 
@@ -371,7 +371,7 @@ void test_table_cell_options(void)
 
         int status = FT_SUCCESS;
         status |= ft_set_default_cell_option(FT_COPT_MIN_WIDTH, 5);
-        status |= ft_set_default_cell_option(FT_COPT_TEXT_ALIGN, CenterAligned);
+        status |= ft_set_default_cell_option(FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
         assert_true(status == FT_SUCCESS);
 
         table = create_test_int_table(0);
@@ -401,7 +401,7 @@ void test_table_cell_options(void)
 
         table = ft_create_table();
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
         int n = ft_printf_ln(table, "%d|%c|%s|%f", 4, 'c', "234", 3.14);
 
         assert_true(n == 4);

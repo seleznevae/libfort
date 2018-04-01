@@ -96,7 +96,7 @@ void test_table_border_style(void)
         table = create_test_int_table(1);
         ft_add_separator(table);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
         int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
 
         assert_true(n == 4);

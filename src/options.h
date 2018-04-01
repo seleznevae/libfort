@@ -8,7 +8,7 @@
 struct fort_column_options
 {
     int col_min_width;
-    enum TextAlignment align;
+    enum ft_text_alignment align;
 };
 typedef struct fort_column_options fort_column_options_t;
 
@@ -30,13 +30,13 @@ struct fort_cell_options
     unsigned cell_col;
     uint32_t options;
     int col_min_width;
-    enum TextAlignment align;
+    enum ft_text_alignment align;
     int cell_padding_top;
     int cell_padding_bottom;
     int cell_padding_left;
     int cell_padding_right;
     int cell_empty_string_height;
-    enum RowType row_type;
+    enum ft_row_type row_type;
 };
 
 typedef struct fort_cell_options fort_cell_options_t;

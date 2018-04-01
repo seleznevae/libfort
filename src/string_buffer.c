@@ -295,15 +295,15 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     int right = 0;
 
     switch (get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TEXT_ALIGN)) {
-        case LeftAligned:
+        case FT_ALIGNED_LEFT:
             left = 0;
             right = (buf_len - 1) - content_width;
             break;
-        case CenterAligned:
+        case FT_ALIGNED_CENTER:
             left = ((buf_len - 1) - content_width) / 2;
             right = ((buf_len - 1) - content_width) - left;
             break;
-        case RightAligned:
+        case FT_ALIGNED_RIGHT:
             left = (buf_len - 1) - content_width;
             right = 0;
             break;
@@ -377,15 +377,15 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     int right = 0;
 
     switch (get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TEXT_ALIGN)) {
-        case LeftAligned:
+        case FT_ALIGNED_LEFT:
             left = 0;
             right = (buf_len - 1) - content_width;
             break;
-        case CenterAligned:
+        case FT_ALIGNED_CENTER:
             left = ((buf_len - 1) - content_width) / 2;
             right = ((buf_len - 1) - content_width) - left;
             break;
-        case RightAligned:
+        case FT_ALIGNED_RIGHT:
             left = (buf_len - 1) - content_width;
             right = 0;
             break;

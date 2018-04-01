@@ -10,10 +10,10 @@ struct fort_row;
 typedef struct fort_row fort_row_t;
 
 /*
-enum RowType
+enum ft_row_type
 {
-    Common,
-    Header
+    FT_ROW_COMMON,
+    FT_ROW_HEADER
 };
 */
 

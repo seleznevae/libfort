@@ -1,13 +1,10 @@
 #ifndef LIBFORT_HPP
 #define LIBFORT_HPP
 
-#include "fort.h"
 #include <string>
-#include <exception>
-
+#include <stdexcept>
 #include <sstream>
-
-
+#include "fort.h"
 
 namespace fort
 {
@@ -66,7 +63,7 @@ public:
     FTable &operator<<(const FTableManipulator &arg)
     {
         if (arg.value == header.value)
-            ft_set_cell_option(table, FT_CUR_ROW, FT_ANY_ROW, FT_COPT_ROW_TYPE, Header);
+            ft_set_cell_option(table, FT_CUR_ROW, FT_ANY_ROW, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
         else if (arg.value == endl.value)
             ft_ln(table);
         else if (arg.value == separator.value)

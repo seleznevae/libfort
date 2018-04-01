@@ -38,7 +38,7 @@ int set_test_options_as_default()
     int status = FT_SUCCESS;
 
     status |= ft_set_default_cell_option(FT_COPT_MIN_WIDTH, 0);
-    status |= ft_set_default_cell_option(FT_COPT_TEXT_ALIGN, RightAligned);
+    status |= ft_set_default_cell_option(FT_COPT_TEXT_ALIGN, FT_ALIGNED_RIGHT);
 
     status |= ft_set_default_cell_option(FT_COPT_BOTTOM_PADDING, 1);
     status |= ft_set_default_cell_option(FT_COPT_TOP_PADDING, 1);
@@ -83,7 +83,7 @@ FTABLE *create_test_int_table(int set_test_opts)
 
     assert_true(table != NULL);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
 //    int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
     int n = FT_NWRITE_LN(table, "3", "4", "55", "67");
     assert(n == FT_SUCCESS);
@@ -113,7 +113,7 @@ FTABLE *create_test_int_wtable(int set_test_opts)
 
     assert_true(table != NULL);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, Header);
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
 //    int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
     int n = FT_NWWRITE_LN(table, L"3", L"4", L"55", L"67");
     assert(n == FT_SUCCESS);

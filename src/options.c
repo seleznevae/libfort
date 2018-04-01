@@ -17,14 +17,14 @@ struct fort_cell_options g_default_cell_option = {
     | FT_COPT_EMPTY_STR_HEIGHT,
 
     0,             /* col_min_width */
-    RightAligned,  /* align */
+    FT_ALIGNED_RIGHT,  /* align */
     0,      /* cell_padding_top         */
     0,      /* cell_padding_bottom      */
     1,      /* cell_padding_left        */
     1,      /* cell_padding_right       */
     1,      /* cell_empty_string_height */
 
-    Common, /* row_type */
+    FT_ROW_COMMON, /* row_type */
 };
 
 static int get_option_value_if_exists_otherwise_default(const struct fort_cell_options *cell_opts, uint32_t option)
@@ -59,7 +59,7 @@ static int get_option_value_if_exists_otherwise_default(const struct fort_cell_o
 
 fort_column_options_t g_column_options = {
     0,           /* col_min_width*/
-    RightAligned, /* align */
+    FT_ALIGNED_RIGHT, /* align */
 };
 
 fort_column_options_t create_column_options(void)
@@ -158,7 +158,7 @@ static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t opt
     if (OPTION_IS_SET(option, FT_COPT_MIN_WIDTH)) {
         opt->col_min_width = value;
     } else if (OPTION_IS_SET(option, FT_COPT_TEXT_ALIGN)) {
-        opt->align = (enum TextAlignment)value;
+        opt->align = (enum ft_text_alignment)value;
     } else if (OPTION_IS_SET(option, FT_COPT_TOP_PADDING)) {
         opt->cell_padding_top = value;
     } else if (OPTION_IS_SET(option, FT_COPT_BOTTOM_PADDING)) {
@@ -170,7 +170,7 @@ static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t opt
     } else if (OPTION_IS_SET(option, FT_COPT_EMPTY_STR_HEIGHT)) {
         opt->cell_empty_string_height = value;
     } else if (OPTION_IS_SET(option, FT_COPT_ROW_TYPE)) {
-        opt->row_type = (enum RowType)value;
+        opt->row_type = (enum ft_row_type)value;
     }
 
     return FT_SUCCESS;
