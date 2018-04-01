@@ -39,8 +39,10 @@ include_directories(src)
 
 if(FORT_COMPILER STREQUAL "MSVC")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
 else(FORT_COMPILER STREQUAL "MSVC")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g")
 endif(FORT_COMPILER STREQUAL "MSVC")
 
 
@@ -144,6 +146,7 @@ endif(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
 # Hack for some gcc versions
 if(FORT_COMPILER STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=gold")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
 endif(FORT_COMPILER STREQUAL "GNU")
 
 
