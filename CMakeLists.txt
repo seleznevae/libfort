@@ -135,6 +135,7 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
     if(FORT_BUILD_TYPE STREQUAL "coveralls")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")
         set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -g -fprofile-arcs -ftest-coverage")
+        target_link_libraries(${PROJECT_NAME}_example_cpp gcov)
     endif(FORT_BUILD_TYPE STREQUAL "coveralls")
 
 endif(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
