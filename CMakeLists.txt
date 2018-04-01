@@ -111,19 +111,19 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
     # asan case
     if(FORT_BUILD_TYPE STREQUAL "asan")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
-        set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -fsanitize=address")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
         if(FORT_COMPILER STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example asan)
             target_link_libraries(${PROJECT_NAME}_test asan)
+            target_link_libraries(${PROJECT_NAME}_example_cpp asan)
         endif(FORT_COMPILER STREQUAL "GNU")
-        target_link_libraries(${PROJECT_NAME}_example_cpp asan)
     endif(FORT_BUILD_TYPE STREQUAL "asan")
 
     #ubsan case
     if(FORT_BUILD_TYPE STREQUAL "ubsan")
         # -fno-sanitize-recover option is used to force faild
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined -fno-sanitize-recover")
-        set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -fsanitize=undefined -fno-sanitize-recover")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined -fno-sanitize-recover")
         if(FORT_COMPILER STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example ubsan)
             target_link_libraries(${PROJECT_NAME}_example_cpp ubsan)
@@ -134,8 +134,8 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
     #coveralls case
     if(FORT_BUILD_TYPE STREQUAL "coveralls")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")
-        set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -g -fprofile-arcs -ftest-coverage")
-        target_link_libraries(${PROJECT_NAME}_example_cpp gcov)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fprofile-arcs -ftest-coverage")
+        #target_link_libraries(${PROJECT_NAME}_example_cpp gcov)
     endif(FORT_BUILD_TYPE STREQUAL "coveralls")
 
 endif(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
