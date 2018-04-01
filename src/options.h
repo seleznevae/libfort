@@ -5,20 +5,6 @@
 #include <stdint.h>
 #include <limits.h>
 
-//enum TextAlignment
-//{
-//    LeftAligned,
-//    CenterAligned,
-//    RightAligned
-//};
-
-//enum RowType
-//{
-//    Common,
-//    Header
-//};
-
-
 struct fort_column_options
 {
     int col_min_width;
@@ -33,21 +19,6 @@ fort_column_options_t create_column_options(void);
 
 struct vector;
 typedef struct vector vector_t;
-
-#define FT_ANY_COLUMN  (UINT_MAX)
-#define FT_ANY_ROW  (UINT_MAX)
-
-#define FT_ROW_UNSPEC  (UINT_MAX-1)
-#define FT_COLUMN_UNSPEC  (UINT_MAX-1)
-
-#define FT_COPT_MIN_WIDTH  ((uint32_t)(0x01U << (0)))
-#define FT_COPT_TEXT_ALIGN ((uint32_t)(0x01U << (1)))
-#define FT_COPT_TOP_PADDING  ((uint32_t)(0x01U << (2)))
-#define FT_COPT_BOTTOM_PADDING ((uint32_t)(0x01U << (3)))
-#define FT_COPT_LEFT_PADDING ((uint32_t)(0x01U << (4)))
-#define FT_COPT_RIGHT_PADDING ((uint32_t)(0x01U << (5)))
-#define FT_COPT_EMPTY_STR_HEIGHT ((uint32_t)(0x01U << (6)))
-#define FT_COPT_ROW_TYPE ((uint32_t)(0x01U << (7)))
 
 #define OPTION_IS_SET(ft_opts, option) ((ft_opts) & (option))
 #define OPTION_SET(ft_opts, option) ((ft_opts) |=(option))

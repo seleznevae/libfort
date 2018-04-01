@@ -107,9 +107,6 @@ SOFTWARE.
 #endif
 
 
-#define STRING2(x) #x
-#define STRING(x) STRING2(x)
-
 
 /*
  *  Wchar support
@@ -137,23 +134,6 @@ static FT_INLINE int ft_check_if_wstring_helper(const wchar_t *str)
     (void)str;
     return 0;
 }
-
-/*
-#define PP_ARG_N( \
-     _1, _2, _3, _4, _5, _6, _7, _8, _9,_10, \
-    _11,_12,_13,_14,_15,_16,_17,_18,_19,_20, \
-    _21,_22,_23,_24,_25,_26,_27,_28,_29,_30, \
-    _31, N, ...) N
-#define PP_RSEQ_N() \
-    31,30, \
-    29,28,27,26,25,24,23,22,21,20, \
-    19,18,17,16,15,14,13,12,11,10, \
-     9, 8, 7, 6, 5, 4, 3, 2, 1, 0
-#define PP_NARG_(...) \
-    PP_ARG_N(__VA_ARGS__)
-#define PP_NARG(...) \
-    PP_NARG_(__VA_ARGS__,PP_RSEQ_N())
-*/
 
 #define FORT_NARGS_IMPL_(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,N,...) N
 #define FT_EXPAND_(x) x
@@ -193,11 +173,15 @@ static FT_INLINE int ft_check_if_wstring_helper(const wchar_t *str)
 #define CHECK_IF_STRING_2(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_1(checker,__VA_ARGS__)))
 #define CHECK_IF_STRING_1(checker,arg) (checker(arg))
 
-#define CHECK_IF_ARGS_ARE_STRINGS__(checker,func, ...) FT_EXPAND_(func(checker,__VA_ARGS__))
-#define CHECK_IF_ARGS_ARE_STRINGS_(checker,basis, n, ...) CHECK_IF_ARGS_ARE_STRINGS__(checker,STR_2_CAT_(basis, n), __VA_ARGS__)
-#define CHECK_IF_ARGS_ARE_STRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_string_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
+#define CHECK_IF_ARGS_ARE_STRINGS__(checker,func, ...) \
+    FT_EXPAND_(func(checker,__VA_ARGS__))
+#define CHECK_IF_ARGS_ARE_STRINGS_(checker,basis, n, ...) \
+    CHECK_IF_ARGS_ARE_STRINGS__(checker,STR_2_CAT_(basis, n), __VA_ARGS__)
+#define CHECK_IF_ARGS_ARE_STRINGS(...) \
+    CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_string_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
 #ifdef FT_HAVE_WCHAR
-#define CHECK_IF_ARGS_ARE_WSTRINGS(...) CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_wstring_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
+#define CHECK_IF_ARGS_ARE_WSTRINGS(...) \
+    CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_wstring_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
 #endif
 
 /*
@@ -209,11 +193,35 @@ FT_BEGIN_DECLS
 struct fort_table;
 typedef struct fort_table FTABLE;
 
+/**
+ * Create formatted table.
+ *
+ * @return
+ *   The pointer to the new allocated FTABLE, on success. NULL on error
+ *   with ft_errno set appropriately.
+ */
 FT_EXTERN FTABLE *ft_create_table(void);
+
+/**
+ * Destroy formatted table.
+ *
+ * Destroy formatted table and free all resources allocated during table creation
+ * and work with it.
+ *
+ * @param table
+ *   Pointer to formatted table previousley created with ft_create_table.
+ */
 FT_EXTERN void ft_destroy_table(FTABLE *table);
 
-
+/**
+ * Move current position to the first cell of the next line(row).
+ *
+ * @param table
+ *   Pointer to formatted table.
+ */
 FT_EXTERN void ft_ln(FTABLE *table);
+FT_EXTERN size_t ft_cur_row(FTABLE *table);
+FT_EXTERN size_t ft_cur_col(FTABLE *table);
 
 
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
@@ -262,44 +270,70 @@ FT_EXTERN int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const c
 
 
 
-
+/**
+ * Add separator after the current row.
+ *
+ * @param table
+ *   Formatted table.
+ * @return
+ *   - 0: Success; separator was added.
+ *   - (-1): !!!!!!!!  todo
+ */
 FT_EXTERN int ft_add_separator(FTABLE *table);
 
 
 
 
-
+/**
+ * Convert table to string representation.
+ *
+ * FTABLE has ownership of the returned pointer. So there is no need to
+ * free it. To take ownership user should explicitly copy the returned
+ * string with strdup or similar functions. Returned pointer remaines valid
+ * until table is destroyed with ft_destroy_table or other invocations of
+ * ft_to_string.
+ *
+ * @param table
+ *   Formatted table.
+ * @return
+ *   The pointer to the string representation of formatted table, on success.
+ *   NULL on error with ft_errno set appropriately.
+ */
 FT_EXTERN const char *ft_to_string(const FTABLE *table);
 
 
 /*
  *  Setting table appearance
  */
-#define FT_ANY_COLUMN  (UINT_MAX)
-#define FT_ANY_ROW  (UINT_MAX)
+#define FT_ANY_COLUMN    (UINT_MAX)
+#define FT_ANY_ROW       (UINT_MAX)
 
-#define FT_ROW_UNSPEC  (UINT_MAX-1)
-#define FT_COLUMN_UNSPEC  (UINT_MAX-1)
+#define FT_CUR_COLUMN    (UINT_MAX - 1)
+#define FT_CUR_ROW       (UINT_MAX - 1)
 
-/*
+#define FT_ROW_UNSPEC    (UINT_MAX - 2)
+#define FT_COLUMN_UNSPEC (UINT_MAX - 2)
+
+/**
  *  Cell options
  */
-#define FT_COPT_MIN_WIDTH  ((uint32_t)(0x01U << (0)))
-#define FT_COPT_TEXT_ALIGN ((uint32_t)(0x01U << (1)))
-#define FT_COPT_TOP_PADDING  ((uint32_t)(0x01U << (2)))
-#define FT_COPT_BOTTOM_PADDING ((uint32_t)(0x01U << (3)))
-#define FT_COPT_LEFT_PADDING ((uint32_t)(0x01U << (4)))
-#define FT_COPT_RIGHT_PADDING ((uint32_t)(0x01U << (5)))
-#define FT_COPT_EMPTY_STR_HEIGHT ((uint32_t)(0x01U << (6)))
-#define FT_COPT_ROW_TYPE ((uint32_t)(0x01U << (7)))
+#define FT_COPT_MIN_WIDTH        (0x01U << 0) /**< Minimum width */
+#define FT_COPT_TEXT_ALIGN       (0x01U << 1) /**< Text alignmemnt */
+#define FT_COPT_TOP_PADDING      (0x01U << 2) /**< Top padding for cell content */
+#define FT_COPT_BOTTOM_PADDING   (0x01U << 3) /**< Bottom padding for cell content */
+#define FT_COPT_LEFT_PADDING     (0x01U << 4) /**< Left padding for cell content */
+#define FT_COPT_RIGHT_PADDING    (0x01U << 5) /**< Right padding for cell content */
+#define FT_COPT_EMPTY_STR_HEIGHT (0x01U << 6) /**< Height of empty cell */
+#define FT_COPT_ROW_TYPE         (0x01U << 7) /**< Row type */
 
-/*
+/**
  *  Table options
  */
-#define FT_TOPT_LEFT_MARGIN ((uint32_t)(0x01U << (0)))
-#define FT_TOPT_TOP_MARGIN ((uint32_t)(0x01U << (1)))
-#define FT_TOPT_RIGHT_MARGIN ((uint32_t)(0x01U << (2)))
-#define FT_TOPT_BOTTOM_MARGIN ((uint32_t)(0x01U << (3)))
+#define FT_TOPT_LEFT_MARGIN   (0x01U << 0)
+#define FT_TOPT_TOP_MARGIN    (0x01U << 1)
+#define FT_TOPT_RIGHT_MARGIN  (0x01U << 2)
+#define FT_TOPT_BOTTOM_MARGIN (0x01U << 3)
+
 
 enum TextAlignment {
     LeftAligned,

@@ -7,7 +7,6 @@
  *               CELL
  * ***************************************************************************/
 
-
 struct fort_cell {
     string_buffer_t *str_buffer;
     fort_table_options_t *options;

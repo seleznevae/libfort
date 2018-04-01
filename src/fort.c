@@ -105,6 +105,17 @@ void ft_ln(FTABLE *table)
     table->cur_row++;
 }
 
+size_t ft_cur_row(FTABLE *table)
+{
+    assert(table);
+    return table->cur_row;
+}
+
+size_t ft_cur_col(FTABLE *table)
+{
+    assert(table);
+    return table->cur_col;
+}
 
 static int ft_row_printf_impl(FTABLE *table, size_t row, const char *fmt, va_list *va)
 {
@@ -829,6 +840,12 @@ int ft_set_cell_option(FTABLE *table, unsigned row, unsigned col, uint32_t optio
             return FT_ERROR;
         }
     }
+
+    if (row == FT_CUR_ROW)
+        row = table->cur_row;
+    if (row == FT_CUR_COLUMN)
+        col = table->cur_col;
+
     return set_cell_option(table->options->cell_options, row, col, option, value);
 }
 

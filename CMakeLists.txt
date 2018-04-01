@@ -50,7 +50,7 @@ endif(FORT_COMPILER STREQUAL "MSVC")
 # Sources and executables
 # ------------------------------------------------------------------------------
 
-FILE(GLOB_RECURSE FortHeaders "include/*.h" "tests/*.h" "src/*.h")
+FILE(GLOB_RECURSE FortHeaders "include/*.h" "include/*.hpp" "tests/*.h" "src/*.h")
 add_custom_target(headers SOURCES ${FortHeaders})
 
 
@@ -74,6 +74,11 @@ add_executable(${PROJECT_NAME}_example
     ${EXAMPLE_SOURCES}
     ${FORT_SOURCES})
 
+set(EXAMPLE_CPP_SOURCES
+    example/main.cpp)
+add_executable(${PROJECT_NAME}_example_cpp
+    ${EXAMPLE_CPP_SOURCES}
+    ${FORT_SOURCES})
 
 set(TEST_SOURCES
     tests/test.c
@@ -107,6 +112,7 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
         if(FORT_COMPILER STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example asan)
+            target_link_libraries(${PROJECT_NAME}_example_cpp asan)
             target_link_libraries(${PROJECT_NAME}_test asan)
         endif(FORT_COMPILER STREQUAL "GNU")
     endif(FORT_BUILD_TYPE STREQUAL "asan")
@@ -117,6 +123,7 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover") #to force fail
         if(FORT_COMPILER STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example ubsan)
+            target_link_libraries(${PROJECT_NAME}_example_cpp ubsan)
             target_link_libraries(${PROJECT_NAME}_test ubsan)
         endif(FORT_COMPILER STREQUAL "GNU")
     endif(FORT_BUILD_TYPE STREQUAL "ubsan")
