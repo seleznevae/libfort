@@ -114,9 +114,9 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
         set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -fsanitize=address")
         if(FORT_COMPILER STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example asan)
-            target_link_libraries(${PROJECT_NAME}_example_cpp asan)
             target_link_libraries(${PROJECT_NAME}_test asan)
         endif(FORT_COMPILER STREQUAL "GNU")
+        target_link_libraries(${PROJECT_NAME}_example_cpp asan)
     endif(FORT_BUILD_TYPE STREQUAL "asan")
 
     #ubsan case
