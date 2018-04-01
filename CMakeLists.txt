@@ -7,10 +7,11 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 # Built options
 option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
 option(FORT_ENABLE_ASTYLE "Enable astyle" OFF)
-set(FORT_BUILD_TYPE "common" CACHE STRING "Built types (possible values: common, asan, ubsan, coveralls)")
+set(FORT_BUILD_TYPE "common" CACHE STRING "Build types(common, asan, ubsan, coveralls)")
 
 
-# Determine compiler (pos. values Clang, GNU, Intel, MSVC, AppleClang... (https://cmake.org/cmake/help/v3.0/variable/CMAKE_LANG_COMPILER_ID.html)
+# Determine compiler (pos. values Clang, GNU, Intel, MSVC, AppleClang...
+# (https://cmake.org/cmake/help/v3.0/variable/CMAKE_LANG_COMPILER_ID.html)
 if(FORT_CXX_BUILD)
     set(FORT_COMPILER ${CMAKE_CXX_COMPILER_ID})
 else(FORT_CXX_BUILD)
@@ -103,13 +104,14 @@ endif(FORT_CXX_BUILD)
 
 
 # ------------------------------------------------------------------------------
-# sanitizers
+# Sanitizers
 # ------------------------------------------------------------------------------
 
 if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
     # asan case
     if(FORT_BUILD_TYPE STREQUAL "asan")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
+        set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -fsanitize=address")
         if(FORT_COMPILER STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example asan)
             target_link_libraries(${PROJECT_NAME}_example_cpp asan)
@@ -119,8 +121,9 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
 
     #ubsan case
     if(FORT_BUILD_TYPE STREQUAL "ubsan")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover") #to force fail
+        # -fno-sanitize-recover option is used to force faild
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined -fno-sanitize-recover")
+        set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -fsanitize=undefined -fno-sanitize-recover")
         if(FORT_COMPILER STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example ubsan)
             target_link_libraries(${PROJECT_NAME}_example_cpp ubsan)
@@ -131,6 +134,7 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
     #coveralls case
     if(FORT_BUILD_TYPE STREQUAL "coveralls")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")
+        set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -g -fprofile-arcs -ftest-coverage")
     endif(FORT_BUILD_TYPE STREQUAL "coveralls")
 
 endif(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")

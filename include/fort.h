@@ -399,7 +399,36 @@ enum ft_row_type {
     FT_ROW_HEADER
 };
 
+/**
+ * Set default cell option for all new formatted tables.
+ *
+ * @param option
+ *   Option identifier
+ * @param value
+ *   Option value
+ * @return
+ *   - 0: Success; default cell option was changed.
+ *   - (-1): !!!!!!!!  todo
+ */
 FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
+
+/**
+ * Set option for the specified cell of the table.
+ *
+ * @param table
+ *   A pointer to the FTABLE structure
+ * @param row
+ *   Cell row
+ * @param col
+ *   Cell column
+ * @param option
+ *   Option identifier
+ * @param value
+ *   Option value
+ * @return
+ *   - 0: Success; default cell option was changed.
+ *   - (-1): !!!!!!!!  todo
+ */
 FT_EXTERN int ft_set_cell_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, int value);
 
 /**
