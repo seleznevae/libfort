@@ -19,7 +19,7 @@ static int vector_reallocate_(vector_t *vector, size_t new_capacity)
     assert(new_capacity > vector->m_capacity);
 
     size_t new_size = new_capacity * vector->m_item_size;
-    vector->m_data = realloc(vector->m_data, new_size);
+    vector->m_data = F_REALLOC(vector->m_data, new_size);
     if (vector->m_data == NULL)
         return -1;
     return 0;
@@ -29,17 +29,17 @@ static int vector_reallocate_(vector_t *vector, size_t new_capacity)
 
 vector_t *create_vector(size_t item_size, size_t capacity)
 {
-    vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
+    vector_t *vector = (vector_t *)F_MALLOC(sizeof(vector_t));
     if (vector == NULL) {
         SYS_LOG_ERROR("Failed to allocate memory for asock vector");
         return NULL;
     }
 
     size_t init_size = MAX(item_size * capacity, 1);
-    vector->m_data = malloc(init_size);
+    vector->m_data = F_MALLOC(init_size);
     if (vector->m_data == NULL) {
         SYS_LOG_ERROR("Failed to allocate memory for asock vector inern. buffer");
-        free(vector);
+        F_FREE(vector);
         return NULL;
     }
 
@@ -54,8 +54,8 @@ vector_t *create_vector(size_t item_size, size_t capacity)
 void destroy_vector(vector_t *vector)
 {
     assert(vector);
-    free(vector->m_data);
-    free(vector);
+    F_FREE(vector->m_data);
+    F_FREE(vector);
 }
 
 vector_t *copy_vector(vector_t *v)
