@@ -515,12 +515,11 @@ const char *ft_to_string(const FTABLE *table)
     size_t *col_width_arr = NULL;
     size_t *row_height_arr = NULL;
     status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
+    if (IS_ERROR(status))
+        return NULL;
 
     if (rows == 0)
         return cur_F_STRDUP(empty_string);
-
-    if (IS_ERROR(status))
-        return NULL;
 
     int written = 0;
     int tmp = 0;
@@ -870,4 +869,9 @@ FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value)
             return FT_MEMORY_ERROR;
     }
     return set_entire_table_option(table->options, option, value);
+}
+
+FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
+{
+    set_memory_funcs(f_malloc, f_free);
 }

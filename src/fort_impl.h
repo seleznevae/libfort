@@ -12,10 +12,10 @@
 
 #define FORT_UNUSED  __attribute__((unused))
 
-#define F_CALLOC calloc
-#define F_MALLOC malloc
-#define F_REALLOC realloc
-#define F_FREE free
+#define F_MALLOC fort_malloc
+#define F_FREE fort_free
+#define F_CALLOC fort_calloc
+#define F_REALLOC fort_realloc
 #define F_STRDUP fort_strdup
 #define F_WCSDUP fort_wcsdup
 
@@ -109,6 +109,14 @@ typedef struct separator separator_t;
 /*****************************************************************************
  *               LIBFORT helpers
  *****************************************************************************/
+
+extern void *(*fort_malloc)(size_t size);
+extern void (*fort_free)(void *ptr);
+extern void *(*fort_calloc)(size_t nmemb, size_t size);
+extern void *(*fort_realloc)(void *ptr, size_t size);
+void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
+
+
 char *fort_strdup(const char* str);
 wchar_t *fort_wcsdup(const wchar_t* str);
 size_t number_of_columns_in_format_string(const char *fmt);

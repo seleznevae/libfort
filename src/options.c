@@ -374,7 +374,7 @@ fort_table_options_t *create_table_options()
     options->cell_options = create_cell_opt_container();
     if (options->cell_options == NULL) {
         destroy_table_options(options);
-        options = NULL;
+        return NULL;
     }
     memcpy(&options->entire_table_options, &g_entire_table_options, sizeof(fort_entire_table_options_t));
     return options;

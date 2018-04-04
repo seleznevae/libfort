@@ -91,6 +91,7 @@ set(TEST_SOURCES
     tests/test_table_basic.c
     tests/test_table_border_style.c
     tests/test_table_options.c
+    tests/test_memory_errors.c
     tests/test_utility.c)
 add_executable(${PROJECT_NAME}_test
     ${FORT_SOURCES}

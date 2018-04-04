@@ -468,6 +468,7 @@ FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value);
 FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
 
 
+FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
 
 
 /*

@@ -6,6 +6,62 @@
 /*****************************************************************************
  *               LIBFORT helpers
  *****************************************************************************/
+
+void *(*fort_malloc)(size_t size) = &malloc;
+void (*fort_free)(void *ptr) = &free;
+void *(*fort_calloc)(size_t nmemb, size_t size) = &calloc;
+void *(*fort_realloc)(void *ptr, size_t size) = &realloc;
+
+
+static void *custom_fort_calloc(size_t nmemb, size_t size)
+{
+    size_t total_size = nmemb * size;
+    void *result = F_MALLOC(total_size);
+    if (result != NULL)
+        memset(result, 0, total_size);
+    return result;
+}
+
+static void *custom_fort_realloc(void *ptr, size_t size)
+{
+    if (ptr == NULL)
+        return F_MALLOC(size);
+    if (size == 0) {
+        F_FREE(ptr);
+        return NULL;
+    }
+
+    void *new_chunk = F_MALLOC(size);
+    if (new_chunk == NULL)
+        return NULL;
+
+    /*
+     * In theory we should copy MIN(size, size allocated for ptr) bytes,
+     * but this is rather dummy implementation so we don't care about it
+     */
+    memcpy(new_chunk, ptr, size);
+    F_FREE(ptr);
+    return new_chunk;
+}
+
+void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
+{
+    assert((f_malloc == NULL && f_free == NULL) /* Use std functions */
+           || (f_malloc != NULL && f_free != NULL) /* Use custom functions */);
+    fort_malloc = f_malloc;
+    fort_free = f_free;
+
+    if (fort_malloc == NULL) {
+        fort_calloc = &calloc;
+        fort_realloc = &realloc;
+    } else {
+        fort_calloc = &custom_fort_calloc;
+        fort_realloc = &custom_fort_realloc;
+    }
+
+}
+
+
 char *fort_strdup(const char *str)
 {
     if (str == NULL)

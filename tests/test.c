@@ -12,6 +12,7 @@ struct test_case test_suit [] = {
     {"test_table_border_style", test_table_border_style},
     {"test_table_cell_options", test_table_cell_options},
     {"test_table_tbl_options", test_table_tbl_options},
+    {"test_memory_errors", test_memory_errors},
 };
 
 int main(void)
