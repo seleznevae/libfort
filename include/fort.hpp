@@ -57,7 +57,7 @@ public:
         stream << arg;
         if (stream.tellp()) {
             ft_nwrite(table, 1, stream.str().c_str());
-            stream = std::stringstream{};
+            stream.str(std::string());
         }
         return *this;
     }
