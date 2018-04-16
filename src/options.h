@@ -146,7 +146,7 @@ extern fort_table_options_t g_table_options;
 
 
 
-fort_table_options_t* create_table_options();
+fort_table_options_t* create_table_options(void);
 fort_table_options_t* copy_table_options(const fort_table_options_t *option);
 void destroy_table_options(fort_table_options_t* options);
 

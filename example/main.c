@@ -3,7 +3,7 @@
 #include <wchar.h>
 #include <locale.h>
 
-static FTABLE *create_basic_table()
+static FTABLE *create_basic_table(void)
 {
     FTABLE *table = ft_create_table();
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);

@@ -364,7 +364,7 @@ fort_table_options_t g_table_options = {
 };
 
 
-fort_table_options_t *create_table_options()
+fort_table_options_t *create_table_options(void)
 {
     fort_table_options_t *options = (fort_table_options_t *)F_CALLOC(sizeof(fort_table_options_t), 1);
     if (options == NULL) {
