@@ -43,16 +43,15 @@ include_directories(src)
 # Warnings
 # ------------------------------------------------------------------------------
 
-if(FORT_COMPILER STREQUAL "MSVC")
+if("${FORT_COMPILER}" STREQUAL "MSVC")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
-else(FORT_COMPILER STREQUAL "MSVC")
+else("${FORT_COMPILER}" STREQUAL "MSVC")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -Wextra")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -Wextra")
-endif(FORT_COMPILER STREQUAL "MSVC")
+endif("${FORT_COMPILER}" STREQUAL "MSVC")
 
 
-MESSAGE( STATUS "FORT_COMPILER:         " ${FORT_COMPILER} )
 
 
 # ------------------------------------------------------------------------------
@@ -116,16 +115,16 @@ endif(FORT_CXX_BUILD)
 # Sanitizers
 # ------------------------------------------------------------------------------
 
-if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
+if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
     # asan case
     if(FORT_BUILD_TYPE STREQUAL "asan")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-        if(FORT_COMPILER STREQUAL "GNU")
+        if("${FORT_COMPILER}" STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example asan)
             target_link_libraries(${PROJECT_NAME}_test asan)
             target_link_libraries(${PROJECT_NAME}_example_cpp asan)
-        endif(FORT_COMPILER STREQUAL "GNU")
+        endif("${FORT_COMPILER}" STREQUAL "GNU")
     endif(FORT_BUILD_TYPE STREQUAL "asan")
 
     #ubsan case
@@ -133,12 +132,12 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
         # -fno-sanitize-recover option is used to force faild
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined -fno-sanitize-recover")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined -fno-sanitize-recover")
-        if(FORT_COMPILER STREQUAL "GNU")
+        if("${FORT_COMPILER}" STREQUAL "GNU")
             target_link_libraries(${PROJECT_NAME}_example ubsan)
             target_link_libraries(${PROJECT_NAME}_example_cpp ubsan)
             target_link_libraries(${PROJECT_NAME}_test ubsan)
-        endif(FORT_COMPILER STREQUAL "GNU")
-    endif(FORT_BUILD_TYPE STREQUAL "ubsan")
+        endif("${FORT_COMPILER}" STREQUAL "GNU")
+    endif("${FORT_COMPILER}" STREQUAL "ubsan")
 
     #coveralls case
     if(FORT_BUILD_TYPE STREQUAL "coveralls")
@@ -147,14 +146,14 @@ if(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
         #target_link_libraries(${PROJECT_NAME}_example_cpp gcov)
     endif(FORT_BUILD_TYPE STREQUAL "coveralls")
 
-endif(FORT_COMPILER STREQUAL "GNU" OR FORT_COMPILER STREQUAL "Clang")
+endif("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
 
 
 # Hack for some gcc versions
-if(FORT_COMPILER STREQUAL "GNU")
+if("${FORT_COMPILER}" STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=gold")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
-endif(FORT_COMPILER STREQUAL "GNU")
+endif("${FORT_COMPILER}" STREQUAL "GNU")
 
 
 
