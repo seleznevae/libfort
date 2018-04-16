@@ -70,6 +70,9 @@ void test_table_tbl_options(void)
     }
 
 
+
+
+#ifdef FT_HAVE_WCHAR
     WHEN("Test setting entire table options(wide strings case)") {
         set_test_options_as_default();
 
@@ -125,6 +128,7 @@ void test_table_tbl_options(void)
 
         ft_destroy_table(table);
     }
+#endif
 }
 
 

@@ -35,6 +35,7 @@ void test_table_basic(void)
         ft_destroy_table(table);
     }
 
+#ifdef FT_HAVE_WCHAR
     WHEN("All columns are equal and not empty (wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -64,6 +65,7 @@ void test_table_basic(void)
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+#endif
 
 
 
@@ -97,6 +99,7 @@ void test_table_basic(void)
         ft_destroy_table(table);
     }
 
+#ifdef FT_HAVE_WCHAR
     WHEN("All columns are not equal and not empty (wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -126,6 +129,7 @@ void test_table_basic(void)
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+#endif
 
     WHEN("All columns are not equal and some cells are empty") {
         table = ft_create_table();
@@ -157,6 +161,7 @@ void test_table_basic(void)
         ft_destroy_table(table);
     }
 
+#ifdef FT_HAVE_WCHAR
     WHEN("All columns are not equal and some cells are empty (wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -186,6 +191,7 @@ void test_table_basic(void)
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+#endif
 
     WHEN("All cells are empty") {
         table = ft_create_table();
@@ -217,6 +223,7 @@ void test_table_basic(void)
         ft_destroy_table(table);
     }
 
+#ifdef FT_HAVE_WCHAR
     WHEN("All cells are empty (wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -246,11 +253,12 @@ void test_table_basic(void)
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+#endif
 }
 
 
 
-
+#ifdef FT_HAVE_WCHAR
 void test_wcs_table_boundaries(void)
 {
     FTABLE *table = NULL;
@@ -285,6 +293,7 @@ void test_wcs_table_boundaries(void)
         ft_destroy_table(table);
     }
 }
+#endif
 
 
 void test_table_write(void)
@@ -332,6 +341,7 @@ void test_table_write(void)
         ft_destroy_table(table);
     }
 
+#ifdef FT_HAVE_WCHAR
     SCENARIO("Test wwrite functions(wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -372,6 +382,7 @@ void test_table_write(void)
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+#endif
 
     SCENARIO("Test nwrite functions") {
         table = ft_create_table();
@@ -404,6 +415,7 @@ void test_table_write(void)
         ft_destroy_table(table);
     }
 
+#ifdef FT_HAVE_WCHAR
     SCENARIO("Test nwwrite functions(wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -434,6 +446,7 @@ void test_table_write(void)
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+#endif
 
 
     SCENARIO("Test row_write functions") {
@@ -470,6 +483,7 @@ void test_table_write(void)
         ft_destroy_table(table);
     }
 
+#ifdef FT_HAVE_WCHAR
     SCENARIO("Test row_write functions(wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -503,6 +517,7 @@ void test_table_write(void)
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+#endif
 
 
     SCENARIO("Test printf functions") {

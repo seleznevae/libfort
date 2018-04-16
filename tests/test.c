@@ -7,7 +7,9 @@ struct test_case test_suit [] = {
     {"test_table_sizes", test_table_sizes},
     {"test_table_geometry", test_table_geometry},
     {"test_table_basic", test_table_basic},
+#ifdef FT_HAVE_WCHAR
     {"test_wcs_table_boundaries", test_wcs_table_boundaries},
+#endif
     {"test_table_write", test_table_write},
     {"test_table_border_style", test_table_border_style},
     {"test_table_cell_options", test_table_cell_options},

@@ -32,10 +32,19 @@ SOFTWARE.
 #include <stdint.h>
 #include <limits.h>
 
-
-/*
- * Determine compiler
+/*****************************************************************************
+ *               Configuration
+ *****************************************************************************/
+/**
+ * libfort configuration macros
+ * (to enable/disable some options this macros should be defined/undefined)
  */
+/** #define FT_CONGIG_HAVE_WCHAR */
+
+
+/*****************************************************************************
+ *               Determine compiler
+ *****************************************************************************/
 #if defined(__clang__)
 #define FT_CLANG_COMPILER
 #elif defined(__GNUC__)
@@ -46,11 +55,9 @@ SOFTWARE.
 #define FT_UNDEFINED_COMPILER
 #endif
 
-
-
-/*
- * Declare restrict
- */
+/*****************************************************************************
+ *               Declare restrict
+ *****************************************************************************/
 /*
 #if defined(__cplusplus)
 #if defined(FT_CLANG_COMPILER)
@@ -67,10 +74,9 @@ SOFTWARE.
 #endif // if defined(__cplusplus)
 */
 
-
-/*
- * Declare restrict
- */
+/*****************************************************************************
+ *               Declare inline
+ *****************************************************************************/
 #if defined(__cplusplus)
 #define FT_INLINE inline
 #else
@@ -79,9 +85,9 @@ SOFTWARE.
 
 
 
-/*
- * Attribute format for argument checking
- */
+/*****************************************************************************
+ *               Attribute format for argument checking
+ *****************************************************************************/
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
 #define FT_PRINTF_ATTRIBUTE_FORMAT(string_index, first_to_check) \
     __attribute__ ((format (printf, string_index, first_to_check)))
@@ -90,9 +96,9 @@ SOFTWARE.
 #endif /* defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER) */
 
 
-/*
- *  C++ needs to know that types and declarations are C, not C++.
- */
+/*****************************************************************************
+ *    C++ needs to know that types and declarations are C, not C++.
+ *****************************************************************************/
 #ifdef __cplusplus
 # define FT_BEGIN_DECLS extern "C" {
 # define FT_END_DECLS }
@@ -109,7 +115,7 @@ SOFTWARE.
 
 /*****************************************************************************
  *               RETURN CODES
- * ***************************************************************************/
+ *****************************************************************************/
 typedef int fort_status_t;
 #define FT_SUCCESS        0
 #define FT_MEMORY_ERROR   -1
@@ -118,15 +124,18 @@ typedef int fort_status_t;
 #define IS_SUCCESS(arg) ((arg) >= 0)
 #define IS_ERROR(arg) ((arg) < 0)
 
+/*****************************************************************************
+ *               Wchar support
+ *****************************************************************************/
 
-/*
- *  Wchar support
- */
+#if defined(FT_CONGIG_HAVE_WCHAR)
 #define FT_HAVE_WCHAR
+#endif
 
-/*
- * Helper macros
- */
+
+/*****************************************************************************
+ *               Helper macros
+ *****************************************************************************/
 
 #define STR_2_CAT_(arg1, arg2) \
     arg1##arg2
@@ -195,9 +204,11 @@ static FT_INLINE int ft_check_if_wstring_helper(const wchar_t *str)
     CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_wstring_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
 #endif
 
-/*
- * libfort structures and functions declarations
- */
+
+/*****************************************************************************
+ *                   libfort API
+ *****************************************************************************/
+
 
 FT_BEGIN_DECLS
 
@@ -208,8 +219,7 @@ typedef struct fort_table FTABLE;
  * Create formatted table.
  *
  * @return
- *   The pointer to the new allocated FTABLE, on success. NULL on error
- *   with ft_errno set appropriately.
+ *   The pointer to the new allocated FTABLE, on success. NULL on error.
  */
 FT_EXTERN FTABLE *ft_create_table(void);
 
@@ -220,7 +230,8 @@ FT_EXTERN FTABLE *ft_create_table(void);
  * and work with it.
  *
  * @param table
- *   Pointer to formatted table previousley created with ft_create_table.
+ *   Pointer to formatted table previousley created with ft_create_table. If
+ *   table is a null pointer, the function does nothing.
  */
 FT_EXTERN void ft_destroy_table(FTABLE *table);
 
@@ -231,12 +242,78 @@ FT_EXTERN void ft_destroy_table(FTABLE *table);
  *   Pointer to formatted table.
  */
 FT_EXTERN void ft_ln(FTABLE *table);
+
+/**
+ * Get row number of the current cell
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @return
+ *   Row number of the current cell
+ */
 FT_EXTERN size_t ft_cur_row(FTABLE *table);
+
+/**
+ * Get column number of the current cell
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @return
+ *   Column number of the current cell
+ */
 FT_EXTERN size_t ft_cur_col(FTABLE *table);
 
 
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
+
+/**
+ * Writes data formatted acording to the format string to a variety of table
+ * cells.
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param fmt
+ *   Pointer to a null-terminated multibyte string specifying how to interpret
+ *   the data. The format string consists of ordinary characters (except % and |),
+ *   which are copied unchanged into the output stream, and conversion
+ *   specifications. Conversion specifications are the same as for standard
+ *   printf function. Character '|' in the format string is treated as a cell
+ *   separator.
+ * @param ...
+ *   Arguments specifying data to print. Similarly to standard printf-like
+ *   functions if any argument after default conversions is not the type
+ *   expected by the corresponding conversion specifier, or if there are fewer
+ *   arguments than required by format, the behavior is undefined. If there are
+ *   more arguments than required by format, the extraneous arguments are
+ *   evaluated and ignored.
+ * @return
+ *   todo ?????
+ */
 FT_EXTERN int ft_printf(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+
+/**
+ * Writes data formatted acording to the format string to a variety of table
+ * cells and moves current position to the first cell of the next line(row).
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param fmt
+ *   Pointer to a null-terminated multibyte string specifying how to interpret
+ *   the data. The format string consists of ordinary characters (except % and |),
+ *   which are copied unchanged into the output stream, and conversion
+ *   specifications. Conversion specifications are the same as for standard
+ *   printf function. Character '|' in the format string is treated as a cell
+ *   separator.
+ * @param ...
+ *   Arguments specifying data to print. Similarly to standard printf-like
+ *   functions if any argument after default conversions is not the type
+ *   expected by the corresponding conversion specifier, or if there are fewer
+ *   arguments than required by format, the behavior is undefined. If there are
+ *   more arguments than required by format, the extraneous arguments are
+ *   evaluated and ignored.
+ * @return
+ *   todo ?????
+ */
 FT_EXTERN int ft_printf_ln(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #else
@@ -300,9 +377,11 @@ FT_EXTERN int ft_add_separator(FTABLE *table);
  *
  * FTABLE has ownership of the returned pointer. So there is no need to
  * free it. To take ownership user should explicitly copy the returned
- * string with strdup or similar functions. Returned pointer remaines valid
- * until table is destroyed with ft_destroy_table or other invocations of
- * ft_to_string.
+ * string with strdup or similar functions.
+ *
+ * Returned pointer may be later invalidated by:
+ * - Calling ft_destroy_table
+ * - Other invocations of ft_to_string
  *
  * @param table
  *   Formatted table.
@@ -324,7 +403,9 @@ FT_EXTERN const char *ft_to_string(const FTABLE *table);
 
 
 
-
+/**
+ * Structure describing border appearance
+ */
 struct ft_border_chars {
     char top_border_ch;
     char separator_ch;
@@ -334,6 +415,9 @@ struct ft_border_chars {
     char in_intersect_ch;
 };
 
+/**
+ * Structure describing border style
+ */
 struct ft_border_style {
     struct ft_border_chars border_chs;
     struct ft_border_chars header_border_chs;
@@ -479,12 +563,22 @@ FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value);
 FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
 
 
+/**
+ * Set functions for memory allocation and deallocation to be used instead of
+ * standard ones.
+ *
+ * @param f_malloc
+ *   Pointer to a function for memory allocation that should be used instead of
+ *   malloc.
+ * @param f_free
+ *   Pointer to a function for memory deallocation that should be used instead
+ *   of free.
+ * @note
+ *   To return memory allocation/deallocation functions to their standard values
+ *   set f_malloc and f_free to NULL.
+ */
 FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
 
-
-/*
- * WChar support
- */
 
 #ifdef FT_HAVE_WCHAR
 

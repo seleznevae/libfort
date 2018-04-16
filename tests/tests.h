@@ -19,7 +19,9 @@ void test_string_buffer(void);
 void test_table_sizes(void);
 void test_table_geometry(void);
 void test_table_basic(void);
+#ifdef FT_HAVE_WCHAR
 void test_wcs_table_boundaries(void);
+#endif
 void test_table_write(void);
 void test_table_border_style(void);
 void test_table_cell_options(void);
@@ -60,7 +62,7 @@ struct test_case
     }
 
 int set_test_options_for_table(FTABLE *table);
-int set_test_options_as_default();
+int set_test_options_as_default(void);
 FTABLE *create_test_int_table(int set_test_opts);
 FTABLE *create_test_int_wtable(int set_test_opts);
 

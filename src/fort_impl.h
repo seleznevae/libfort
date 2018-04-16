@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include "fort.h"
 
+#if defined(FT_MICROSOFT_COMPILER)
+#define _CRT_SECURE_NO_WARNINGS /* To disable warnings for unsafe functions */
+#endif
+
 #define FORT_COL_SEPARATOR '|'
 
 #define FORT_UNUSED  __attribute__((unused))

@@ -33,7 +33,7 @@ int set_test_options_for_table(FTABLE *table)
     return ft_set_border_style(table, &brdr_style);
 }
 
-int set_test_options_as_default()
+int set_test_options_as_default(void)
 {
     int status = FT_SUCCESS;
 
@@ -101,6 +101,7 @@ FTABLE *create_test_int_table(int set_test_opts)
     return table;
 }
 
+#ifdef FT_HAVE_WCHAR
 FTABLE *create_test_int_wtable(int set_test_opts)
 {
     FTABLE *table = NULL;
@@ -130,3 +131,4 @@ FTABLE *create_test_int_wtable(int set_test_opts)
 
     return table;
 }
+#endif
