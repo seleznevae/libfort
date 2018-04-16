@@ -52,7 +52,7 @@ else(FORT_COMPILER STREQUAL "MSVC")
 endif(FORT_COMPILER STREQUAL "MSVC")
 
 
-
+MESSAGE( STATUS "FORT_COMPILER:         " ${FORT_COMPILER} )
 
 
 # ------------------------------------------------------------------------------
