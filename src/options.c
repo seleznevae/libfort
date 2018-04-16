@@ -156,24 +156,33 @@ static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t opt
 
     OPTION_SET(opt->options, option);
     if (OPTION_IS_SET(option, FT_COPT_MIN_WIDTH)) {
+        CHECK_NOT_NEGATIVE(value);
         opt->col_min_width = value;
     } else if (OPTION_IS_SET(option, FT_COPT_TEXT_ALIGN)) {
         opt->align = (enum ft_text_alignment)value;
     } else if (OPTION_IS_SET(option, FT_COPT_TOP_PADDING)) {
+        CHECK_NOT_NEGATIVE(value);
         opt->cell_padding_top = value;
     } else if (OPTION_IS_SET(option, FT_COPT_BOTTOM_PADDING)) {
+        CHECK_NOT_NEGATIVE(value);
         opt->cell_padding_bottom = value;
     } else if (OPTION_IS_SET(option, FT_COPT_LEFT_PADDING)) {
+        CHECK_NOT_NEGATIVE(value);
         opt->cell_padding_left = value;
     } else if (OPTION_IS_SET(option, FT_COPT_RIGHT_PADDING)) {
+        CHECK_NOT_NEGATIVE(value);
         opt->cell_padding_right = value;
     } else if (OPTION_IS_SET(option, FT_COPT_EMPTY_STR_HEIGHT)) {
+        CHECK_NOT_NEGATIVE(value);
         opt->cell_empty_string_height = value;
     } else if (OPTION_IS_SET(option, FT_COPT_ROW_TYPE)) {
         opt->row_type = (enum ft_row_type)value;
     }
 
     return FT_SUCCESS;
+
+fort_fail:
+    return FT_EINVAL;
 }
 
 
@@ -329,6 +338,7 @@ fort_entire_table_options_t g_entire_table_options = {
 static fort_status_t set_entire_table_option_internal(fort_entire_table_options_t *options, uint32_t option, int value)
 {
     assert(options);
+    CHECK_NOT_NEGATIVE(value);
     if (OPTION_IS_SET(option, FT_TOPT_LEFT_MARGIN)) {
         options->left_margin = value;
     } else if (OPTION_IS_SET(option, FT_TOPT_TOP_MARGIN)) {
@@ -341,6 +351,9 @@ static fort_status_t set_entire_table_option_internal(fort_entire_table_options_
         return FT_EINVAL;
     }
     return FT_SUCCESS;
+
+fort_fail:
+    return FT_EINVAL;
 }
 
 fort_status_t set_entire_table_option(fort_table_options_t *table_options, uint32_t option, int value)
@@ -361,6 +374,13 @@ fort_table_options_t g_table_options = {
     /* border_style */
     BASIC_STYLE,
     NULL,     /* cell_options */
+    /* entire_table_options */
+    {
+        0, /* left_margin */
+        0, /* top_margin */
+        0, /* right_margin */
+        0  /* bottom_margin */
+    }
 };
 
 

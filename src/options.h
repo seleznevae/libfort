@@ -29,13 +29,13 @@ struct fort_cell_options
     unsigned cell_row;
     unsigned cell_col;
     uint32_t options;
-    int col_min_width;
+    unsigned int col_min_width;
     enum ft_text_alignment align;
-    int cell_padding_top;
-    int cell_padding_bottom;
-    int cell_padding_left;
-    int cell_padding_right;
-    int cell_empty_string_height;
+    unsigned int cell_padding_top;
+    unsigned int cell_padding_bottom;
+    unsigned int cell_padding_left;
+    unsigned int cell_padding_right;
+    unsigned int cell_empty_string_height;
     enum ft_row_type row_type;
 };
 
@@ -125,10 +125,10 @@ extern struct fort_border_style FORT_EMPTY_STYLE;
 
 struct fort_entire_table_options
 {
-    int left_margin;
-    int top_margin;
-    int right_margin;
-    int bottom_margin;
+    unsigned int left_margin;
+    unsigned int top_margin;
+    unsigned int right_margin;
+    unsigned int bottom_margin;
 };
 typedef struct fort_entire_table_options fort_entire_table_options_t;
 extern fort_entire_table_options_t g_entire_table_options;

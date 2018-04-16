@@ -127,4 +127,8 @@ int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);
         written += tmp; \
     } while(0)
 
+
+#define CHECK_NOT_NEGATIVE(x) \
+    do { if (x < 0) goto fort_fail; } while (0)
+
 #endif /* FORT_IMPL_H */

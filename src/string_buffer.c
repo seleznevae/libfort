@@ -260,7 +260,9 @@ size_t buffer_text_width(string_buffer_t *buffer)
                 return max_length;
 
             int line_width = mk_wcswidth(beg, end - beg);
-            max_length = MAX(max_length, line_width);
+            if (line_width < 0) /* For safety */
+                line_width = 0;
+            max_length = MAX(max_length, (size_t)line_width);
 
             ++n;
         }

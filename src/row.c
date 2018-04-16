@@ -52,7 +52,7 @@ void destroy_row(fort_row_t *row)
 
 
 
-int columns_in_row(const fort_row_t *row)
+unsigned int columns_in_row(const fort_row_t *row)
 {
     if (row == NULL || row->cells == NULL)
         return 0;
@@ -324,7 +324,7 @@ fort_row_t *create_row_from_string(const char *str)
 {
     char *pos = NULL;
     char *base_pos = NULL;
-    int number_of_separators = 0;
+    unsigned int number_of_separators = 0;
 
     fort_row_t *row = create_row();
     if (row == NULL)
@@ -417,11 +417,11 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
         int virtual_sz = vsnprintf(buffer->str.cstr, string_buffer_capacity(buffer)/*buffer->str_sz*/, fmt, va);
         va_end(va);
         /* If error encountered */
-        if (virtual_sz == -1)
+        if (virtual_sz < 0)
             goto clear;
 
         /* Successful write */
-        if (virtual_sz < string_buffer_capacity(buffer))
+        if ((size_t)virtual_sz < string_buffer_capacity(buffer))
             break;
 
         /* Otherwise buffer was too small, so incr. buffer size ant try again. */
@@ -463,7 +463,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
     if (row == NULL)
         return -1;
 
-    int cols_in_row = columns_in_row(row);
+    unsigned int cols_in_row = columns_in_row(row);
     if (cols_in_row > col_width_arr_sz)
         return -1;
 
@@ -533,7 +533,7 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
     if (row == NULL)
         return -1;
 
-    int cols_in_row = columns_in_row(row);
+    unsigned int cols_in_row = columns_in_row(row);
     if (cols_in_row > col_width_arr_sz)
         return -1;
 

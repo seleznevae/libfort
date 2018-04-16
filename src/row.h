@@ -24,7 +24,7 @@ fort_row_t * create_row_from_string(const char *str);
 fort_row_t* create_row_from_fmt_string(const char*  fmt, va_list *va_args);
 
 
-int columns_in_row(const fort_row_t *row);
+unsigned int columns_in_row(const fort_row_t *row);
 
 fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnNull policy);
 fort_cell_t *get_cell(fort_row_t *row, size_t col);
