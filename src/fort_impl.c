@@ -7,11 +7,37 @@
  *               LIBFORT helpers
  *****************************************************************************/
 
+#ifndef FT_MICROSOFT_COMPILER
 void *(*fort_malloc)(size_t size) = &malloc;
 void (*fort_free)(void *ptr) = &free;
 void *(*fort_calloc)(size_t nmemb, size_t size) = &calloc;
 void *(*fort_realloc)(void *ptr, size_t size) = &realloc;
+#else
+static void *local_malloc(size_t size)
+{
+    return malloc(size);
+}
 
+static void local_free(void *ptr)
+{
+    free(ptr);
+}
+
+static void *local_calloc(size_t nmemb, size_t size)
+{
+    return calloc(nmemb, size);
+}
+
+static void *local_realloc(void *ptr, size_t size)
+{
+    return realloc(ptr, size);
+}
+
+void *(*fort_malloc)(size_t size) = &local_malloc;
+void (*fort_free)(void *ptr) = &local_free;
+void *(*fort_calloc)(size_t nmemb, size_t size) = &local_calloc;
+void *(*fort_realloc)(void *ptr, size_t size) = &local_realloc;
+#endif
 
 static void *custom_fort_calloc(size_t nmemb, size_t size)
 {
@@ -48,13 +74,22 @@ void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
 {
     assert((f_malloc == NULL && f_free == NULL) /* Use std functions */
            || (f_malloc != NULL && f_free != NULL) /* Use custom functions */);
-    fort_malloc = f_malloc;
-    fort_free = f_free;
 
-    if (fort_malloc == NULL) {
+    if (f_malloc == NULL && f_free == NULL) {
+#ifndef FT_MICROSOFT_COMPILER
+        fort_malloc = &malloc;
+        fort_free = &free;
         fort_calloc = &calloc;
         fort_realloc = &realloc;
+#else
+        fort_malloc = &local_malloc;
+        fort_free = &local_free;
+        fort_calloc = &local_calloc;
+        fort_realloc = &local_realloc;
+#endif
     } else {
+        fort_malloc = f_malloc;
+        fort_free = f_free;
         fort_calloc = &custom_fort_calloc;
         fort_realloc = &custom_fort_realloc;
     }
