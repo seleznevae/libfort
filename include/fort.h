@@ -524,7 +524,7 @@ FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
  *   - 0: Success; cell option was changed.
  *   - (-1): !!!!!!!!  todo
  */
-FT_EXTERN int ft_set_cell_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, int value);
+FT_EXTERN int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t option, int value);
 
 /**
  * Table options identifiers

@@ -148,6 +148,10 @@ int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
     if (n == 0)
         return 0;
 
+    /* To ensure valid return value it is safely not print such big strings */
+    if (n > INT_MAX)
+        return -1;
+
     int status = snprintf(buf, length, "%0*d", (int)n, 0);
     if (status < 0)
         return status;
@@ -157,7 +161,7 @@ int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
         *buf = ch;
         buf++;
     }
-    return n;
+    return (int)n;
 }
 
 
@@ -169,6 +173,10 @@ int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
     if (n == 0)
         return 0;
 
+    /* To ensure valid return value it is safely not print such big strings */
+    if (n > INT_MAX)
+        return -1;
+
     int status = swprintf(buf, length, L"%0*d", (int)n, 0);
     if (status < 0)
         return status;
@@ -178,5 +186,5 @@ int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
         *buf = ch;
         buf++;
     }
-    return n;
+    return (int)n;
 }

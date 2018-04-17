@@ -13,8 +13,8 @@ fort_cell_t * create_cell(void);
 
 
 void destroy_cell(fort_cell_t *cell);
-unsigned int hint_width_cell(const fort_cell_t *cell, const context_t *context);
-unsigned int hint_height_cell(const fort_cell_t *cell, const context_t *context);
+size_t hint_width_cell(const fort_cell_t *cell, const context_t *context);
+size_t hint_height_cell(const fort_cell_t *cell, const context_t *context);
 
 
 /*

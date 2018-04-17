@@ -52,7 +52,7 @@ void destroy_row(fort_row_t *row)
 
 
 
-unsigned int columns_in_row(const fort_row_t *row)
+size_t columns_in_row(const fort_row_t *row)
 {
     if (row == NULL || row->cells == NULL)
         return 0;
@@ -414,7 +414,7 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
     while (1) {
         va_list va;
         va_copy(va, *va_args);
-        int virtual_sz = vsnprintf(buffer->str.cstr, string_buffer_capacity(buffer)/*buffer->str_sz*/, fmt, va);
+        int virtual_sz = vsnprintf(buffer->str.cstr, string_buffer_capacity(buffer), fmt, va);
         va_end(va);
         /* If error encountered */
         if (virtual_sz < 0)
@@ -463,7 +463,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
     if (row == NULL)
         return -1;
 
-    unsigned int cols_in_row = columns_in_row(row);
+    size_t cols_in_row = columns_in_row(row);
     if (cols_in_row > col_width_arr_sz)
         return -1;
 
@@ -533,7 +533,7 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
     if (row == NULL)
         return -1;
 
-    unsigned int cols_in_row = columns_in_row(row);
+    size_t cols_in_row = columns_in_row(row);
     if (cols_in_row > col_width_arr_sz)
         return -1;
 

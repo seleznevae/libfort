@@ -86,7 +86,7 @@ void destroy_cell_opt_container(fort_cell_opt_container_t *cont)
         destroy_vector(cont);
 }
 
-const fort_cell_options_t *cget_cell_opt(const fort_cell_opt_container_t *cont, unsigned row, unsigned col)
+const fort_cell_options_t *cget_cell_opt(const fort_cell_opt_container_t *cont, size_t row, size_t col)
 {
     assert(cont);
     size_t sz = vector_size(cont);
@@ -99,7 +99,7 @@ const fort_cell_options_t *cget_cell_opt(const fort_cell_opt_container_t *cont, 
     return NULL;
 }
 
-fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, unsigned row, unsigned col)
+fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, size_t row, size_t col)
 {
     assert(cont);
     size_t sz = vector_size(cont);
@@ -186,7 +186,7 @@ fort_fail:
 }
 
 
-fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option, int value)
+fort_status_t set_cell_option(fort_cell_opt_container_t *cont, size_t row, size_t col, uint32_t option, int value)
 {
     fort_cell_options_t *opt = get_cell_opt_and_create_if_not_exists(cont, row, col);
     if (opt == NULL)

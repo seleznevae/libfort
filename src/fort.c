@@ -824,7 +824,7 @@ int ft_set_border_style(FTABLE *table, struct ft_border_style *style)
 
 
 
-int ft_set_cell_option(FTABLE *table, unsigned row, unsigned col, uint32_t option, int value)
+int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t option, int value)
 {
     assert(table);
 

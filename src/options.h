@@ -26,8 +26,8 @@ typedef struct vector vector_t;
 
 struct fort_cell_options
 {
-    unsigned cell_row;
-    unsigned cell_col;
+    size_t cell_row;
+    size_t cell_col;
     uint32_t options;
     unsigned int col_min_width;
     enum ft_text_alignment align;
@@ -46,9 +46,9 @@ typedef struct fort_cell_options fort_cell_options_t;
 typedef vector_t fort_cell_opt_container_t;
 fort_cell_opt_container_t *create_cell_opt_container(void);
 void destroy_cell_opt_container(fort_cell_opt_container_t *cont);
-const fort_cell_options_t* cget_cell_opt(const fort_cell_opt_container_t *cont, unsigned row, unsigned col);
-fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, unsigned row, unsigned col);
-fort_status_t set_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option, int value);
+const fort_cell_options_t* cget_cell_opt(const fort_cell_opt_container_t *cont, size_t row, size_t col);
+fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, size_t row, size_t col);
+fort_status_t set_cell_option(fort_cell_opt_container_t *cont, size_t row, size_t col, uint32_t option, int value);
 fort_status_t unset_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option);
 
 int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t row, size_t column, uint32_t option);

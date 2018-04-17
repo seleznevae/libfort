@@ -1,6 +1,10 @@
 #ifndef FORT_IMPL_H
 #define FORT_IMPL_H
 
+#if defined(_MSC_VER)
+#define _CRT_SECURE_NO_WARNINGS /* To disable warnings for unsafe functions */
+#endif
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,9 +12,7 @@
 #include <stdio.h>
 #include "fort.h"
 
-#if defined(FT_MICROSOFT_COMPILER)
-#define _CRT_SECURE_NO_WARNINGS /* To disable warnings for unsafe functions */
-#endif
+
 
 #define FORT_COL_SEPARATOR '|'
 
