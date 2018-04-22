@@ -169,6 +169,7 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
 {
     assert(cur_vec);
     assert(mv_vec);
+    assert(cur_vec != mv_vec);
     assert(cur_vec->m_item_size == mv_vec->m_item_size);
 
     size_t cur_sz = vector_size(cur_vec);
@@ -196,9 +197,9 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
     }
 
     memcpy(tmp,
-           cur_vec->m_data + deviation,
+           (char *)cur_vec->m_data + deviation,
            cur_vec->m_item_size * (cur_sz - pos));
-    memcpy(cur_vec->m_data + deviation,
+    memcpy((char *)cur_vec->m_data + deviation,
            mv_vec->m_data,
            cur_vec->m_item_size * mv_sz);
     memcpy(mv_vec->m_data,
