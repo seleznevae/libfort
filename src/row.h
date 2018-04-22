@@ -30,6 +30,7 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
 fort_cell_t *get_cell(fort_row_t *row, size_t col);
 const fort_cell_t *get_cell_c(const fort_row_t *row, size_t col);
 fort_cell_t *get_cell_and_create_if_not_exists(fort_row_t *row, size_t col);
+fort_status_t swap_row(fort_row_t *cur_row, fort_row_t *ins_row, size_t pos);
 
 
 

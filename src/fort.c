@@ -117,6 +117,14 @@ size_t ft_cur_col(FTABLE *table)
     return table->cur_col;
 }
 
+void ft_set_cur_cell(FTABLE *table, size_t row, size_t col)
+{
+    assert(table);
+    table->cur_row = row;
+    table->cur_col = col;
+}
+
+
 static int ft_row_printf_impl(FTABLE *table, size_t row, const char *fmt, va_list *va)
 {
     size_t i = 0;
@@ -146,15 +154,14 @@ static int ft_row_printf_impl(FTABLE *table, size_t row, const char *fmt, va_lis
             }
         }
     }
-    /* todo: clearing pushed items in case of error */
-    /* todo: this function always create new row, this is not correct, it should be more complicated */
+    /* todo: clearing pushed items in case of error ?? */
 
-    cur_row_p = (fort_row_t **)vector_at(table->rows, row);
-
-    destroy_row(*cur_row_p);
-    *cur_row_p = new_row;
     new_cols = columns_in_row(new_row);
+    cur_row_p = (fort_row_t **)vector_at(table->rows, row);
+    swap_row(*cur_row_p, new_row, table->cur_col);
+
     table->cur_col += new_cols;
+    destroy_row(new_row);
     return new_cols;
 
 clear:

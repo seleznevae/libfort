@@ -244,24 +244,40 @@ FT_EXTERN void ft_destroy_table(FTABLE *table);
 FT_EXTERN void ft_ln(FTABLE *table);
 
 /**
- * Get row number of the current cell
+ * Get row number of the current cell.
  *
  * @param table
  *   Pointer to formatted table.
  * @return
- *   Row number of the current cell
+ *   Row number of the current cell.
  */
 FT_EXTERN size_t ft_cur_row(FTABLE *table);
 
 /**
- * Get column number of the current cell
+ * Get column number of the current cell.
  *
  * @param table
  *   Pointer to formatted table.
  * @return
- *   Column number of the current cell
+ *   Column number of the current cell.
  */
 FT_EXTERN size_t ft_cur_col(FTABLE *table);
+
+/**
+ * Set current cell position.
+ *
+ * Current cell - cell that will be edited with all modifiing functions
+ * (ft_printf, ft_write ...).
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param row
+ *   New row number for the current cell.
+ * @param col
+ *   New row number for the current cell.
+ */
+FT_EXTERN void ft_set_cur_cell(FTABLE *table, size_t row, size_t col);
+
 
 
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
@@ -287,7 +303,8 @@ FT_EXTERN size_t ft_cur_col(FTABLE *table);
  *   more arguments than required by format, the extraneous arguments are
  *   evaluated and ignored.
  * @return
- *   todo ?????
+ *   - Number of printed cells
+ *   - (<0): In case of error
  */
 FT_EXTERN int ft_printf(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
@@ -312,7 +329,8 @@ FT_EXTERN int ft_printf(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE
  *   more arguments than required by format, the extraneous arguments are
  *   evaluated and ignored.
  * @return
- *   todo ?????
+ *   - Number of printed cells.
+ *   - (<0): In case of error.
  */
 FT_EXTERN int ft_printf_ln(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
@@ -380,8 +398,8 @@ FT_EXTERN int ft_add_separator(FTABLE *table);
  * string with strdup or similar functions.
  *
  * Returned pointer may be later invalidated by:
- * - Calling ft_destroy_table
- * - Other invocations of ft_to_string
+ * - Calling ft_destroy_table;
+ * - Other invocations of ft_to_string.
  *
  * @param table
  *   Formatted table.
@@ -404,7 +422,7 @@ FT_EXTERN const char *ft_to_string(const FTABLE *table);
 
 
 /**
- * Structure describing border appearance
+ * Structure describing border appearance.
  */
 struct ft_border_chars {
     char top_border_ch;
@@ -416,7 +434,7 @@ struct ft_border_chars {
 };
 
 /**
- * Structure describing border style
+ * Structure describing border style.
  */
 struct ft_border_style {
     struct ft_border_chars border_chs;
@@ -425,7 +443,7 @@ struct ft_border_style {
 };
 
 /**
- * Built-in table border styles
+ * Built-in table border styles.
  */
 extern struct ft_border_style *FT_BASIC_STYLE;
 extern struct ft_border_style *FT_SIMPLE_STYLE;
@@ -437,7 +455,7 @@ extern struct ft_border_style *FT_EMPTY_STYLE;
  * Set default border style for all new formatted tables.
  *
  * @param style
- *   Pointer to border style
+ *   Pointer to border style.
  * @return
  *   - 0: Success; default border style was changed.
  *   - (-1): !!!!!!!!  todo
@@ -448,9 +466,9 @@ FT_EXTERN int ft_set_default_border_style(struct ft_border_style *style);
  * Set border style for the table.
  *
  * @param table
- *   A pointer to the FTABLE structure
+ *   A pointer to the FTABLE structure.
  * @param style
- *   Pointer to border style
+ *   Pointer to border style.
  * @return
  *   - 0: Success; table border style was changed.
  *   - (-1): !!!!!!!!  todo
@@ -458,7 +476,7 @@ FT_EXTERN int ft_set_default_border_style(struct ft_border_style *style);
 FT_EXTERN int ft_set_border_style(FTABLE *table, struct ft_border_style *style);
 
 /**
- * Special macros to define cell position (row and column)
+ * Special macros to define cell position (row and column).
  */
 #define FT_ANY_COLUMN    (UINT_MAX)
 #define FT_CUR_COLUMN    (UINT_MAX - 1)
@@ -466,7 +484,7 @@ FT_EXTERN int ft_set_border_style(FTABLE *table, struct ft_border_style *style);
 #define FT_CUR_ROW       (UINT_MAX - 1)
 
 /**
- * Cell options identifiers
+ * Cell options identifiers.
  */
 #define FT_COPT_MIN_WIDTH        (0x01U << 0) /**< Minimum width */
 #define FT_COPT_TEXT_ALIGN       (0x01U << 1) /**< Text alignmemnt */
@@ -478,7 +496,7 @@ FT_EXTERN int ft_set_border_style(FTABLE *table, struct ft_border_style *style);
 #define FT_COPT_ROW_TYPE         (0x01U << 7) /**< Row type */
 
 /**
- * Alignment of cell content
+ * Alignment of cell content.
  */
 enum ft_text_alignment {
     FT_ALIGNED_LEFT,
@@ -487,7 +505,7 @@ enum ft_text_alignment {
 };
 
 /**
- * Type of table row
+ * Type of table row.
  */
 enum ft_row_type {
     FT_ROW_COMMON,
@@ -498,9 +516,9 @@ enum ft_row_type {
  * Set default cell option for all new formatted tables.
  *
  * @param option
- *   Cell option identifier
+ *   Cell option identifier.
  * @param value
- *   Cell option value
+ *   Cell option value.
  * @return
  *   - 0: Success; default cell option was changed.
  *   - (-1): !!!!!!!!  todo
@@ -511,15 +529,15 @@ FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
  * Set option for the specified cell of the table.
  *
  * @param table
- *   A pointer to the FTABLE structure
+ *   A pointer to the FTABLE structure.
  * @param row
- *   Cell row
+ *   Cell row.
  * @param col
- *   Cell column
+ *   Cell column.
  * @param option
- *   Cell option identifier
+ *   Cell option identifier.
  * @param value
- *   Cell option value
+ *   Cell option value.
  * @return
  *   - 0: Success; cell option was changed.
  *   - (-1): !!!!!!!!  todo
@@ -527,7 +545,7 @@ FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
 FT_EXTERN int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t option, int value);
 
 /**
- * Table options identifiers
+ * Table options identifiers.
  */
 #define FT_TOPT_LEFT_MARGIN   (0x01U << 0)
 #define FT_TOPT_TOP_MARGIN    (0x01U << 1)
@@ -538,9 +556,9 @@ FT_EXTERN int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t
  * Set default table option.
  *
  * @param option
- *   Table option identifier
+ *   Table option identifier.
  * @param value
- *   Table option value
+ *   Table option value.
  * @return
  *   - 0: Success; default table option was changed.
  *   - (-1): !!!!!!!!  todo
@@ -551,11 +569,11 @@ FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value);
  * Set table option.
  *
  * @param table
- *   A pointer to the FTABLE structure
+ *   A pointer to the FTABLE structure.
  * @param option
- *   Table option identifier
+ *   Table option identifier.
  * @param value
- *   Table option value
+ *   Table option value.
  * @return
  *   - 0: Success; default table option was changed.
  *   - (-1): !!!!!!!!  todo

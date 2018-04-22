@@ -106,6 +106,22 @@ fort_cell_t *get_cell_and_create_if_not_exists(fort_row_t *row, size_t col)
     return get_cell_implementation(row, col, Create);
 }
 
+fort_status_t swap_row(fort_row_t *cur_row, fort_row_t *ins_row, size_t pos)
+{
+    assert(cur_row);
+    assert(ins_row);
+    size_t cur_sz = vector_size(cur_row->cells);
+    if (cur_sz == 0 && pos == 0) {
+        fort_row_t tmp;
+        memcpy(&tmp, cur_row, sizeof(fort_row_t));
+        memcpy(cur_row, ins_row, sizeof(fort_row_t));
+        memcpy(ins_row, &tmp, sizeof(fort_row_t));
+        return FT_SUCCESS;
+    }
+
+    return vector_swap(cur_row->cells, ins_row->cells, pos);
+}
+
 
 
 

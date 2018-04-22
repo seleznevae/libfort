@@ -3,6 +3,7 @@
 
 struct test_case test_suit [] = {
     {"test_vector_basic", test_vector_basic},
+    {"test_vector_stress", test_vector_stress},
     {"test_string_buffer", test_string_buffer},
     {"test_table_sizes", test_table_sizes},
     {"test_table_geometry", test_table_geometry},

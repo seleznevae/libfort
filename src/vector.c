@@ -165,4 +165,50 @@ void *vector_at(vector_t *vector, size_t index)
     return (char *)vector->m_data + index * vector->m_item_size;
 }
 
+fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
+{
+    assert(cur_vec);
+    assert(mv_vec);
+    assert(cur_vec->m_item_size == mv_vec->m_item_size);
+
+    size_t cur_sz = vector_size(cur_vec);
+    size_t mv_sz = vector_size(mv_vec);
+    if (mv_sz == 0) {
+        return FT_SUCCESS;
+    }
+
+    size_t min_targ_size = pos + mv_sz;
+    if (cur_sz < min_targ_size) {
+        if (vector_reallocate_(cur_vec, min_targ_size) == -1)
+            return FT_ERROR;
+        cur_vec->m_capacity = min_targ_size;
+    }
+
+    ptrdiff_t deviation = pos * cur_vec->m_item_size;
+    void *tmp = NULL;
+    size_t new_mv_sz = 0;
+    if (cur_sz > pos) {
+        new_mv_sz = MIN(cur_sz - pos, mv_sz);
+        tmp = F_MALLOC(cur_vec->m_item_size * new_mv_sz);
+        if (tmp == NULL) {
+            return FT_MEMORY_ERROR;
+        }
+    }
+
+    memcpy(tmp,
+           cur_vec->m_data + deviation,
+           cur_vec->m_item_size * (cur_sz - pos));
+    memcpy(cur_vec->m_data + deviation,
+           mv_vec->m_data,
+           cur_vec->m_item_size * mv_sz);
+    memcpy(mv_vec->m_data,
+           tmp,
+           cur_vec->m_item_size * new_mv_sz);
+
+    mv_vec->m_size = new_mv_sz;
+    F_FREE(tmp);
+    return FT_SUCCESS;
+}
+
+
 

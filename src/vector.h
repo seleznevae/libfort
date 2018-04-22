@@ -26,6 +26,7 @@ extern int vector_erase(vector_t*, size_t index);
 extern void vector_clear(vector_t*);
 extern const void *vector_at_c(const vector_t *vector, size_t index);
 extern void* vector_at(vector_t*, size_t index);
+extern fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos);
 
 
 #define FOR_EACH_(type, item, vector, index_name) \

@@ -15,6 +15,7 @@
 
 /* Test cases */
 void test_vector_basic(void);
+void test_vector_stress(void);
 void test_string_buffer(void);
 void test_table_sizes(void);
 void test_table_geometry(void);

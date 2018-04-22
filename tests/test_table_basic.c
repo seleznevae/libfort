@@ -312,14 +312,20 @@ void test_table_write(void)
         assert_true(ft_write(table, "3.140000") == FT_SUCCESS);
         ft_ln(table);
         assert_true(ft_write(table, "c") == FT_SUCCESS);
-        assert_true(ft_write(table, "234") == FT_SUCCESS);
-        assert_true(ft_write(table, "3.140000") == FT_SUCCESS);
-        assert_true(ft_write_ln(table, "3") == FT_SUCCESS);
+        assert_true(ft_write(table, "235") == FT_SUCCESS);
+        assert_true(ft_write(table, "3.150000") == FT_SUCCESS);
+        assert_true(ft_write_ln(table, "5") == FT_SUCCESS);
 
         assert_true(ft_write(table, "234") == FT_SUCCESS);
         assert_true(ft_write(table, "3.140000") == FT_SUCCESS);
         assert_true(ft_write(table, "3") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "c") == FT_SUCCESS);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        assert_true(ft_write(table, "234") == FT_SUCCESS);
+        assert_true(ft_write(table, "3.140000") == FT_SUCCESS);
+        assert_true(ft_write_ln(table, "3") == FT_SUCCESS);
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -354,14 +360,20 @@ void test_table_write(void)
         assert_true(ft_wwrite(table, L"3.140000") == FT_SUCCESS);
         ft_ln(table);
         assert_true(ft_wwrite(table, L"c") == FT_SUCCESS);
-        assert_true(ft_wwrite(table, L"234") == FT_SUCCESS);
-        assert_true(ft_wwrite(table, L"3.140000") == FT_SUCCESS);
-        assert_true(ft_wwrite_ln(table, L"3") == FT_SUCCESS);
+        assert_true(ft_wwrite(table, L"235") == FT_SUCCESS);
+        assert_true(ft_wwrite(table, L"3.150000") == FT_SUCCESS);
+        assert_true(ft_wwrite_ln(table, L"5") == FT_SUCCESS);
 
         assert_true(ft_wwrite(table, L"234") == FT_SUCCESS);
         assert_true(ft_wwrite(table, L"3.140000") == FT_SUCCESS);
         assert_true(ft_wwrite(table, L"3") == FT_SUCCESS);
         assert_true(ft_wwrite_ln(table, L"c") == FT_SUCCESS);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        assert_true(ft_wwrite(table, L"234") == FT_SUCCESS);
+        assert_true(ft_wwrite(table, L"3.140000") == FT_SUCCESS);
+        assert_true(ft_wwrite_ln(table, L"3") == FT_SUCCESS);
 
         const wchar_t *table_str = ft_to_wstring(table);
         assert_true(table_str != NULL);
@@ -392,8 +404,12 @@ void test_table_write(void)
         ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_nwrite(table, 4, "3", "c", "234", "3.140000") == FT_SUCCESS);
         ft_ln(table);
-        assert_true(ft_nwrite_ln(table, 4, "c", "234", "3.140000", "3") == FT_SUCCESS);
+        assert_true(ft_nwrite_ln(table, 4, "c", "235", "3.150000", "5") == FT_SUCCESS);
         assert_true(ft_nwrite_ln(table, 4, "234", "3.140000", "3", "c") == FT_SUCCESS);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        assert_true(ft_nwrite_ln(table, 3, "234", "3.140000", "3") == FT_SUCCESS);
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -424,8 +440,12 @@ void test_table_write(void)
         ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_nwwrite(table, 4, L"3", L"c", L"234", L"3.140000") == FT_SUCCESS);
         ft_ln(table);
-        assert_true(ft_nwwrite_ln(table, 4, L"c", L"234", L"3.140000", L"3") == FT_SUCCESS);
+        assert_true(ft_nwwrite_ln(table, 4, L"c", L"235", L"3.150000", L"5") == FT_SUCCESS);
         assert_true(ft_nwwrite_ln(table, 4, L"234", L"3.140000", L"3", L"c") == FT_SUCCESS);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        assert_true(ft_nwwrite_ln(table, 3, L"234", L"3.140000", L"3") == FT_SUCCESS);
 
         const wchar_t *table_str = ft_to_wstring(table);
         assert_true(table_str != NULL);
@@ -456,12 +476,18 @@ void test_table_write(void)
 
         ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
         const char *row_0[4] = {"3", "c", "234", "3.140000"};
-        const char *row_1[4] = {"c", "234", "3.140000", "3"};
+        const char *row_1[4] = {"c", "235", "3.150000", "5"};
         const char *row_2[4] = {"234", "3.140000", "3", "c"};
         assert_true(ft_row_write_ln(table, 4, row_0) == FT_SUCCESS);
         assert_true(ft_row_write(table, 4, row_1) == FT_SUCCESS);
         ft_ln(table);
         assert_true(ft_row_write_ln(table, 4, row_2) == FT_SUCCESS);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        const char *row_11[3] = {"234", "3.140000", "3"};
+        assert_true(ft_row_write(table, 3, row_11) == FT_SUCCESS);
+        ft_ln(table);
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -491,12 +517,18 @@ void test_table_write(void)
 
         ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
         const wchar_t *row_0[4] = {L"3", L"c", L"234", L"3.140000"};
-        const wchar_t *row_1[4] = {L"c", L"234", L"3.140000", L"3"};
+        const wchar_t *row_1[4] = {L"c", L"235", L"3.150000", L"5"};
         const wchar_t *row_2[4] = {L"234", L"3.140000", L"3", L"c"};
         assert_true(ft_row_wwrite_ln(table, 4, row_0) == FT_SUCCESS);
         assert_true(ft_row_wwrite(table, 4, row_1) == FT_SUCCESS);
         ft_ln(table);
         assert_true(ft_row_wwrite_ln(table, 4, row_2) == FT_SUCCESS);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        const wchar_t *row_11[3] = {L"234", L"3.140000", L"3"};
+        assert_true(ft_row_wwrite(table, 3, row_11) == FT_SUCCESS);
+        ft_ln(table);
 
         const wchar_t *table_str = ft_to_wstring(table);
         assert_true(table_str != NULL);
@@ -528,11 +560,16 @@ void test_table_write(void)
         ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
         int n = ft_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true(n == 4);
-        n = ft_printf(table, "%c|%s|%f|%d", 'c', "234", 3.14, 3);
+        n = ft_printf(table, "%c|%s|%f|%d", 'c', "235", 3.15, 5);
         assert_true(n == 4);
         ft_ln(table);
         n = ft_printf_ln(table, "%s|%f|%d|%c", "234", 3.14,  3, 'c');
         assert_true(n == 4);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        n = ft_printf(table, "%s|%f|%d", "234", 3.14, 3);
+        assert_true(n == 3);
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);

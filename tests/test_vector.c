@@ -87,3 +87,34 @@ void test_vector_basic(void)
 
     destroy_vector(vector);
 }
+
+
+void test_vector_stress(void)
+{
+    size_t i = 0;
+
+    typedef short item_t;
+    const size_t init_capacity = 10;
+    vector_t *vector = create_vector(sizeof(item_t), init_capacity);
+
+    assert_true(vector != NULL);
+    assert_true(vector_size(vector)     == 0);
+    assert_true(vector_capacity(vector) == init_capacity);
+
+    WHEN("Pushing a lot of items into vector") {
+        for (i = 0; i < 1000 * init_capacity; ++i) {
+            item_t item = (item_t)i;
+            vector_push(vector, &item);
+        }
+
+        THEN("Then capacity is not changed") {
+            assert_true(vector_size(vector)     == 1000 * init_capacity);
+            assert_true(vector_capacity(vector) >= 1000 * init_capacity);
+        }
+    }
+
+    /*
+     * Destroy without previously called clear
+     */
+    destroy_vector(vector);
+}
