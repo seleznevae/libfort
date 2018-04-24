@@ -40,15 +40,15 @@ static int create_simple_table_and_show(void)
         result = 3;
         goto exit;
     }
-    if (FT_NWRITE_LN(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
+    if (ft_write_ln(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
         result = 4;
         goto exit;
     }
-    if (FT_NWRITE_LN(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
+    if (ft_write_ln(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
         result = 5;
         goto exit;
     }
-    if (FT_NWRITE_LN(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
+    if (ft_write_ln(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
         result = 6;
         goto exit;
     }

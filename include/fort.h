@@ -347,12 +347,9 @@ FT_EXTERN int ft_printf_ln_impl(FTABLE *table, const char *fmt, ...) FT_PRINTF_A
 
 
 
-FT_EXTERN int ft_write(FTABLE *table, const char *cell_content);
-FT_EXTERN int ft_write_ln(FTABLE *table, const char *cell_content);
-
-#define FT_NWRITE(table, ...)\
+#define ft_write(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-#define FT_NWRITE_LN(table, ...)\
+#define ft_write_ln(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 FT_EXTERN int ft_nwrite(FTABLE *table, size_t n, const char *cell_content, ...);
 FT_EXTERN int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ...);
@@ -365,13 +362,9 @@ FT_EXTERN int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ..
 FT_EXTERN int ft_row_write(FTABLE *table, size_t cols, const char *row_cells[]);
 FT_EXTERN int ft_row_write_ln(FTABLE *table, size_t cols, const char *row_cells[]);
 
-#if !defined(__cplusplus) && !defined(FT_MICROSOFT_COMPILER)
-FT_EXTERN int ft_s_table_write(FTABLE *table, size_t rows, size_t cols, const char *table_cells[rows][cols]);
-FT_EXTERN int ft_s_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char *table_cells[rows][cols]);
+FT_EXTERN int ft_table_write(FTABLE *table, size_t rows, size_t cols, const char *table_cells[]);
+FT_EXTERN int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char *table_cells[]);
 
-FT_EXTERN int ft_table_write(FTABLE *table, size_t rows, size_t cols, const char * *  table_cells[rows]);
-FT_EXTERN int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char * *  table_cells[rows]);
-#endif
 
 
 
@@ -600,18 +593,19 @@ FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free
 
 #ifdef FT_HAVE_WCHAR
 
-FT_EXTERN int ft_wwrite(FTABLE *table, const wchar_t *cell_content);
-FT_EXTERN int ft_wwrite_ln(FTABLE *table, const wchar_t *cell_content);
 
-#define FT_NWWRITE(table, ...)\
+#define ft_wwrite(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-#define FT_NWWRITE_LN(table, ...)\
+#define ft_wwrite_ln(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 FT_EXTERN int ft_nwwrite(FTABLE *table, size_t n, const wchar_t *cell_content, ...);
 FT_EXTERN int ft_nwwrite_ln(FTABLE *table, size_t n, const wchar_t *cell_content, ...);
 
 FT_EXTERN int ft_row_wwrite(FTABLE *table, size_t cols, const wchar_t *row_cells[]);
 FT_EXTERN int ft_row_wwrite_ln(FTABLE *table, size_t cols, const wchar_t *row_cells[]);
+
+FT_EXTERN int ft_table_wwrite(FTABLE *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
+FT_EXTERN int ft_table_wwrite_ln(FTABLE *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
 
 FT_EXTERN const wchar_t *ft_to_wstring(const FTABLE *table);
 #endif

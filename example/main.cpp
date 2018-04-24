@@ -5,7 +5,7 @@
 int main()
 {
     {
-        fort::FTable table;
+        fort::Table table;
         // Fill table with data
         table << fort::header
             << "Rank" << "Title" << "Year" << "Rating" << fort::endl
@@ -21,7 +21,7 @@ int main()
 
 
     {
-        fort::FTable table;
+        fort::Table table;
         // Fill table with data
         table << fort::header;
         table.write_ln("Rank", "Title", "Year", "Rating");

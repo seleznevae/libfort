@@ -9,31 +9,31 @@
 namespace fort
 {
 
-class FTableManipulator {
+class TableManipulator {
 public:
-    explicit FTableManipulator(int i)
+    explicit TableManipulator(int i)
         :value(i)
     {
     }
-    friend class FTable;
+    friend class Table;
 private:
     int value;
 };
 
-const FTableManipulator header(0);
-const FTableManipulator endl(1);
-const FTableManipulator separator(2);
+const TableManipulator header(0);
+const TableManipulator endl(1);
+const TableManipulator separator(2);
 
-class FTable {
+class Table {
 public:
-    FTable()
+    Table()
         :table(ft_create_table())
     {
         if (table == NULL)
             throw std::runtime_error("Runtime error");
     }
 
-    ~FTable()
+    ~Table()
     {
         ft_destroy_table(table);
     }
@@ -52,7 +52,7 @@ public:
     }
 
     template <typename T>
-    FTable &operator<<(const T &arg)
+    Table &operator<<(const T &arg)
     {
         stream << arg;
         if (stream.tellp()) {
@@ -62,7 +62,7 @@ public:
         return *this;
     }
 
-    FTable &operator<<(const FTableManipulator &arg)
+    Table &operator<<(const TableManipulator &arg)
     {
         if (arg.value == header.value)
             ft_set_cell_option(table, FT_CUR_ROW, FT_ANY_ROW, FT_COPT_ROW_TYPE, FT_ROW_HEADER);

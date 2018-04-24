@@ -409,7 +409,7 @@ void test_table_cell_options(void)
         int n = ft_printf_ln(table, "%d|%c|%s|%f", 4, 'c', "234", 3.14);
 
         assert_true(n == 4);
-        n = FT_NWRITE_LN(table, "5", "c", "234\n12", "3.140000");
+        n = ft_write_ln(table, "5", "c", "234\n12", "3.140000");
         assert_true(n == FT_SUCCESS);
         n = ft_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true(n == 4);

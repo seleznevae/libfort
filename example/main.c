@@ -10,14 +10,14 @@ static FTABLE *create_basic_table(void)
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
 
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-    FT_NWRITE_LN(table, "Rank", "Title", "Year", "Rating");
+    ft_write_ln(table, "Rank", "Title", "Year", "Rating");
 
-    FT_NWRITE_LN(table, "1", "The Shawshank Redemption", "1994", "9.5");
-    FT_NWRITE_LN(table, "2", "12 Angry Men", "1957", "8.8");
-    FT_NWRITE_LN(table, "3", "It's a Wonderful Life", "1946", "8.6");
+    ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
+    ft_write_ln(table, "2", "12 Angry Men", "1957", "8.8");
+    ft_write_ln(table, "3", "It's a Wonderful Life", "1946", "8.6");
     ft_add_separator(table);
-    FT_NWRITE_LN(table, "4", "2001: A Space Odyssey", "1968", "8.5");
-    FT_NWRITE_LN(table, "5", "Blade Runner", "1982", "8.1");
+    ft_write_ln(table, "4", "2001: A Space Odyssey", "1968", "8.5");
+    ft_write_ln(table, "5", "Blade Runner", "1982", "8.1");
     return table;
 }
 
@@ -51,10 +51,10 @@ int main(void)
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
     ft_printf_ln(table, "Rank|Title|Year|Rating");
 
-    FT_NWRITE_LN(table, "1", "The Shawshank Redemption", "1994", "9.5");
-    FT_NWRITE_LN(table, "2", "12 Angry Men", "1957", "8.8");
-    FT_NWRITE_LN(table, "3", "2001: A Space Odyssey", "1968", "8.5");
-    FT_NWRITE_LN(table, "4", "Blade Runner", "1982", "8.1");
+    ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
+    ft_write_ln(table, "2", "12 Angry Men", "1957", "8.8");
+    ft_write_ln(table, "3", "2001: A Space Odyssey", "1968", "8.5");
+    ft_write_ln(table, "4", "Blade Runner", "1982", "8.1");
 
 
     printf("Table:\n");
@@ -80,7 +80,6 @@ int main(void)
     ft_destroy_table(table);
 
     /*-------------------------------------------------------------*/
-#if !defined(__cplusplus) && !defined(FT_MICROSOFT_COMPILER)
     table = ft_create_table();
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
@@ -91,32 +90,11 @@ int main(void)
             {"1", "Joe Public", "3.14"},
             {"2", "John Doe", "4.50"}
         };
-    ft_s_table_write_ln(table, 2, 3, ctab);
+    ft_table_write_ln(table, 2, 3, (const char **)ctab);
 
     printf("Table:\n");
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
-
-    /*-------------------------------------------------------------*/
-
-
-
-    table = ft_create_table();
-    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
-
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-    ft_printf_ln(table, "No.|Name|Avg. Mark");
-    const char **tab[2] = {
-        row1,
-        row2
-    };
-    ft_table_write_ln(table, 2, 3, tab);
-
-    printf("Table:\n");
-    printf("%s\n", ft_to_string(table));
-    ft_destroy_table(table);
-#endif
 
     /*----------------  Different styles  --------------------*/
 
@@ -154,12 +132,12 @@ int main(void)
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
 
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-    FT_NWWRITE_LN(table, L"Ранг", L"Название", L"Год", L"Рейтинг");
+    ft_wwrite_ln(table, L"Ранг", L"Название", L"Год", L"Рейтинг");
 
-    FT_NWWRITE_LN(table, L"1", L"Побег из Шоушенка", L"1994", L"9.5");
-    FT_NWWRITE_LN(table, L"2", L"12 разгневанных мужчин", L"1957", L"8.8");
-    FT_NWWRITE_LN(table, L"3", L"Космическая одиссея 2001 года", L"1968", L"8.5");
-    FT_NWWRITE_LN(table, L"4", L"Бегущий по лезвию", L"1982", L"8.1");
+    ft_wwrite_ln(table, L"1", L"Побег из Шоушенка", L"1994", L"9.5");
+    ft_wwrite_ln(table, L"2", L"12 разгневанных мужчин", L"1957", L"8.8");
+    ft_wwrite_ln(table, L"3", L"Космическая одиссея 2001 года", L"1968", L"8.5");
+    ft_wwrite_ln(table, L"4", L"Бегущий по лезвию", L"1982", L"8.1");
 
     /* Ранг | Название | Год | Рейтинг */
     /*FT_NWWRITE_LN(table, L"\x420\x430\x43d\x433", L"\x41d\x430\x437\x432\x430\x43d\x438\x435", L"\x413\x43e\x434", L"\x420\x435\x439\x442\x438\x43d\x433"); */
