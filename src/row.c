@@ -338,8 +338,15 @@ clear:
 
 fort_row_t *create_row_from_string(const char *str)
 {
-    char *pos = NULL;
-    char *base_pos = NULL;
+    typedef char char_type;
+    char_type *(*strdup_)(const char_type * str) = F_STRDUP;
+    const char_type zero_char = '\0';
+    fort_status_t (*fill_cell_from_string_)(fort_cell_t *cell, const char *str) = fill_cell_from_string;
+    const char_type *const zero_string = "";
+#define STRCHR strchr
+
+    char_type *pos = NULL;
+    char_type *base_pos = NULL;
     unsigned int number_of_separators = 0;
 
     fort_row_t *row = create_row();
@@ -349,7 +356,7 @@ fort_row_t *create_row_from_string(const char *str)
     if (str == NULL)
         return row;
 
-    char *str_copy = F_STRDUP(str);
+    char_type *str_copy = strdup_(str);
     if (str_copy == NULL)
         goto clear;
 
@@ -357,9 +364,9 @@ fort_row_t *create_row_from_string(const char *str)
     base_pos = str_copy;
     number_of_separators = 0;
     while (*pos) {
-        pos = strchr(pos, FORT_COL_SEPARATOR);
+        pos = STRCHR(pos, FORT_COL_SEPARATOR);
         if (pos != NULL) {
-            *(pos) = '\0';
+            *(pos) = zero_char;
             ++pos;
             number_of_separators++;
         }
@@ -368,8 +375,7 @@ fort_row_t *create_row_from_string(const char *str)
         if (cell == NULL)
             goto clear;
 
-        /*        int status = fill_buffer_from_string(cell->str_buffer, base_pos);  */
-        int status = fill_cell_from_string(cell, base_pos);
+        int status = fill_cell_from_string_(cell, base_pos);
         if (IS_ERROR(status)) {
             destroy_cell(cell);
             goto clear;
@@ -392,8 +398,7 @@ fort_row_t *create_row_from_string(const char *str)
         if (cell == NULL)
             goto clear;
 
-        /*        int status = fill_buffer_from_string(cell->str_buffer, "");  */
-        int status = fill_cell_from_string(cell, "");
+        int status = fill_cell_from_string_(cell, zero_string);
         if (IS_ERROR(status)) {
             destroy_cell(cell);
             goto clear;
@@ -413,24 +418,117 @@ clear:
     destroy_row(row);
     F_FREE(str_copy);
     return NULL;
+
+#undef STRCHR
 }
 
 
+#ifdef FT_HAVE_WCHAR
+fort_row_t *create_row_from_wstring(const wchar_t *str)
+{
+    typedef wchar_t char_type;
+    char_type *(*strdup_)(const char_type * str) = F_WCSDUP;
+    const char_type zero_char = L'\0';
+    fort_status_t (*fill_cell_from_string_)(fort_cell_t *cell, const wchar_t *str) = fill_cell_from_wstring;
+    const char_type *const zero_string = L"";
+#define STRCHR wcschr
+
+    char_type *pos = NULL;
+    char_type *base_pos = NULL;
+    unsigned int number_of_separators = 0;
+
+    fort_row_t *row = create_row();
+    if (row == NULL)
+        return NULL;
+
+    if (str == NULL)
+        return row;
+
+    char_type *str_copy = strdup_(str);
+    if (str_copy == NULL)
+        goto clear;
+
+    pos = str_copy;
+    base_pos = str_copy;
+    number_of_separators = 0;
+    while (*pos) {
+        pos = STRCHR(pos, FORT_COL_SEPARATOR);
+        if (pos != NULL) {
+            *(pos) = zero_char;
+            ++pos;
+            number_of_separators++;
+        }
+
+        fort_cell_t *cell = create_cell();
+        if (cell == NULL)
+            goto clear;
+
+        int status = fill_cell_from_string_(cell, base_pos);
+        if (IS_ERROR(status)) {
+            destroy_cell(cell);
+            goto clear;
+        }
+
+        status = vector_push(row->cells, &cell);
+        if (IS_ERROR(status)) {
+            destroy_cell(cell);
+            goto clear;
+        }
+
+        if (pos == NULL)
+            break;
+        base_pos = pos;
+    }
+
+    /* special case if in format string last cell is empty */
+    while (vector_size(row->cells) < (number_of_separators + 1)) {
+        fort_cell_t *cell = create_cell();
+        if (cell == NULL)
+            goto clear;
+
+        int status = fill_cell_from_string_(cell, zero_string);
+        if (IS_ERROR(status)) {
+            destroy_cell(cell);
+            goto clear;
+        }
+
+        status = vector_push(row->cells, &cell);
+        if (IS_ERROR(status)) {
+            destroy_cell(cell);
+            goto clear;
+        }
+    }
+
+    F_FREE(str_copy);
+    return row;
+
+clear:
+    destroy_row(row);
+    F_FREE(str_copy);
+    return NULL;
+#undef STRCHR
+}
+#endif
 
 
 fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 {
+#define VSNPRINTF vsnprintf
+#define STR_FILED cstr
+#define CREATE_ROW_FROM_STRING create_row_from_string
+#define NUMBER_OF_COLUMNS_IN_FORMAT_STRING number_of_columns_in_format_string
+
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CharBuf);
     if (buffer == NULL)
         return NULL;
 
-    size_t cols_origin = number_of_columns_in_format_string(fmt);
+    size_t cols_origin = NUMBER_OF_COLUMNS_IN_FORMAT_STRING(fmt);
     size_t cols = 0;
 
     while (1) {
         va_list va;
         va_copy(va, *va_args);
-        int virtual_sz = vsnprintf(buffer->str.cstr, string_buffer_capacity(buffer), fmt, va);
+        int virtual_sz = VSNPRINTF(buffer->str.STR_FILED, string_buffer_capacity(buffer), fmt, va);
         va_end(va);
         /* If error encountered */
         if (virtual_sz < 0)
@@ -445,10 +543,10 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
             goto clear;
     }
 
-    cols = number_of_columns_in_format_string(buffer->str.cstr);
+    cols = NUMBER_OF_COLUMNS_IN_FORMAT_STRING(buffer->str.STR_FILED);
     if (cols == cols_origin) {
 
-        fort_row_t *row = create_row_from_string(buffer->str.cstr);
+        fort_row_t *row = CREATE_ROW_FROM_STRING(buffer->str.STR_FILED);
         if (row == NULL) {
             goto clear;
         }
@@ -462,7 +560,69 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 clear:
     destroy_string_buffer(buffer);
     return NULL;
+#undef VSNPRINTF
+#undef STR_FILED
+#undef CREATE_ROW_FROM_STRING
+#undef NUMBER_OF_COLUMNS_IN_FORMAT_STRING
 }
+
+#ifdef FT_HAVE_WCHAR
+fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
+{
+#define VSNPRINTF vswprintf
+#define STR_FILED wstr
+#define CREATE_ROW_FROM_STRING create_row_from_wstring
+#define NUMBER_OF_COLUMNS_IN_FORMAT_STRING number_of_columns_in_format_wstring
+
+
+    string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CharBuf);
+    if (buffer == NULL)
+        return NULL;
+
+    size_t cols_origin = NUMBER_OF_COLUMNS_IN_FORMAT_STRING(fmt);
+    size_t cols = 0;
+
+    while (1) {
+        va_list va;
+        va_copy(va, *va_args);
+        int virtual_sz = VSNPRINTF(buffer->str.STR_FILED, string_buffer_capacity(buffer), fmt, va);
+        va_end(va);
+        /* If error encountered */
+        if (virtual_sz < 0)
+            goto clear;
+
+        /* Successful write */
+        if ((size_t)virtual_sz < string_buffer_capacity(buffer))
+            break;
+
+        /* Otherwise buffer was too small, so incr. buffer size ant try again. */
+        if (!IS_SUCCESS(realloc_string_buffer_without_copy(buffer)))
+            goto clear;
+    }
+
+    cols = NUMBER_OF_COLUMNS_IN_FORMAT_STRING(buffer->str.STR_FILED);
+    if (cols == cols_origin) {
+
+        fort_row_t *row = CREATE_ROW_FROM_STRING(buffer->str.STR_FILED);
+        if (row == NULL) {
+            goto clear;
+        }
+
+        destroy_string_buffer(buffer);
+        return row;
+    }
+
+    /* todo: add processing of cols != cols_origin */
+
+clear:
+    destroy_string_buffer(buffer);
+    return NULL;
+#undef VSNPRINTF
+#undef STR_FILED
+#undef CREATE_ROW_FROM_STRING
+#undef NUMBER_OF_COLUMNS_IN_FORMAT_STRING
+}
+#endif
 
 
 int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,

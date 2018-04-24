@@ -140,6 +140,22 @@ size_t number_of_columns_in_format_string(const char *fmt)
     return separator_counter + 1;
 }
 
+size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
+{
+    int separator_counter = 0;
+    const wchar_t *pos = fmt;
+    while (1) {
+        pos = wcschr(pos, FORT_COL_SEPARATOR);
+        if (pos == NULL)
+            break;
+
+        separator_counter++;
+        ++pos;
+    }
+    return separator_counter + 1;
+}
+
+
 int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
 {
     if (length <= n)

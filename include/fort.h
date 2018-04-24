@@ -594,6 +594,10 @@ FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free
 #ifdef FT_HAVE_WCHAR
 
 
+FT_EXTERN int ft_wprintf(FTABLE *table, const wchar_t *fmt, ...);
+FT_EXTERN int ft_wprintf_ln(FTABLE *table, const wchar_t *fmt, ...);
+
+
 #define ft_wwrite(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 #define ft_wwrite_ln(table, ...)\

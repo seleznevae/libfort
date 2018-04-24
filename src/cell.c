@@ -135,6 +135,7 @@ clear:
     return -1;
 }
 
+#ifdef FT_HAVE_WCHAR
 int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context)
 {
     wchar_t space_char = L' ';
@@ -175,6 +176,7 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
 clear:
     return -1;
 }
+#endif
 
 
 fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str)
@@ -184,6 +186,17 @@ fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str)
 
     return fill_buffer_from_string(cell->str_buffer, str);
 }
+
+#ifdef FT_HAVE_WCHAR
+fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str)
+{
+    assert(str);
+    assert(cell);
+
+    return fill_buffer_from_wstring(cell->str_buffer, str);
+}
+
+#endif
 
 string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
 {
