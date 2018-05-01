@@ -9,7 +9,6 @@
 
 struct fort_cell {
     string_buffer_t *str_buffer;
-    fort_table_options_t *options;
 };
 
 fort_cell_t *create_cell(void)
@@ -22,7 +21,6 @@ fort_cell_t *create_cell(void)
         F_FREE(cell);
         return NULL;
     }
-    cell->options = NULL;
     /*init_cell_options(&(cell->options));*/
     return cell;
 }
@@ -32,7 +30,6 @@ void destroy_cell(fort_cell_t *cell)
     if (cell == NULL)
         return;
     destroy_string_buffer(cell->str_buffer);
-    F_FREE(cell->options);
     F_FREE(cell);
 }
 
