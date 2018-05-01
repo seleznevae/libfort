@@ -376,7 +376,7 @@ FT_EXTERN int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const c
  *   Formatted table.
  * @return
  *   - 0: Success; separator was added.
- *   - (-1): !!!!!!!!  todo
+ *   - (<0): In case of error
  */
 FT_EXTERN int ft_add_separator(FTABLE *table);
 
@@ -451,7 +451,7 @@ extern struct ft_border_style *FT_EMPTY_STYLE;
  *   Pointer to border style.
  * @return
  *   - 0: Success; default border style was changed.
- *   - (-1): !!!!!!!!  todo
+ *   - (<0): In case of error
  */
 FT_EXTERN int ft_set_default_border_style(struct ft_border_style *style);
 
@@ -464,7 +464,7 @@ FT_EXTERN int ft_set_default_border_style(struct ft_border_style *style);
  *   Pointer to border style.
  * @return
  *   - 0: Success; table border style was changed.
- *   - (-1): !!!!!!!!  todo
+ *   - (<0): In case of error
  */
 FT_EXTERN int ft_set_border_style(FTABLE *table, struct ft_border_style *style);
 
@@ -514,7 +514,7 @@ enum ft_row_type {
  *   Cell option value.
  * @return
  *   - 0: Success; default cell option was changed.
- *   - (-1): !!!!!!!!  todo
+ *   - (<0): In case of error
  */
 FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
 
@@ -533,7 +533,7 @@ FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
  *   Cell option value.
  * @return
  *   - 0: Success; cell option was changed.
- *   - (-1): !!!!!!!!  todo
+ *   - (<0): In case of error
  */
 FT_EXTERN int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t option, int value);
 
@@ -554,7 +554,7 @@ FT_EXTERN int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t
  *   Table option value.
  * @return
  *   - 0: Success; default table option was changed.
- *   - (-1): !!!!!!!!  todo
+ *   - (<0): In case of error
  */
 FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value);
 
@@ -569,7 +569,7 @@ FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value);
  *   Table option value.
  * @return
  *   - 0: Success; default table option was changed.
- *   - (-1): !!!!!!!!  todo
+ *   - (<0): In case of error
  */
 FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
 
