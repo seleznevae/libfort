@@ -156,51 +156,113 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 }
 
 
-int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
+//int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
+//{
+//    if (length <= n)
+//        return -1;
+
+//    if (n == 0)
+//        return 0;
+
+//    /* To ensure valid return value it is safely not print such big strings */
+//    if (n > INT_MAX)
+//        return -1;
+
+//    int status = snprintf(buf, length, "%0*d", (int)n, 0);
+//    if (status < 0)
+//        return status;
+
+//    size_t i = 0;
+//    for (i = 0; i < n; ++i) {
+//        *buf = ch;
+//        buf++;
+//    }
+//    return (int)n;
+//}
+
+int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
 {
-    if (length <= n)
+    size_t str_len = strlen(str);
+    if (length <= n * str_len)
         return -1;
 
     if (n == 0)
         return 0;
 
     /* To ensure valid return value it is safely not print such big strings */
-    if (n > INT_MAX)
+    if (n * str_len > INT_MAX)
         return -1;
 
-    int status = snprintf(buf, length, "%0*d", (int)n, 0);
+    int status = snprintf(buf, length, "%0*d", (int)(n * str_len), 0);
     if (status < 0)
         return status;
 
     size_t i = 0;
     for (i = 0; i < n; ++i) {
-        *buf = ch;
-        buf++;
+        const char *str_p = str;
+        while (*str_p)
+            *(buf++) = *(str_p++);
     }
-    return (int)n;
+    return (int)(n * str_len);
 }
 
 
-int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
+//int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
+//{
+//    if (length <= n)
+//        return -1;
+
+//    if (n == 0)
+//        return 0;
+
+//    /* To ensure valid return value it is safely not print such big strings */
+//    if (n > INT_MAX)
+//        return -1;
+
+//    int status = swprintf(buf, length, L"%0*d", (int)n, 0);
+//    if (status < 0)
+//        return status;
+
+//    size_t i = 0;
+//    for (i = 0; i < n; ++i) {
+//        *buf = ch;
+//        buf++;
+//    }
+//    return (int)n;
+//}
+
+int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
 {
-    if (length <= n)
+    size_t str_len = strlen(str);
+
+    /* This function doesn't work properly with multibyte characters
+     * so it is better return an error in this case
+     */
+    if (str_len > 1)
+        return -1;
+
+    if (length <= n * str_len)
         return -1;
 
     if (n == 0)
         return 0;
 
+
+
     /* To ensure valid return value it is safely not print such big strings */
-    if (n > INT_MAX)
+    if (n * str_len > INT_MAX)
         return -1;
 
-    int status = swprintf(buf, length, L"%0*d", (int)n, 0);
+    int status = swprintf(buf, length, L"%0*d", (int)(n * str_len), 0);
     if (status < 0)
         return status;
 
     size_t i = 0;
     for (i = 0; i < n; ++i) {
-        *buf = ch;
-        buf++;
+        const char *str_p = str;
+        while (*str_p)
+            *(buf++) = (wchar_t) * (str_p++);
     }
-    return (int)n;
+    return (int)(n * str_len);
 }
+

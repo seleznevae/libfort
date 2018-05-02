@@ -15,19 +15,21 @@ void test_table_border_style(void)
     WHEN("Changing cell separators") {
 
         struct ft_border_style brdr_style;
-        brdr_style.border_chs.top_border_ch = '|';
-        brdr_style.border_chs.separator_ch = '|';
-        brdr_style.border_chs.bottom_border_ch = '|';
-        brdr_style.border_chs.side_border_ch = '=';
-        brdr_style.border_chs.out_intersect_ch = '+';
-        brdr_style.border_chs.in_intersect_ch = '#';
+        brdr_style.border_chs.top_border_ch = "|";
+        brdr_style.border_chs.separator_ch = "|";
+        brdr_style.border_chs.bottom_border_ch = "|";
+        brdr_style.border_chs.side_border_ch = "=";
+        brdr_style.border_chs.out_intersect_ch = "+";
+        brdr_style.border_chs.in_intersect_ch = "#";
 
-        brdr_style.header_border_chs.top_border_ch = '*';
-        brdr_style.header_border_chs.separator_ch = '*';
-        brdr_style.header_border_chs.bottom_border_ch = '*';
-        brdr_style.header_border_chs.side_border_ch = 'v';
-        brdr_style.header_border_chs.out_intersect_ch = '+';
-        brdr_style.header_border_chs.in_intersect_ch = '#';
+        brdr_style.header_border_chs.top_border_ch = "*";
+        brdr_style.header_border_chs.separator_ch = "*";
+        brdr_style.header_border_chs.bottom_border_ch = "*";
+        brdr_style.header_border_chs.side_border_ch = "v";
+        brdr_style.header_border_chs.out_intersect_ch = "+";
+        brdr_style.header_border_chs.in_intersect_ch = "#";
+
+        brdr_style.hor_separator_char = "|";
         ft_set_default_border_style(&brdr_style);
 
 
@@ -54,19 +56,21 @@ void test_table_border_style(void)
 
 
 
-        brdr_style.border_chs.top_border_ch = '|';
-        brdr_style.border_chs.separator_ch = '\0';
-        brdr_style.border_chs.bottom_border_ch = '|';
-        brdr_style.border_chs.side_border_ch = '=';
-        brdr_style.border_chs.out_intersect_ch = '+';
-        brdr_style.border_chs.in_intersect_ch = '\0';
+        brdr_style.border_chs.top_border_ch = "|";
+        brdr_style.border_chs.separator_ch = "\0";
+        brdr_style.border_chs.bottom_border_ch = "|";
+        brdr_style.border_chs.side_border_ch = "=";
+        brdr_style.border_chs.out_intersect_ch = "+";
+        brdr_style.border_chs.in_intersect_ch = "\0";
 
-        brdr_style.header_border_chs.top_border_ch = '*';
-        brdr_style.header_border_chs.separator_ch = '*';
-        brdr_style.header_border_chs.bottom_border_ch = '*';
-        brdr_style.header_border_chs.side_border_ch = 'v';
-        brdr_style.header_border_chs.out_intersect_ch = '+';
-        brdr_style.header_border_chs.in_intersect_ch = '#';
+        brdr_style.header_border_chs.top_border_ch = "*";
+        brdr_style.header_border_chs.separator_ch = "*";
+        brdr_style.header_border_chs.bottom_border_ch = "*";
+        brdr_style.header_border_chs.side_border_ch = "v";
+        brdr_style.header_border_chs.out_intersect_ch = "+";
+        brdr_style.header_border_chs.in_intersect_ch = "#";
+
+        brdr_style.hor_separator_char = "";
 
         ft_set_default_border_style(&brdr_style);
 

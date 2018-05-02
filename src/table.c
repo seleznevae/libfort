@@ -234,6 +234,11 @@ fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t *width)
         *width += table->options->entire_table_options.right_margin;
     }
 
+    /* Take into account that border elements can be more than one byte long */
+    fort_table_options_t *table_options = table->options ? table->options : &g_table_options;
+    size_t max_border_elem_len = max_border_elem_strlen(table_options);
+    *width *= max_border_elem_len;
+
     return FT_SUCCESS;
 
 }

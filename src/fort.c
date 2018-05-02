@@ -537,8 +537,8 @@ const char *ft_to_string(const FTABLE *table)
     typedef char char_type;
     const char_type *empty_string = "";
     const enum str_buf_type buf_type = CharBuf;
-    char space_char = ' ';
-    char new_line_char = '\n';
+    const char *space_char = " ";
+    const char *new_line_char = "\n";
 #define cur_F_STRDUP F_STRDUP
     int (*snprintf_row_)(const fort_row_t *, char *, size_t, size_t *, size_t, size_t, const context_t *) = snprintf_row;
     int (*print_row_separator_)(char *, size_t,
@@ -546,7 +546,8 @@ const char *ft_to_string(const FTABLE *table)
                                 const fort_row_t *, const fort_row_t *,
                                 enum HorSeparatorPos, const separator_t *,
                                 const context_t *) = print_row_separator;
-    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
+//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
+    int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
     assert(table);
 
     /* Determing size of table string representation */
@@ -595,8 +596,8 @@ const char *ft_to_string(const FTABLE *table)
 
     /* Print top margin */
     for (i = 0; i < context.table_options->entire_table_options.top_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, 1, new_line_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
     }
 
     for (i = 0; i < rows; ++i) {
@@ -614,8 +615,8 @@ const char *ft_to_string(const FTABLE *table)
 
     /* Print bottom margin */
     for (i = 0; i < context.table_options->entire_table_options.bottom_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, 1, new_line_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
     }
 
 
@@ -637,8 +638,8 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
     typedef wchar_t char_type;
     const char_type *empty_string = L"";
     const enum str_buf_type buf_type = WCharBuf;
-    wchar_t space_char = L' ';
-    wchar_t new_line_char = L'\n';
+    const char *space_char = " ";
+    const char *new_line_char = "\n";
 #define cur_F_STRDUP F_WCSDUP
     int (*snprintf_row_)(const fort_row_t *, wchar_t *, size_t, size_t *, size_t, size_t, const context_t *) = wsnprintf_row;
     int (*print_row_separator_)(wchar_t *, size_t,
@@ -646,7 +647,9 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
                                 const fort_row_t *, const fort_row_t *,
                                 enum HorSeparatorPos, const separator_t *,
                                 const context_t *) = wprint_row_separator;
-    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
+//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
+    int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
+
 
     assert(table);
 
@@ -697,8 +700,8 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
 
     /* Print top margin */
     for (i = 0; i < context.table_options->entire_table_options.top_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, 1, new_line_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
     }
 
     for (i = 0; i < rows; ++i) {
@@ -716,8 +719,8 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
 
     /* Print bottom margin */
     for (i = 0; i < context.table_options->entire_table_options.bottom_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, sz - written, 1, new_line_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
     }
 
     F_FREE(col_width_arr);
@@ -794,6 +797,8 @@ struct ft_border_style *FT_SIMPLE_STYLE = (struct ft_border_style *) &FORT_SIMPL
 struct ft_border_style *FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_STYLE;
 struct ft_border_style *FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
 struct ft_border_style *FT_EMPTY_STYLE  = (struct ft_border_style *) &FORT_EMPTY_STYLE;
+struct ft_border_style *FT_SOLID_STYLE  = (struct ft_border_style *) &FORT_SOLID_STYLE;
+struct ft_border_style *FT_DOUBLE_STYLE  = (struct ft_border_style *) &FORT_DOUBLE_STYLE;
 
 
 
@@ -803,7 +808,9 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
         || (struct fort_border_style *)style == &FORT_SIMPLE_STYLE
         || (struct fort_border_style *)style == &FORT_DOT_STYLE
         || (struct fort_border_style *)style == &FORT_PLAIN_STYLE
-        || (struct fort_border_style *)style == &FORT_EMPTY_STYLE) {
+        || (struct fort_border_style *)style == &FORT_EMPTY_STYLE
+        || (struct fort_border_style *)style == &FORT_SOLID_STYLE
+        || (struct fort_border_style *)style == &FORT_DOUBLE_STYLE) {
         memcpy(&(options->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
         return;
     }
@@ -837,8 +844,11 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
     BOR_CHARS[BL_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->out_intersect_ch;
     BOR_CHARS[II_bip] = border_chs->in_intersect_ch;
 
-    if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
-        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
+//    if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
+//        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
+//    }
+    if (strlen(border_chs->separator_ch) == 0 && strlen(border_chs->in_intersect_ch) == 0) {
+        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = "\0";
     }
 
 
@@ -852,8 +862,11 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
     H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->out_intersect_ch;
     H_BOR_CHARS[II_bip] = header_border_chs->in_intersect_ch;
 
-    if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
-        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
+//    if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
+//        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
+//    }
+    if (strlen(header_border_chs->separator_ch) == 0 && strlen(header_border_chs->in_intersect_ch) == 0) {
+        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = "\0";
     }
 
     SEP_CHARS[LH_sip] = SEP_CHARS[RH_sip] = SEP_CHARS[II_sip] = header_border_chs->out_intersect_ch;

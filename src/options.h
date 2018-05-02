@@ -112,15 +112,17 @@ enum SeparatorItemPos
 
 struct fort_border_style
 {
-    char border_chars[BorderItemPosSize];
-    char header_border_chars[BorderItemPosSize];
-    char separator_chars[SepratorItemPosSize];
+    const char *border_chars[BorderItemPosSize];
+    const char *header_border_chars[BorderItemPosSize];
+    const char *separator_chars[SepratorItemPosSize];
 };
 extern struct fort_border_style FORT_BASIC_STYLE;
 extern struct fort_border_style FORT_SIMPLE_STYLE;
 extern struct fort_border_style FORT_PLAIN_STYLE;
 extern struct fort_border_style FORT_DOT_STYLE;
 extern struct fort_border_style FORT_EMPTY_STYLE;
+extern struct fort_border_style FORT_SOLID_STYLE;
+extern struct fort_border_style FORT_DOUBLE_STYLE;
 
 
 struct fort_entire_table_options
@@ -144,6 +146,7 @@ struct fort_table_options
 typedef struct fort_table_options fort_table_options_t;
 extern fort_table_options_t g_table_options;
 
+size_t max_border_elem_strlen(struct fort_table_options*);
 
 
 fort_table_options_t* create_table_options(void);

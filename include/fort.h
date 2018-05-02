@@ -418,12 +418,12 @@ FT_EXTERN const char *ft_to_string(const FTABLE *table);
  * Structure describing border appearance.
  */
 struct ft_border_chars {
-    char top_border_ch;
-    char separator_ch;
-    char bottom_border_ch;
-    char side_border_ch;
-    char out_intersect_ch;
-    char in_intersect_ch;
+    const char *top_border_ch;
+    const char *separator_ch;
+    const char *bottom_border_ch;
+    const char *side_border_ch;
+    const char *out_intersect_ch;
+    const char *in_intersect_ch;
 };
 
 /**
@@ -432,7 +432,7 @@ struct ft_border_chars {
 struct ft_border_style {
     struct ft_border_chars border_chs;
     struct ft_border_chars header_border_chs;
-    char hor_separator_char;
+    const char *hor_separator_char;
 };
 
 /**
@@ -443,6 +443,8 @@ extern struct ft_border_style *FT_SIMPLE_STYLE;
 extern struct ft_border_style *FT_PLAIN_STYLE;
 extern struct ft_border_style *FT_DOT_STYLE;
 extern struct ft_border_style *FT_EMPTY_STYLE;
+extern struct ft_border_style *FT_SOLID_STYLE;
+extern struct ft_border_style *FT_DOUBLE_STYLE;
 
 /**
  * Set default border style for all new formatted tables.

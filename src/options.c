@@ -218,113 +218,159 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
 #define BASIC_STYLE  {            \
     /* border_chars */            \
     {                             \
-     '+', '-', '+', '+',          \
-     '|', '|', '|',               \
-     '\0', '\0', '\0', '\0',      \
-     '+', '-', '+', '+'           \
+     "+", "-", "+", "+",          \
+     "|", "|", "|",               \
+     "\0", "\0", "\0", "\0",      \
+     "+", "-", "+", "+"           \
     },                            \
     /* header_border_chars */     \
     {                             \
-    '+', '-', '+', '+',           \
-    '|', '|', '|',                \
-    '+', '-', '+', '+',           \
-    '+', '-', '+', '+'            \
+    "+", "-", "+", "+",           \
+    "|", "|", "|",                \
+    "+", "-", "+", "+",           \
+    "+", "-", "+", "+"            \
     },                            \
     /* separator_chars */         \
     {                             \
-    '+', '-', '+', '+',           \
+    "+", "-", "+", "+",           \
     },                            \
 }
 
 #define SIMPLE_STYLE  {           \
     /* border_chars */            \
     {                             \
-     ' ', ' ', ' ', ' ',          \
-     ' ', ' ', ' ',               \
-     '\0', '\0', '\0', '\0',      \
-     ' ', ' ', ' ', ' '           \
+     " ", " ", " ", " ",          \
+     " ", " ", " ",               \
+     "\0", "\0", "\0", "\0",      \
+     " ", " ", " ", " "           \
     },                            \
     /* header_border_chars */     \
     {                             \
-    ' ', ' ', ' ', ' ',           \
-    ' ', ' ', ' ',                \
-    ' ', '-', ' ', ' ',           \
-    ' ', ' ', ' ', ' '            \
+    " ", " ", " ", " ",           \
+    " ", " ", " ",                \
+    " ", "-", " ", " ",           \
+    " ", " ", " ", " "            \
     },                            \
     /* separator_chars */         \
     {                             \
-    ' ', '-', ' ', ' ',           \
+    " ", "-", " ", " ",           \
     },                            \
 }
 
 #define PLAIN_STYLE  {            \
     /* border_chars */            \
     {                             \
-     ' ', ' ', ' ', ' ',          \
-     ' ', ' ', ' ',               \
-     '\0', '\0', '\0', '\0',      \
-     ' ', ' ', ' ', ' '           \
+     " ", " ", " ", " ",          \
+     " ", " ", " ",               \
+     "\0", "\0", "\0", "\0",      \
+     " ", " ", " ", " "           \
     },                            \
     /* header_border_chars */     \
     {                             \
-    ' ', '-', '-', ' ',           \
-    ' ', ' ', ' ',                \
-    ' ', '-', '-', ' ',           \
-    ' ', '-', '-', ' '            \
+    " ", "-", "-", " ",           \
+    " ", " ", " ",                \
+    " ", "-", "-", " ",           \
+    " ", "-", "-", " "            \
     },                            \
     /* separator_chars */         \
     {                             \
-    ' ', '-', '-', ' ',           \
+    " ", "-", "-", " ",           \
     },                            \
 }
 
 #define DOT_STYLE  {              \
     /* border_chars */            \
     {                             \
-     '.', '.', '.', '.',          \
-     ':', ':', ':',               \
-     '\0', '\0', '\0', '\0',      \
-     ':', '.', ':', ':'           \
+     ".", ".", ".", ".",          \
+     ":", ":", ":",               \
+     "\0", "\0", "\0", "\0",      \
+     ":", ".", ":", ":"           \
     },                            \
     /* header_border_chars */     \
     {                             \
-    '.', '.', '.', '.',           \
-    ':', ':', ':',                \
-    ':', '.', ':', ':',           \
-    ':', '.', ':', ':'            \
+    ".", ".", ".", ".",           \
+    ":", ":", ":",                \
+    ":", ".", ":", ":",           \
+    ":", ".", ":", ":"            \
     },                            \
     /* separator_chars */         \
     {                             \
-    ':', '.', ':', ':',           \
+    ":", ".", ":", ":",           \
     },                            \
 }
 
 #define EMPTY_STYLE  {            \
     /* border_chars */            \
     {                             \
-     ' ', ' ', ' ', ' ',          \
-     ' ', ' ', ' ',               \
-     '\0', '\0', '\0', '\0',      \
-     ' ', ' ', ' ', ' '           \
+     " ", " ", " ", " ",          \
+     " ", " ", " ",               \
+     "\0", "\0", "\0", "\0",      \
+     " ", " ", " ", " "           \
     },                            \
     /* header_border_chars */     \
     {                             \
-    ' ', ' ', ' ', ' ',           \
-    ' ', ' ', ' ',                \
-    '\0', '\0', '\0', '\0',       \
-    ' ', ' ', ' ', ' '            \
+    " ", " ", " ", " ",           \
+    " ", " ", " ",                \
+    "\0", "\0", "\0", "\0",       \
+    " ", " ", " ", " "            \
     },                            \
     /* separator_chars */         \
     {                             \
-    ' ', ' ', ' ', ' ',           \
+    " ", " ", " ", " ",           \
     },                            \
 }
+
+
+#define SOLID_STYLE  {            \
+    /* border_chars */            \
+    {                             \
+     "┏", "━", "┳", "┓",          \
+     "┃", "┃", "┃",               \
+     "", "", "", "",              \
+     "┗", "━", "┻", "┛"           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    "┏", "━", "┳", "┓",           \
+    "┃", "┃", "┃",                \
+    "┣", "━", "╋", "┫",           \
+    "┗", "━", "┻", "┛"            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    "┣", "━", "╋", "┫",           \
+    },                            \
+}
+
+#define DOUBLE_STYLE  {           \
+    /* border_chars */            \
+    {                             \
+     "╔", "═", "╦", "╗",          \
+     "║", "║", "║",               \
+     "", "", "", "",              \
+     "╚", "═", "╩", "╝"           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    "╔", "═", "╦", "╗",           \
+    "║", "║", "║",                \
+    "╠", "═", "╬", "╣",           \
+    "╚", "═", "╩", "╝"            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    "╠", "═", "╬", "╣",           \
+    },                            \
+}
+
 
 struct fort_border_style FORT_BASIC_STYLE = BASIC_STYLE;
 struct fort_border_style FORT_SIMPLE_STYLE = SIMPLE_STYLE;
 struct fort_border_style FORT_PLAIN_STYLE = PLAIN_STYLE;
 struct fort_border_style FORT_DOT_STYLE = DOT_STYLE;
 struct fort_border_style FORT_EMPTY_STYLE = EMPTY_STYLE;
+struct fort_border_style FORT_SOLID_STYLE = SOLID_STYLE;
+struct fort_border_style FORT_DOUBLE_STYLE = DOUBLE_STYLE;
 
 
 
@@ -367,7 +413,26 @@ fort_status_t set_default_entire_table_option(uint32_t option, int value)
     return set_entire_table_option_internal(&g_entire_table_options, option, value);
 }
 
+size_t max_border_elem_strlen(struct fort_table_options *options)
+{
+    assert(options);
+    size_t result = 1;
+    int i = 0;
+    for (i = 0; i < BorderItemPosSize; ++i) {
+        result = MAX(result, strlen(options->border_style.border_chars[i]));
+    }
 
+    i = 0;
+    for (i = 0; i < BorderItemPosSize; ++i) {
+        result = MAX(result, strlen(options->border_style.header_border_chars[i]));
+    }
+
+    i = 0;
+    for (i = 0; i < SepratorItemPosSize; ++i) {
+        result = MAX(result, strlen(options->border_style.separator_chars[i]));
+    }
+    return result;
+}
 
 
 fort_table_options_t g_table_options = {

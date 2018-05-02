@@ -127,8 +127,10 @@ char *fort_strdup(const char* str);
 wchar_t *fort_wcsdup(const wchar_t* str);
 size_t number_of_columns_in_format_string(const char *fmt);
 size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
-int snprint_n_chars(char *buf, size_t length, size_t n, char ch);
-int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);
+//int snprint_n_chars(char *buf, size_t length, size_t n, char ch);
+//int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);
+int snprint_n_strings(char *buf, size_t length, size_t n, const char *str);
+int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
 
 
 #define CHCK_RSLT_ADD_TO_WRITTEN(statement) \

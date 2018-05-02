@@ -106,9 +106,11 @@ static int lines_number_cell(fort_cell_t *cell)
 
 int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context)
 {
-    char space_char = ' ';
+    const char *space_char = " ";
     int (*buffer_printf_)(string_buffer_t *, size_t, char *, size_t, const context_t *) = buffer_printf;
-    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
+//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
+    int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
+
 
 
     if (cell == NULL || buf_len == 0
@@ -123,7 +125,7 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     if (row >= hint_height_cell(cell, context)
         || row < cell_padding_top
         || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
-        return snprint_n_chars_(buf, buf_len, buf_len - 1, space_char);
+        return snprint_n_strings_(buf, buf_len, buf_len - 1, space_char);
     }
 
 
@@ -132,13 +134,13 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     int left = cell_padding_left;
     int right = cell_padding_right;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, left, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, left, space_char));
 
     if (cell->str_buffer)
         CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + written, buf_len - written - right, context));
     else
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, buf_len - written - right, space_char));
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, right, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, buf_len - written - right, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, right, space_char));
 
     return written;
 
@@ -149,9 +151,11 @@ clear:
 #ifdef FT_HAVE_WCHAR
 int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context)
 {
-    wchar_t space_char = L' ';
+    const char *space_char = " ";
     int (*buffer_printf_)(string_buffer_t *, size_t, wchar_t *, size_t, const context_t *) = buffer_wprintf;
-    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
+//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
+    int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
+
 
 
     if (cell == NULL || buf_len == 0
@@ -166,7 +170,7 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
     if (row >= hint_height_cell(cell, context)
         || row < cell_padding_top
         || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
-        return snprint_n_chars_(buf, buf_len, buf_len - 1, space_char);
+        return snprint_n_strings_(buf, buf_len, buf_len - 1, space_char);
     }
 
     int written = 0;
@@ -174,13 +178,13 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
     int left = cell_padding_left;
     int right = cell_padding_right;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, left, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, left, space_char));
 
     if (cell->str_buffer)
         CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + written, buf_len - written - right, context));
     else
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, buf_len - written - right, space_char));
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buf + written, buf_len - written, right, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, buf_len - written - right, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, right, space_char));
 
     return written;
 
