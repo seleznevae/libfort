@@ -626,7 +626,7 @@ const char *ft_to_string(const FTABLE *table)
 clear:
     F_FREE(col_width_arr);
     F_FREE(row_height_arr);
-    F_FREE(buffer);
+//    F_FREE(buffer);
     return NULL;
 #undef cur_F_STRDUP
 }
@@ -727,7 +727,7 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
 clear:
     F_FREE(col_width_arr);
     F_FREE(row_height_arr);
-    F_FREE(buffer);
+//    F_FREE(buffer);
     return NULL;
 #undef cur_F_STRDUP
 }
@@ -936,4 +936,25 @@ FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value)
 FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
 {
     set_memory_funcs(f_malloc, f_free);
+}
+
+#include "cell.h"
+FT_EXTERN void ft_some_api(FTABLE *table, size_t row, size_t col, size_t group_width)
+{
+    assert(table);
+    if (group_width == 0)
+        return;
+
+    fort_row_t *row_p = get_row(table, row);
+    fort_cell_t *main_cell = get_cell(row_p, col);
+    set_cell_type(main_cell, GroupMasterCell);
+    --group_width;
+    ++col;
+
+    while (group_width) {
+        fort_cell_t *slave_cell = get_cell(row_p, col);
+        set_cell_type(slave_cell, GroupSlaveCell);
+        --group_width;
+        ++col;
+    }
 }

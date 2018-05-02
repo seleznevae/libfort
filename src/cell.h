@@ -17,6 +17,9 @@ size_t hint_width_cell(const fort_cell_t *cell, const context_t *context);
 size_t hint_height_cell(const fort_cell_t *cell, const context_t *context);
 
 
+void set_cell_type(fort_cell_t *cell, enum CellType type);
+enum CellType get_cell_type(const fort_cell_t *cell);
+
 /*
  * Returns number of lines in cell. If cell is empty or
  * contains empty string, then 0 is returned.

@@ -9,6 +9,7 @@
 
 struct fort_cell {
     string_buffer_t *str_buffer;
+    enum CellType cell_type;
 };
 
 fort_cell_t *create_cell(void)
@@ -21,7 +22,7 @@ fort_cell_t *create_cell(void)
         F_FREE(cell);
         return NULL;
     }
-    /*init_cell_options(&(cell->options));*/
+    cell->cell_type = CommonCell;
     return cell;
 }
 
@@ -32,6 +33,19 @@ void destroy_cell(fort_cell_t *cell)
     destroy_string_buffer(cell->str_buffer);
     F_FREE(cell);
 }
+
+void set_cell_type(fort_cell_t *cell, enum CellType type)
+{
+    assert(cell);
+    cell->cell_type = type;
+}
+
+enum CellType get_cell_type(const fort_cell_t *cell)
+{
+    assert(cell);
+    return cell->cell_type;
+}
+
 
 size_t hint_width_cell(const fort_cell_t *cell, const context_t *context)
 {

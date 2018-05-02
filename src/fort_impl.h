@@ -16,6 +16,8 @@
 
 #define FORT_COL_SEPARATOR '|'
 
+#define FORT_COL_SEPARATOR_LENGTH 1
+
 #define FORT_UNUSED  __attribute__((unused))
 
 #define F_MALLOC fort_malloc
@@ -100,6 +102,14 @@ typedef struct fort_table FTABLE;
 typedef struct separator separator_t;
 
 
+
+
+enum CellType
+{
+    CommonCell,
+    GroupMasterCell,
+    GroupSlaveCell
+};
 
 
 /*****************************************************************************

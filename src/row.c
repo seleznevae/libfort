@@ -122,6 +122,41 @@ fort_status_t swap_row(fort_row_t *cur_row, fort_row_t *ins_row, size_t pos)
     return vector_swap(cur_row->cells, ins_row->cells, pos);
 }
 
+size_t group_cell_number(const fort_row_t *row, size_t master_cell_col)
+{
+    assert(row);
+    const fort_cell_t *cell = get_cell_c(row, master_cell_col);
+    if (cell == NULL)
+        return 0;
+
+    size_t total_cols = vector_size(row->cells);
+    size_t slave_col = master_cell_col + 1;
+    while (slave_col < total_cols) {
+        const fort_cell_t *cell = get_cell_c(row, slave_col);
+        if (cell && get_cell_type(cell) == GroupSlaveCell) {
+            ++slave_col;
+        } else {
+            break;
+        }
+    }
+    return slave_col - master_cell_col;
+}
+
+int get_row_cell_types(const fort_row_t *row, enum CellType *types, size_t types_sz)
+{
+    assert(row);
+    assert(types);
+    size_t i = 0;
+    for (i = 0; i < types_sz; ++i) {
+        const fort_cell_t *cell = get_cell_c(row, i);
+        if (cell) {
+            types[i] = get_cell_type(cell);
+        } else {
+            types[i] = CommonCell;
+        }
+    }
+    return FT_SUCCESS;
+}
 
 
 
@@ -140,6 +175,34 @@ int print_row_separator(char *buffer, size_t buffer_sz,
     assert(buffer);
     assert(context);
 
+    int status = -1;
+
+    /* Get cell types
+     *
+     * Regions above top row and below bottom row areconsidered full of virtual
+     * GroupSlaveCell cells
+     */
+    enum CellType *top_row_types = F_MALLOC(sizeof(enum CellType) * cols * 2);
+    if (top_row_types == NULL) {
+        return FT_MEMORY_ERROR;
+    }
+    enum CellType *bottom_row_types = top_row_types + cols;
+    if (upper_row) {
+        get_row_cell_types(upper_row, top_row_types, cols);
+    } else {
+        size_t i = 0;
+        for (i = 0; i < cols; ++i)
+            top_row_types[i] = GroupSlaveCell;
+    }
+    if (lower_row) {
+        get_row_cell_types(lower_row, bottom_row_types, cols);
+    } else {
+        size_t i = 0;
+        for (i = 0; i < cols; ++i)
+            bottom_row_types[i] = GroupSlaveCell;
+    }
+
+
     int written = 0;
     int tmp = 0;
 
@@ -152,15 +215,20 @@ int print_row_separator(char *buffer, size_t buffer_sz,
         upper_row_type = (enum ft_row_type)get_cell_opt_value_hierarcial(context->table_options, context->row - 1, FT_ANY_COLUMN, FT_COPT_ROW_TYPE);
     }
 
-
-    /*  Row separator anatomy
+    /* Row separator anatomy
      *
-     *  L  I  I  I  IV  I   I   I  R
-     */
+     *  |      C11    |   C12         C13      |      C14           C15         |
+     *  L  I  I  I   IV  I   I   IT  I  I  I  IB    I    I     II    I    I     R
+     *  |      C21    |   C22     |   C23             C24           C25         |
+    */
     const char *L = NULL;
     const char *I = NULL;
     const char *IV = NULL;
     const char *R = NULL;
+    const char *IT = NULL;
+    const char *IB = NULL;
+    const char *II = NULL;
+
 
     typedef const char (*border_chars_point_t)[BorderItemPosSize];
     const char (*border_chars)[BorderItemPosSize] = NULL;
@@ -174,6 +242,10 @@ int print_row_separator(char *buffer, size_t buffer_sz,
         I = &(context->table_options->border_style.separator_chars[IH_sip]);
         IV = &(context->table_options->border_style.separator_chars[II_sip]);
         R = &(context->table_options->border_style.separator_chars[RH_sip]);
+
+        IT = &(context->table_options->border_style.separator_chars[II_sip]);
+        IB = &(context->table_options->border_style.separator_chars[II_sip]);
+        II = &(context->table_options->border_style.separator_chars[IH_sip]);
     } else {
         switch (separatorPos) {
             case TopSeparator:
@@ -181,18 +253,30 @@ int print_row_separator(char *buffer, size_t buffer_sz,
                 I = &(*border_chars)[TT_bip];
                 IV = &(*border_chars)[TV_bip];
                 R = &(*border_chars)[TR_bip];
+
+                IT = &(*border_chars)[TV_bip];
+                IB = &(*border_chars)[TV_bip];
+                II = &(*border_chars)[TT_bip];
                 break;
             case InsideSeparator:
                 L = &(*border_chars)[LH_bip];
                 I = &(*border_chars)[IH_bip];
                 IV = &(*border_chars)[II_bip];
                 R = &(*border_chars)[RH_bip];
+
+                IT = &(*border_chars)[TV_bip];
+                IB = &(*border_chars)[BV_bip];
+                II = &(*border_chars)[IH_bip];
                 break;
             case BottomSeparator:
                 L = &(*border_chars)[BL_bip];
                 I = &(*border_chars)[BB_bip];
                 IV = &(*border_chars)[BV_bip];
                 R = &(*border_chars)[BR_bip];
+
+                IT = &(*border_chars)[BV_bip];
+                IB = &(*border_chars)[BV_bip];
+                II = &(*border_chars)[BB_bip];
                 break;
             default:
                 break;
@@ -200,8 +284,10 @@ int print_row_separator(char *buffer, size_t buffer_sz,
     }
 
     /* If all chars are not printable, skip line separator */  /* todo: add processing for wchar_t */
-    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R))
-        return 0;
+    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
+        status = 0;
+        goto clear;
+    }
 
     size_t i = 0;
 
@@ -212,7 +298,16 @@ int print_row_separator(char *buffer, size_t buffer_sz,
         if (i == 0) {
             CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buffer_sz - written, 1, (char_type)*L));
         } else {
-            CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buffer_sz - written, 1, (char_type)*IV));
+            if ((top_row_types[i] == CommonCell || top_row_types[i] == GroupMasterCell)
+                    && (bottom_row_types[i] == CommonCell || bottom_row_types[i] == GroupMasterCell)) {
+                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buffer_sz - written, 1, (char_type)*IV));
+            } else if (top_row_types[i] == GroupSlaveCell && bottom_row_types[i] == GroupSlaveCell) {
+                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buffer_sz - written, 1, (char_type)*II));
+            } else if (top_row_types[i] == GroupSlaveCell) {
+                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buffer_sz - written, 1, (char_type)*IT));
+            } else {
+                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buffer_sz - written, 1, (char_type)*IB));
+            }
         }
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buffer_sz - written, col_width_arr[i], (char_type)*I));
     }
@@ -223,10 +318,11 @@ int print_row_separator(char *buffer, size_t buffer_sz,
 
     CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buffer_sz - written, 1, new_line_char));
 
-    return written;
+    status = written;
 
 clear:
-    return -1;
+    F_FREE(top_row_types);
+    return status;
 }
 
 
@@ -665,26 +761,44 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
         /* Print left margin */
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buf_sz - written, context->table_options->entire_table_options.left_margin, space_char));
 
+        /* Print left table boundary */
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buf_sz - written, 1, (char_type)*L));
         size_t j = 0;
-        for (j = 0; j < col_width_arr_sz; ++j) {
-            ((context_t *)context)->column = j;
+        while (j < col_width_arr_sz) {
             if (j < cols_in_row) {
+                ((context_t *)context)->column = j;
                 fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, j);
-                CHCK_RSLT_ADD_TO_WRITTEN(cell_printf_(cell, i, buffer + written, col_width_arr[j] + 1, context));
+                size_t cell_width = 0;
+
+                size_t group_slave_sz = group_cell_number(row, j);
+                cell_width = col_width_arr[j];
+                size_t slave_j = 0;
+                size_t master_j = j;
+                for (slave_j = master_j + 1; slave_j < (master_j + group_slave_sz); ++slave_j) {
+                    cell_width += col_width_arr[slave_j] + FORT_COL_SEPARATOR_LENGTH;
+                    ++j;
+                }
+
+                CHCK_RSLT_ADD_TO_WRITTEN(cell_printf_(cell, i, buffer + written, cell_width + 1, context));
             } else {
+                /* Print empty cell */
                 CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buf_sz - written, col_width_arr[j], space_char));
             }
-            if (j == col_width_arr_sz - 1) {
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buf_sz - written, 1, (char_type)*R));
-            } else {
+
+            /* Print boundary between cells */
+            if (j < col_width_arr_sz - 1)
                 CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buf_sz - written, 1, (char_type)*IV));
-            }
+
+            ++j;
         }
+
+        /* Print right table boundary */
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buf_sz - written, 1, (char_type)*R));
 
         /* Print right margin */
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buf_sz - written, context->table_options->entire_table_options.right_margin, space_char));
 
+        /* Print new line character */
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_chars_(buffer + written, buf_sz - written, 1, new_line_char));
     }
     return written;

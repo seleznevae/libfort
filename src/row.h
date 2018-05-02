@@ -27,7 +27,8 @@ const fort_cell_t *get_cell_c(const fort_row_t *row, size_t col);
 fort_cell_t *get_cell_and_create_if_not_exists(fort_row_t *row, size_t col);
 fort_status_t swap_row(fort_row_t *cur_row, fort_row_t *ins_row, size_t pos);
 
-
+size_t group_cell_number(const fort_row_t *row, size_t master_cell_col);
+int get_row_cell_types(const fort_row_t *row, enum CellType *types, size_t types_sz);
 
 int print_row_separator(char *buffer, size_t buffer_sz,
                                const size_t *col_width_arr, size_t cols,

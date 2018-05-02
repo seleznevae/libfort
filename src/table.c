@@ -112,6 +112,7 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
         return FT_ERROR;
     }
 
+    int combined_cells_found = 0;
     context_t context;
     context.table_options = (table->options ? table->options : &g_table_options);
     size_t col = 0;
@@ -124,8 +125,52 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
             context.column = col;
             context.row = row;
             if (cell) {
-                col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context));
+                switch (get_cell_type(cell)) {
+                    case CommonCell:
+                        col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context));
+                        break;
+                    case GroupMasterCell:
+                        combined_cells_found = 1;
+                        break;
+                    case GroupSlaveCell:
+                        ; /* Do nothing */
+                        break;
+                }
                 row_height_arr[row] = MAX(row_height_arr[row], hint_height_cell(cell, &context));
+            }
+        }
+    }
+
+    if (combined_cells_found) {
+        col = 0;
+        for (col = 0; col < cols; ++col) {
+            size_t row = 0;
+            for (row = 0; row < rows; ++row) {
+                const fort_row_t *row_p = get_row_c(table, row);
+                const fort_cell_t *cell = get_cell_c(row_p, col);
+                context.column = col;
+                context.row = row;
+                if (cell) {
+                    if (get_cell_type(cell) == GroupMasterCell) {
+                        size_t hint_width = hint_width_cell(cell, &context);
+                        size_t slave_col = col + group_cell_number(row_p, col);
+                        size_t cur_adj_col = col;
+                        size_t group_width = col_width_arr[col];
+                        size_t i;
+                        for (i = col + 1; i < slave_col; ++i)
+                            group_width += col_width_arr[i] + FORT_COL_SEPARATOR_LENGTH;
+                        /* adjust col. widths */
+                        while (1) {
+                            if (group_width >= hint_width)
+                                break;
+                            col_width_arr[cur_adj_col] += 1;
+                            group_width++;
+                            cur_adj_col++;
+                            if (cur_adj_col == slave_col)
+                                cur_adj_col = col;
+                        }
+                    }
+                }
             }
         }
     }

@@ -123,6 +123,18 @@ int main(void)
     printf("Table:\n%s\n", ft_to_string(table));
     ft_destroy_table(table);
 
+
+    /* Debug */
+    ft_set_default_border_style(FT_DOT_STYLE);
+    table = create_basic_table();
+    ft_set_cell_option(table, FT_CUR_ROW, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_write_ln(table, "Summary", "", "", "8.7");
+    ft_some_api(table, 6, 0, 3);
+    ft_some_api(table, 0, 0, 3);
+    printf("Table:\n%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+    return 0;
+
     /*-------------------------------------------------------------*/
 #if defined(FT_HAVE_WCHAR) && !defined(FT_MICROSOFT_COMPILER)
     setlocale(LC_CTYPE, "");

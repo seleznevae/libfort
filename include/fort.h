@@ -591,6 +591,9 @@ FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
 FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
 
 
+
+FT_EXTERN void ft_some_api(FTABLE *table, size_t row, size_t col, size_t group_width);
+
 #ifdef FT_HAVE_WCHAR
 
 
