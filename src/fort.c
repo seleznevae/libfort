@@ -798,7 +798,12 @@ struct ft_border_style *FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_
 struct ft_border_style *FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
 struct ft_border_style *FT_EMPTY_STYLE  = (struct ft_border_style *) &FORT_EMPTY_STYLE;
 struct ft_border_style *FT_SOLID_STYLE  = (struct ft_border_style *) &FORT_SOLID_STYLE;
+struct ft_border_style *FT_SOLID_ROUND_STYLE  = (struct ft_border_style *) &FORT_SOLID_ROUND_STYLE;
 struct ft_border_style *FT_DOUBLE_STYLE  = (struct ft_border_style *) &FORT_DOUBLE_STYLE;
+struct ft_border_style *FT_DOUBLE2_STYLE  = (struct ft_border_style *) &FORT_DOUBLE2_STYLE;
+struct ft_border_style *FT_BOLD_STYLE  = (struct ft_border_style *) &FORT_BOLD_STYLE;
+struct ft_border_style *FT_BOLD2_STYLE  = (struct ft_border_style *) &FORT_BOLD2_STYLE;
+struct ft_border_style *FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME_STYLE;
 
 
 
@@ -810,7 +815,12 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
         || (struct fort_border_style *)style == &FORT_PLAIN_STYLE
         || (struct fort_border_style *)style == &FORT_EMPTY_STYLE
         || (struct fort_border_style *)style == &FORT_SOLID_STYLE
-        || (struct fort_border_style *)style == &FORT_DOUBLE_STYLE) {
+        || (struct fort_border_style *)style == &FORT_SOLID_ROUND_STYLE
+        || (struct fort_border_style *)style == &FORT_DOUBLE_STYLE
+        || (struct fort_border_style *)style == &FORT_DOUBLE2_STYLE
+        || (struct fort_border_style *)style == &FORT_BOLD_STYLE
+        || (struct fort_border_style *)style == &FORT_BOLD2_STYLE
+        || (struct fort_border_style *)style == &FORT_FRAME_STYLE) {
         memcpy(&(options->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
         return;
     }
@@ -951,23 +961,20 @@ FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free
     set_memory_funcs(f_malloc, f_free);
 }
 
-#include "cell.h"
-FT_EXTERN void ft_some_api(FTABLE *table, size_t row, size_t col, size_t group_width)
+FT_EXTERN int ft_set_cell_span(FTABLE *table, size_t row, size_t col, size_t hor_span)
 {
     assert(table);
-    if (group_width == 0)
-        return;
+    if (hor_span < 2)
+        return FT_EINVAL;
 
-    fort_row_t *row_p = get_row(table, row);
-    fort_cell_t *main_cell = get_cell(row_p, col);
-    set_cell_type(main_cell, GroupMasterCell);
-    --group_width;
-    ++col;
+    if (row == FT_CUR_ROW)
+        row = table->cur_row;
+    if (row == FT_CUR_COLUMN)
+        col = table->cur_col;
 
-    while (group_width) {
-        fort_cell_t *slave_cell = get_cell(row_p, col);
-        set_cell_type(slave_cell, GroupSlaveCell);
-        --group_width;
-        ++col;
-    }
+    fort_row_t *row_p = get_row_and_create_if_not_exists(table, row);
+    if (row_p == NULL)
+        return FT_ERROR;
+
+    return row_set_cell_span(row_p, col, hor_span);
 }

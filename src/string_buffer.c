@@ -155,6 +155,12 @@ string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type 
     result->data_sz = sz;
     result->type = type;
 
+    if (sz && type == CharBuf) {
+        result->str.cstr[0] = '\0';
+    } else if (sz && type == WCharBuf) {
+        result->str.wstr[0] = L'\0';
+    }
+
     return result;
 }
 

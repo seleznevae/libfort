@@ -158,6 +158,34 @@ int get_row_cell_types(const fort_row_t *row, enum CellType *types, size_t types
     return FT_SUCCESS;
 }
 
+fort_status_t row_set_cell_span(fort_row_t *row, size_t cell_column, size_t hor_span)
+{
+    assert(row);
+
+    if (hor_span < 2)
+        return FT_EINVAL;
+
+    fort_cell_t *main_cell = get_cell_and_create_if_not_exists(row, cell_column);
+    if (main_cell == NULL) {
+        return FT_ERROR;
+    }
+    set_cell_type(main_cell, GroupMasterCell);
+    --hor_span;
+    ++cell_column;
+
+    while (hor_span) {
+        fort_cell_t *slave_cell = get_cell_and_create_if_not_exists(row, cell_column);
+        if (slave_cell == NULL) {
+            return FT_ERROR;
+        }
+        set_cell_type(slave_cell, GroupSlaveCell);
+        --hor_span;
+        ++cell_column;
+    }
+
+    return FT_SUCCESS;
+}
+
 
 
 
@@ -969,4 +997,6 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
 clear:
     return -1;
 }
+
+
 

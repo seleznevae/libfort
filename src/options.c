@@ -321,26 +321,48 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
 }
 
 
-#define SOLID_STYLE  {            \
+#define SOLID_STYLE  {           \
     /* border_chars */            \
     {                             \
-     "┏", "━", "┳", "┓",          \
-     "┃", "┃", "┃",               \
+     "┌", "─", "┬", "┐",          \
+     "│", "│", "│",               \
      "", "", "", "",              \
-     "┗", "━", "┻", "┛"           \
+     "└", "─", "┴", "╯"           \
     },                            \
     /* header_border_chars */     \
     {                             \
-    "┏", "━", "┳", "┓",           \
-    "┃", "┃", "┃",                \
-    "┣", "━", "╋", "┫",           \
-    "┗", "━", "┻", "┛"            \
+    "┌", "─", "┬", "┐",           \
+    "│", "│", "│",                \
+    "├", "─", "┼", "┤",           \
+    "└", "─", "┴", "┘"            \
     },                            \
     /* separator_chars */         \
     {                             \
-    "┣", "━", "╋", "┫",           \
+    "├", "─", "┼", "┤",           \
     },                            \
 }
+
+#define SOLID_ROUND_STYLE  {      \
+    /* border_chars */            \
+    {                             \
+     "╭", "─", "┬", "╮",          \
+     "│", "│", "│",               \
+     "", "", "", "",              \
+     "╰", "─", "┴", "╯"           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    "╭", "─", "┬", "╮",           \
+    "│", "│", "│",                \
+    "├", "─", "┼", "┤",           \
+    "╰", "─", "┴", "╯"            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    "├", "─", "┼", "┤",           \
+    },                            \
+}
+
 
 #define DOUBLE_STYLE  {           \
     /* border_chars */            \
@@ -364,13 +386,104 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
 }
 
 
+#define DOUBLE2_STYLE  {           \
+    /* border_chars */            \
+    {                             \
+     "╔", "═", "╤", "╗",          \
+     "║", "│", "║",               \
+     "╟", "─", "┼", "╢",          \
+     "╚", "═", "╧", "╝"           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    "╔", "═", "╤", "╗",           \
+    "║", "│", "║",                \
+    "╠", "═", "╪", "╣",           \
+    "╚", "═", "╧", "╝"            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    "╠", "═", "╪", "╣",           \
+    },                            \
+}
+
+
+#define BOLD_STYLE  {             \
+    /* border_chars */            \
+    {                             \
+     "┏", "━", "┳", "┓",          \
+     "┃", "┃", "┃",               \
+     "", "", "", "",              \
+     "┗", "━", "┻", "┛"           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    "┏", "━", "┳", "┓",           \
+    "┃", "┃", "┃",                \
+    "┣", "━", "╋", "┫",           \
+    "┗", "━", "┻", "┛"            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    "┣", "━", "╋", "┫",           \
+    },                            \
+}
+
+#define BOLD2_STYLE  {            \
+    /* border_chars */            \
+    {                             \
+     "┏", "━", "┯", "┓",          \
+     "┃", "│", "┃",               \
+     "┠", "─", "┼", "┨",          \
+     "┗", "━", "┷", "┛"           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    "┏", "━", "┯", "┓",           \
+    "┃", "│", "┃",                \
+    "┣", "━", "┿", "┫",           \
+    "┗", "━", "┷", "┛"            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    "┣", "━", "┿", "┫",           \
+    },                            \
+}
+
+#define FRAME_STYLE  {             \
+    /* border_chars */            \
+    {                             \
+     "▛", "▀", "▀", "▜",          \
+     "▌", "┃", "▐",               \
+     "", "", "", "",              \
+     "▙", "▄", "▄", "▟"           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    "▛", "▀", "▀", "▜",           \
+    "▌", "┃", "▐",                \
+    "▌", "━", "╋", "▐",           \
+    "▙", "▄", "▄", "▟"            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    "▌", "━", "╋", "▐",           \
+    },                            \
+}
+
+
 struct fort_border_style FORT_BASIC_STYLE = BASIC_STYLE;
 struct fort_border_style FORT_SIMPLE_STYLE = SIMPLE_STYLE;
 struct fort_border_style FORT_PLAIN_STYLE = PLAIN_STYLE;
 struct fort_border_style FORT_DOT_STYLE = DOT_STYLE;
 struct fort_border_style FORT_EMPTY_STYLE = EMPTY_STYLE;
 struct fort_border_style FORT_SOLID_STYLE = SOLID_STYLE;
+struct fort_border_style FORT_SOLID_ROUND_STYLE = SOLID_ROUND_STYLE;
 struct fort_border_style FORT_DOUBLE_STYLE = DOUBLE_STYLE;
+struct fort_border_style FORT_DOUBLE2_STYLE = DOUBLE2_STYLE;
+struct fort_border_style FORT_BOLD_STYLE = BOLD_STYLE;
+struct fort_border_style FORT_BOLD2_STYLE = BOLD2_STYLE;
+struct fort_border_style FORT_FRAME_STYLE = FRAME_STYLE;
 
 
 

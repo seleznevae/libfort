@@ -444,7 +444,12 @@ extern struct ft_border_style *FT_PLAIN_STYLE;
 extern struct ft_border_style *FT_DOT_STYLE;
 extern struct ft_border_style *FT_EMPTY_STYLE;
 extern struct ft_border_style *FT_SOLID_STYLE;
+extern struct ft_border_style *FT_SOLID_ROUND_STYLE;
 extern struct ft_border_style *FT_DOUBLE_STYLE;
+extern struct ft_border_style *FT_DOUBLE2_STYLE;
+extern struct ft_border_style *FT_BOLD_STYLE;
+extern struct ft_border_style *FT_BOLD2_STYLE;
+extern struct ft_border_style *FT_FRAME_STYLE;
 
 /**
  * Set default border style for all new formatted tables.
@@ -577,6 +582,24 @@ FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
 
 
 /**
+ * Set column span for the specified cell of the table.
+ *
+ * @param table
+ *   A pointer to the FTABLE structure.
+ * @param row
+ *   Cell row.
+ * @param col
+ *   Cell column.
+ * @param hor_span
+ *   Column span.
+ * @return
+ *   - 0: Success; default table option was changed.
+ *   - (<0): In case of error
+ */
+FT_EXTERN int ft_set_cell_span(FTABLE *table, size_t row, size_t col, size_t hor_span);
+
+
+/**
  * Set functions for memory allocation and deallocation to be used instead of
  * standard ones.
  *
@@ -594,7 +617,6 @@ FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free
 
 
 
-FT_EXTERN void ft_some_api(FTABLE *table, size_t row, size_t col, size_t group_width);
 
 #ifdef FT_HAVE_WCHAR
 

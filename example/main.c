@@ -128,7 +128,32 @@ int main(void)
     printf("Table:\n%s\n", ft_to_string(table));
     ft_destroy_table(table);
 
+    ft_set_default_border_style(FT_SOLID_ROUND_STYLE);
+    table = create_basic_table();
+    printf("Table:\n%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+
     ft_set_default_border_style(FT_DOUBLE_STYLE);
+    table = create_basic_table();
+    printf("Table:\n%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+
+    ft_set_default_border_style(FT_DOUBLE2_STYLE);
+    table = create_basic_table();
+    printf("Table:\n%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+
+    ft_set_default_border_style(FT_BOLD_STYLE);
+    table = create_basic_table();
+    printf("Table:\n%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+
+    ft_set_default_border_style(FT_BOLD2_STYLE);
+    table = create_basic_table();
+    printf("Table:\n%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+
+    ft_set_default_border_style(FT_FRAME_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
     ft_destroy_table(table);
@@ -138,8 +163,8 @@ int main(void)
     table = create_basic_table();
     ft_set_cell_option(table, FT_CUR_ROW, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "Summary", "", "", "8.7");
-    ft_some_api(table, 6, 0, 3);
-    ft_some_api(table, 0, 0, 3);
+    ft_set_cell_span(table, 6, 0, 3);
+    ft_set_cell_span(table, 0, 0, 3);
     printf("Table:\n%s\n", ft_to_string(table));
     ft_destroy_table(table);
 
