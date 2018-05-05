@@ -3,11 +3,11 @@
 #include "cell.h"
 #include "vector.h"
 #include "row.h"
-fort_status_t get_table_sizes(const FTABLE *table, size_t *rows, size_t *cols);
+fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols);
 
 
 
-fort_row_t *get_row_implementation(fort_table_t *table, size_t row, enum PolicyOnNull policy)
+fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnNull policy)
 {
     if (table == NULL || table->rows == NULL) {
         return NULL;
@@ -36,17 +36,17 @@ fort_row_t *get_row_implementation(fort_table_t *table, size_t row, enum PolicyO
     return NULL;
 }
 
-fort_row_t *get_row(fort_table_t *table, size_t row)
+fort_row_t *get_row(ft_table_t *table, size_t row)
 {
     return get_row_implementation(table, row, DoNotCreate);
 }
 
-const fort_row_t *get_row_c(const fort_table_t *table, size_t row)
+const fort_row_t *get_row_c(const ft_table_t *table, size_t row)
 {
-    return get_row((fort_table_t *)table, row);
+    return get_row((ft_table_t *)table, row);
 }
 
-fort_row_t *get_row_and_create_if_not_exists(fort_table_t *table, size_t row)
+fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row)
 {
     return get_row_implementation(table, row, Create);
 }
@@ -54,7 +54,7 @@ fort_row_t *get_row_and_create_if_not_exists(fort_table_t *table, size_t row)
 
 
 
-string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(FTABLE *table)
+string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table)
 {
     assert(table);
 
@@ -72,7 +72,7 @@ string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(FTABLE *table)
 /*
  * Returns number of cells (rows * cols)
  */
-fort_status_t get_table_sizes(const FTABLE *table, size_t *rows, size_t *cols)
+fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols)
 {
     *rows = 0;
     *cols = 0;
@@ -88,7 +88,7 @@ fort_status_t get_table_sizes(const FTABLE *table, size_t *rows, size_t *cols)
     return FT_SUCCESS;
 }
 
-fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
+fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
         size_t **col_width_arr_p, size_t *col_width_arr_sz,
         size_t **row_height_arr_p, size_t *row_height_arr_sz)
 {
@@ -197,7 +197,7 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
 /*
  * Returns geometry in characters
  */
-fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t *width)
+fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width)
 {
     if (table == NULL)
         return FT_ERROR;

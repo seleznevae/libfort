@@ -236,7 +236,7 @@ public:
 
 
 private:
-    FTABLE *table;
+    ft_table_t *table;
     std::stringstream stream;
 };
 

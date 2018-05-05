@@ -62,10 +62,10 @@ struct test_case
         exit(EXIT_FAILURE); \
     }
 
-int set_test_options_for_table(FTABLE *table);
+int set_test_options_for_table(ft_table_t *table);
 int set_test_options_as_default(void);
-FTABLE *create_test_int_table(int set_test_opts);
-FTABLE *create_test_int_wtable(int set_test_opts);
+ft_table_t *create_test_int_table(int set_test_opts);
+ft_table_t *create_test_int_wtable(int set_test_opts);
 
 
 

@@ -25,7 +25,7 @@ void test_free(void *ptr)
 
 static int create_simple_table_and_show(void)
 {
-    FTABLE *table = NULL;
+    ft_table_t *table = NULL;
     int result = 0;
 
     table = ft_create_table();

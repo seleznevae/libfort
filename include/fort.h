@@ -28,7 +28,7 @@ SOFTWARE.
  * @file fort.h
  * @brief Main header file describing libfort API.
  *
- * This files contains declarations of all libfort functions and macro
+ * This file contains declarations of all libfort functions and macro
  * definitions.
  */
 
@@ -115,71 +115,77 @@ typedef int fort_status_t;
  *               Helper macros
  *****************************************************************************/
 
-#define STR_2_CAT_(arg1, arg2) \
+#define FT_STR_2_CAT_(arg1, arg2) \
     arg1##arg2
-#define STR_2_CAT(arg1, arg2) \
-    STR_2_CAT_(arg1, arg2)
+#define FT_STR_2_CAT(arg1, arg2) \
+    FT_STR_2_CAT_(arg1, arg2)
 
-
+/**
+ * @interanl
+ */
 static FT_INLINE int ft_check_if_string_helper(const char *str)
 {
     (void)str;
     return 0;
 }
 
+/**
+ * @interanl
+ */
 static FT_INLINE int ft_check_if_wstring_helper(const wchar_t *str)
 {
     (void)str;
     return 0;
 }
 
-#define FORT_NARGS_IMPL_(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,N,...) N
+#define FT_NARGS_IMPL_(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,N,...) N
 #define FT_EXPAND_(x) x
-#define PP_NARG(...) \
-    FT_EXPAND_(FORT_NARGS_IMPL_(__VA_ARGS__,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0))
+#define FT_PP_NARG_(...) \
+    FT_EXPAND_(FT_NARGS_IMPL_(__VA_ARGS__,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0))
 
-#define CHECK_IF_STRING_32(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_31(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_31(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_30(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_30(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_29(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_29(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_28(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_28(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_27(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_27(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_26(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_26(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_25(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_25(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_24(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_24(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_23(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_23(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_22(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_22(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_21(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_21(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_20(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_20(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_19(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_19(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_18(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_18(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_17(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_17(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_16(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_16(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_15(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_15(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_14(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_14(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_13(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_13(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_12(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_12(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_11(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_11(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_10(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_10(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_9(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_9(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_8(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_8(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_7(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_7(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_6(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_6(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_5(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_5(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_4(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_4(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_3(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_3(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_2(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_2(checker,arg,...) (checker(arg),FT_EXPAND_(CHECK_IF_STRING_1(checker,__VA_ARGS__)))
-#define CHECK_IF_STRING_1(checker,arg) (checker(arg))
+#define FT_CHECK_IF_STR_32(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_31(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_31(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_30(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_30(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_29(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_29(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_28(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_28(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_27(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_27(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_26(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_26(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_25(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_25(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_24(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_24(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_23(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_23(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_22(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_22(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_21(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_21(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_20(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_20(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_19(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_19(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_18(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_18(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_17(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_17(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_16(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_16(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_15(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_15(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_14(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_14(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_13(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_13(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_12(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_12(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_11(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_11(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_10(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_10(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_9(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_9(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_8(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_8(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_7(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_7(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_6(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_6(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_5(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_5(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_4(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_4(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_3(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_3(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_2(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_2(checker,arg,...) (checker(arg),FT_EXPAND_(FT_CHECK_IF_STR_1(checker,__VA_ARGS__)))
+#define FT_CHECK_IF_STR_1(checker,arg) (checker(arg))
 
-#define CHECK_IF_ARGS_ARE_STRINGS__(checker,func, ...) \
+#define FT_CHECK_IF_ARGS_ARE_STRINGS__(checker,func, ...) \
     FT_EXPAND_(func(checker,__VA_ARGS__))
-#define CHECK_IF_ARGS_ARE_STRINGS_(checker,basis, n, ...) \
-    CHECK_IF_ARGS_ARE_STRINGS__(checker,STR_2_CAT_(basis, n), __VA_ARGS__)
-#define CHECK_IF_ARGS_ARE_STRINGS(...) \
-    CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_string_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
+#define FT_CHECK_IF_ARGS_ARE_STRINGS_(checker,basis, n, ...) \
+    FT_CHECK_IF_ARGS_ARE_STRINGS__(checker,FT_STR_2_CAT_(basis, n), __VA_ARGS__)
+#define FT_CHECK_IF_ARGS_ARE_STRINGS(...) \
+    FT_CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_string_helper,FT_CHECK_IF_STR_,FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__)
+
 #ifdef FT_HAVE_WCHAR
 #define CHECK_IF_ARGS_ARE_WSTRINGS(...) \
-    CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_wstring_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
+    FT_CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_wstring_helper,FT_CHECK_IF_STR_,FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__)
 #endif
 
 /**
@@ -205,16 +211,26 @@ static FT_INLINE int ft_check_if_wstring_helper(const wchar_t *str)
 
 FT_BEGIN_DECLS
 
-struct fort_table;
-typedef struct fort_table FTABLE;
+/**
+ * The main structure of libfort containing information about formatted table.
+ */
+struct ft_table;
+
+/**
+ * The main structure of libfort containing information about formatted table.
+ *
+ * ft_table_t objects should be created by a call to ft_create_table and
+ * destroyed with ft_destroy_table.
+ */
+typedef struct ft_table ft_table_t;
 
 /**
  * Create formatted table.
  *
  * @return
- *   The pointer to the new allocated FTABLE, on success. NULL on error.
+ *   The pointer to the new allocated ft_table_t, on success. NULL on error.
  */
-FTABLE *ft_create_table(void);
+ft_table_t *ft_create_table(void);
 
 /**
  * Destroy formatted table.
@@ -226,7 +242,7 @@ FTABLE *ft_create_table(void);
  *   Pointer to formatted table previousley created with ft_create_table. If
  *   table is a null pointer, the function does nothing.
  */
-void ft_destroy_table(FTABLE *table);
+void ft_destroy_table(ft_table_t *table);
 
 /**
  * Move current position to the first cell of the next line(row).
@@ -234,7 +250,7 @@ void ft_destroy_table(FTABLE *table);
  * @param table
  *   Pointer to formatted table.
  */
-void ft_ln(FTABLE *table);
+void ft_ln(ft_table_t *table);
 
 /**
  * Get row number of the current cell.
@@ -244,7 +260,7 @@ void ft_ln(FTABLE *table);
  * @return
  *   Row number of the current cell.
  */
-size_t ft_cur_row(FTABLE *table);
+size_t ft_cur_row(ft_table_t *table);
 
 /**
  * Get column number of the current cell.
@@ -254,7 +270,7 @@ size_t ft_cur_row(FTABLE *table);
  * @return
  *   Column number of the current cell.
  */
-size_t ft_cur_col(FTABLE *table);
+size_t ft_cur_col(ft_table_t *table);
 
 /**
  * Set current cell position.
@@ -269,14 +285,14 @@ size_t ft_cur_col(FTABLE *table);
  * @param col
  *   New row number for the current cell.
  */
-void ft_set_cur_cell(FTABLE *table, size_t row, size_t col);
+void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col);
 
 
 
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
 
 /**
- * Writes data formatted acording to the format string to a variety of table
+ * Write data formatted acording to the format string to a variety of table
  * cells.
  *
  * @param table
@@ -299,11 +315,11 @@ void ft_set_cur_cell(FTABLE *table, size_t row, size_t col);
  *   - Number of printed cells
  *   - (<0): In case of error
  */
-int ft_printf(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+int ft_printf(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 /**
- * Writes data formatted acording to the format string to a variety of table
- * cells and moves current position to the first cell of the next line(row).
+ * Write data formatted acording to the format string to a variety of table
+ * cells and move current position to the first cell of the next line(row).
  *
  * @param table
  *   Pointer to formatted table.
@@ -325,38 +341,194 @@ int ft_printf(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2,
  *   - Number of printed cells.
  *   - (<0): In case of error.
  */
-int ft_printf_ln(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+int ft_printf_ln(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #else
 
-int ft_printf_impl(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-int ft_printf_ln_impl(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+/**
+ * @cond IGNORE_DOC
+ */
+
+int ft_printf_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+int ft_printf_ln_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #define ft_printf(table, ...) \
     (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_impl(table, __VA_ARGS__))
 #define ft_printf_ln(table, ...) \
     (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_ln_impl(table, __VA_ARGS__))
+
+/**
+ * @endcond
+ */
 #endif
 
 
-
+/**
+ * Write strings to the the table.
+ *
+ * Write specified strings to the same number of consecutive cells in the
+ * current row.
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param ...
+ *   Strings to write.
+ * @return
+ *   - 0: Success; data were written
+ *   - (<0): In case of error
+ */
 #define ft_write(table, ...)\
-    (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
+    (0 ? FT_CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
+
+/**
+ * Write strings to the the table and go to the next line.
+ *
+ * Write specified strings to the same number of consecutive cells in the
+ * current row and move current position to the first cell of the next
+ * line(row).
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param ...
+ *   Strings to write.
+ * @return
+ *   - 0: Success; data were written
+ *   - (<0): In case of error
+ */
 #define ft_write_ln(table, ...)\
-    (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-int ft_nwrite(FTABLE *table, size_t n, const char *cell_content, ...);
-int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ...);
+    (0 ? FT_CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite_ln(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
+
+/**
+ * Write specified number of strings to the the table.
+ *
+ * Write specified number of strings to the same number of consecutive cells in
+ * the current row.
+ *
+ * @note In most cases it is more preferable to use MACRO @ref ft_write instead
+ * of @ref ft_nwrite, which is more safe (@ref ft_write automatically counts the
+ * number of string arguments and at compile check that all passed arguments are
+ * strings).
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param count
+ *   Number of strings to write.
+ * @param cell_content
+ *   First string to write.
+ * @param ...
+ *   Other strings to write.
+ * @return
+ *   - 0: Success; data were written
+ *   - (<0): In case of error
+ */
+int ft_nwrite(ft_table_t *table, size_t count, const char *cell_content, ...);
+
+/**
+ * Write specified number of strings to the the table and go to the next line.
+ *
+ * Write specified number of strings to the same number of consecutive cells
+ * in the current row and move current position to the first cell of the next
+ * line(row).
+ *
+ * @note In most cases it is more preferable to use MACRO @ref ft_write instead
+ * of @ref ft_nwrite, which is more safe (@ref ft_write automatically counts the
+ * number of string arguments and at compile check that all passed arguments are
+ * strings).
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param count
+ *   Number of strings to write.
+ * @param cell_content
+ *   First string to write.
+ * @param ...
+ *   Other strings to write.
+ * @return
+ *   - 0: Success; data were written
+ *   - (<0): In case of error
+ */
+int ft_nwrite_ln(ft_table_t *table, size_t count, const char *cell_content, ...);
 
 
 
 
 
+/**
+ * Write strings from the array to the table.
+ *
+ * Write specified number of strings from the array to the same number of
+ * consecutive cells in the current row.
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param cols
+ *   Number of elements in row_cells.
+ * @param row_cells
+ *   Array of strings to write.
+ * @return
+ *   - 0: Success; data were written
+ *   - (<0): In case of error
+ */
+int ft_row_write(ft_table_t *table, size_t cols, const char *row_cells[]);
 
-int ft_row_write(FTABLE *table, size_t cols, const char *row_cells[]);
-int ft_row_write_ln(FTABLE *table, size_t cols, const char *row_cells[]);
+/**
+ * Write strings from the array to the table and go to the next line.
+ *
+ * Write specified number of strings from the array to the same number of
+ * consecutive cells in the current row and move current position to the first
+ * cell of the next line(row).
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param cols
+ *   Number of elements in row_cells.
+ * @param row_cells
+ *   Array of strings to write.
+ * @return
+ *   - 0: Success; data were written
+ *   - (<0): In case of error
+ */
+int ft_row_write_ln(ft_table_t *table, size_t cols, const char *row_cells[]);
 
-int ft_table_write(FTABLE *table, size_t rows, size_t cols, const char *table_cells[]);
-int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char *table_cells[]);
+
+/**
+ * Write strings from the 2D array to the table.
+ *
+ * Write specified number of strings from the 2D array to the formatted table.
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param rows
+ *   Number of rows in the 2D array.
+ * @param cols
+ *   Number of columns in the 2D array.
+ * @param table_cells
+ *   2D array of strings to write.
+ * @return
+ *   - 0: Success; data were written
+ *   - (<0): In case of error
+ */
+int ft_table_write(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[]);
+
+/**
+ * Write strings from the 2D array to the table and go to the next line.
+ *
+ * Write specified number of strings from the 2D array to the formatted table
+ * and move current position to the first cell of the next line(row).
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param rows
+ *   Number of rows in the 2D array.
+ * @param cols
+ *   Number of columns in the 2D array.
+ * @param table_cells
+ *   2D array of strings to write.
+ * @return
+ *   - 0: Success; data were written
+ *   - (<0): In case of error
+ */
+int ft_table_write_ln(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[]);
 
 
 
@@ -371,7 +543,7 @@ int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char *table
  *   - 0: Success; separator was added.
  *   - (<0): In case of error
  */
-int ft_add_separator(FTABLE *table);
+int ft_add_separator(ft_table_t *table);
 
 
 
@@ -379,7 +551,7 @@ int ft_add_separator(FTABLE *table);
 /**
  * Convert table to string representation.
  *
- * FTABLE has ownership of the returned pointer. So there is no need to
+ * ft_table_t has ownership of the returned pointer. So there is no need to
  * free it. To take ownership user should explicitly copy the returned
  * string with strdup or similar functions.
  *
@@ -390,10 +562,10 @@ int ft_add_separator(FTABLE *table);
  * @param table
  *   Formatted table.
  * @return
- *   The pointer to the string representation of formatted table, on success.
- *   NULL on error with ft_errno set appropriately.
+ *   - The pointer to the string representation of formatted table, on success.
+ *   - NULL on error with ft_errno set appropriately.
  */
-const char *ft_to_string(const FTABLE *table);
+const char *ft_to_string(const ft_table_t *table);
 
 
 
@@ -464,14 +636,14 @@ int ft_set_default_border_style(struct ft_border_style *style);
  * Set border style for the table.
  *
  * @param table
- *   A pointer to the FTABLE structure.
+ *   A pointer to the ft_table_t structure.
  * @param style
  *   Pointer to border style.
  * @return
  *   - 0: Success; table border style was changed.
  *   - (<0): In case of error
  */
-int ft_set_border_style(FTABLE *table, struct ft_border_style *style);
+int ft_set_border_style(ft_table_t *table, struct ft_border_style *style);
 
 
 
@@ -537,7 +709,7 @@ int ft_set_default_cell_option(uint32_t option, int value);
  * Set option for the specified cell of the table.
  *
  * @param table
- *   A pointer to the FTABLE structure.
+ *   A pointer to the ft_table_t structure.
  * @param row
  *   Cell row.
  * @param col
@@ -550,7 +722,7 @@ int ft_set_default_cell_option(uint32_t option, int value);
  *   - 0: Success; cell option was changed.
  *   - (<0): In case of error
  */
-int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t option, int value);
+int ft_set_cell_option(ft_table_t *table, size_t row, size_t col, uint32_t option, int value);
 
 
 /**
@@ -582,7 +754,7 @@ int ft_set_default_tbl_option(uint32_t option, int value);
  * Set table option.
  *
  * @param table
- *   A pointer to the FTABLE structure.
+ *   A pointer to the ft_table_t structure.
  * @param option
  *   Table option identifier.
  * @param value
@@ -591,14 +763,14 @@ int ft_set_default_tbl_option(uint32_t option, int value);
  *   - 0: Success; default table option was changed.
  *   - (<0): In case of error
  */
-int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
+int ft_set_tbl_option(ft_table_t *table, uint32_t option, int value);
 
 
 /**
  * Set column span for the specified cell of the table.
  *
  * @param table
- *   A pointer to the FTABLE structure.
+ *   A pointer to the ft_table_t structure.
  * @param row
  *   Cell row.
  * @param col
@@ -609,7 +781,7 @@ int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
  *   - 0: Success; default table option was changed.
  *   - (<0): In case of error
  */
-int ft_set_cell_span(FTABLE *table, size_t row, size_t col, size_t hor_span);
+int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span);
 
 
 /**
@@ -634,24 +806,24 @@ void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *pt
 #ifdef FT_HAVE_WCHAR
 
 
-int ft_wprintf(FTABLE *table, const wchar_t *fmt, ...);
-int ft_wprintf_ln(FTABLE *table, const wchar_t *fmt, ...);
+int ft_wprintf(ft_table_t *table, const wchar_t *fmt, ...);
+int ft_wprintf_ln(ft_table_t *table, const wchar_t *fmt, ...);
 
 
 #define ft_wwrite(table, ...)\
-    (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
+    (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
 #define ft_wwrite_ln(table, ...)\
-    (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-int ft_nwwrite(FTABLE *table, size_t n, const wchar_t *cell_content, ...);
-int ft_nwwrite_ln(FTABLE *table, size_t n, const wchar_t *cell_content, ...);
+    (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite_ln(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
+int ft_nwwrite(ft_table_t *table, size_t n, const wchar_t *cell_content, ...);
+int ft_nwwrite_ln(ft_table_t *table, size_t n, const wchar_t *cell_content, ...);
 
-int ft_row_wwrite(FTABLE *table, size_t cols, const wchar_t *row_cells[]);
-int ft_row_wwrite_ln(FTABLE *table, size_t cols, const wchar_t *row_cells[]);
+int ft_row_wwrite(ft_table_t *table, size_t cols, const wchar_t *row_cells[]);
+int ft_row_wwrite_ln(ft_table_t *table, size_t cols, const wchar_t *row_cells[]);
 
-int ft_table_wwrite(FTABLE *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
-int ft_table_wwrite_ln(FTABLE *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
+int ft_table_wwrite(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
+int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
 
-const wchar_t *ft_to_wstring(const FTABLE *table);
+const wchar_t *ft_to_wstring(const ft_table_t *table);
 #endif
 
 

@@ -3,7 +3,7 @@
 
 void test_table_basic(void)
 {
-    FTABLE *table = NULL;
+    ft_table_t *table = NULL;
 
     WHEN("All columns are equal and not empty") {
         table = ft_create_table();
@@ -261,7 +261,7 @@ void test_table_basic(void)
 #ifdef FT_HAVE_WCHAR
 void test_wcs_table_boundaries(void)
 {
-    FTABLE *table = NULL;
+    ft_table_t *table = NULL;
 
     WHEN("All columns are not equal and not empty (wide strings)") {
         table = ft_create_table();
@@ -298,7 +298,7 @@ void test_wcs_table_boundaries(void)
 
 void test_table_write(void)
 {
-    FTABLE *table = NULL;
+    ft_table_t *table = NULL;
 
     SCENARIO("Test write functions") {
         table = ft_create_table();

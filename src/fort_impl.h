@@ -47,13 +47,13 @@ enum F_BOOL
 };
 
 
-#define STR_2_CAT_(arg1, arg2) \
+#define FT_STR_2_CAT_(arg1, arg2) \
     arg1##arg2
-#define STR_2_CAT(arg1, arg2) \
-    STR_2_CAT_(arg1, arg2)
+#define FT_STR_2_CAT(arg1, arg2) \
+    FT_STR_2_CAT_(arg1, arg2)
 
 #define UNIQUE_NAME_(prefix) \
-    STR_2_CAT(prefix,__COUNTER__)
+    FT_STR_2_CAT(prefix,__COUNTER__)
 #define UNIQUE_NAME(prefix) \
     UNIQUE_NAME_(prefix)
 
@@ -98,7 +98,7 @@ typedef struct vector vector_t;
 typedef struct fort_cell fort_cell_t;
 typedef struct string_buffer string_buffer_t;
 typedef struct fort_row fort_row_t;
-typedef struct fort_table FTABLE;
+typedef struct ft_table ft_table_t;
 typedef struct separator separator_t;
 
 

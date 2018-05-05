@@ -10,7 +10,7 @@
 
 void test_table_tbl_options(void)
 {
-    FTABLE *table = NULL;
+    ft_table_t *table = NULL;
 
     WHEN("Test setting entire table options") {
         set_test_options_as_default();
@@ -134,7 +134,7 @@ void test_table_tbl_options(void)
 
 void test_table_cell_options(void)
 {
-    FTABLE *table = NULL;
+    ft_table_t *table = NULL;
 
 
     WHEN("All paddings = 1") {

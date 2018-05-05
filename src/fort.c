@@ -47,9 +47,9 @@ SOFTWARE.
  *               LIBFORT
  * ***************************************************************************/
 
-FTABLE *ft_create_table(void)
+ft_table_t *ft_create_table(void)
 {
-    FTABLE *result = (FTABLE *)F_CALLOC(1, sizeof(FTABLE));
+    ft_table_t *result = (ft_table_t *)F_CALLOC(1, sizeof(ft_table_t));
     if (result == NULL)
         return NULL;
 
@@ -72,7 +72,7 @@ FTABLE *ft_create_table(void)
 }
 
 
-void ft_destroy_table(FTABLE *table)
+void ft_destroy_table(ft_table_t *table)
 {
     size_t i = 0;
 
@@ -98,26 +98,26 @@ void ft_destroy_table(FTABLE *table)
     F_FREE(table);
 }
 
-void ft_ln(FTABLE *table)
+void ft_ln(ft_table_t *table)
 {
     assert(table);
     table->cur_col = 0;
     table->cur_row++;
 }
 
-size_t ft_cur_row(FTABLE *table)
+size_t ft_cur_row(ft_table_t *table)
 {
     assert(table);
     return table->cur_row;
 }
 
-size_t ft_cur_col(FTABLE *table)
+size_t ft_cur_col(ft_table_t *table)
 {
     assert(table);
     return table->cur_col;
 }
 
-void ft_set_cur_cell(FTABLE *table, size_t row, size_t col)
+void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col)
 {
     assert(table);
     table->cur_row = row;
@@ -125,7 +125,7 @@ void ft_set_cur_cell(FTABLE *table, size_t row, size_t col)
 }
 
 
-static int ft_row_printf_impl(FTABLE *table, size_t row, const char *fmt, va_list *va)
+static int ft_row_printf_impl(ft_table_t *table, size_t row, const char *fmt, va_list *va)
 {
 #define CREATE_ROW_FROM_FMT_STRING create_row_from_fmt_string
     size_t i = 0;
@@ -172,7 +172,7 @@ clear:
 }
 
 #ifdef FT_HAVE_WCHAR
-static int ft_row_wprintf_impl(FTABLE *table, size_t row, const wchar_t *fmt, va_list *va)
+static int ft_row_wprintf_impl(ft_table_t *table, size_t row, const wchar_t *fmt, va_list *va)
 {
 #define CREATE_ROW_FROM_FMT_STRING create_row_from_fmt_wstring
     size_t i = 0;
@@ -229,7 +229,7 @@ clear:
 
 
 
-int FT_PRINTF(FTABLE *table, const char *fmt, ...)
+int FT_PRINTF(ft_table_t *table, const char *fmt, ...)
 {
     assert(table);
     va_list va;
@@ -239,7 +239,7 @@ int FT_PRINTF(FTABLE *table, const char *fmt, ...)
     return result;
 }
 
-int FT_PRINTF_LN(FTABLE *table, const char *fmt, ...)
+int FT_PRINTF_LN(ft_table_t *table, const char *fmt, ...)
 {
     assert(table);
     va_list va;
@@ -258,7 +258,7 @@ int FT_PRINTF_LN(FTABLE *table, const char *fmt, ...)
 #undef FT_HDR_PRINTF_LN
 
 #ifdef FT_HAVE_WCHAR
-int ft_wprintf(FTABLE *table, const wchar_t *fmt, ...)
+int ft_wprintf(ft_table_t *table, const wchar_t *fmt, ...)
 {
     assert(table);
     va_list va;
@@ -268,7 +268,7 @@ int ft_wprintf(FTABLE *table, const wchar_t *fmt, ...)
     return result;
 }
 
-int ft_wprintf_ln(FTABLE *table, const wchar_t *fmt, ...)
+int ft_wprintf_ln(ft_table_t *table, const wchar_t *fmt, ...)
 {
     assert(table);
     va_list va;
@@ -284,7 +284,7 @@ int ft_wprintf_ln(FTABLE *table, const wchar_t *fmt, ...)
 #endif
 
 
-static int ft_write_impl(FTABLE *table, const char *cell_content)
+static int ft_write_impl(ft_table_t *table, const char *cell_content)
 {
     assert(table);
     string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
@@ -301,7 +301,7 @@ static int ft_write_impl(FTABLE *table, const char *cell_content)
 
 #ifdef FT_HAVE_WCHAR
 
-static int ft_wwrite_impl(FTABLE *table, const wchar_t *cell_content)
+static int ft_wwrite_impl(ft_table_t *table, const wchar_t *cell_content)
 {
     assert(table);
     string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
@@ -318,7 +318,7 @@ static int ft_wwrite_impl(FTABLE *table, const wchar_t *cell_content)
 #endif
 
 
-int ft_nwrite(FTABLE *table, size_t n, const char *cell_content, ...)
+int ft_nwrite(ft_table_t *table, size_t count, const char *cell_content, ...)
 {
     size_t i = 0;
     assert(table);
@@ -328,8 +328,8 @@ int ft_nwrite(FTABLE *table, size_t n, const char *cell_content, ...)
 
     va_list va;
     va_start(va, cell_content);
-    --n;
-    for (i = 0; i < n; ++i) {
+    --count;
+    for (i = 0; i < count; ++i) {
         const char *cell = va_arg(va, const char *);
         status = ft_write_impl(table, cell);
         if (FT_IS_ERROR(status))
@@ -339,7 +339,7 @@ int ft_nwrite(FTABLE *table, size_t n, const char *cell_content, ...)
     return status;
 }
 
-int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ...)
+int ft_nwrite_ln(ft_table_t *table, size_t count, const char *cell_content, ...)
 {
     size_t i = 0;
     assert(table);
@@ -349,8 +349,8 @@ int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ...)
 
     va_list va;
     va_start(va, cell_content);
-    --n;
-    for (i = 0; i < n; ++i) {
+    --count;
+    for (i = 0; i < count; ++i) {
         const char *cell = va_arg(va, const char *);
         status = ft_write_impl(table, cell);
         if (FT_IS_ERROR(status)) {
@@ -366,7 +366,7 @@ int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ...)
 
 #ifdef FT_HAVE_WCHAR
 
-int ft_nwwrite(FTABLE *table, size_t n, const wchar_t *cell_content, ...)
+int ft_nwwrite(ft_table_t *table, size_t n, const wchar_t *cell_content, ...)
 {
     size_t i = 0;
     assert(table);
@@ -387,7 +387,7 @@ int ft_nwwrite(FTABLE *table, size_t n, const wchar_t *cell_content, ...)
     return status;
 }
 
-int ft_nwwrite_ln(FTABLE *table, size_t n, const wchar_t *cell_content, ...)
+int ft_nwwrite_ln(ft_table_t *table, size_t n, const wchar_t *cell_content, ...)
 {
     size_t i = 0;
     assert(table);
@@ -414,7 +414,7 @@ int ft_nwwrite_ln(FTABLE *table, size_t n, const wchar_t *cell_content, ...)
 #endif
 
 
-int ft_row_write(FTABLE *table, size_t cols, const char *cells[])
+int ft_row_write(ft_table_t *table, size_t cols, const char *cells[])
 {
     size_t i = 0;
     assert(table);
@@ -428,7 +428,7 @@ int ft_row_write(FTABLE *table, size_t cols, const char *cells[])
     return FT_SUCCESS;
 }
 
-int ft_row_write_ln(FTABLE *table, size_t cols, const char *cells[])
+int ft_row_write_ln(ft_table_t *table, size_t cols, const char *cells[])
 {
     assert(table);
     int status = ft_row_write(table, cols, cells);
@@ -439,7 +439,7 @@ int ft_row_write_ln(FTABLE *table, size_t cols, const char *cells[])
 }
 
 #ifdef FT_HAVE_WCHAR
-int ft_row_wwrite(FTABLE *table, size_t cols, const wchar_t *cells[])
+int ft_row_wwrite(ft_table_t *table, size_t cols, const wchar_t *cells[])
 {
     size_t i = 0;
     assert(table);
@@ -453,7 +453,7 @@ int ft_row_wwrite(FTABLE *table, size_t cols, const wchar_t *cells[])
     return FT_SUCCESS;
 }
 
-int ft_row_wwrite_ln(FTABLE *table, size_t cols, const wchar_t *cells[])
+int ft_row_wwrite_ln(ft_table_t *table, size_t cols, const wchar_t *cells[])
 {
     assert(table);
     int status = ft_row_wwrite(table, cols, cells);
@@ -466,7 +466,7 @@ int ft_row_wwrite_ln(FTABLE *table, size_t cols, const wchar_t *cells[])
 
 
 
-int ft_table_write(FTABLE *table, size_t rows, size_t cols, const char *table_cells[])
+int ft_table_write(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[])
 {
     size_t i = 0;
     assert(table);
@@ -482,7 +482,7 @@ int ft_table_write(FTABLE *table, size_t rows, size_t cols, const char *table_ce
     return FT_SUCCESS;
 }
 
-int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char *table_cells[])
+int ft_table_write_ln(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[])
 {
     assert(table);
     int status = ft_table_write(table, rows, cols, table_cells);
@@ -494,7 +494,7 @@ int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char *table
 
 
 #ifdef FT_HAVE_WCHAR
-int ft_table_wwrite(FTABLE *table, size_t rows, size_t cols, const wchar_t *table_cells[])
+int ft_table_wwrite(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[])
 {
     size_t i = 0;
     assert(table);
@@ -510,7 +510,7 @@ int ft_table_wwrite(FTABLE *table, size_t rows, size_t cols, const wchar_t *tabl
     return FT_SUCCESS;
 }
 
-int ft_table_wwrite_ln(FTABLE *table, size_t rows, size_t cols, const wchar_t *table_cells[])
+int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[])
 {
     assert(table);
     int status = ft_table_wwrite(table, rows, cols, table_cells);
@@ -532,7 +532,7 @@ int ft_table_wwrite_ln(FTABLE *table, size_t rows, size_t cols, const wchar_t *t
 
 
 
-const char *ft_to_string(const FTABLE *table)
+const char *ft_to_string(const ft_table_t *table)
 {
     typedef char char_type;
     const char_type *empty_string = "";
@@ -561,7 +561,7 @@ const char *ft_to_string(const FTABLE *table)
 
     /* Allocate string buffer for string representation */
     if (table->conv_buffer == NULL) {
-        ((FTABLE *)table)->conv_buffer = create_string_buffer(sz, buf_type);
+        ((ft_table_t *)table)->conv_buffer = create_string_buffer(sz, buf_type);
         if (table->conv_buffer == NULL)
             return NULL;
     }
@@ -633,7 +633,7 @@ clear:
 }
 
 
-const wchar_t *ft_to_wstring(const FTABLE *table)
+const wchar_t *ft_to_wstring(const ft_table_t *table)
 {
     typedef wchar_t char_type;
     const char_type *empty_string = L"";
@@ -664,7 +664,7 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
 
     /* Allocate string buffer for string representation */
     if (table->conv_buffer == NULL) {
-        ((FTABLE *)table)->conv_buffer = create_string_buffer(sz, buf_type);
+        ((ft_table_t *)table)->conv_buffer = create_string_buffer(sz, buf_type);
         if (table->conv_buffer == NULL)
             return NULL;
     }
@@ -761,7 +761,7 @@ clear:
 
 
 
-int ft_add_separator(FTABLE *table)
+int ft_add_separator(ft_table_t *table)
 {
     assert(table);
     assert(table->separators);
@@ -895,7 +895,7 @@ int ft_set_default_border_style(struct ft_border_style *style)
     return FT_SUCCESS;
 }
 
-int ft_set_border_style(FTABLE *table, struct ft_border_style *style)
+int ft_set_border_style(ft_table_t *table, struct ft_border_style *style)
 {
     assert(table);
     if (table->options == NULL) {
@@ -909,7 +909,7 @@ int ft_set_border_style(FTABLE *table, struct ft_border_style *style)
 
 
 
-int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t option, int value)
+int ft_set_cell_option(ft_table_t *table, size_t row, size_t col, uint32_t option, int value)
 {
     assert(table);
 
@@ -944,7 +944,7 @@ int ft_set_default_tbl_option(uint32_t option, int value)
     return set_default_entire_table_option(option, value);
 }
 
-int ft_set_tbl_option(FTABLE *table, uint32_t option, int value)
+int ft_set_tbl_option(ft_table_t *table, uint32_t option, int value)
 {
     assert(table);
 
@@ -961,7 +961,7 @@ void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *pt
     set_memory_funcs(f_malloc, f_free);
 }
 
-int ft_set_cell_span(FTABLE *table, size_t row, size_t col, size_t hor_span)
+int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
 {
     assert(table);
     if (hor_span < 2)

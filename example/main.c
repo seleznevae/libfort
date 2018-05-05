@@ -3,9 +3,9 @@
 #include <wchar.h>
 #include <locale.h>
 
-static FTABLE *create_basic_table(void)
+static ft_table_t *create_basic_table(void)
 {
-    FTABLE *table = ft_create_table();
+    ft_table_t *table = ft_create_table();
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
 
@@ -25,7 +25,7 @@ int main(void)
 {
     int result = 0;
 
-    FTABLE *table = NULL;
+    ft_table_t *table = NULL;
 
     table = ft_create_table();
     ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);

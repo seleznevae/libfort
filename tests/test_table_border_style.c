@@ -7,7 +7,7 @@
 
 void test_table_border_style(void)
 {
-    FTABLE *table = NULL;
+    ft_table_t *table = NULL;
 
     set_test_options_as_default();
 
