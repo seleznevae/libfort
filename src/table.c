@@ -25,7 +25,7 @@ fort_row_t *get_row_implementation(fort_table_t *table, size_t row, enum PolicyO
                 fort_row_t *new_row = create_row();
                 if (new_row == NULL)
                     return NULL;
-                if (IS_ERROR(vector_push(table->rows, &new_row))) {
+                if (FT_IS_ERROR(vector_push(table->rows, &new_row))) {
                     destroy_row(new_row);
                     return NULL;
                 }
@@ -101,7 +101,7 @@ fort_status_t table_rows_and_cols_geometry(const FTABLE *table,
     size_t cols = 0;
     size_t rows = 0;
     int status = get_table_sizes(table, &rows, &cols);
-    if (IS_ERROR(status))
+    if (FT_IS_ERROR(status))
         return status;
 
     size_t *col_width_arr = (size_t *)F_CALLOC(sizeof(size_t), cols);
@@ -210,7 +210,7 @@ fort_status_t table_geometry(const FTABLE *table, size_t *height, size_t *width)
     size_t *row_height_arr = NULL;
 
     int status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
-    if (IS_ERROR(status))
+    if (FT_IS_ERROR(status))
         return status;
 
     *width = 1 + (cols == 0 ? 1 : cols) + 1; /* for boundaries (that take 1 symbol) + newline   */

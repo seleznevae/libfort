@@ -112,7 +112,7 @@ fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_contain
     fort_cell_options_t opt = g_default_cell_option;// DEFAULT_CELL_OPTION;
     opt.cell_row = row;
     opt.cell_col = col;
-    if (IS_SUCCESS(vector_push(cont, &opt))) {
+    if (FT_IS_SUCCESS(vector_push(cont, &opt))) {
         return (fort_cell_options_t *)vector_at(cont, sz);
     }
 

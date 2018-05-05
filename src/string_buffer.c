@@ -198,7 +198,7 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
 
     while (sz >= string_buffer_capacity(buffer)) {
         int status = realloc_string_buffer_without_copy(buffer);
-        if (!IS_SUCCESS(status)) {
+        if (!FT_IS_SUCCESS(status)) {
             return status;
         }
     }
@@ -221,7 +221,7 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
 
     while (sz >= string_buffer_capacity(buffer)) {
         int status = realloc_string_buffer_without_copy(buffer);
-        if (!IS_SUCCESS(status)) {
+        if (!FT_IS_SUCCESS(status)) {
             return status;
         }
     }

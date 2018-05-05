@@ -1,3 +1,36 @@
+/*
+libfort
+
+MIT License
+
+Copyright (c) 2017 - 2018 Seleznev Anton
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+/**
+ * @file fort.hpp
+ * @brief Main header file describing libfort C++ API .
+ *
+ * This files contains C++ wrappers around libfort API that can
+ * be used in C++ code.
+ */
 #ifndef LIBFORT_HPP
 #define LIBFORT_HPP
 
@@ -24,6 +57,11 @@ const TableManipulator header(0);
 const TableManipulator endl(1);
 const TableManipulator separator(2);
 
+/**
+ * Table - here is a short description.
+ *
+ * Here is detailed description.
+ */
 class Table {
 public:
     Table()
@@ -75,12 +113,12 @@ public:
 
     bool write(const char *str)
     {
-        return IS_SUCCESS(ft_write(table, str));
+        return FT_IS_SUCCESS(ft_write(table, str));
     }
 
     bool write_ln(const char *str)
     {
-        return IS_SUCCESS(ft_write_ln(table, str));
+        return FT_IS_SUCCESS(ft_write_ln(table, str));
     }
 
     bool write(const std::string &str)

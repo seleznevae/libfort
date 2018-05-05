@@ -79,7 +79,7 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
                 fort_cell_t *new_cell = create_cell();
                 if (new_cell == NULL)
                     return NULL;
-                if (IS_ERROR(vector_push(row->cells, &new_cell))) {
+                if (FT_IS_ERROR(vector_push(row->cells, &new_cell))) {
                     destroy_cell(new_cell);
                     return NULL;
                 }
@@ -573,13 +573,13 @@ fort_row_t *create_row_from_string(const char *str)
             goto clear;
 
         int status = fill_cell_from_string_(cell, base_pos);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             destroy_cell(cell);
             goto clear;
         }
 
         status = vector_push(row->cells, &cell);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             destroy_cell(cell);
             goto clear;
         }
@@ -596,13 +596,13 @@ fort_row_t *create_row_from_string(const char *str)
             goto clear;
 
         int status = fill_cell_from_string_(cell, zero_string);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             destroy_cell(cell);
             goto clear;
         }
 
         status = vector_push(row->cells, &cell);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             destroy_cell(cell);
             goto clear;
         }
@@ -661,13 +661,13 @@ fort_row_t *create_row_from_wstring(const wchar_t *str)
             goto clear;
 
         int status = fill_cell_from_string_(cell, base_pos);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             destroy_cell(cell);
             goto clear;
         }
 
         status = vector_push(row->cells, &cell);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             destroy_cell(cell);
             goto clear;
         }
@@ -684,13 +684,13 @@ fort_row_t *create_row_from_wstring(const wchar_t *str)
             goto clear;
 
         int status = fill_cell_from_string_(cell, zero_string);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             destroy_cell(cell);
             goto clear;
         }
 
         status = vector_push(row->cells, &cell);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             destroy_cell(cell);
             goto clear;
         }
@@ -736,7 +736,7 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
             break;
 
         /* Otherwise buffer was too small, so incr. buffer size ant try again. */
-        if (!IS_SUCCESS(realloc_string_buffer_without_copy(buffer)))
+        if (!FT_IS_SUCCESS(realloc_string_buffer_without_copy(buffer)))
             goto clear;
     }
 
@@ -793,7 +793,7 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
             break;
 
         /* Otherwise buffer was too small, so incr. buffer size ant try again. */
-        if (!IS_SUCCESS(realloc_string_buffer_without_copy(buffer)))
+        if (!FT_IS_SUCCESS(realloc_string_buffer_without_copy(buffer)))
             goto clear;
     }
 

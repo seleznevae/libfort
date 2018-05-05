@@ -24,6 +24,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+/**
+ * @file fort.h
+ * @brief Main header file describing libfort API.
+ *
+ * This files contains declarations of all libfort functions and macro
+ * definitions.
+ */
+
 #ifndef LIBFORT_H
 #define LIBFORT_H
 
@@ -41,75 +49,8 @@ SOFTWARE.
  */
 /** #define FT_CONGIG_HAVE_WCHAR */
 
-
-/*****************************************************************************
- *               Determine compiler
- *****************************************************************************/
-#if defined(__clang__)
-#define FT_CLANG_COMPILER
-#elif defined(__GNUC__)
-#define FT_GCC_COMPILER
-#elif defined(_MSC_VER)
-#define FT_MICROSOFT_COMPILER
-#else
-#define FT_UNDEFINED_COMPILER
-#endif
-
-/*****************************************************************************
- *               Declare restrict
- *****************************************************************************/
-/*
-#if defined(__cplusplus)
-#if defined(FT_CLANG_COMPILER)
-#define FT_RESTRICT __restrict__
-#else
-#define FT_RESTRICT __restrict
-#endif // if defined(FT_CLANG_COMPILER)
-#else
-#if __STDC_VERSION__ < 199901L
-#define FT_RESTRICT
-#else
-#define FT_RESTRICT restrict
-#endif // __STDC_VERSION__ < 199901L
-#endif // if defined(__cplusplus)
-*/
-
-/*****************************************************************************
- *               Declare inline
- *****************************************************************************/
-#if defined(__cplusplus)
-#define FT_INLINE inline
-#else
-#define FT_INLINE __inline
-#endif /* if defined(__cplusplus) */
-
-
-
-/*****************************************************************************
- *               Attribute format for argument checking
- *****************************************************************************/
-#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
-#define FT_PRINTF_ATTRIBUTE_FORMAT(string_index, first_to_check) \
-    __attribute__ ((format (printf, string_index, first_to_check)))
-#else
-#define FT_PRINTF_ATTRIBUTE_FORMAT(string_index, first_to_check)
-#endif /* defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER) */
-
-
-/*****************************************************************************
- *    C++ needs to know that types and declarations are C, not C++.
- *****************************************************************************/
-#ifdef __cplusplus
-# define FT_BEGIN_DECLS extern "C" {
-# define FT_END_DECLS }
-#else
-# define FT_BEGIN_DECLS
-# define FT_END_DECLS
-#endif
-
-
-#ifndef FT_EXTERN
-#define FT_EXTERN extern
+#if defined(FT_CONGIG_HAVE_WCHAR)
+#define FT_HAVE_WCHAR
 #endif
 
 
@@ -121,15 +62,52 @@ typedef int fort_status_t;
 #define FT_MEMORY_ERROR   -1
 #define FT_ERROR          -2
 #define FT_EINVAL         -3
-#define IS_SUCCESS(arg) ((arg) >= 0)
-#define IS_ERROR(arg) ((arg) < 0)
+#define FT_IS_SUCCESS(arg) ((arg) >= 0)
+#define FT_IS_ERROR(arg) ((arg) < 0)
+
+
+
+
+/**
+ * @cond HELPER_MACROS
+ */
 
 /*****************************************************************************
- *               Wchar support
+ *               Determine compiler
  *****************************************************************************/
 
-#if defined(FT_CONGIG_HAVE_WCHAR)
-#define FT_HAVE_WCHAR
+#if defined(__clang__)
+#define FT_CLANG_COMPILER
+#elif defined(__GNUC__)
+#define FT_GCC_COMPILER
+#elif defined(_MSC_VER)
+#define FT_MICROSOFT_COMPILER
+#else
+#define FT_UNDEFINED_COMPILER
+#endif
+
+
+/*****************************************************************************
+ *               Declare inline
+ *****************************************************************************/
+
+#if defined(__cplusplus)
+#define FT_INLINE inline
+#else
+#define FT_INLINE __inline
+#endif /* if defined(__cplusplus) */
+
+
+/*****************************************************************************
+ *    C++ needs to know that types and declarations are C, not C++.
+ *****************************************************************************/
+
+#ifdef __cplusplus
+# define FT_BEGIN_DECLS extern "C" {
+# define FT_END_DECLS }
+#else
+# define FT_BEGIN_DECLS
+# define FT_END_DECLS
 #endif
 
 
@@ -204,11 +182,26 @@ static FT_INLINE int ft_check_if_wstring_helper(const wchar_t *str)
     CHECK_IF_ARGS_ARE_STRINGS_(ft_check_if_wstring_helper,CHECK_IF_STRING_,PP_NARG(__VA_ARGS__), __VA_ARGS__)
 #endif
 
+/**
+ * @endcond
+ */
+
+
+/*****************************************************************************
+ *               Attribute format for argument checking
+ *****************************************************************************/
+
+#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
+#define FT_PRINTF_ATTRIBUTE_FORMAT(string_index, first_to_check) \
+    __attribute__ ((format (printf, string_index, first_to_check)))
+#else
+#define FT_PRINTF_ATTRIBUTE_FORMAT(string_index, first_to_check)
+#endif /* defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER) */
+
 
 /*****************************************************************************
  *                   libfort API
  *****************************************************************************/
-
 
 FT_BEGIN_DECLS
 
@@ -221,7 +214,7 @@ typedef struct fort_table FTABLE;
  * @return
  *   The pointer to the new allocated FTABLE, on success. NULL on error.
  */
-FT_EXTERN FTABLE *ft_create_table(void);
+FTABLE *ft_create_table(void);
 
 /**
  * Destroy formatted table.
@@ -233,7 +226,7 @@ FT_EXTERN FTABLE *ft_create_table(void);
  *   Pointer to formatted table previousley created with ft_create_table. If
  *   table is a null pointer, the function does nothing.
  */
-FT_EXTERN void ft_destroy_table(FTABLE *table);
+void ft_destroy_table(FTABLE *table);
 
 /**
  * Move current position to the first cell of the next line(row).
@@ -241,7 +234,7 @@ FT_EXTERN void ft_destroy_table(FTABLE *table);
  * @param table
  *   Pointer to formatted table.
  */
-FT_EXTERN void ft_ln(FTABLE *table);
+void ft_ln(FTABLE *table);
 
 /**
  * Get row number of the current cell.
@@ -251,7 +244,7 @@ FT_EXTERN void ft_ln(FTABLE *table);
  * @return
  *   Row number of the current cell.
  */
-FT_EXTERN size_t ft_cur_row(FTABLE *table);
+size_t ft_cur_row(FTABLE *table);
 
 /**
  * Get column number of the current cell.
@@ -261,7 +254,7 @@ FT_EXTERN size_t ft_cur_row(FTABLE *table);
  * @return
  *   Column number of the current cell.
  */
-FT_EXTERN size_t ft_cur_col(FTABLE *table);
+size_t ft_cur_col(FTABLE *table);
 
 /**
  * Set current cell position.
@@ -276,7 +269,7 @@ FT_EXTERN size_t ft_cur_col(FTABLE *table);
  * @param col
  *   New row number for the current cell.
  */
-FT_EXTERN void ft_set_cur_cell(FTABLE *table, size_t row, size_t col);
+void ft_set_cur_cell(FTABLE *table, size_t row, size_t col);
 
 
 
@@ -306,7 +299,7 @@ FT_EXTERN void ft_set_cur_cell(FTABLE *table, size_t row, size_t col);
  *   - Number of printed cells
  *   - (<0): In case of error
  */
-FT_EXTERN int ft_printf(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+int ft_printf(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 /**
  * Writes data formatted acording to the format string to a variety of table
@@ -332,12 +325,12 @@ FT_EXTERN int ft_printf(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE
  *   - Number of printed cells.
  *   - (<0): In case of error.
  */
-FT_EXTERN int ft_printf_ln(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+int ft_printf_ln(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #else
 
-FT_EXTERN int ft_printf_impl(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-FT_EXTERN int ft_printf_ln_impl(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+int ft_printf_impl(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+int ft_printf_ln_impl(FTABLE *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #define ft_printf(table, ...) \
     (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_impl(table, __VA_ARGS__))
@@ -351,19 +344,19 @@ FT_EXTERN int ft_printf_ln_impl(FTABLE *table, const char *fmt, ...) FT_PRINTF_A
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 #define ft_write_ln(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-FT_EXTERN int ft_nwrite(FTABLE *table, size_t n, const char *cell_content, ...);
-FT_EXTERN int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ...);
+int ft_nwrite(FTABLE *table, size_t n, const char *cell_content, ...);
+int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ...);
 
 
 
 
 
 
-FT_EXTERN int ft_row_write(FTABLE *table, size_t cols, const char *row_cells[]);
-FT_EXTERN int ft_row_write_ln(FTABLE *table, size_t cols, const char *row_cells[]);
+int ft_row_write(FTABLE *table, size_t cols, const char *row_cells[]);
+int ft_row_write_ln(FTABLE *table, size_t cols, const char *row_cells[]);
 
-FT_EXTERN int ft_table_write(FTABLE *table, size_t rows, size_t cols, const char *table_cells[]);
-FT_EXTERN int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char *table_cells[]);
+int ft_table_write(FTABLE *table, size_t rows, size_t cols, const char *table_cells[]);
+int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char *table_cells[]);
 
 
 
@@ -378,7 +371,7 @@ FT_EXTERN int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const c
  *   - 0: Success; separator was added.
  *   - (<0): In case of error
  */
-FT_EXTERN int ft_add_separator(FTABLE *table);
+int ft_add_separator(FTABLE *table);
 
 
 
@@ -400,7 +393,7 @@ FT_EXTERN int ft_add_separator(FTABLE *table);
  *   The pointer to the string representation of formatted table, on success.
  *   NULL on error with ft_errno set appropriately.
  */
-FT_EXTERN const char *ft_to_string(const FTABLE *table);
+const char *ft_to_string(const FTABLE *table);
 
 
 
@@ -436,7 +429,9 @@ struct ft_border_style {
 };
 
 /**
- * Built-in table border styles.
+ * @defgroup BasicStyles
+ * @name Built-in table border styles.
+ * @{
  */
 extern struct ft_border_style *FT_BASIC_STYLE;
 extern struct ft_border_style *FT_SIMPLE_STYLE;
@@ -450,6 +445,9 @@ extern struct ft_border_style *FT_DOUBLE2_STYLE;
 extern struct ft_border_style *FT_BOLD_STYLE;
 extern struct ft_border_style *FT_BOLD2_STYLE;
 extern struct ft_border_style *FT_FRAME_STYLE;
+/** @} */
+
+
 
 /**
  * Set default border style for all new formatted tables.
@@ -460,7 +458,7 @@ extern struct ft_border_style *FT_FRAME_STYLE;
  *   - 0: Success; default border style was changed.
  *   - (<0): In case of error
  */
-FT_EXTERN int ft_set_default_border_style(struct ft_border_style *style);
+int ft_set_default_border_style(struct ft_border_style *style);
 
 /**
  * Set border style for the table.
@@ -473,18 +471,25 @@ FT_EXTERN int ft_set_default_border_style(struct ft_border_style *style);
  *   - 0: Success; table border style was changed.
  *   - (<0): In case of error
  */
-FT_EXTERN int ft_set_border_style(FTABLE *table, struct ft_border_style *style);
+int ft_set_border_style(FTABLE *table, struct ft_border_style *style);
+
+
 
 /**
- * Special macros to define cell position (row and column).
+ * @name Special macros to define cell position (row and column).
+ * @{
  */
-#define FT_ANY_COLUMN    (UINT_MAX)
-#define FT_CUR_COLUMN    (UINT_MAX - 1)
-#define FT_ANY_ROW       (UINT_MAX)
-#define FT_CUR_ROW       (UINT_MAX - 1)
+#define FT_ANY_COLUMN (UINT_MAX)     /**< Any column (can be used to refer to all cells in a row)*/
+#define FT_CUR_COLUMN (UINT_MAX - 1) /**< Current column */
+#define FT_ANY_ROW    (UINT_MAX)     /**< Any row (can be used to refer to all cells in a column)*/
+#define FT_CUR_ROW    (UINT_MAX - 1) /**< Current row */
+/** @} */
+
+
 
 /**
- * Cell options identifiers.
+ * @name Cell options identifiers.
+ * @{
  */
 #define FT_COPT_MIN_WIDTH        (0x01U << 0) /**< Minimum width */
 #define FT_COPT_TEXT_ALIGN       (0x01U << 1) /**< Text alignmemnt */
@@ -494,22 +499,25 @@ FT_EXTERN int ft_set_border_style(FTABLE *table, struct ft_border_style *style);
 #define FT_COPT_RIGHT_PADDING    (0x01U << 5) /**< Right padding for cell content */
 #define FT_COPT_EMPTY_STR_HEIGHT (0x01U << 6) /**< Height of empty cell */
 #define FT_COPT_ROW_TYPE         (0x01U << 7) /**< Row type */
+/** @} */
+
+
 
 /**
  * Alignment of cell content.
  */
 enum ft_text_alignment {
-    FT_ALIGNED_LEFT,
-    FT_ALIGNED_CENTER,
-    FT_ALIGNED_RIGHT
+    FT_ALIGNED_LEFT = 0,     /**< Align left */
+    FT_ALIGNED_CENTER,       /**< Align center */
+    FT_ALIGNED_RIGHT         /**< Align right */
 };
 
 /**
- * Type of table row.
+ * Type of table row. Determines appearance of row.
  */
 enum ft_row_type {
-    FT_ROW_COMMON,
-    FT_ROW_HEADER
+    FT_ROW_COMMON = 0,      /**< Common row */
+    FT_ROW_HEADER           /**< Header row */
 };
 
 /**
@@ -523,7 +531,7 @@ enum ft_row_type {
  *   - 0: Success; default cell option was changed.
  *   - (<0): In case of error
  */
-FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
+int ft_set_default_cell_option(uint32_t option, int value);
 
 /**
  * Set option for the specified cell of the table.
@@ -542,15 +550,20 @@ FT_EXTERN int ft_set_default_cell_option(uint32_t option, int value);
  *   - 0: Success; cell option was changed.
  *   - (<0): In case of error
  */
-FT_EXTERN int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t option, int value);
+int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t option, int value);
+
 
 /**
- * Table options identifiers.
+ * @name Table options identifiers.
+ * @{
  */
 #define FT_TOPT_LEFT_MARGIN   (0x01U << 0)
 #define FT_TOPT_TOP_MARGIN    (0x01U << 1)
 #define FT_TOPT_RIGHT_MARGIN  (0x01U << 2)
 #define FT_TOPT_BOTTOM_MARGIN (0x01U << 3)
+/** @} */
+
+
 
 /**
  * Set default table option.
@@ -563,7 +576,7 @@ FT_EXTERN int ft_set_cell_option(FTABLE *table, size_t row, size_t col, uint32_t
  *   - 0: Success; default table option was changed.
  *   - (<0): In case of error
  */
-FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value);
+int ft_set_default_tbl_option(uint32_t option, int value);
 
 /**
  * Set table option.
@@ -578,7 +591,7 @@ FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value);
  *   - 0: Success; default table option was changed.
  *   - (<0): In case of error
  */
-FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
+int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
 
 
 /**
@@ -596,7 +609,7 @@ FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value);
  *   - 0: Success; default table option was changed.
  *   - (<0): In case of error
  */
-FT_EXTERN int ft_set_cell_span(FTABLE *table, size_t row, size_t col, size_t hor_span);
+int ft_set_cell_span(FTABLE *table, size_t row, size_t col, size_t hor_span);
 
 
 /**
@@ -613,7 +626,7 @@ FT_EXTERN int ft_set_cell_span(FTABLE *table, size_t row, size_t col, size_t hor
  *   To return memory allocation/deallocation functions to their standard values
  *   set f_malloc and f_free to NULL.
  */
-FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
+void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
 
 
 
@@ -621,24 +634,24 @@ FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free
 #ifdef FT_HAVE_WCHAR
 
 
-FT_EXTERN int ft_wprintf(FTABLE *table, const wchar_t *fmt, ...);
-FT_EXTERN int ft_wprintf_ln(FTABLE *table, const wchar_t *fmt, ...);
+int ft_wprintf(FTABLE *table, const wchar_t *fmt, ...);
+int ft_wprintf_ln(FTABLE *table, const wchar_t *fmt, ...);
 
 
 #define ft_wwrite(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
 #define ft_wwrite_ln(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite_ln(table, PP_NARG(__VA_ARGS__), __VA_ARGS__))
-FT_EXTERN int ft_nwwrite(FTABLE *table, size_t n, const wchar_t *cell_content, ...);
-FT_EXTERN int ft_nwwrite_ln(FTABLE *table, size_t n, const wchar_t *cell_content, ...);
+int ft_nwwrite(FTABLE *table, size_t n, const wchar_t *cell_content, ...);
+int ft_nwwrite_ln(FTABLE *table, size_t n, const wchar_t *cell_content, ...);
 
-FT_EXTERN int ft_row_wwrite(FTABLE *table, size_t cols, const wchar_t *row_cells[]);
-FT_EXTERN int ft_row_wwrite_ln(FTABLE *table, size_t cols, const wchar_t *row_cells[]);
+int ft_row_wwrite(FTABLE *table, size_t cols, const wchar_t *row_cells[]);
+int ft_row_wwrite_ln(FTABLE *table, size_t cols, const wchar_t *row_cells[]);
 
-FT_EXTERN int ft_table_wwrite(FTABLE *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
-FT_EXTERN int ft_table_wwrite_ln(FTABLE *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
+int ft_table_wwrite(FTABLE *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
+int ft_table_wwrite_ln(FTABLE *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
 
-FT_EXTERN const wchar_t *ft_to_wstring(const FTABLE *table);
+const wchar_t *ft_to_wstring(const FTABLE *table);
 #endif
 
 

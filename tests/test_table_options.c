@@ -1,4 +1,3 @@
-//#define FT_EXTERN static
 #include "tests.h"
 #include "fort.h"
 #include <string.h>

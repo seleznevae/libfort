@@ -149,7 +149,7 @@ static int ft_row_printf_impl(FTABLE *table, size_t row, const char *fmt, va_lis
             if (padding_row == NULL)
                 goto clear;
 
-            if (IS_ERROR(vector_push(table->rows, &padding_row))) {
+            if (FT_IS_ERROR(vector_push(table->rows, &padding_row))) {
                 destroy_row(padding_row);
                 goto clear;
             }
@@ -196,7 +196,7 @@ static int ft_row_wprintf_impl(FTABLE *table, size_t row, const wchar_t *fmt, va
             if (padding_row == NULL)
                 goto clear;
 
-            if (IS_ERROR(vector_push(table->rows, &padding_row))) {
+            if (FT_IS_ERROR(vector_push(table->rows, &padding_row))) {
                 destroy_row(padding_row);
                 goto clear;
             }
@@ -292,7 +292,7 @@ static int ft_write_impl(FTABLE *table, const char *cell_content)
         return FT_ERROR;
 
     int status = fill_buffer_from_string(str_buffer, cell_content);
-    if (IS_SUCCESS(status)) {
+    if (FT_IS_SUCCESS(status)) {
         table->cur_col++;
     }
     return status;
@@ -309,7 +309,7 @@ static int ft_wwrite_impl(FTABLE *table, const wchar_t *cell_content)
         return FT_ERROR;
 
     int status = fill_buffer_from_wstring(str_buffer, cell_content);
-    if (IS_SUCCESS(status)) {
+    if (FT_IS_SUCCESS(status)) {
         table->cur_col++;
     }
     return status;
@@ -323,7 +323,7 @@ int ft_nwrite(FTABLE *table, size_t n, const char *cell_content, ...)
     size_t i = 0;
     assert(table);
     int status = ft_write_impl(table, cell_content);
-    if (IS_ERROR(status))
+    if (FT_IS_ERROR(status))
         return status;
 
     va_list va;
@@ -332,7 +332,7 @@ int ft_nwrite(FTABLE *table, size_t n, const char *cell_content, ...)
     for (i = 0; i < n; ++i) {
         const char *cell = va_arg(va, const char *);
         status = ft_write_impl(table, cell);
-        if (IS_ERROR(status))
+        if (FT_IS_ERROR(status))
             return status;
     }
     va_end(va);
@@ -344,7 +344,7 @@ int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ...)
     size_t i = 0;
     assert(table);
     int status = ft_write_impl(table, cell_content);
-    if (IS_ERROR(status))
+    if (FT_IS_ERROR(status))
         return status;
 
     va_list va;
@@ -353,7 +353,7 @@ int ft_nwrite_ln(FTABLE *table, size_t n, const char *cell_content, ...)
     for (i = 0; i < n; ++i) {
         const char *cell = va_arg(va, const char *);
         status = ft_write_impl(table, cell);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             va_end(va);
             return status;
         }
@@ -371,7 +371,7 @@ int ft_nwwrite(FTABLE *table, size_t n, const wchar_t *cell_content, ...)
     size_t i = 0;
     assert(table);
     int status = ft_wwrite_impl(table, cell_content);
-    if (IS_ERROR(status))
+    if (FT_IS_ERROR(status))
         return status;
 
     va_list va;
@@ -380,7 +380,7 @@ int ft_nwwrite(FTABLE *table, size_t n, const wchar_t *cell_content, ...)
     for (i = 0; i < n; ++i) {
         const wchar_t *cell = va_arg(va, const wchar_t *);
         status = ft_wwrite_impl(table, cell);
-        if (IS_ERROR(status))
+        if (FT_IS_ERROR(status))
             return status;
     }
     va_end(va);
@@ -392,7 +392,7 @@ int ft_nwwrite_ln(FTABLE *table, size_t n, const wchar_t *cell_content, ...)
     size_t i = 0;
     assert(table);
     int status = ft_wwrite_impl(table, cell_content);
-    if (IS_ERROR(status))
+    if (FT_IS_ERROR(status))
         return status;
 
     va_list va;
@@ -401,7 +401,7 @@ int ft_nwwrite_ln(FTABLE *table, size_t n, const wchar_t *cell_content, ...)
     for (i = 0; i < n; ++i) {
         const wchar_t *cell = va_arg(va, const wchar_t *);
         status = ft_wwrite_impl(table, cell);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             va_end(va);
             return status;
         }
@@ -420,7 +420,7 @@ int ft_row_write(FTABLE *table, size_t cols, const char *cells[])
     assert(table);
     for (i = 0; i < cols; ++i) {
         int status = ft_write_impl(table, cells[i]);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             /* todo: maybe current pos in case of error should be equal to the one before function call? */
             return status;
         }
@@ -432,7 +432,7 @@ int ft_row_write_ln(FTABLE *table, size_t cols, const char *cells[])
 {
     assert(table);
     int status = ft_row_write(table, cols, cells);
-    if (IS_SUCCESS(status)) {
+    if (FT_IS_SUCCESS(status)) {
         ft_ln(table);
     }
     return status;
@@ -445,7 +445,7 @@ int ft_row_wwrite(FTABLE *table, size_t cols, const wchar_t *cells[])
     assert(table);
     for (i = 0; i < cols; ++i) {
         int status = ft_wwrite_impl(table, cells[i]);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             /* todo: maybe current pos in case of error should be equal to the one before function call? */
             return status;
         }
@@ -457,7 +457,7 @@ int ft_row_wwrite_ln(FTABLE *table, size_t cols, const wchar_t *cells[])
 {
     assert(table);
     int status = ft_row_wwrite(table, cols, cells);
-    if (IS_SUCCESS(status)) {
+    if (FT_IS_SUCCESS(status)) {
         ft_ln(table);
     }
     return status;
@@ -472,7 +472,7 @@ int ft_table_write(FTABLE *table, size_t rows, size_t cols, const char *table_ce
     assert(table);
     for (i = 0; i < rows; ++i) {
         int status = ft_row_write(table, cols, (const char **)&table_cells[i * cols]);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             /* todo: maybe current pos in case of error should be equal to the one before function call? */
             return status;
         }
@@ -486,7 +486,7 @@ int ft_table_write_ln(FTABLE *table, size_t rows, size_t cols, const char *table
 {
     assert(table);
     int status = ft_table_write(table, rows, cols, table_cells);
-    if (IS_SUCCESS(status)) {
+    if (FT_IS_SUCCESS(status)) {
         ft_ln(table);
     }
     return status;
@@ -500,7 +500,7 @@ int ft_table_wwrite(FTABLE *table, size_t rows, size_t cols, const wchar_t *tabl
     assert(table);
     for (i = 0; i < rows; ++i) {
         int status = ft_row_wwrite(table, cols, (const wchar_t **)&table_cells[i * cols]);
-        if (IS_ERROR(status)) {
+        if (FT_IS_ERROR(status)) {
             /* todo: maybe current pos in case of error should be equal to the one before function call? */
             return status;
         }
@@ -514,7 +514,7 @@ int ft_table_wwrite_ln(FTABLE *table, size_t rows, size_t cols, const wchar_t *t
 {
     assert(table);
     int status = ft_table_wwrite(table, rows, cols, table_cells);
-    if (IS_SUCCESS(status)) {
+    if (FT_IS_SUCCESS(status)) {
         ft_ln(table);
     }
     return status;
@@ -554,7 +554,7 @@ const char *ft_to_string(const FTABLE *table)
     size_t height = 0;
     size_t width = 0;
     int status = table_geometry(table, &height, &width);
-    if (IS_ERROR(status)) {
+    if (FT_IS_ERROR(status)) {
         return NULL;
     }
     size_t sz = height * width + 1;
@@ -566,7 +566,7 @@ const char *ft_to_string(const FTABLE *table)
             return NULL;
     }
     while (string_buffer_capacity(table->conv_buffer) < sz) {
-        if (IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
+        if (FT_IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
             return NULL;
         }
     }
@@ -578,7 +578,7 @@ const char *ft_to_string(const FTABLE *table)
     size_t *col_width_arr = NULL;
     size_t *row_height_arr = NULL;
     status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
-    if (IS_ERROR(status))
+    if (FT_IS_ERROR(status))
         return NULL;
 
     if (rows == 0)
@@ -657,7 +657,7 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
     size_t height = 0;
     size_t width = 0;
     int status = table_geometry(table, &height, &width);
-    if (IS_ERROR(status)) {
+    if (FT_IS_ERROR(status)) {
         return NULL;
     }
     size_t sz = height * width + 1;
@@ -669,7 +669,7 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
             return NULL;
     }
     while (string_buffer_capacity(table->conv_buffer) < sz) {
-        if (IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
+        if (FT_IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
             return NULL;
         }
     }
@@ -685,7 +685,7 @@ const wchar_t *ft_to_wstring(const FTABLE *table)
     if (rows == 0)
         return cur_F_STRDUP(empty_string);
 
-    if (IS_ERROR(status))
+    if (FT_IS_ERROR(status))
         return NULL;
 
     int written = 0;
@@ -771,7 +771,7 @@ int ft_add_separator(FTABLE *table)
         if (sep_p == NULL)
             return FT_MEMORY_ERROR;
         int status = vector_push(table->separators, &sep_p);
-        if (IS_ERROR(status))
+        if (FT_IS_ERROR(status))
             return status;
     }
 
@@ -939,12 +939,12 @@ int ft_set_default_cell_option(uint32_t option, int value)
 }
 
 
-FT_EXTERN int ft_set_default_tbl_option(uint32_t option, int value)
+int ft_set_default_tbl_option(uint32_t option, int value)
 {
     return set_default_entire_table_option(option, value);
 }
 
-FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value)
+int ft_set_tbl_option(FTABLE *table, uint32_t option, int value)
 {
     assert(table);
 
@@ -956,12 +956,12 @@ FT_EXTERN int ft_set_tbl_option(FTABLE *table, uint32_t option, int value)
     return set_entire_table_option(table->options, option, value);
 }
 
-FT_EXTERN void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
+void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
 {
     set_memory_funcs(f_malloc, f_free);
 }
 
-FT_EXTERN int ft_set_cell_span(FTABLE *table, size_t row, size_t col, size_t hor_span)
+int ft_set_cell_span(FTABLE *table, size_t row, size_t col, size_t hor_span)
 {
     assert(table);
     if (hor_span < 2)

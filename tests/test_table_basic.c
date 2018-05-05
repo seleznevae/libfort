@@ -306,26 +306,26 @@ void test_table_write(void)
         assert_true(set_test_options_for_table(table) == FT_SUCCESS);
 
         ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-        assert_true(IS_SUCCESS(ft_write(table, "3")));
-        assert_true(IS_SUCCESS(ft_write(table, "c")));
-        assert_true(IS_SUCCESS(ft_write(table, "234")));
-        assert_true(IS_SUCCESS(ft_write(table, "3.140000")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "3")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "c")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "234")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "3.140000")));
         ft_ln(table);
-        assert_true(IS_SUCCESS(ft_write(table, "c")));
-        assert_true(IS_SUCCESS(ft_write(table, "235")));
-        assert_true(IS_SUCCESS(ft_write(table, "3.150000")));
-        assert_true(IS_SUCCESS(ft_write_ln(table, "5")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "c")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "235")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "3.150000")));
+        assert_true(FT_IS_SUCCESS(ft_write_ln(table, "5")));
 
-        assert_true(IS_SUCCESS(ft_write(table, "234")));
-        assert_true(IS_SUCCESS(ft_write(table, "3.140000")));
-        assert_true(IS_SUCCESS(ft_write(table, "3")));
-        assert_true(IS_SUCCESS(ft_write_ln(table, "c")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "234")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "3.140000")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "3")));
+        assert_true(FT_IS_SUCCESS(ft_write_ln(table, "c")));
 
         /* Replace old values */
         ft_set_cur_cell(table, 1, 1);
-        assert_true(IS_SUCCESS(ft_write(table, "234")));
-        assert_true(IS_SUCCESS(ft_write(table, "3.140000")));
-        assert_true(IS_SUCCESS(ft_write_ln(table, "3")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "234")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "3.140000")));
+        assert_true(FT_IS_SUCCESS(ft_write_ln(table, "3")));
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -354,26 +354,26 @@ void test_table_write(void)
         assert_true(set_test_options_for_table(table) == FT_SUCCESS);
 
         ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"3")));
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"c")));
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"234")));
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"3.140000")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"3")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"c")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"234")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"3.140000")));
         ft_ln(table);
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"c")));
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"235")));
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"3.150000")));
-        assert_true(IS_SUCCESS(ft_wwrite_ln(table, L"5")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"c")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"235")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"3.150000")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite_ln(table, L"5")));
 
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"234")));
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"3.140000")));
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"3")));
-        assert_true(IS_SUCCESS(ft_wwrite_ln(table, L"c")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"234")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"3.140000")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"3")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite_ln(table, L"c")));
 
         /* Replace old values */
         ft_set_cur_cell(table, 1, 1);
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"234")));
-        assert_true(IS_SUCCESS(ft_wwrite(table, L"3.140000")));
-        assert_true(IS_SUCCESS(ft_wwrite_ln(table, L"3")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"234")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"3.140000")));
+        assert_true(FT_IS_SUCCESS(ft_wwrite_ln(table, L"3")));
 
         const wchar_t *table_str = ft_to_wstring(table);
         assert_true(table_str != NULL);
