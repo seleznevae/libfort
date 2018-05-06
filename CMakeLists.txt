@@ -81,13 +81,13 @@ set(EXAMPLE_SOURCES
     example/main.c)
 add_executable(${PROJECT_NAME}_example
     ${EXAMPLE_SOURCES}
-    ${FORT_DEV_SOURCES})
+    lib/fort.c)
 
 set(EXAMPLE_CPP_SOURCES
     example/main.cpp)
 add_executable(${PROJECT_NAME}_example_cpp
     ${EXAMPLE_CPP_SOURCES}
-    ${FORT_DEV_SOURCES})
+    lib/fort.c)
 
 set(TEST_SOURCES_DEV
     tests/main_test.c

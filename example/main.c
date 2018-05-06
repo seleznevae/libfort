@@ -113,73 +113,61 @@ int main(void)
     ft_set_default_border_style(FT_BASIC_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_SIMPLE_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_PLAIN_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_DOT_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_EMPTY_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_SOLID_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_SOLID_ROUND_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_DOUBLE_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_DOUBLE2_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_BOLD_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_BOLD2_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_FRAME_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
-    print_char_str(ft_to_string(table));
     ft_destroy_table(table);
 
     /* Debug */
