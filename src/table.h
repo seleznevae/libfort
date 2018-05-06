@@ -2,7 +2,6 @@
 #define TABLE_H
 
 #include "fort_impl.h"
-#include "fort.h"
 
 struct ft_table;
 typedef struct ft_table ft_table_t;

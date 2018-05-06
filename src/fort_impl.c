@@ -1,5 +1,7 @@
 #include "fort_impl.h"
+#ifdef FT_HAVE_WCHAR
 #include <wchar.h>
+#endif
 
 
 

@@ -24,13 +24,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "stdlib.h"
-#include "stdarg.h"
-#include "stdio.h"
+#include <stdlib.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include "fort.h"
-#include "assert.h"
-#include "string.h"
-#include "wchar.h"
+#include <assert.h>
+#include <string.h>
+#include <wchar.h>
 #include <ctype.h>
 
 #include "vector.h"
@@ -633,6 +633,8 @@ clear:
 }
 
 
+#ifdef FT_HAVE_WCHAR
+
 const wchar_t *ft_to_wstring(const ft_table_t *table)
 {
     typedef wchar_t char_type;
@@ -735,6 +737,7 @@ clear:
 #undef cur_F_STRDUP
 }
 
+#endif
 
 
 /*

@@ -1,6 +1,6 @@
+#include <assert.h>
 #include "options.h"
 #include "fort_impl.h"
-#include "assert.h"
 #include "vector.h"
 
 /*****************************************************************************

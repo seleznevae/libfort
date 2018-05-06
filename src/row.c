@@ -910,6 +910,7 @@ clear:
 }
 
 
+#ifdef FT_HAVE_WCHAR
 
 int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                   size_t row_height, const context_t *context)
@@ -998,5 +999,6 @@ clear:
     return -1;
 }
 
+#endif
 
 

@@ -3,12 +3,12 @@
 
 #include "fort_impl.h"
 #include "fort.h"
-#include "stdarg.h"
+#include <stdarg.h>
 #include "options.h"
-
 #ifdef FT_HAVE_WCHAR
 #include <wchar.h>
 #endif
+
 struct fort_row;
 typedef struct fort_row fort_row_t;
 

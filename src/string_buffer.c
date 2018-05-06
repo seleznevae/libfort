@@ -1,9 +1,9 @@
 #include "string_buffer.h"
 #include "options.h"
-#include "assert.h"
-#include "wchar.h"
 #include "wcwidth.h"
+#include <assert.h>
 #include <stddef.h>
+#include <wchar.h>
 /*****************************************************************************
  *               STRING BUFFER
  * ***************************************************************************/

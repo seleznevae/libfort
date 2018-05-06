@@ -1,7 +1,7 @@
 #include "cell.h"
 #include "options.h"
 #include "string_buffer.h"
-#include "assert.h"
+#include <assert.h>
 
 /*****************************************************************************
  *               CELL
