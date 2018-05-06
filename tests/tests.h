@@ -73,12 +73,5 @@ struct ft_table *create_test_int_table(int set_test_opts);
 struct ft_table *create_test_int_wtable(int set_test_opts);
 
 
-void run_test_suit(const char *test_suit_name, int n_tests, struct test_case test_suit []);
-
-#ifdef FORT_WB_TESTING_ENABLED
-int run_wb_test_suit(void);
-#endif
-int run_bb_test_suit(void);
-
 
 #endif // TESTS_H

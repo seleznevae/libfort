@@ -98,7 +98,7 @@ set(TEST_SOURCES_DEV
     tests/bb_tests/test_table_border_style.c
     tests/bb_tests/test_table_options.c
     tests/bb_tests/test_memory_errors.c
-    tests/test_common.c)
+    tests/test_utils.c)
 add_executable(${PROJECT_NAME}_test_dev
     ${FORT_SOURCES}
     ${TEST_SOURCES_DEV})
@@ -112,7 +112,7 @@ set(TEST_SOURCES
     tests/bb_tests/test_table_border_style.c
     tests/bb_tests/test_table_options.c
     tests/bb_tests/test_memory_errors.c
-    tests/test_common.c)
+    tests/test_utils.c)
 add_executable(${PROJECT_NAME}_test
     include/fort.c
     ${TEST_SOURCES})
