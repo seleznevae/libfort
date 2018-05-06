@@ -5,8 +5,7 @@
 #include <stdint.h>
 #include <limits.h>
 
-struct fort_column_options
-{
+struct fort_column_options {
     int col_min_width;
     enum ft_text_alignment align;
 };
@@ -24,8 +23,7 @@ typedef struct vector vector_t;
 #define OPTION_SET(ft_opts, option) ((ft_opts) |=(option))
 #define OPTION_UNSET(ft_opts, option) ((ft_opts) &= ~((uint32_t)option))
 
-struct fort_cell_options
-{
+struct fort_cell_options {
     size_t cell_row;
     size_t cell_col;
     uint32_t options;
@@ -46,8 +44,8 @@ typedef struct fort_cell_options fort_cell_options_t;
 typedef vector_t fort_cell_opt_container_t;
 fort_cell_opt_container_t *create_cell_opt_container(void);
 void destroy_cell_opt_container(fort_cell_opt_container_t *cont);
-const fort_cell_options_t* cget_cell_opt(const fort_cell_opt_container_t *cont, size_t row, size_t col);
-fort_cell_options_t* get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, size_t row, size_t col);
+const fort_cell_options_t *cget_cell_opt(const fort_cell_opt_container_t *cont, size_t row, size_t col);
+fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, size_t row, size_t col);
 fort_status_t set_cell_option(fort_cell_opt_container_t *cont, size_t row, size_t col, uint32_t option, int value);
 fort_status_t unset_cell_option(fort_cell_opt_container_t *cont, unsigned row, unsigned col, uint32_t option);
 
@@ -67,15 +65,13 @@ fort_status_t set_default_cell_option(uint32_t option, int value);
  *   BL BB BB BB BV BB BB BB BV BB BB BB BR        <----- BottomSeparator
  */
 
-enum HorSeparatorPos
-{
+enum HorSeparatorPos {
     TopSeparator,
     InsideSeparator,
     BottomSeparator
 };
 
-enum BorderItemPos
-{
+enum BorderItemPos {
     TL_bip = 0,
     TT_bip = 1,
     TV_bip = 2,
@@ -99,8 +95,7 @@ enum BorderItemPos
 };
 
 
-enum SeparatorItemPos
-{
+enum SeparatorItemPos {
     LH_sip = 0,
     IH_sip = 1,
     II_sip = 2,
@@ -110,8 +105,7 @@ enum SeparatorItemPos
 };
 
 
-struct fort_border_style
-{
+struct fort_border_style {
     const char *border_chars[BorderItemPosSize];
     const char *header_border_chars[BorderItemPosSize];
     const char *separator_chars[SepratorItemPosSize];
@@ -130,8 +124,7 @@ extern struct fort_border_style FORT_BOLD2_STYLE;
 extern struct fort_border_style FORT_FRAME_STYLE;
 
 
-struct fort_entire_table_options
-{
+struct fort_entire_table_options {
     unsigned int left_margin;
     unsigned int top_margin;
     unsigned int right_margin;
@@ -142,21 +135,20 @@ extern fort_entire_table_options_t g_entire_table_options;
 fort_status_t set_entire_table_option(fort_table_options_t *table_options, uint32_t option, int value);
 fort_status_t set_default_entire_table_option(uint32_t option, int value);
 
-struct fort_table_options
-{
+struct fort_table_options {
     struct fort_border_style border_style;
-    fort_cell_opt_container_t * cell_options;
+    fort_cell_opt_container_t *cell_options;
     fort_entire_table_options_t entire_table_options;
 };
 typedef struct fort_table_options fort_table_options_t;
 extern fort_table_options_t g_table_options;
 
-size_t max_border_elem_strlen(struct fort_table_options*);
+size_t max_border_elem_strlen(struct fort_table_options *);
 
 
-fort_table_options_t* create_table_options(void);
-fort_table_options_t* copy_table_options(const fort_table_options_t *option);
-void destroy_table_options(fort_table_options_t* options);
+fort_table_options_t *create_table_options(void);
+fort_table_options_t *copy_table_options(const fort_table_options_t *option);
+void destroy_table_options(fort_table_options_t *options);
 
 
 

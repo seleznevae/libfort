@@ -33,15 +33,13 @@
 #define MIN(a,b) ((a) < (b) ? (a) : b)
 
 
-enum PolicyOnNull
-{
+enum PolicyOnNull {
     Create,
     DoNotCreate
 };
 
 
-enum F_BOOL
-{
+enum F_BOOL {
     F_FALSE = 0,
     F_TRUE = 1
 };
@@ -80,14 +78,12 @@ struct fort_row;
 struct vector;
 struct fort_cell;
 struct string_buffer;
-struct separator
-{
+struct separator {
     int enabled;
 };
 
 typedef struct fort_table_options fort_table_options_t;
-struct fort_context
-{
+struct fort_context {
     fort_table_options_t *table_options;
     size_t row;
     size_t column;
@@ -104,8 +100,7 @@ typedef struct separator separator_t;
 
 
 
-enum CellType
-{
+enum CellType {
     CommonCell,
     GroupMasterCell,
     GroupSlaveCell
@@ -123,8 +118,8 @@ extern void *(*fort_realloc)(void *ptr, size_t size);
 void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
 
 
-char *fort_strdup(const char* str);
-wchar_t *fort_wcsdup(const wchar_t* str);
+char *fort_strdup(const char *str);
+wchar_t *fort_wcsdup(const wchar_t *str);
 size_t number_of_columns_in_format_string(const char *fmt);
 size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
 //int snprint_n_chars(char *buf, size_t length, size_t n, char ch);

@@ -9,7 +9,7 @@
 /*****************************************************************************
  *               CELL
  * ***************************************************************************/
-fort_cell_t * create_cell(void);
+fort_cell_t *create_cell(void);
 
 
 void destroy_cell(fort_cell_t *cell);
@@ -34,6 +34,6 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
 fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str);
 #endif
 
-string_buffer_t* cell_get_string_buffer(fort_cell_t *cell);
+string_buffer_t *cell_get_string_buffer(fort_cell_t *cell);
 
 #endif /* CELL_H */

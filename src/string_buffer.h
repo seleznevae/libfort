@@ -7,26 +7,24 @@
 /*****************************************************************************
  *               STRING BUFFER
  * ***************************************************************************/
-enum str_buf_type
-{
+enum str_buf_type {
     CharBuf,
     WCharBuf
 };
 
 struct string_buffer;
 typedef struct string_buffer string_buffer_t;
-struct string_buffer
-{
+struct string_buffer {
     union {
         char *cstr;
         wchar_t *wstr;
         void *data;
-    }str;
+    } str;
     size_t data_sz;
     enum str_buf_type type;
 };
 
-string_buffer_t* create_string_buffer(size_t number_of_chars, enum str_buf_type type);
+string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type type);
 void destroy_string_buffer(string_buffer_t *buffer);
 fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer);
 

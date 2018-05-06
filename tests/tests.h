@@ -34,8 +34,7 @@ void test_table_cell_options(void);
 void test_table_tbl_options(void);
 void test_memory_errors(void);
 
-struct test_case
-{
+struct test_case {
     char name [128];
     void (*test)(void);
 };

@@ -5,8 +5,7 @@
 
 struct ft_table;
 typedef struct ft_table ft_table_t;
-struct ft_table
-{
+struct ft_table {
     vector_t *rows;
     fort_table_options_t *options;
     string_buffer_t *conv_buffer;
@@ -39,13 +38,13 @@ fort_row_t *get_row(ft_table_t *table, size_t row);
 const fort_row_t *get_row_c(const ft_table_t *table, size_t row);
 fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row);
 
-string_buffer_t * get_cur_str_buffer_and_create_if_not_exists(ft_table_t * table);
+string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table);
 
 
 
 fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
-                                                  size_t **col_width_arr_p, size_t *col_width_arr_sz,
-                                                  size_t **row_height_arr_p, size_t *row_height_arr_sz);
+        size_t **col_width_arr_p, size_t *col_width_arr_sz,
+        size_t **row_height_arr_p, size_t *row_height_arr_sz);
 fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width);
 
 #endif /* TABLE_H */
