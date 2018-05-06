@@ -3,7 +3,7 @@
 
 
 /********************************************************
-   Begin of file "fort_impl.h"
+   Begin of file "fort_utils.h"
  ********************************************************/
 
 #ifndef FORT_IMPL_H
@@ -157,7 +157,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
 #endif /* FORT_IMPL_H */
 
 /********************************************************
-   End of file "fort_impl.h"
+   End of file "fort_utils.h"
  ********************************************************/
 
 
@@ -168,7 +168,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
 #ifndef VECTOR_H
 #define VECTOR_H
 
-/* #include "fort_impl.h" */ /* Commented by amalgamation script */
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
 
 /*****************************************************************************
@@ -234,7 +234,7 @@ int mk_wcswidth(const wchar_t *pwcs, size_t n);
 #ifndef STRING_BUFFER_H
 #define STRING_BUFFER_H
 
-/* #include "fort_impl.h" */ /* Commented by amalgamation script */
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
 
 /*****************************************************************************
@@ -290,7 +290,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
-/* #include "fort_impl.h" */ /* Commented by amalgamation script */
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 #include <stdint.h>
 #include <limits.h>
 
@@ -463,7 +463,7 @@ void destroy_table_options(fort_table_options_t* options);
 #ifndef CELL_H
 #define CELL_H
 
-/* #include "fort_impl.h" */ /* Commented by amalgamation script */
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
 
 
@@ -512,7 +512,7 @@ string_buffer_t* cell_get_string_buffer(fort_cell_t *cell);
 #ifndef ROW_H
 #define ROW_H
 
-/* #include "fort_impl.h" */ /* Commented by amalgamation script */
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 #include "fort.h"
 #include <stdarg.h>
 /* #include "options.h" */ /* Commented by amalgamation script */
@@ -585,7 +585,7 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
 #ifndef TABLE_H
 #define TABLE_H
 
-/* #include "fort_impl.h" */ /* Commented by amalgamation script */
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
 struct ft_table;
 typedef struct ft_table ft_table_t;
@@ -645,7 +645,7 @@ fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *wi
 
 #include <assert.h>
 /* #include "options.h" */ /* Commented by amalgamation script */
-/* #include "fort_impl.h" */ /* Commented by amalgamation script */
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 /* #include "vector.h" */ /* Commented by amalgamation script */
 
 /*****************************************************************************
@@ -1523,987 +1523,6 @@ fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *wi
    Begin of file "fort_impl.c"
  ********************************************************/
 
-/* #include "fort_impl.h" */ /* Commented by amalgamation script */
-#ifdef FT_HAVE_WCHAR
-#include <wchar.h>
-#endif
-
-
-
-/*****************************************************************************
- *               LIBFORT helpers
- *****************************************************************************/
-
-#ifndef FT_MICROSOFT_COMPILER
-void *(*fort_malloc)(size_t size) = &malloc;
-void (*fort_free)(void *ptr) = &free;
-void *(*fort_calloc)(size_t nmemb, size_t size) = &calloc;
-void *(*fort_realloc)(void *ptr, size_t size) = &realloc;
-#else
-static void *local_malloc(size_t size)
-{
-    return malloc(size);
-}
-
-static void local_free(void *ptr)
-{
-    free(ptr);
-}
-
-static void *local_calloc(size_t nmemb, size_t size)
-{
-    return calloc(nmemb, size);
-}
-
-static void *local_realloc(void *ptr, size_t size)
-{
-    return realloc(ptr, size);
-}
-
-void *(*fort_malloc)(size_t size) = &local_malloc;
-void (*fort_free)(void *ptr) = &local_free;
-void *(*fort_calloc)(size_t nmemb, size_t size) = &local_calloc;
-void *(*fort_realloc)(void *ptr, size_t size) = &local_realloc;
-#endif
-
-static void *custom_fort_calloc(size_t nmemb, size_t size)
-{
-    size_t total_size = nmemb * size;
-    void *result = F_MALLOC(total_size);
-    if (result != NULL)
-        memset(result, 0, total_size);
-    return result;
-}
-
-static void *custom_fort_realloc(void *ptr, size_t size)
-{
-    if (ptr == NULL)
-        return F_MALLOC(size);
-    if (size == 0) {
-        F_FREE(ptr);
-        return NULL;
-    }
-
-    void *new_chunk = F_MALLOC(size);
-    if (new_chunk == NULL)
-        return NULL;
-
-    /*
-     * In theory we should copy MIN(size, size allocated for ptr) bytes,
-     * but this is rather dummy implementation so we don't care about it
-     */
-    memcpy(new_chunk, ptr, size);
-    F_FREE(ptr);
-    return new_chunk;
-}
-
-void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
-{
-    assert((f_malloc == NULL && f_free == NULL) /* Use std functions */
-           || (f_malloc != NULL && f_free != NULL) /* Use custom functions */);
-
-    if (f_malloc == NULL && f_free == NULL) {
-#ifndef FT_MICROSOFT_COMPILER
-        fort_malloc = &malloc;
-        fort_free = &free;
-        fort_calloc = &calloc;
-        fort_realloc = &realloc;
-#else
-        fort_malloc = &local_malloc;
-        fort_free = &local_free;
-        fort_calloc = &local_calloc;
-        fort_realloc = &local_realloc;
-#endif
-    } else {
-        fort_malloc = f_malloc;
-        fort_free = f_free;
-        fort_calloc = &custom_fort_calloc;
-        fort_realloc = &custom_fort_realloc;
-    }
-
-}
-
-
-char *fort_strdup(const char *str)
-{
-    if (str == NULL)
-        return NULL;
-
-    size_t sz = strlen(str);
-    char *str_copy = (char *)F_MALLOC((sz + 1) * sizeof(char));
-    if (str_copy == NULL)
-        return NULL;
-
-    strcpy(str_copy, str);
-    return str_copy;
-}
-
-wchar_t *fort_wcsdup(const wchar_t *str)
-{
-    if (str == NULL)
-        return NULL;
-
-    size_t sz = wcslen(str);
-    wchar_t *str_copy = (wchar_t *)F_MALLOC((sz + 1) * sizeof(wchar_t));
-    if (str_copy == NULL)
-        return NULL;
-
-    wcscpy(str_copy, str);
-    return str_copy;
-}
-
-size_t number_of_columns_in_format_string(const char *fmt)
-{
-    int separator_counter = 0;
-    const char *pos = fmt;
-    while (1) {
-        pos = strchr(pos, FORT_COL_SEPARATOR);
-        if (pos == NULL)
-            break;
-
-        separator_counter++;
-        ++pos;
-    }
-    return separator_counter + 1;
-}
-
-size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
-{
-    int separator_counter = 0;
-    const wchar_t *pos = fmt;
-    while (1) {
-        pos = wcschr(pos, FORT_COL_SEPARATOR);
-        if (pos == NULL)
-            break;
-
-        separator_counter++;
-        ++pos;
-    }
-    return separator_counter + 1;
-}
-
-
-//int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
-//{
-//    if (length <= n)
-//        return -1;
-
-//    if (n == 0)
-//        return 0;
-
-//    /* To ensure valid return value it is safely not print such big strings */
-//    if (n > INT_MAX)
-//        return -1;
-
-//    int status = snprintf(buf, length, "%0*d", (int)n, 0);
-//    if (status < 0)
-//        return status;
-
-//    size_t i = 0;
-//    for (i = 0; i < n; ++i) {
-//        *buf = ch;
-//        buf++;
-//    }
-//    return (int)n;
-//}
-
-int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
-{
-    size_t str_len = strlen(str);
-    if (length <= n * str_len)
-        return -1;
-
-    if (n == 0)
-        return 0;
-
-    /* To ensure valid return value it is safely not print such big strings */
-    if (n * str_len > INT_MAX)
-        return -1;
-
-    int status = snprintf(buf, length, "%0*d", (int)(n * str_len), 0);
-    if (status < 0)
-        return status;
-
-    size_t i = 0;
-    for (i = 0; i < n; ++i) {
-        const char *str_p = str;
-        while (*str_p)
-            *(buf++) = *(str_p++);
-    }
-    return (int)(n * str_len);
-}
-
-
-//int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
-//{
-//    if (length <= n)
-//        return -1;
-
-//    if (n == 0)
-//        return 0;
-
-//    /* To ensure valid return value it is safely not print such big strings */
-//    if (n > INT_MAX)
-//        return -1;
-
-//    int status = swprintf(buf, length, L"%0*d", (int)n, 0);
-//    if (status < 0)
-//        return status;
-
-//    size_t i = 0;
-//    for (i = 0; i < n; ++i) {
-//        *buf = ch;
-//        buf++;
-//    }
-//    return (int)n;
-//}
-
-int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
-{
-    size_t str_len = strlen(str);
-
-    /* This function doesn't work properly with multibyte characters
-     * so it is better return an error in this case
-     */
-    if (str_len > 1)
-        return -1;
-
-    if (length <= n * str_len)
-        return -1;
-
-    if (n == 0)
-        return 0;
-
-
-
-    /* To ensure valid return value it is safely not print such big strings */
-    if (n * str_len > INT_MAX)
-        return -1;
-
-    int status = swprintf(buf, length, L"%0*d", (int)(n * str_len), 0);
-    if (status < 0)
-        return status;
-
-    size_t i = 0;
-    for (i = 0; i < n; ++i) {
-        const char *str_p = str;
-        while (*str_p)
-            *(buf++) = (wchar_t) * (str_p++);
-    }
-    return (int)(n * str_len);
-}
-
-
-/********************************************************
-   End of file "fort_impl.c"
- ********************************************************/
-
-
-/********************************************************
-   Begin of file "vector.c"
- ********************************************************/
-
-/* #include "vector.h" */ /* Commented by amalgamation script */
-#include <assert.h>
-#include <string.h>
-
-/*****************************************************************************
- *               VECTOR IMPLEMENTATIONS
- * ***************************************************************************/
-
-struct vector {
-    size_t m_size;
-    void  *m_data;
-    size_t m_capacity;
-    size_t m_item_size;
-};
-
-static int vector_reallocate_(vector_t *vector, size_t new_capacity)
-{
-    assert(vector);
-    assert(new_capacity > vector->m_capacity);
-
-    size_t new_size = new_capacity * vector->m_item_size;
-    vector->m_data = F_REALLOC(vector->m_data, new_size);
-    if (vector->m_data == NULL)
-        return -1;
-    return 0;
-}
-
-/* ------------ Constructors & Destructors ----------------------------- */
-
-vector_t *create_vector(size_t item_size, size_t capacity)
-{
-    vector_t *vector = (vector_t *)F_MALLOC(sizeof(vector_t));
-    if (vector == NULL) {
-        SYS_LOG_ERROR("Failed to allocate memory for asock vector");
-        return NULL;
-    }
-
-    size_t init_size = MAX(item_size * capacity, 1);
-    vector->m_data = F_MALLOC(init_size);
-    if (vector->m_data == NULL) {
-        SYS_LOG_ERROR("Failed to allocate memory for asock vector inern. buffer");
-        F_FREE(vector);
-        return NULL;
-    }
-
-    vector->m_size      = 0;
-    vector->m_capacity  = capacity;
-    vector->m_item_size = item_size;
-
-    return vector;
-}
-
-
-void destroy_vector(vector_t *vector)
-{
-    assert(vector);
-    F_FREE(vector->m_data);
-    F_FREE(vector);
-}
-
-vector_t *copy_vector(vector_t *v)
-{
-    if (v == NULL)
-        return NULL;
-
-    vector_t *new_vector = create_vector(v->m_item_size, v->m_capacity);
-    if (new_vector == NULL)
-        return NULL;
-
-    memcpy(new_vector->m_data, v->m_data, v->m_item_size * v->m_size);
-    new_vector->m_size      = v->m_size ;
-    new_vector->m_item_size = v->m_item_size ;
-    return new_vector;
-}
-
-
-
-/* ----------- Nonmodifying functions --------------------------------- */
-
-size_t vector_size(const vector_t *vector)
-{
-    assert(vector);
-    return vector->m_size;
-}
-
-
-size_t vector_capacity(const vector_t *vector)
-{
-    assert(vector);
-    return vector->m_capacity;
-}
-
-size_t vector_index_of(const vector_t *vector, const void *item)
-{
-    assert(vector);
-    assert(item);
-
-    size_t i = 0;
-    for (i = 0; i < vector->m_size; ++i) {
-        void *data_pos = (char *)vector->m_data + i * vector->m_item_size;
-        if (memcmp(data_pos, item, vector->m_item_size) == 0) {
-            return i;
-        }
-    }
-    return INVALID_VEC_INDEX;
-}
-
-
-/* ----------- Modifying functions ------------------------------------- */
-
-int vector_push(vector_t *vector, const void *item)
-{
-    assert(vector);
-    assert(item);
-
-    if (vector->m_size == vector->m_capacity) {
-        if (vector_reallocate_(vector, vector->m_capacity * 2) == -1)
-            return FT_ERROR;
-        vector->m_capacity = vector->m_capacity * 2;
-    }
-
-    ptrdiff_t deviation = vector->m_size * vector->m_item_size;
-    memcpy((char *)vector->m_data + deviation, item, vector->m_item_size);
-
-    ++(vector->m_size);
-
-    return FT_SUCCESS;
-}
-
-
-int vector_erase(vector_t *vector, size_t index)
-{
-    assert(vector);
-
-    if (vector->m_size == 0 || index >= vector->m_size)
-        return FT_ERROR;
-
-    memmove((char *)vector->m_data + vector->m_item_size * index,
-            (char *)vector->m_data + vector->m_item_size * (index + 1),
-            (vector->m_size - 1 - index) * vector->m_item_size);
-    vector->m_size--;
-    return FT_SUCCESS;
-}
-
-
-void vector_clear(vector_t *vector)
-{
-    vector->m_size = 0;
-}
-
-const void *vector_at_c(const vector_t *vector, size_t index)
-{
-    if (index >= vector->m_size)
-        return NULL;
-
-    return (char *)vector->m_data + index * vector->m_item_size;
-}
-
-
-void *vector_at(vector_t *vector, size_t index)
-{
-    if (index >= vector->m_size)
-        return NULL;
-
-    return (char *)vector->m_data + index * vector->m_item_size;
-}
-
-fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
-{
-    assert(cur_vec);
-    assert(mv_vec);
-    assert(cur_vec != mv_vec);
-    assert(cur_vec->m_item_size == mv_vec->m_item_size);
-
-    size_t cur_sz = vector_size(cur_vec);
-    size_t mv_sz = vector_size(mv_vec);
-    if (mv_sz == 0) {
-        return FT_SUCCESS;
-    }
-
-    size_t min_targ_size = pos + mv_sz;
-    if (cur_sz < min_targ_size) {
-        if (vector_reallocate_(cur_vec, min_targ_size) == -1)
-            return FT_ERROR;
-        cur_vec->m_capacity = min_targ_size;
-    }
-
-    ptrdiff_t deviation = pos * cur_vec->m_item_size;
-    void *tmp = NULL;
-    size_t new_mv_sz = 0;
-    if (cur_sz > pos) {
-        new_mv_sz = MIN(cur_sz - pos, mv_sz);
-        tmp = F_MALLOC(cur_vec->m_item_size * new_mv_sz);
-        if (tmp == NULL) {
-            return FT_MEMORY_ERROR;
-        }
-    }
-
-    memcpy(tmp,
-           (char *)cur_vec->m_data + deviation,
-           cur_vec->m_item_size * (cur_sz - pos));
-    memcpy((char *)cur_vec->m_data + deviation,
-           mv_vec->m_data,
-           cur_vec->m_item_size * mv_sz);
-    memcpy(mv_vec->m_data,
-           tmp,
-           cur_vec->m_item_size * new_mv_sz);
-
-    mv_vec->m_size = new_mv_sz;
-    F_FREE(tmp);
-    return FT_SUCCESS;
-}
-
-
-
-
-/********************************************************
-   End of file "vector.c"
- ********************************************************/
-
-
-/********************************************************
-   Begin of file "string_buffer.c"
- ********************************************************/
-
-/* #include "string_buffer.h" */ /* Commented by amalgamation script */
-/* #include "options.h" */ /* Commented by amalgamation script */
-/* #include "wcwidth.h" */ /* Commented by amalgamation script */
-#include <assert.h>
-#include <stddef.h>
-#include <wchar.h>
-/*****************************************************************************
- *               STRING BUFFER
- * ***************************************************************************/
-
-
-static ptrdiff_t str_iter_width(const char *beg, const char *end)
-{
-    assert(end >= beg);
-    return (end - beg);
-}
-
-static ptrdiff_t wcs_iter_width(const wchar_t *beg, const wchar_t *end)
-{
-    assert(end >= beg);
-    return mk_wcswidth(beg, (end - beg));
-}
-
-
-static size_t buf_str_len(const string_buffer_t *buf)
-{
-    assert(buf);
-    if (buf->type == CharBuf) {
-        return strlen(buf->str.cstr);
-    } else {
-        return wcslen(buf->str.wstr);
-    }
-}
-
-size_t strchr_count(const char *str, char ch)
-{
-    if (str == NULL)
-        return 0;
-
-    size_t count = 0;
-    str = strchr(str, ch);
-    while (str) {
-        count++;
-        str++;
-        str = strchr(str, ch);
-    }
-    return count;
-}
-
-size_t wstrchr_count(const wchar_t *str, wchar_t ch)
-{
-    if (str == NULL)
-        return 0;
-
-    size_t count = 0;
-    str = wcschr(str, ch);
-    while (str) {
-        count++;
-        str++;
-        str = wcschr(str, ch);
-    }
-    return count;
-}
-
-const char *str_n_substring_beg(const char *str, char ch_separator, size_t n)
-{
-    if (str == NULL)
-        return NULL;
-
-    if (n == 0)
-        return str;
-
-    str = strchr(str, ch_separator);
-    --n;
-    while (n > 0) {
-        if (str == NULL)
-            return NULL;
-        --n;
-        str++;
-        str = strchr(str, ch_separator);
-    }
-    return str ? (str + 1) : NULL;
-}
-
-const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, size_t n)
-{
-    if (str == NULL)
-        return NULL;
-
-    if (n == 0)
-        return str;
-
-    str = wcschr(str, ch_separator);
-    --n;
-    while (n > 0) {
-        if (str == NULL)
-            return NULL;
-        --n;
-        str++;
-        str = wcschr(str, ch_separator);
-    }
-    return str ? (str + 1) : NULL;
-}
-
-void str_n_substring(const char *str, char ch_separator, size_t n, const char **begin, const char **end)
-{
-    const char *beg = str_n_substring_beg(str, ch_separator, n);
-    if (beg == NULL) {
-        *begin = NULL;
-        *end = NULL;
-        return;
-    }
-
-    const char *en = strchr(beg, ch_separator);
-    if (en == NULL) {
-        en = str + strlen(str);
-    }
-
-    *begin = beg;
-    *end = en;
-    return;
-}
-
-void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end)
-{
-    const wchar_t *beg = wstr_n_substring_beg(str, ch_separator, n);
-    if (beg == NULL) {
-        *begin = NULL;
-        *end = NULL;
-        return;
-    }
-
-    const wchar_t *en = wcschr(beg, ch_separator);
-    if (en == NULL) {
-        en = str + wcslen(str);
-    }
-
-    *begin = beg;
-    *end = en;
-    return;
-}
-
-
-string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type type)
-{
-    size_t sz = (number_of_chars) * (type == CharBuf ? sizeof(char) : sizeof(wchar_t));
-    string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
-    if (result == NULL)
-        return NULL;
-    result->str.data = F_MALLOC(sz);
-    if (result->str.data == NULL) {
-        F_FREE(result);
-        return NULL;
-    }
-    result->data_sz = sz;
-    result->type = type;
-
-    if (sz && type == CharBuf) {
-        result->str.cstr[0] = '\0';
-    } else if (sz && type == WCharBuf) {
-        result->str.wstr[0] = L'\0';
-    }
-
-    return result;
-}
-
-void destroy_string_buffer(string_buffer_t *buffer)
-{
-    if (buffer == NULL)
-        return;
-    F_FREE(buffer->str.data);
-    buffer->str.data = NULL;
-    F_FREE(buffer);
-}
-
-fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
-{
-    assert(buffer);
-    char *new_str = (char *)F_MALLOC(buffer->data_sz * 2);
-    if (new_str == NULL) {
-        return FT_MEMORY_ERROR;
-    }
-    F_FREE(buffer->str.data);
-    buffer->str.data = new_str;
-    buffer->data_sz *= 2;
-    return FT_SUCCESS;
-}
-
-fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
-{
-    assert(buffer);
-    assert(str);
-
-    size_t sz = strlen(str);
-    char *copy = F_STRDUP(str);
-    if (copy == NULL)
-        return FT_MEMORY_ERROR;
-
-    while (sz >= string_buffer_capacity(buffer)) {
-        int status = realloc_string_buffer_without_copy(buffer);
-        if (!FT_IS_SUCCESS(status)) {
-            return status;
-        }
-    }
-    F_FREE(buffer->str.data);
-    buffer->str.cstr = copy;
-    buffer->type = CharBuf;
-
-    return FT_SUCCESS;
-}
-
-fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *str)
-{
-    assert(buffer);
-    assert(str);
-
-    size_t sz = wcslen(str);
-    wchar_t *copy = F_WCSDUP(str);
-    if (copy == NULL)
-        return FT_MEMORY_ERROR;
-
-    while (sz >= string_buffer_capacity(buffer)) {
-        int status = realloc_string_buffer_without_copy(buffer);
-        if (!FT_IS_SUCCESS(status)) {
-            return status;
-        }
-    }
-    F_FREE(buffer->str.data);
-    buffer->str.wstr = copy;
-    buffer->type = WCharBuf;
-
-    return FT_SUCCESS;
-}
-
-
-
-size_t buffer_text_height(string_buffer_t *buffer)
-{
-    if (buffer == NULL || buffer->str.data == NULL || buf_str_len(buffer) == 0) {
-        return 0;
-    }
-    if (buffer->type == CharBuf)
-        return 1 + strchr_count(buffer->str.cstr, '\n');
-    else
-        return 1 + wstrchr_count(buffer->str.wstr, L'\n');
-}
-
-size_t buffer_text_width(string_buffer_t *buffer)
-{
-    size_t max_length = 0;
-    int n = 0;
-    if (buffer->type == CharBuf) {
-        while (1) {
-            const char *beg = NULL;
-            const char *end = NULL;
-            str_n_substring(buffer->str.cstr, '\n', n, &beg, &end);
-            if (beg == NULL || end == NULL)
-                return max_length;
-
-            max_length = MAX(max_length, (size_t)(end - beg));
-            ++n;
-        }
-    } else {
-        while (1) {
-            const wchar_t *beg = NULL;
-            const wchar_t *end = NULL;
-            wstr_n_substring(buffer->str.wstr, L'\n', n, &beg, &end);
-            if (beg == NULL || end == NULL)
-                return max_length;
-
-            int line_width = mk_wcswidth(beg, end - beg);
-            if (line_width < 0) /* For safety */
-                line_width = 0;
-            max_length = MAX(max_length, (size_t)line_width);
-
-            ++n;
-        }
-    }
-}
-
-
-
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t buf_len, const context_t *context)
-{
-#define CHAR_TYPE char
-#define NULL_CHAR '\0'
-#define NEWLINE_CHAR '\n'
-#define SPACE_CHAR " "
-#define SNPRINTF_FMT_STR "%*s"
-#define SNPRINTF snprintf
-#define BUFFER_STR str.cstr
-//#define SNPRINT_N_CHARS  snprint_n_chars
-#define SNPRINT_N_STRINGS  snprint_n_strings
-#define STR_N_SUBSTRING str_n_substring
-#define STR_ITER_WIDTH str_iter_width
-
-    if (buffer == NULL || buffer->str.data == NULL
-        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
-        return -1;
-    }
-
-    size_t content_width = buffer_text_width(buffer);
-    if ((buf_len - 1) < content_width)
-        return -1;
-
-    size_t left = 0;
-    size_t right = 0;
-
-    switch (get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TEXT_ALIGN)) {
-        case FT_ALIGNED_LEFT:
-            left = 0;
-            right = (buf_len - 1) - content_width;
-            break;
-        case FT_ALIGNED_CENTER:
-            left = ((buf_len - 1) - content_width) / 2;
-            right = ((buf_len - 1) - content_width) - left;
-            break;
-        case FT_ALIGNED_RIGHT:
-            left = (buf_len - 1) - content_width;
-            right = 0;
-            break;
-        default:
-            assert(0);
-            break;
-    }
-
-    int  written = 0;
-    int tmp = 0;
-    const CHAR_TYPE *beg = NULL;
-    const CHAR_TYPE *end = NULL;
-    CHAR_TYPE old_value;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, left, SPACE_CHAR));
-
-    STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
-    if (beg == NULL || end == NULL)
-        return -1;
-    old_value = *end;
-    *(CHAR_TYPE *)end = NULL_CHAR;
-
-    ptrdiff_t str_it_width = STR_ITER_WIDTH(beg, end);
-    if (str_it_width < 0 || content_width < (size_t)str_it_width)
-        return - 1;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
-    *(CHAR_TYPE *)end = old_value;
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, right, SPACE_CHAR));
-    return written;
-
-clear:
-    return -1;
-
-#undef CHAR_TYPE
-#undef NULL_CHAR
-#undef NEWLINE_CHAR
-#undef SPACE_CHAR
-#undef SNPRINTF_FMT_STR
-#undef SNPRINTF
-#undef BUFFER_STR
-//#undef SNPRINT_N_CHARS
-#undef SNPRINT_N_STRINGS
-#undef STR_N_SUBSTRING
-#undef STR_ITER_WIDTH
-}
-
-
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t buf_len, const context_t *context)
-{
-#define CHAR_TYPE wchar_t
-#define NULL_CHAR L'\0'
-#define NEWLINE_CHAR L'\n'
-#define SPACE_CHAR " "
-#define SNPRINTF_FMT_STR L"%*ls"
-#define SNPRINTF swprintf
-#define BUFFER_STR str.wstr
-//#define SNPRINT_N_CHARS  wsnprint_n_chars
-#define SNPRINT_N_STRINGS  wsnprint_n_string
-#define STR_N_SUBSTRING wstr_n_substring
-#define STR_ITER_WIDTH wcs_iter_width
-
-    if (buffer == NULL || buffer->str.data == NULL
-        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
-        return -1;
-    }
-
-    size_t content_width = buffer_text_width(buffer);
-    if ((buf_len - 1) < content_width)
-        return -1;
-
-    size_t left = 0;
-    size_t right = 0;
-
-    switch (get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TEXT_ALIGN)) {
-        case FT_ALIGNED_LEFT:
-            left = 0;
-            right = (buf_len - 1) - content_width;
-            break;
-        case FT_ALIGNED_CENTER:
-            left = ((buf_len - 1) - content_width) / 2;
-            right = ((buf_len - 1) - content_width) - left;
-            break;
-        case FT_ALIGNED_RIGHT:
-            left = (buf_len - 1) - content_width;
-            right = 0;
-            break;
-        default:
-            assert(0);
-            break;
-    }
-
-    int  written = 0;
-    int tmp = 0;
-    const CHAR_TYPE *beg = NULL;
-    const CHAR_TYPE *end = NULL;
-    CHAR_TYPE old_value;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, left, SPACE_CHAR));
-
-    STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
-    if (beg == NULL || end == NULL)
-        return -1;
-    old_value = *end;
-    *(CHAR_TYPE *)end = NULL_CHAR;
-
-    ptrdiff_t str_it_width = STR_ITER_WIDTH(beg, end);
-    if (str_it_width < 0 || content_width < (size_t)str_it_width)
-        return - 1;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
-    *(CHAR_TYPE *)end = old_value;
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, right, SPACE_CHAR));
-    return written;
-
-clear:
-    return -1;
-
-#undef CHAR_TYPE
-#undef NULL_CHAR
-#undef NEWLINE_CHAR
-#undef SPACE_CHAR
-#undef SNPRINTF_FMT_STR
-#undef SNPRINTF
-#undef BUFFER_STR
-//#undef SNPRINT_N_CHARS
-#undef SNPRINT_N_STRINGS
-#undef STR_N_SUBSTRING
-#undef STR_ITER_WIDTH
-}
-
-size_t string_buffer_capacity(const string_buffer_t *buffer)
-{
-    assert(buffer);
-    if (buffer->type == CharBuf)
-        return buffer->data_sz;
-    else
-        return buffer->data_sz / sizeof(wchar_t);
-}
-
-void *buffer_get_data(string_buffer_t *buffer)
-{
-    assert(buffer);
-    return buffer->str.data;
-}
-
-
-/********************************************************
-   End of file "string_buffer.c"
- ********************************************************/
-
-
-/********************************************************
-   Begin of file "fort.c"
- ********************************************************/
-
 /*
 libfort
 
@@ -2540,7 +1559,7 @@ SOFTWARE.
 #include <ctype.h>
 
 /* #include "vector.h" */ /* Commented by amalgamation script */
-/* #include "fort_impl.h" */ /* Commented by amalgamation script */
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 /* #include "string_buffer.h" */ /* Commented by amalgamation script */
 /* #include "table.h" */ /* Commented by amalgamation script */
 /* #include "row.h" */ /* Commented by amalgamation script */
@@ -3489,7 +2508,988 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
 }
 
 /********************************************************
-   End of file "fort.c"
+   End of file "fort_impl.c"
+ ********************************************************/
+
+
+/********************************************************
+   Begin of file "vector.c"
+ ********************************************************/
+
+/* #include "vector.h" */ /* Commented by amalgamation script */
+#include <assert.h>
+#include <string.h>
+
+/*****************************************************************************
+ *               VECTOR IMPLEMENTATIONS
+ * ***************************************************************************/
+
+struct vector {
+    size_t m_size;
+    void  *m_data;
+    size_t m_capacity;
+    size_t m_item_size;
+};
+
+static int vector_reallocate_(vector_t *vector, size_t new_capacity)
+{
+    assert(vector);
+    assert(new_capacity > vector->m_capacity);
+
+    size_t new_size = new_capacity * vector->m_item_size;
+    vector->m_data = F_REALLOC(vector->m_data, new_size);
+    if (vector->m_data == NULL)
+        return -1;
+    return 0;
+}
+
+/* ------------ Constructors & Destructors ----------------------------- */
+
+vector_t *create_vector(size_t item_size, size_t capacity)
+{
+    vector_t *vector = (vector_t *)F_MALLOC(sizeof(vector_t));
+    if (vector == NULL) {
+        SYS_LOG_ERROR("Failed to allocate memory for asock vector");
+        return NULL;
+    }
+
+    size_t init_size = MAX(item_size * capacity, 1);
+    vector->m_data = F_MALLOC(init_size);
+    if (vector->m_data == NULL) {
+        SYS_LOG_ERROR("Failed to allocate memory for asock vector inern. buffer");
+        F_FREE(vector);
+        return NULL;
+    }
+
+    vector->m_size      = 0;
+    vector->m_capacity  = capacity;
+    vector->m_item_size = item_size;
+
+    return vector;
+}
+
+
+void destroy_vector(vector_t *vector)
+{
+    assert(vector);
+    F_FREE(vector->m_data);
+    F_FREE(vector);
+}
+
+vector_t *copy_vector(vector_t *v)
+{
+    if (v == NULL)
+        return NULL;
+
+    vector_t *new_vector = create_vector(v->m_item_size, v->m_capacity);
+    if (new_vector == NULL)
+        return NULL;
+
+    memcpy(new_vector->m_data, v->m_data, v->m_item_size * v->m_size);
+    new_vector->m_size      = v->m_size ;
+    new_vector->m_item_size = v->m_item_size ;
+    return new_vector;
+}
+
+
+
+/* ----------- Nonmodifying functions --------------------------------- */
+
+size_t vector_size(const vector_t *vector)
+{
+    assert(vector);
+    return vector->m_size;
+}
+
+
+size_t vector_capacity(const vector_t *vector)
+{
+    assert(vector);
+    return vector->m_capacity;
+}
+
+size_t vector_index_of(const vector_t *vector, const void *item)
+{
+    assert(vector);
+    assert(item);
+
+    size_t i = 0;
+    for (i = 0; i < vector->m_size; ++i) {
+        void *data_pos = (char *)vector->m_data + i * vector->m_item_size;
+        if (memcmp(data_pos, item, vector->m_item_size) == 0) {
+            return i;
+        }
+    }
+    return INVALID_VEC_INDEX;
+}
+
+
+/* ----------- Modifying functions ------------------------------------- */
+
+int vector_push(vector_t *vector, const void *item)
+{
+    assert(vector);
+    assert(item);
+
+    if (vector->m_size == vector->m_capacity) {
+        if (vector_reallocate_(vector, vector->m_capacity * 2) == -1)
+            return FT_ERROR;
+        vector->m_capacity = vector->m_capacity * 2;
+    }
+
+    ptrdiff_t deviation = vector->m_size * vector->m_item_size;
+    memcpy((char *)vector->m_data + deviation, item, vector->m_item_size);
+
+    ++(vector->m_size);
+
+    return FT_SUCCESS;
+}
+
+
+int vector_erase(vector_t *vector, size_t index)
+{
+    assert(vector);
+
+    if (vector->m_size == 0 || index >= vector->m_size)
+        return FT_ERROR;
+
+    memmove((char *)vector->m_data + vector->m_item_size * index,
+            (char *)vector->m_data + vector->m_item_size * (index + 1),
+            (vector->m_size - 1 - index) * vector->m_item_size);
+    vector->m_size--;
+    return FT_SUCCESS;
+}
+
+
+void vector_clear(vector_t *vector)
+{
+    vector->m_size = 0;
+}
+
+const void *vector_at_c(const vector_t *vector, size_t index)
+{
+    if (index >= vector->m_size)
+        return NULL;
+
+    return (char *)vector->m_data + index * vector->m_item_size;
+}
+
+
+void *vector_at(vector_t *vector, size_t index)
+{
+    if (index >= vector->m_size)
+        return NULL;
+
+    return (char *)vector->m_data + index * vector->m_item_size;
+}
+
+fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
+{
+    assert(cur_vec);
+    assert(mv_vec);
+    assert(cur_vec != mv_vec);
+    assert(cur_vec->m_item_size == mv_vec->m_item_size);
+
+    size_t cur_sz = vector_size(cur_vec);
+    size_t mv_sz = vector_size(mv_vec);
+    if (mv_sz == 0) {
+        return FT_SUCCESS;
+    }
+
+    size_t min_targ_size = pos + mv_sz;
+    if (cur_sz < min_targ_size) {
+        if (vector_reallocate_(cur_vec, min_targ_size) == -1)
+            return FT_ERROR;
+        cur_vec->m_capacity = min_targ_size;
+    }
+
+    ptrdiff_t deviation = pos * cur_vec->m_item_size;
+    void *tmp = NULL;
+    size_t new_mv_sz = 0;
+    if (cur_sz > pos) {
+        new_mv_sz = MIN(cur_sz - pos, mv_sz);
+        tmp = F_MALLOC(cur_vec->m_item_size * new_mv_sz);
+        if (tmp == NULL) {
+            return FT_MEMORY_ERROR;
+        }
+    }
+
+    memcpy(tmp,
+           (char *)cur_vec->m_data + deviation,
+           cur_vec->m_item_size * (cur_sz - pos));
+    memcpy((char *)cur_vec->m_data + deviation,
+           mv_vec->m_data,
+           cur_vec->m_item_size * mv_sz);
+    memcpy(mv_vec->m_data,
+           tmp,
+           cur_vec->m_item_size * new_mv_sz);
+
+    mv_vec->m_size = new_mv_sz;
+    F_FREE(tmp);
+    return FT_SUCCESS;
+}
+
+
+
+
+/********************************************************
+   End of file "vector.c"
+ ********************************************************/
+
+
+/********************************************************
+   Begin of file "string_buffer.c"
+ ********************************************************/
+
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
+/* #include "options.h" */ /* Commented by amalgamation script */
+/* #include "wcwidth.h" */ /* Commented by amalgamation script */
+#include <assert.h>
+#include <stddef.h>
+#include <wchar.h>
+/*****************************************************************************
+ *               STRING BUFFER
+ * ***************************************************************************/
+
+
+static ptrdiff_t str_iter_width(const char *beg, const char *end)
+{
+    assert(end >= beg);
+    return (end - beg);
+}
+
+static ptrdiff_t wcs_iter_width(const wchar_t *beg, const wchar_t *end)
+{
+    assert(end >= beg);
+    return mk_wcswidth(beg, (end - beg));
+}
+
+
+static size_t buf_str_len(const string_buffer_t *buf)
+{
+    assert(buf);
+    if (buf->type == CharBuf) {
+        return strlen(buf->str.cstr);
+    } else {
+        return wcslen(buf->str.wstr);
+    }
+}
+
+size_t strchr_count(const char *str, char ch)
+{
+    if (str == NULL)
+        return 0;
+
+    size_t count = 0;
+    str = strchr(str, ch);
+    while (str) {
+        count++;
+        str++;
+        str = strchr(str, ch);
+    }
+    return count;
+}
+
+size_t wstrchr_count(const wchar_t *str, wchar_t ch)
+{
+    if (str == NULL)
+        return 0;
+
+    size_t count = 0;
+    str = wcschr(str, ch);
+    while (str) {
+        count++;
+        str++;
+        str = wcschr(str, ch);
+    }
+    return count;
+}
+
+const char *str_n_substring_beg(const char *str, char ch_separator, size_t n)
+{
+    if (str == NULL)
+        return NULL;
+
+    if (n == 0)
+        return str;
+
+    str = strchr(str, ch_separator);
+    --n;
+    while (n > 0) {
+        if (str == NULL)
+            return NULL;
+        --n;
+        str++;
+        str = strchr(str, ch_separator);
+    }
+    return str ? (str + 1) : NULL;
+}
+
+const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, size_t n)
+{
+    if (str == NULL)
+        return NULL;
+
+    if (n == 0)
+        return str;
+
+    str = wcschr(str, ch_separator);
+    --n;
+    while (n > 0) {
+        if (str == NULL)
+            return NULL;
+        --n;
+        str++;
+        str = wcschr(str, ch_separator);
+    }
+    return str ? (str + 1) : NULL;
+}
+
+void str_n_substring(const char *str, char ch_separator, size_t n, const char **begin, const char **end)
+{
+    const char *beg = str_n_substring_beg(str, ch_separator, n);
+    if (beg == NULL) {
+        *begin = NULL;
+        *end = NULL;
+        return;
+    }
+
+    const char *en = strchr(beg, ch_separator);
+    if (en == NULL) {
+        en = str + strlen(str);
+    }
+
+    *begin = beg;
+    *end = en;
+    return;
+}
+
+void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end)
+{
+    const wchar_t *beg = wstr_n_substring_beg(str, ch_separator, n);
+    if (beg == NULL) {
+        *begin = NULL;
+        *end = NULL;
+        return;
+    }
+
+    const wchar_t *en = wcschr(beg, ch_separator);
+    if (en == NULL) {
+        en = str + wcslen(str);
+    }
+
+    *begin = beg;
+    *end = en;
+    return;
+}
+
+
+string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type type)
+{
+    size_t sz = (number_of_chars) * (type == CharBuf ? sizeof(char) : sizeof(wchar_t));
+    string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
+    if (result == NULL)
+        return NULL;
+    result->str.data = F_MALLOC(sz);
+    if (result->str.data == NULL) {
+        F_FREE(result);
+        return NULL;
+    }
+    result->data_sz = sz;
+    result->type = type;
+
+    if (sz && type == CharBuf) {
+        result->str.cstr[0] = '\0';
+    } else if (sz && type == WCharBuf) {
+        result->str.wstr[0] = L'\0';
+    }
+
+    return result;
+}
+
+void destroy_string_buffer(string_buffer_t *buffer)
+{
+    if (buffer == NULL)
+        return;
+    F_FREE(buffer->str.data);
+    buffer->str.data = NULL;
+    F_FREE(buffer);
+}
+
+fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
+{
+    assert(buffer);
+    char *new_str = (char *)F_MALLOC(buffer->data_sz * 2);
+    if (new_str == NULL) {
+        return FT_MEMORY_ERROR;
+    }
+    F_FREE(buffer->str.data);
+    buffer->str.data = new_str;
+    buffer->data_sz *= 2;
+    return FT_SUCCESS;
+}
+
+fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
+{
+    assert(buffer);
+    assert(str);
+
+    size_t sz = strlen(str);
+    char *copy = F_STRDUP(str);
+    if (copy == NULL)
+        return FT_MEMORY_ERROR;
+
+    while (sz >= string_buffer_capacity(buffer)) {
+        int status = realloc_string_buffer_without_copy(buffer);
+        if (!FT_IS_SUCCESS(status)) {
+            return status;
+        }
+    }
+    F_FREE(buffer->str.data);
+    buffer->str.cstr = copy;
+    buffer->type = CharBuf;
+
+    return FT_SUCCESS;
+}
+
+fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *str)
+{
+    assert(buffer);
+    assert(str);
+
+    size_t sz = wcslen(str);
+    wchar_t *copy = F_WCSDUP(str);
+    if (copy == NULL)
+        return FT_MEMORY_ERROR;
+
+    while (sz >= string_buffer_capacity(buffer)) {
+        int status = realloc_string_buffer_without_copy(buffer);
+        if (!FT_IS_SUCCESS(status)) {
+            return status;
+        }
+    }
+    F_FREE(buffer->str.data);
+    buffer->str.wstr = copy;
+    buffer->type = WCharBuf;
+
+    return FT_SUCCESS;
+}
+
+
+
+size_t buffer_text_height(string_buffer_t *buffer)
+{
+    if (buffer == NULL || buffer->str.data == NULL || buf_str_len(buffer) == 0) {
+        return 0;
+    }
+    if (buffer->type == CharBuf)
+        return 1 + strchr_count(buffer->str.cstr, '\n');
+    else
+        return 1 + wstrchr_count(buffer->str.wstr, L'\n');
+}
+
+size_t buffer_text_width(string_buffer_t *buffer)
+{
+    size_t max_length = 0;
+    int n = 0;
+    if (buffer->type == CharBuf) {
+        while (1) {
+            const char *beg = NULL;
+            const char *end = NULL;
+            str_n_substring(buffer->str.cstr, '\n', n, &beg, &end);
+            if (beg == NULL || end == NULL)
+                return max_length;
+
+            max_length = MAX(max_length, (size_t)(end - beg));
+            ++n;
+        }
+    } else {
+        while (1) {
+            const wchar_t *beg = NULL;
+            const wchar_t *end = NULL;
+            wstr_n_substring(buffer->str.wstr, L'\n', n, &beg, &end);
+            if (beg == NULL || end == NULL)
+                return max_length;
+
+            int line_width = mk_wcswidth(beg, end - beg);
+            if (line_width < 0) /* For safety */
+                line_width = 0;
+            max_length = MAX(max_length, (size_t)line_width);
+
+            ++n;
+        }
+    }
+}
+
+
+
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t buf_len, const context_t *context)
+{
+#define CHAR_TYPE char
+#define NULL_CHAR '\0'
+#define NEWLINE_CHAR '\n'
+#define SPACE_CHAR " "
+#define SNPRINTF_FMT_STR "%*s"
+#define SNPRINTF snprintf
+#define BUFFER_STR str.cstr
+//#define SNPRINT_N_CHARS  snprint_n_chars
+#define SNPRINT_N_STRINGS  snprint_n_strings
+#define STR_N_SUBSTRING str_n_substring
+#define STR_ITER_WIDTH str_iter_width
+
+    if (buffer == NULL || buffer->str.data == NULL
+        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
+        return -1;
+    }
+
+    size_t content_width = buffer_text_width(buffer);
+    if ((buf_len - 1) < content_width)
+        return -1;
+
+    size_t left = 0;
+    size_t right = 0;
+
+    switch (get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TEXT_ALIGN)) {
+        case FT_ALIGNED_LEFT:
+            left = 0;
+            right = (buf_len - 1) - content_width;
+            break;
+        case FT_ALIGNED_CENTER:
+            left = ((buf_len - 1) - content_width) / 2;
+            right = ((buf_len - 1) - content_width) - left;
+            break;
+        case FT_ALIGNED_RIGHT:
+            left = (buf_len - 1) - content_width;
+            right = 0;
+            break;
+        default:
+            assert(0);
+            break;
+    }
+
+    int  written = 0;
+    int tmp = 0;
+    const CHAR_TYPE *beg = NULL;
+    const CHAR_TYPE *end = NULL;
+    CHAR_TYPE old_value;
+
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, left, SPACE_CHAR));
+
+    STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
+    if (beg == NULL || end == NULL)
+        return -1;
+    old_value = *end;
+    *(CHAR_TYPE *)end = NULL_CHAR;
+
+    ptrdiff_t str_it_width = STR_ITER_WIDTH(beg, end);
+    if (str_it_width < 0 || content_width < (size_t)str_it_width)
+        return - 1;
+
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    *(CHAR_TYPE *)end = old_value;
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, right, SPACE_CHAR));
+    return written;
+
+clear:
+    return -1;
+
+#undef CHAR_TYPE
+#undef NULL_CHAR
+#undef NEWLINE_CHAR
+#undef SPACE_CHAR
+#undef SNPRINTF_FMT_STR
+#undef SNPRINTF
+#undef BUFFER_STR
+//#undef SNPRINT_N_CHARS
+#undef SNPRINT_N_STRINGS
+#undef STR_N_SUBSTRING
+#undef STR_ITER_WIDTH
+}
+
+
+int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t buf_len, const context_t *context)
+{
+#define CHAR_TYPE wchar_t
+#define NULL_CHAR L'\0'
+#define NEWLINE_CHAR L'\n'
+#define SPACE_CHAR " "
+#define SNPRINTF_FMT_STR L"%*ls"
+#define SNPRINTF swprintf
+#define BUFFER_STR str.wstr
+//#define SNPRINT_N_CHARS  wsnprint_n_chars
+#define SNPRINT_N_STRINGS  wsnprint_n_string
+#define STR_N_SUBSTRING wstr_n_substring
+#define STR_ITER_WIDTH wcs_iter_width
+
+    if (buffer == NULL || buffer->str.data == NULL
+        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
+        return -1;
+    }
+
+    size_t content_width = buffer_text_width(buffer);
+    if ((buf_len - 1) < content_width)
+        return -1;
+
+    size_t left = 0;
+    size_t right = 0;
+
+    switch (get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TEXT_ALIGN)) {
+        case FT_ALIGNED_LEFT:
+            left = 0;
+            right = (buf_len - 1) - content_width;
+            break;
+        case FT_ALIGNED_CENTER:
+            left = ((buf_len - 1) - content_width) / 2;
+            right = ((buf_len - 1) - content_width) - left;
+            break;
+        case FT_ALIGNED_RIGHT:
+            left = (buf_len - 1) - content_width;
+            right = 0;
+            break;
+        default:
+            assert(0);
+            break;
+    }
+
+    int  written = 0;
+    int tmp = 0;
+    const CHAR_TYPE *beg = NULL;
+    const CHAR_TYPE *end = NULL;
+    CHAR_TYPE old_value;
+
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, left, SPACE_CHAR));
+
+    STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
+    if (beg == NULL || end == NULL)
+        return -1;
+    old_value = *end;
+    *(CHAR_TYPE *)end = NULL_CHAR;
+
+    ptrdiff_t str_it_width = STR_ITER_WIDTH(beg, end);
+    if (str_it_width < 0 || content_width < (size_t)str_it_width)
+        return - 1;
+
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    *(CHAR_TYPE *)end = old_value;
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, right, SPACE_CHAR));
+    return written;
+
+clear:
+    return -1;
+
+#undef CHAR_TYPE
+#undef NULL_CHAR
+#undef NEWLINE_CHAR
+#undef SPACE_CHAR
+#undef SNPRINTF_FMT_STR
+#undef SNPRINTF
+#undef BUFFER_STR
+//#undef SNPRINT_N_CHARS
+#undef SNPRINT_N_STRINGS
+#undef STR_N_SUBSTRING
+#undef STR_ITER_WIDTH
+}
+
+size_t string_buffer_capacity(const string_buffer_t *buffer)
+{
+    assert(buffer);
+    if (buffer->type == CharBuf)
+        return buffer->data_sz;
+    else
+        return buffer->data_sz / sizeof(wchar_t);
+}
+
+void *buffer_get_data(string_buffer_t *buffer)
+{
+    assert(buffer);
+    return buffer->str.data;
+}
+
+
+/********************************************************
+   End of file "string_buffer.c"
+ ********************************************************/
+
+
+/********************************************************
+   Begin of file "fort_utils.c"
+ ********************************************************/
+
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
+#ifdef FT_HAVE_WCHAR
+#include <wchar.h>
+#endif
+
+
+
+/*****************************************************************************
+ *               LIBFORT helpers
+ *****************************************************************************/
+
+#ifndef FT_MICROSOFT_COMPILER
+void *(*fort_malloc)(size_t size) = &malloc;
+void (*fort_free)(void *ptr) = &free;
+void *(*fort_calloc)(size_t nmemb, size_t size) = &calloc;
+void *(*fort_realloc)(void *ptr, size_t size) = &realloc;
+#else
+static void *local_malloc(size_t size)
+{
+    return malloc(size);
+}
+
+static void local_free(void *ptr)
+{
+    free(ptr);
+}
+
+static void *local_calloc(size_t nmemb, size_t size)
+{
+    return calloc(nmemb, size);
+}
+
+static void *local_realloc(void *ptr, size_t size)
+{
+    return realloc(ptr, size);
+}
+
+void *(*fort_malloc)(size_t size) = &local_malloc;
+void (*fort_free)(void *ptr) = &local_free;
+void *(*fort_calloc)(size_t nmemb, size_t size) = &local_calloc;
+void *(*fort_realloc)(void *ptr, size_t size) = &local_realloc;
+#endif
+
+static void *custom_fort_calloc(size_t nmemb, size_t size)
+{
+    size_t total_size = nmemb * size;
+    void *result = F_MALLOC(total_size);
+    if (result != NULL)
+        memset(result, 0, total_size);
+    return result;
+}
+
+static void *custom_fort_realloc(void *ptr, size_t size)
+{
+    if (ptr == NULL)
+        return F_MALLOC(size);
+    if (size == 0) {
+        F_FREE(ptr);
+        return NULL;
+    }
+
+    void *new_chunk = F_MALLOC(size);
+    if (new_chunk == NULL)
+        return NULL;
+
+    /*
+     * In theory we should copy MIN(size, size allocated for ptr) bytes,
+     * but this is rather dummy implementation so we don't care about it
+     */
+    memcpy(new_chunk, ptr, size);
+    F_FREE(ptr);
+    return new_chunk;
+}
+
+void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
+{
+    assert((f_malloc == NULL && f_free == NULL) /* Use std functions */
+           || (f_malloc != NULL && f_free != NULL) /* Use custom functions */);
+
+    if (f_malloc == NULL && f_free == NULL) {
+#ifndef FT_MICROSOFT_COMPILER
+        fort_malloc = &malloc;
+        fort_free = &free;
+        fort_calloc = &calloc;
+        fort_realloc = &realloc;
+#else
+        fort_malloc = &local_malloc;
+        fort_free = &local_free;
+        fort_calloc = &local_calloc;
+        fort_realloc = &local_realloc;
+#endif
+    } else {
+        fort_malloc = f_malloc;
+        fort_free = f_free;
+        fort_calloc = &custom_fort_calloc;
+        fort_realloc = &custom_fort_realloc;
+    }
+
+}
+
+
+char *fort_strdup(const char *str)
+{
+    if (str == NULL)
+        return NULL;
+
+    size_t sz = strlen(str);
+    char *str_copy = (char *)F_MALLOC((sz + 1) * sizeof(char));
+    if (str_copy == NULL)
+        return NULL;
+
+    strcpy(str_copy, str);
+    return str_copy;
+}
+
+wchar_t *fort_wcsdup(const wchar_t *str)
+{
+    if (str == NULL)
+        return NULL;
+
+    size_t sz = wcslen(str);
+    wchar_t *str_copy = (wchar_t *)F_MALLOC((sz + 1) * sizeof(wchar_t));
+    if (str_copy == NULL)
+        return NULL;
+
+    wcscpy(str_copy, str);
+    return str_copy;
+}
+
+size_t number_of_columns_in_format_string(const char *fmt)
+{
+    int separator_counter = 0;
+    const char *pos = fmt;
+    while (1) {
+        pos = strchr(pos, FORT_COL_SEPARATOR);
+        if (pos == NULL)
+            break;
+
+        separator_counter++;
+        ++pos;
+    }
+    return separator_counter + 1;
+}
+
+size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
+{
+    int separator_counter = 0;
+    const wchar_t *pos = fmt;
+    while (1) {
+        pos = wcschr(pos, FORT_COL_SEPARATOR);
+        if (pos == NULL)
+            break;
+
+        separator_counter++;
+        ++pos;
+    }
+    return separator_counter + 1;
+}
+
+
+//int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
+//{
+//    if (length <= n)
+//        return -1;
+
+//    if (n == 0)
+//        return 0;
+
+//    /* To ensure valid return value it is safely not print such big strings */
+//    if (n > INT_MAX)
+//        return -1;
+
+//    int status = snprintf(buf, length, "%0*d", (int)n, 0);
+//    if (status < 0)
+//        return status;
+
+//    size_t i = 0;
+//    for (i = 0; i < n; ++i) {
+//        *buf = ch;
+//        buf++;
+//    }
+//    return (int)n;
+//}
+
+int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
+{
+    size_t str_len = strlen(str);
+    if (length <= n * str_len)
+        return -1;
+
+    if (n == 0)
+        return 0;
+
+    /* To ensure valid return value it is safely not print such big strings */
+    if (n * str_len > INT_MAX)
+        return -1;
+
+    int status = snprintf(buf, length, "%0*d", (int)(n * str_len), 0);
+    if (status < 0)
+        return status;
+
+    size_t i = 0;
+    for (i = 0; i < n; ++i) {
+        const char *str_p = str;
+        while (*str_p)
+            *(buf++) = *(str_p++);
+    }
+    return (int)(n * str_len);
+}
+
+
+//int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
+//{
+//    if (length <= n)
+//        return -1;
+
+//    if (n == 0)
+//        return 0;
+
+//    /* To ensure valid return value it is safely not print such big strings */
+//    if (n > INT_MAX)
+//        return -1;
+
+//    int status = swprintf(buf, length, L"%0*d", (int)n, 0);
+//    if (status < 0)
+//        return status;
+
+//    size_t i = 0;
+//    for (i = 0; i < n; ++i) {
+//        *buf = ch;
+//        buf++;
+//    }
+//    return (int)n;
+//}
+
+int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
+{
+    size_t str_len = strlen(str);
+
+    /* This function doesn't work properly with multibyte characters
+     * so it is better return an error in this case
+     */
+    if (str_len > 1)
+        return -1;
+
+    if (length <= n * str_len)
+        return -1;
+
+    if (n == 0)
+        return 0;
+
+
+
+    /* To ensure valid return value it is safely not print such big strings */
+    if (n * str_len > INT_MAX)
+        return -1;
+
+    int status = swprintf(buf, length, L"%0*d", (int)(n * str_len), 0);
+    if (status < 0)
+        return status;
+
+    size_t i = 0;
+    for (i = 0; i < n; ++i) {
+        const char *str_p = str;
+        while (*str_p)
+            *(buf++) = (wchar_t) * (str_p++);
+    }
+    return (int)(n * str_len);
+}
+
+
+/********************************************************
+   End of file "fort_utils.c"
  ********************************************************/
 
 

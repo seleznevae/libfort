@@ -63,7 +63,7 @@ def main():
 
     # config["header_files"] = filter(is_c_header_file, all_files)
     config["header_files"] = [
-        "fort_impl.h",
+        "fort_utils.h",
         "vector.h",
         "wcwidth.h",
         "string_buffer.h",

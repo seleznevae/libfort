@@ -63,15 +63,15 @@ FILE(GLOB_RECURSE FortHeaders "include/*.h" "include/*.hpp" "tests/*.h" "src/*.h
 add_custom_target(headers SOURCES ${FortHeaders})
 
 
-set(FORT_SOURCES
-    src/fort.c
+set(FORT_DEV_SOURCES
+    src/fort_impl.c
     src/vector.c
     src/string_buffer.c
     src/options.c
     src/cell.c
     src/row.c
     src/table.c
-    src/fort_impl.c
+    src/fort_utils.c
     src/wcwidth.c)
 
 
@@ -81,13 +81,13 @@ set(EXAMPLE_SOURCES
     example/main.c)
 add_executable(${PROJECT_NAME}_example
     ${EXAMPLE_SOURCES}
-    ${FORT_SOURCES})
+    ${FORT_DEV_SOURCES})
 
 set(EXAMPLE_CPP_SOURCES
     example/main.cpp)
 add_executable(${PROJECT_NAME}_example_cpp
     ${EXAMPLE_CPP_SOURCES}
-    ${FORT_SOURCES})
+    ${FORT_DEV_SOURCES})
 
 set(TEST_SOURCES_DEV
     tests/main_test.c
@@ -100,7 +100,7 @@ set(TEST_SOURCES_DEV
     tests/bb_tests/test_memory_errors.c
     tests/test_utils.c)
 add_executable(${PROJECT_NAME}_test_dev
-    ${FORT_SOURCES}
+    ${FORT_DEV_SOURCES}
     ${TEST_SOURCES_DEV})
 
 target_compile_definitions(${PROJECT_NAME}_test_dev
@@ -119,7 +119,7 @@ add_executable(${PROJECT_NAME}_test
 
 
 if(FORT_CXX_BUILD)
-    SET_SOURCE_FILES_PROPERTIES( ${FORT_SOURCES} PROPERTIES LANGUAGE CXX)
+    SET_SOURCE_FILES_PROPERTIES( ${FORT_DEV_SOURCES} PROPERTIES LANGUAGE CXX)
     SET_SOURCE_FILES_PROPERTIES( ${EXAMPLE_SOURCES} PROPERTIES LANGUAGE CXX)
     SET_SOURCE_FILES_PROPERTIES( ${TEST_SOURCES} PROPERTIES LANGUAGE CXX)
 endif(FORT_CXX_BUILD)

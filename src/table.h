@@ -1,7 +1,7 @@
 #ifndef TABLE_H
 #define TABLE_H
 
-#include "fort_impl.h"
+#include "fort_utils.h"
 
 struct ft_table;
 typedef struct ft_table ft_table_t;

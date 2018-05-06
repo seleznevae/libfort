@@ -1,7 +1,7 @@
 #ifndef STRING_BUFFER_H
 #define STRING_BUFFER_H
 
-#include "fort_impl.h"
+#include "fort_utils.h"
 
 
 /*****************************************************************************
