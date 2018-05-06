@@ -1,5 +1,6 @@
 #include "tests.h"
 #include <wchar.h>
+#include "fort.h"
 
 void test_table_basic(void)
 {

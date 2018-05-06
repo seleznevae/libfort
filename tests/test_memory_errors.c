@@ -1,4 +1,5 @@
 #include "tests.h"
+#include "fort.h"
 
 static int aloc_num = 0;
 static int aloc_lim = 9999;

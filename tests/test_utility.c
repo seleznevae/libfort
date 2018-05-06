@@ -1,7 +1,7 @@
 #include "tests.h"
 #include "fort.h"
 
-int set_test_options_for_table(ft_table_t *table)
+int set_test_options_for_table(struct ft_table *table)
 {
     assert(table);
     int status = FT_SUCCESS;
@@ -71,7 +71,7 @@ int set_test_options_as_default(void)
 
 
 
-ft_table_t *create_test_int_table(int set_test_opts)
+struct ft_table *create_test_int_table(int set_test_opts)
 {
     ft_table_t *table = NULL;
 
@@ -102,7 +102,7 @@ ft_table_t *create_test_int_table(int set_test_opts)
 }
 
 #ifdef FT_HAVE_WCHAR
-ft_table_t *create_test_int_wtable(int set_test_opts)
+struct ft_table *create_test_int_wtable(int set_test_opts)
 {
     ft_table_t *table = NULL;
 

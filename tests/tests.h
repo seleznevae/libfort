@@ -4,14 +4,19 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
-#include "fort_impl.h"
 #include <assert.h>
-#include "wchar.h"
-#include "locale.h"
+#include <wchar.h>
+#include <locale.h>
+#include <string.h>
+#include <stdio.h>
 
 #define WHEN(...)
 #define THEN(...)
 #define SCENARIO(...)
+
+#if defined(FT_CONGIG_HAVE_WCHAR)
+#define FT_HAVE_WCHAR
+#endif
 
 /* Test cases */
 void test_vector_basic(void);
@@ -34,7 +39,6 @@ struct test_case
     char name [128];
     void (*test)(void);
 };
-
 
 /*
  *  Test utility funcitons
@@ -62,13 +66,14 @@ struct test_case
         exit(EXIT_FAILURE); \
     }
 
-int set_test_options_for_table(ft_table_t *table);
+struct ft_table;
+int set_test_options_for_table(struct ft_table *table);
 int set_test_options_as_default(void);
-ft_table_t *create_test_int_table(int set_test_opts);
-ft_table_t *create_test_int_wtable(int set_test_opts);
+struct ft_table *create_test_int_table(int set_test_opts);
+struct ft_table *create_test_int_wtable(int set_test_opts);
 
 
-
+void run_test_suit(const char *test_suit_name, int n_tests, struct test_case test_suit []);
 
 
 

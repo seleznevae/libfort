@@ -1,8 +1,6 @@
 #include "tests.h"
-
 #include "string_buffer.h"
-//#include "../src/fort.c"
-#include "wchar.h"
+#include <wchar.h>
 
 
 size_t strchr_count(const char *str, char ch);

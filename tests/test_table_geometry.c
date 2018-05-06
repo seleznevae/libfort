@@ -1,7 +1,6 @@
 #include "tests.h"
 #include "table.h"
 
-
 void test_table_sizes(void)
 {
     ft_table_t *table = ft_create_table();

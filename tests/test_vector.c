@@ -1,7 +1,5 @@
 #include "tests.h"
-
 #include "vector.h"
-//#include "../src/fort.c"
 
 
 void test_vector_basic(void)
