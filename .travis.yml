@@ -85,6 +85,7 @@ script:
   - cmake --build . --target all 
   - ls
   - ./libfort_example
+  - ./libfort_test_dev
   - ./libfort_test
 
   # Test build without optimizations and with ubsan
@@ -97,6 +98,7 @@ script:
       cmake --build . --target all ;
       ls ;
       ./libfort_example ;
+      ./libfort_test_dev ;
       ./libfort_test ;
     fi
 
@@ -143,7 +145,7 @@ script:
       cmake .. -DFORT_BUILD_TYPE=coveralls ;
       cmake --build . --target all ;
       ls ;
-      ./libfort_test ;
+      ./libfort_test_dev ;
     fi
   - cd ..
 

@@ -34,6 +34,7 @@ add_definitions(-DFT_CONGIG_HAVE_WCHAR)
 
 include_directories(include)
 include_directories(src)
+include_directories(tests)
 
 
 
@@ -88,18 +89,32 @@ add_executable(${PROJECT_NAME}_example_cpp
     ${EXAMPLE_CPP_SOURCES}
     ${FORT_SOURCES})
 
-set(TEST_SOURCES
-    tests/test.c
-    tests/test_vector.c
-    tests/test_string_buffer.c
-    tests/test_table_geometry.c
-    tests/test_table_basic.c
-    tests/test_table_border_style.c
-    tests/test_table_options.c
-    tests/test_memory_errors.c
-    tests/test_utility.c)
-add_executable(${PROJECT_NAME}_test
+set(TEST_SOURCES_DEV
+    tests/main_test.c
+    tests/wb_tests/test_vector.c
+    tests/wb_tests/test_string_buffer.c
+    tests/wb_tests/test_table_geometry.c
+    tests/bb_tests/test_table_basic.c
+    tests/bb_tests/test_table_border_style.c
+    tests/bb_tests/test_table_options.c
+    tests/bb_tests/test_memory_errors.c
+    tests/test_common.c)
+add_executable(${PROJECT_NAME}_test_dev
     ${FORT_SOURCES}
+    ${TEST_SOURCES_DEV})
+
+target_compile_definitions(${PROJECT_NAME}_test_dev
+    PUBLIC FORT_WB_TESTING_ENABLED=1)
+
+set(TEST_SOURCES
+    tests/main_test.c
+    tests/bb_tests/test_table_basic.c
+    tests/bb_tests/test_table_border_style.c
+    tests/bb_tests/test_table_options.c
+    tests/bb_tests/test_memory_errors.c
+    tests/test_common.c)
+add_executable(${PROJECT_NAME}_test
+    include/fort.c
     ${TEST_SOURCES})
 
 
