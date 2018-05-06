@@ -32,7 +32,7 @@ add_definitions(-DFT_CONGIG_HAVE_WCHAR)
 # Includes
 # ------------------------------------------------------------------------------
 
-include_directories(include)
+include_directories(lib)
 include_directories(src)
 include_directories(tests)
 
@@ -59,7 +59,7 @@ endif("${FORT_COMPILER}" STREQUAL "MSVC")
 # Sources and executables
 # ------------------------------------------------------------------------------
 
-FILE(GLOB_RECURSE FortHeaders "include/*.h" "include/*.hpp" "tests/*.h" "src/*.h")
+FILE(GLOB_RECURSE FortHeaders "lib/*.h" "lib/*.hpp" "tests/*.h" "src/*.h")
 add_custom_target(headers SOURCES ${FortHeaders})
 
 
@@ -114,7 +114,7 @@ set(TEST_SOURCES
     tests/bb_tests/test_memory_errors.c
     tests/test_utils.c)
 add_executable(${PROJECT_NAME}_test
-    include/fort.c
+    lib/fort.c
     ${TEST_SOURCES})
 
 
@@ -210,9 +210,14 @@ if(FORT_ENABLE_ASTYLE)
         --convert-tabs
         --min-conditional-indent=0
         --indent=spaces=4
-        ${CMAKE_SOURCE_DIR}/include/*.h
+        ${CMAKE_SOURCE_DIR}/lib/*.h
+        ${CMAKE_SOURCE_DIR}/lib/*.c
+        ${CMAKE_SOURCE_DIR}/src/*.h
         ${CMAKE_SOURCE_DIR}/src/*.c
         ${CMAKE_SOURCE_DIR}/tests/*.c
+        ${CMAKE_SOURCE_DIR}/tests/*.h
+        ${CMAKE_SOURCE_DIR}/tests/bb_tests/*.c
+        ${CMAKE_SOURCE_DIR}/tests/wb_tests/*.c
     )
 
     if(NOT WIN32 STREQUAL "1")
