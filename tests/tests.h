@@ -30,6 +30,7 @@ void test_wcs_table_boundaries(void);
 #endif
 void test_table_write(void);
 void test_table_border_style(void);
+void test_table_builtin_border_styles(void);
 void test_table_cell_options(void);
 void test_table_tbl_options(void);
 void test_memory_errors(void);

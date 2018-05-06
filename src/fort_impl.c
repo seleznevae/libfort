@@ -535,11 +535,12 @@ int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_
 const char *ft_to_string(const ft_table_t *table)
 {
     typedef char char_type;
-    const char_type *empty_string = "";
+//    const char_type *empty_string = "";
     const enum str_buf_type buf_type = CharBuf;
     const char *space_char = " ";
     const char *new_line_char = "\n";
 #define cur_F_STRDUP F_STRDUP
+#define EMPTY_STRING ""
     int (*snprintf_row_)(const fort_row_t *, char *, size_t, size_t *, size_t, size_t, const context_t *) = snprintf_row;
     int (*print_row_separator_)(char *, size_t,
                                 const size_t *, size_t,
@@ -582,7 +583,7 @@ const char *ft_to_string(const ft_table_t *table)
         return NULL;
 
     if (rows == 0)
-        return cur_F_STRDUP(empty_string);
+        return EMPTY_STRING;
 
     int written = 0;
     int tmp = 0;
@@ -630,6 +631,7 @@ clear:
 //    F_FREE(buffer);
     return NULL;
 #undef cur_F_STRDUP
+#undef EMPTY_STRING
 }
 
 
@@ -638,11 +640,12 @@ clear:
 const wchar_t *ft_to_wstring(const ft_table_t *table)
 {
     typedef wchar_t char_type;
-    const char_type *empty_string = L"";
+//    const char_type *empty_string = L"";
     const enum str_buf_type buf_type = WCharBuf;
     const char *space_char = " ";
     const char *new_line_char = "\n";
 #define cur_F_STRDUP F_WCSDUP
+#define EMPTY_STRING L""
     int (*snprintf_row_)(const fort_row_t *, wchar_t *, size_t, size_t *, size_t, size_t, const context_t *) = wsnprintf_row;
     int (*print_row_separator_)(wchar_t *, size_t,
                                 const size_t *, size_t,
@@ -685,7 +688,7 @@ const wchar_t *ft_to_wstring(const ft_table_t *table)
     status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
 
     if (rows == 0)
-        return cur_F_STRDUP(empty_string);
+        return EMPTY_STRING;
 
     if (FT_IS_ERROR(status))
         return NULL;
@@ -735,6 +738,7 @@ clear:
 //    F_FREE(buffer);
     return NULL;
 #undef cur_F_STRDUP
+#undef EMPTY_STRING
 }
 
 #endif
