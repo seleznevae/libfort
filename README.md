@@ -1,11 +1,20 @@
-# libfort (WIP - work in progress)
+# libfort (Library to create FORmatted Tables)
 
 [![Build Status](https://travis-ci.org/seleznevae/libfort.svg?branch=master)](https://travis-ci.org/seleznevae/libfort)
 [![Build status](https://ci.appveyor.com/api/projects/status/ll1qygb56pho95xw/branch/master?svg=true)](https://ci.appveyor.com/project/seleznevae/libfort/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/seleznevae/libfort/badge.svg?branch=master)](https://coveralls.io/github/seleznevae/libfort?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<!---
+
+libfort - A simple to format tables with various row/column options for indentation, indentation character, alignment, padding (left, right, both), padding characters (left, right, both), and in-line whitespace characters.
+
+**Features:**
+- Easy to integrate (only 2 files: **fort.c** and **fort.h** from **lib** direrctory)
+- Customization of appearance (various border styles and row/column/cell options for indentation, alignment, padding)
+- A number of functions to fill the table (add content by adding separate cells, rows or use _printf_ like functions)
+- Support of multiple lines in cells
+
+
 ## Supported platforms and compilers
 
 The following compilers are currently used in continuous integration at [Travis](https://travis-ci.org/seleznevae/libfort) and [AppVeyor](https://ci.appveyor.com/project/seleznevae/libfort):
@@ -30,4 +39,3 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
--->
