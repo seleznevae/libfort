@@ -125,9 +125,12 @@ fort_status_t swap_row(fort_row_t *cur_row, fort_row_t *ins_row, size_t pos)
 size_t group_cell_number(const fort_row_t *row, size_t master_cell_col)
 {
     assert(row);
-    const fort_cell_t *cell = get_cell_c(row, master_cell_col);
-    if (cell == NULL)
+    const fort_cell_t *master_cell = get_cell_c(row, master_cell_col);
+    if (master_cell == NULL)
         return 0;
+
+    if (get_cell_type(master_cell) != GroupMasterCell)
+        return 1;
 
     size_t total_cols = vector_size(row->cells);
     size_t slave_col = master_cell_col + 1;

@@ -163,7 +163,7 @@ static int ft_row_printf_impl(ft_table_t *table, size_t row, const char *fmt, va
 
     table->cur_col += new_cols;
     destroy_row(new_row);
-    return new_cols;
+    return (int)new_cols;
 
 clear:
     destroy_row(new_row);
@@ -210,7 +210,7 @@ static int ft_row_wprintf_impl(ft_table_t *table, size_t row, const wchar_t *fmt
 
     table->cur_col += new_cols;
     destroy_row(new_row);
-    return new_cols;
+    return (int)new_cols;
 
 clear:
     destroy_row(new_row);

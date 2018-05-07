@@ -61,7 +61,7 @@ int main(void)
     ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
 
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-    ft_printf_ln(table, "Rank|Title|Year|Rating");
+    ft_write_ln(table, "Rank", "Title", "Year", "Rating");
 
     ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
     ft_write_ln(table, "2", "12 Angry Men", "1957", "8.8");
