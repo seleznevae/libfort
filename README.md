@@ -35,6 +35,10 @@ Output:
 
 <img src="https://github.com/seleznevae/libfort/blob/master/docs/images/basic_table.png" data-canonical-src="https://github.com/seleznevae/libfort/blob/master/docs/images/basic_table.png" width="500" />
 
+## Installation
+
+Copy 2 files **fort.c** and **fort.h** from [**lib**](https://github.com/seleznevae/libfort/tree/master/lib) direrctory to your project. Include **fort.h** in all sources where you will use libfort and compile with **fort.c**.
+
 
 ## Supported platforms and compilers
 
