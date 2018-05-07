@@ -6,13 +6,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
-libfort - A simple to format tables with various row/column options for indentation, indentation character, alignment, padding (left, right, both), padding characters (left, right, both), and in-line whitespace characters.
+**libfort** - a simple library to create formatted ACII tables.
 
 **Features:**
 - Easy to integrate (only 2 files: **fort.c** and **fort.h** from **lib** direrctory)
 - Customization of appearance (various border styles and row/column/cell options for indentation, alignment, padding)
 - A number of functions to fill the table (add content by adding separate cells, rows or use _printf_ like functions)
 - Support of multiple lines in cells
+- Support of wide characters
 
 
 ## Supported platforms and compilers
