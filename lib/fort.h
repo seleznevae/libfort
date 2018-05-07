@@ -606,6 +606,7 @@ struct ft_border_style {
  * @{
  */
 extern struct ft_border_style *FT_BASIC_STYLE;
+extern struct ft_border_style *FT_BASIC2_STYLE;
 extern struct ft_border_style *FT_SIMPLE_STYLE;
 extern struct ft_border_style *FT_PLAIN_STYLE;
 extern struct ft_border_style *FT_DOT_STYLE;

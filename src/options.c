@@ -236,6 +236,27 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     },                            \
 }
 
+#define BASIC2_STYLE  {            \
+    /* border_chars */            \
+    {                             \
+     "+", "-", "+", "+",          \
+     "|", "|", "|",               \
+     "+", "-", "+", "+",           \
+     "+", "-", "+", "+"           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    "+", "-", "+", "+",           \
+    "|", "|", "|",                \
+    "+", "-", "+", "+",           \
+    "+", "-", "+", "+"            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    "+", "-", "+", "+",           \
+    },                            \
+}
+
 #define SIMPLE_STYLE  {           \
     /* border_chars */            \
     {                             \
@@ -473,6 +494,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
 
 
 struct fort_border_style FORT_BASIC_STYLE = BASIC_STYLE;
+struct fort_border_style FORT_BASIC2_STYLE = BASIC2_STYLE;
 struct fort_border_style FORT_SIMPLE_STYLE = SIMPLE_STYLE;
 struct fort_border_style FORT_PLAIN_STYLE = PLAIN_STYLE;
 struct fort_border_style FORT_DOT_STYLE = DOT_STYLE;

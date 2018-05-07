@@ -420,6 +420,7 @@ struct fort_border_style {
     const char *separator_chars[SepratorItemPosSize];
 };
 extern struct fort_border_style FORT_BASIC_STYLE;
+extern struct fort_border_style FORT_BASIC2_STYLE;
 extern struct fort_border_style FORT_SIMPLE_STYLE;
 extern struct fort_border_style FORT_PLAIN_STYLE;
 extern struct fort_border_style FORT_DOT_STYLE;
@@ -892,6 +893,27 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     },                            \
 }
 
+#define BASIC2_STYLE  {            \
+    /* border_chars */            \
+    {                             \
+     "+", "-", "+", "+",          \
+     "|", "|", "|",               \
+     "+", "-", "+", "+",           \
+     "+", "-", "+", "+"           \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    "+", "-", "+", "+",           \
+    "|", "|", "|",                \
+    "+", "-", "+", "+",           \
+    "+", "-", "+", "+"            \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    "+", "-", "+", "+",           \
+    },                            \
+}
+
 #define SIMPLE_STYLE  {           \
     /* border_chars */            \
     {                             \
@@ -1129,6 +1151,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
 
 
 struct fort_border_style FORT_BASIC_STYLE = BASIC_STYLE;
+struct fort_border_style FORT_BASIC2_STYLE = BASIC2_STYLE;
 struct fort_border_style FORT_SIMPLE_STYLE = SIMPLE_STYLE;
 struct fort_border_style FORT_PLAIN_STYLE = PLAIN_STYLE;
 struct fort_border_style FORT_DOT_STYLE = DOT_STYLE;
@@ -2330,6 +2353,7 @@ int ft_add_separator(ft_table_t *table)
 
 
 struct ft_border_style *FT_BASIC_STYLE = (struct ft_border_style *) &FORT_BASIC_STYLE;
+struct ft_border_style *FT_BASIC2_STYLE = (struct ft_border_style *) &FORT_BASIC2_STYLE;
 struct ft_border_style *FT_SIMPLE_STYLE = (struct ft_border_style *) &FORT_SIMPLE_STYLE;
 struct ft_border_style *FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_STYLE;
 struct ft_border_style *FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
@@ -2347,6 +2371,7 @@ struct ft_border_style *FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME
 static void set_border_options_for_options(fort_table_options_t *options, struct ft_border_style *style)
 {
     if ((struct fort_border_style *)style == &FORT_BASIC_STYLE
+        || (struct fort_border_style *)style == &FORT_BASIC2_STYLE
         || (struct fort_border_style *)style == &FORT_SIMPLE_STYLE
         || (struct fort_border_style *)style == &FORT_DOT_STYLE
         || (struct fort_border_style *)style == &FORT_PLAIN_STYLE

@@ -794,6 +794,7 @@ int ft_add_separator(ft_table_t *table)
 
 
 struct ft_border_style *FT_BASIC_STYLE = (struct ft_border_style *) &FORT_BASIC_STYLE;
+struct ft_border_style *FT_BASIC2_STYLE = (struct ft_border_style *) &FORT_BASIC2_STYLE;
 struct ft_border_style *FT_SIMPLE_STYLE = (struct ft_border_style *) &FORT_SIMPLE_STYLE;
 struct ft_border_style *FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_STYLE;
 struct ft_border_style *FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
@@ -811,6 +812,7 @@ struct ft_border_style *FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME
 static void set_border_options_for_options(fort_table_options_t *options, struct ft_border_style *style)
 {
     if ((struct fort_border_style *)style == &FORT_BASIC_STYLE
+        || (struct fort_border_style *)style == &FORT_BASIC2_STYLE
         || (struct fort_border_style *)style == &FORT_SIMPLE_STYLE
         || (struct fort_border_style *)style == &FORT_DOT_STYLE
         || (struct fort_border_style *)style == &FORT_PLAIN_STYLE

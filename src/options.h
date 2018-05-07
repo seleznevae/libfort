@@ -111,6 +111,7 @@ struct fort_border_style {
     const char *separator_chars[SepratorItemPosSize];
 };
 extern struct fort_border_style FORT_BASIC_STYLE;
+extern struct fort_border_style FORT_BASIC2_STYLE;
 extern struct fort_border_style FORT_SIMPLE_STYLE;
 extern struct fort_border_style FORT_PLAIN_STYLE;
 extern struct fort_border_style FORT_DOT_STYLE;
