@@ -30,8 +30,10 @@ ft_write_ln(table, "4", "Blade Runner", "1982", "8.1");
 printf("%s\n", ft_to_string(table));
 ft_destroy_table(table);
 ```
+
 Output:
 
+<img src="https://github.com/seleznevae/libfort/blob/master/docs/images/basic_table.png" data-canonical-src="https://github.com/seleznevae/libfort/blob/master/docs/images/basic_table.png" width="500" />
 
 
 ## Supported platforms and compilers
