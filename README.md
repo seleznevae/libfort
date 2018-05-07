@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
-**libfort** - a simple library to create formatted ACII tables.
+**libfort** - a simple library to create formatted ASCII tables.
 
 **Features:**
 - Easy to integrate (only 2 files: **fort.c** and **fort.h** from **lib** direrctory)
@@ -14,6 +14,24 @@
 - A number of functions to fill the table (add content by adding separate cells, rows or use _printf_ like functions)
 - Support of multiple lines in cells
 - Support of wide characters
+
+## Example
+
+```C
+ft_table_t *table = ft_create_table();
+ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+ft_write_ln(table, "Rank", "Title", "Year", "Rating");
+
+ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
+ft_write_ln(table, "2", "12 Angry Men", "1957", "8.8");
+ft_write_ln(table, "3", "2001: A Space Odyssey", "1968", "8.5");
+ft_write_ln(table, "4", "Blade Runner", "1982", "8.1");
+
+printf("%s\n", ft_to_string(table));
+ft_destroy_table(table);
+```
+Output:
+
 
 
 ## Supported platforms and compilers
