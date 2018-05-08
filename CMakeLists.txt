@@ -48,7 +48,7 @@ if("${FORT_COMPILER}" STREQUAL "MSVC")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
 else("${FORT_COMPILER}" STREQUAL "MSVC")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -Wextra")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -Wextra -std=c99 -Wpedantic")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -Wextra")
 endif("${FORT_COMPILER}" STREQUAL "MSVC")
 

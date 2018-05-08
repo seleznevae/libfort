@@ -12,8 +12,6 @@ enum str_buf_type {
     WCharBuf
 };
 
-struct string_buffer;
-typedef struct string_buffer string_buffer_t;
 struct string_buffer {
     union {
         char *cstr;

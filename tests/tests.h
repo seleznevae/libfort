@@ -49,7 +49,7 @@ struct test_case {
 #define assert_str_equal(str1, str2) \
     if (strcmp(str1, str2) != 0) \
     { \
-        fprintf(stderr, "%s:%d(%s):Abort! Not equals strings:\n",__FILE__,__LINE__, __FUNCTION__); \
+        fprintf(stderr, "%s:%d(%s):Abort! Not equals strings:\n",__FILE__,__LINE__, __func__); \
         fprintf(stderr, "Left string:\n%s\n", str1); \
         fprintf(stderr, "Right string:\n%s\n", str2); \
         exit(EXIT_FAILURE); \
@@ -58,7 +58,7 @@ struct test_case {
 #define assert_wcs_equal(str1, str2) \
     if (wcscmp(str1, str2) != 0) \
     { \
-        fprintf(stderr, "%s:%d(%s):Abort! Not equals strings:\n",__FILE__,__LINE__, __FUNCTION__); \
+        fprintf(stderr, "%s:%d(%s):Abort! Not equals strings:\n",__FILE__,__LINE__, __func__); \
         setlocale(LC_CTYPE, ""); \
         fwprintf(stdout, L"Left string:\n%ls\n", str1); \
         fwprintf(stdout, L"Right string:\n%ls\n", str2); \

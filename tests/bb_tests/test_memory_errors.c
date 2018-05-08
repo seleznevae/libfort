@@ -34,8 +34,10 @@ static int create_simple_table_and_show(void)
         result = 1;
         goto exit;
     }
-//    if (set_test_options_for_table(table) != FT_SUCCESS)
-//        return 2;
+    /*
+    if (set_test_options_for_table(table) != FT_SUCCESS)
+        return 2;
+    */
 
     if (ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER) != FT_SUCCESS) {
         result = 3;
@@ -73,7 +75,7 @@ static int create_simple_table_and_show(void)
         "| 3 | c | 234 | 3.140000 |\n"
         "|   |   |     |          |\n"
         "+---+---+-----+----------+\n";
-//    assert_str_equal(table_str, table_str_etalon);
+    /*assert_str_equal(table_str, table_str_etalon);*/
     if (strcmp(table_str, table_str_etalon) != 0) {
         result = 8;
         goto exit;

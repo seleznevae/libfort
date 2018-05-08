@@ -8,9 +8,6 @@
  *               VECTOR
  * ***************************************************************************/
 
-struct vector;
-typedef struct vector vector_t;
-
 #define INVALID_VEC_INDEX ((size_t) -1)
 
 extern vector_t *create_vector(size_t item_size, size_t capacity);

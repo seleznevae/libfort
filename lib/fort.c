@@ -129,7 +129,7 @@ typedef struct vector vector_t;
 typedef struct fort_cell fort_cell_t;
 typedef struct string_buffer string_buffer_t;
 typedef struct fort_row fort_row_t;
-typedef struct ft_table ft_table_t;
+/*typedef struct ft_table ft_table_t;*/
 typedef struct separator separator_t;
 
 
@@ -157,8 +157,8 @@ char *fort_strdup(const char *str);
 wchar_t *fort_wcsdup(const wchar_t *str);
 size_t number_of_columns_in_format_string(const char *fmt);
 size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
-//int snprint_n_chars(char *buf, size_t length, size_t n, char ch);
-//int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);
+/*int snprint_n_chars(char *buf, size_t length, size_t n, char ch);*/
+/*int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);*/
 int snprint_n_strings(char *buf, size_t length, size_t n, const char *str);
 int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
 
@@ -196,9 +196,6 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
 /*****************************************************************************
  *               VECTOR
  * ***************************************************************************/
-
-struct vector;
-typedef struct vector vector_t;
 
 #define INVALID_VEC_INDEX ((size_t) -1)
 
@@ -267,8 +264,6 @@ enum str_buf_type {
     WCharBuf
 };
 
-struct string_buffer;
-typedef struct string_buffer string_buffer_t;
 struct string_buffer {
     union {
         char *cstr;
@@ -318,15 +313,9 @@ struct fort_column_options {
     int col_min_width;
     enum ft_text_alignment align;
 };
-typedef struct fort_column_options fort_column_options_t;
 
 extern fort_column_options_t g_column_options;
 fort_column_options_t create_column_options(void);
-
-
-
-struct vector;
-typedef struct vector vector_t;
 
 #define OPTION_IS_SET(ft_opts, option) ((ft_opts) & (option))
 #define OPTION_SET(ft_opts, option) ((ft_opts) |=(option))
@@ -450,7 +439,6 @@ struct fort_table_options {
     fort_cell_opt_container_t *cell_options;
     fort_entire_table_options_t entire_table_options;
 };
-typedef struct fort_table_options fort_table_options_t;
 extern fort_table_options_t g_table_options;
 
 size_t max_border_elem_strlen(struct fort_table_options *);
@@ -533,10 +521,6 @@ string_buffer_t *cell_get_string_buffer(fort_cell_t *cell);
 #include <wchar.h>
 #endif
 
-struct fort_row;
-typedef struct fort_row fort_row_t;
-
-
 fort_row_t *create_row(void);
 void destroy_row(fort_row_t *row);
 fort_row_t *create_row_from_string(const char *str);
@@ -600,8 +584,6 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
 
 /* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
-struct ft_table;
-typedef struct ft_table ft_table_t;
 struct ft_table {
     vector_t *rows;
     fort_table_options_t *options;

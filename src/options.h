@@ -9,15 +9,9 @@ struct fort_column_options {
     int col_min_width;
     enum ft_text_alignment align;
 };
-typedef struct fort_column_options fort_column_options_t;
 
 extern fort_column_options_t g_column_options;
 fort_column_options_t create_column_options(void);
-
-
-
-struct vector;
-typedef struct vector vector_t;
 
 #define OPTION_IS_SET(ft_opts, option) ((ft_opts) & (option))
 #define OPTION_SET(ft_opts, option) ((ft_opts) |=(option))
@@ -141,7 +135,6 @@ struct fort_table_options {
     fort_cell_opt_container_t *cell_options;
     fort_entire_table_options_t entire_table_options;
 };
-typedef struct fort_table_options fort_table_options_t;
 extern fort_table_options_t g_table_options;
 
 size_t max_border_elem_strlen(struct fort_table_options *);

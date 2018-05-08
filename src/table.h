@@ -3,8 +3,6 @@
 
 #include "fort_utils.h"
 
-struct ft_table;
-typedef struct ft_table ft_table_t;
 struct ft_table {
     vector_t *rows;
     fort_table_options_t *options;

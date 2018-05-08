@@ -84,7 +84,6 @@ struct ft_table *create_test_int_table(int set_test_opts)
     assert_true(table != NULL);
 
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-//    int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
     int n = ft_write_ln(table, "3", "4", "55", "67");
     assert(n == FT_SUCCESS);
 
@@ -115,7 +114,6 @@ struct ft_table *create_test_int_wtable(int set_test_opts)
     assert_true(table != NULL);
 
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-//    int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
     int n = ft_wwrite_ln(table, L"3", L"4", L"55", L"67");
     assert(n == FT_SUCCESS);
 

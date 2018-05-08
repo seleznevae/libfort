@@ -9,10 +9,6 @@
 #include <wchar.h>
 #endif
 
-struct fort_row;
-typedef struct fort_row fort_row_t;
-
-
 fort_row_t *create_row(void);
 void destroy_row(fort_row_t *row);
 fort_row_t *create_row_from_string(const char *str);
