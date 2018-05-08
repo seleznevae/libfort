@@ -35,7 +35,8 @@ void print_char_str(const char *str)
 
 void base_example(void)
 {
-    ft_table_t *table = ft_create_table();;
+    ft_table_t *table = ft_create_table();
+    /* Set "header" type for the first row */
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "N", "Planet", "Speed, km/s");
 

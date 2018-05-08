@@ -363,6 +363,7 @@ clear:
 }
 
 
+#ifdef FT_HAVE_WCHAR
 
 int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
                          const size_t *col_width_arr, size_t cols,
@@ -534,7 +535,7 @@ clear:
     return status;
 }
 
-
+#endif
 
 fort_row_t *create_row_from_string(const char *str)
 {
