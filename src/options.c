@@ -17,7 +17,7 @@ struct fort_cell_options g_default_cell_option = {
     | FT_COPT_EMPTY_STR_HEIGHT,
 
     0,             /* col_min_width */
-    FT_ALIGNED_RIGHT,  /* align */
+    FT_ALIGNED_LEFT,  /* align */
     0,      /* cell_padding_top         */
     0,      /* cell_padding_bottom      */
     1,      /* cell_padding_left        */

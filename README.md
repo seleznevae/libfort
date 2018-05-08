@@ -18,20 +18,31 @@
 ## Example
 
 ```C
-ft_table_t *table = ft_create_table();
-ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-ft_write_ln(table, "Rank", "Title", "Year", "Rating");
+#include "fort.h"
+int main(void)
+{
+    ft_table_t *table = ft_create_table();;
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_write_ln(table, "N", "Planet", "Speed, km/s");
 
-ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
-ft_write_ln(table, "2", "12 Angry Men", "1957", "8.8");
-ft_write_ln(table, "3", "2001: A Space Odyssey", "1968", "8.5");
-ft_write_ln(table, "4", "Blade Runner", "1982", "8.1");
+    ft_write_ln(table, "1", "Mercury", "47.362");
+    ft_write_ln(table, "2", "Venus", "35.02");
+    ft_write_ln(table, "3", "Earth", "29.78");
 
-printf("%s\n", ft_to_string(table));
-ft_destroy_table(table);
+    printf("%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+}
 ```
-
 Output:
+```text
++---+---------+-------------+
+| N | Planet  | Speed, km/s |
++---+---------+-------------+
+| 1 | Mercury | 47.362      |
+| 2 | Venus   | 35.02       |
+| 3 | Earth   | 29.78       |
++---+---------+-------------+
+```
 
 <img src="https://github.com/seleznevae/libfort/blob/master/docs/images/basic_table.png" data-canonical-src="https://github.com/seleznevae/libfort/blob/master/docs/images/basic_table.png" width="500" />
 

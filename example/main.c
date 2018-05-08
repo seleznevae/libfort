@@ -33,8 +33,24 @@ void print_char_str(const char *str)
 
 }
 
+void base_example(void)
+{
+    ft_table_t *table = ft_create_table();;
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_write_ln(table, "N", "Planet", "Speed, km/s");
+
+    ft_write_ln(table, "1", "Mercury", "47.362");
+    ft_write_ln(table, "2", "Venus", "35.02");
+    ft_write_ln(table, "3", "Earth", "29.78");
+
+    printf("%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+}
+
 int main(void)
 {
+    base_example();
+
     int result = 0;
 
     ft_table_t *table = NULL;
