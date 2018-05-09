@@ -15,9 +15,19 @@
 - Support of multiple lines in cells
 - Support of wide characters
 
-## Examples
+## Getting Started
 
-### Basic using
+The common libfort usage pattern: 
+- create a table (_ft_create_table_);
+- fill it with data (_ft_write_ln_, _fr_ptrintf_ln_, _ft_row_write_, ...);
+- modify basic table appearance (_ft_set_cell_option_, ft_set_border_style ...)
+- convert table to string representation (_ft_to_string_);
+- destroy the table (_ft_destroy_table_)
+
+Here are some examples:
+
+### Basic example
+
 
 ```C
 #include <stdio.h>
@@ -58,23 +68,21 @@ int main(void)
 {
     ft_table_t *table = ft_create_table();
     ft_set_border_style(table, FT_DOUBLE2_STYLE);
-    /* Set center alignment for the 0th column */
-    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    /* Set center alignment for the 1st column */
+    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
     /* Set center alignment for the 3rd column */
     ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
 
     /* Set "header" type for the first row */
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-    ft_write_ln(table, "Rank", "Title", "Year", "Rating");
+    ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
 
-    ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
-    ft_write_ln(table, "2", "12 Angry Men", "1957", "8.8");
-    ft_write_ln(table, "3", "2001: A Space Odyssey", "1968", "8.5");
-    ft_write_ln(table, "4", "Blade Runner", "1982", "8.1");
 
-    ft_write_ln(table, "Average", "", "", "8.7");
-    ft_set_cell_span(table, 5, 0, 3);
-    ft_set_cell_option(table, 5, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
+    ft_write_ln(table, "The Godfather", "Francis Ford Coppola", "1972", "9.2");
+    ft_write_ln(table, "12 Angry Men", "Sidney Lumet", "1957", "8.8");
+    ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
+
 
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
@@ -82,19 +90,17 @@ int main(void)
 ```
 Output:
 ```text
-╔══════╤══════════════════════════╤══════╤════════╗
-║ Rank │ Title                    │ Year │ Rating ║
-╠══════╪══════════════════════════╪══════╪════════╣
-║  1   │ The Shawshank Redemption │ 1994 │  9.5   ║
-╟──────┼──────────────────────────┼──────┼────────╢
-║  2   │ 12 Angry Men             │ 1957 │  8.8   ║
-╟──────┼──────────────────────────┼──────┼────────╢
-║  3   │ 2001: A Space Odyssey    │ 1968 │  8.5   ║
-╟──────┼──────────────────────────┼──────┼────────╢
-║  4   │ Blade Runner             │ 1982 │  8.1   ║
-╠══════╧══════════════════════════╧══════╪════════╣
-║                Average                 │  8.7   ║
-╚════════════════════════════════════════╧════════╝
+╔══════════════════════════╤══════════════════════╤══════╤════════╗
+║ Movie title              │       Director       │ Year │ Rating ║
+╠══════════════════════════╪══════════════════════╪══════╪════════╣
+║ The Shawshank Redemption │    Frank Darabont    │ 1994 │  9.5   ║
+╟──────────────────────────┼──────────────────────┼──────┼────────╢
+║ The Godfather            │ Francis Ford Coppola │ 1972 │  9.2   ║
+╟──────────────────────────┼──────────────────────┼──────┼────────╢
+║ 12 Angry Men             │     Sidney Lumet     │ 1957 │  8.8   ║
+╟──────────────────────────┼──────────────────────┼──────┼────────╢
+║ 2001: A Space Odyssey    │   Stanley Kubrick    │ 1968 │  8.5   ║
+╚══════════════════════════╧══════════════════════╧══════╧════════╝
 ```
 
 
@@ -110,8 +116,12 @@ The following compilers are currently used in continuous integration at [Travis]
 | Compiler           | Operating System             |
 |--------------------|------------------------------|
 | GCC 4.8.4          | Ubuntu 14.04.3               | 
+| GCC 4.9.4          | Ubuntu 14.04.3               | 
+| GCC 5.5.0          | Ubuntu 14.04.3               | 
+| GCC 6.4.0          | Ubuntu 14.04.3               | 
+| GCC 7.3.0          | Ubuntu 14.04.3               | 
 | Clang 5.0.0        | Ubuntu 14.04.3               | 
-| Visual Studio 2017?| Windows Server 2016         ?|
+| Visual Studio 2017 | Windows Server 2016          |
 
 ## License
 
