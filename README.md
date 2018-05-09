@@ -58,35 +58,27 @@ Output:
 +---+---------+-------------+
 ```
 
-
 ### Customize table appearance
 
 ```C
-#include <stdio.h>
-#include "fort.h"
-int main(void)
-{
-    ft_table_t *table = ft_create_table();
-    ft_set_border_style(table, FT_DOUBLE2_STYLE);
-    /* Set center alignment for the 1st column */
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    /* Set center alignment for the 3rd column */
-    ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+ft_table_t *table = ft_create_table();
+ft_set_border_style(table, FT_DOUBLE2_STYLE);
+/* Set center alignment for the 1st column */
+ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+/* Set center alignment for the 3rd column */
+ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
 
-    /* Set "header" type for the first row */
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-    ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
+/* Set "header" type for the first row */
+ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
 
+ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
+ft_write_ln(table, "The Godfather", "Francis Ford Coppola", "1972", "9.2");
+ft_write_ln(table, "12 Angry Men", "Sidney Lumet", "1957", "8.8");
+ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
 
-    ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
-    ft_write_ln(table, "The Godfather", "Francis Ford Coppola", "1972", "9.2");
-    ft_write_ln(table, "12 Angry Men", "Sidney Lumet", "1957", "8.8");
-    ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
-
-
-    printf("%s\n", ft_to_string(table));
-    ft_destroy_table(table);
-}
+printf("%s\n", ft_to_string(table));
+ft_destroy_table(table);
 ```
 Output:
 ```text

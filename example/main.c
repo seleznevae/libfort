@@ -61,12 +61,10 @@ void different_cell_options(void)
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
 
-
     ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
     ft_write_ln(table, "The Godfather", "Francis Ford Coppola", "1972", "9.2");
     ft_write_ln(table, "12 Angry Men", "Sidney Lumet", "1957", "8.8");
     ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
-
 
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
