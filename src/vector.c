@@ -196,15 +196,21 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
         }
     }
 
-    memcpy(tmp,
-           (char *)cur_vec->m_data + deviation,
-           cur_vec->m_item_size * new_mv_sz);
+    if (tmp) {
+        memcpy(tmp,
+               (char *)cur_vec->m_data + deviation,
+               cur_vec->m_item_size * new_mv_sz);
+    }
+
     memcpy((char *)cur_vec->m_data + deviation,
            mv_vec->m_data,
            cur_vec->m_item_size * mv_sz);
-    memcpy(mv_vec->m_data,
-           tmp,
-           cur_vec->m_item_size * new_mv_sz);
+
+    if (tmp) {
+        memcpy(mv_vec->m_data,
+               tmp,
+               cur_vec->m_item_size * new_mv_sz);
+    }
 
     cur_vec->m_size = MAX(cur_vec->m_size, min_targ_size);
     mv_vec->m_size = new_mv_sz;
