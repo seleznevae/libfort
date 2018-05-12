@@ -83,6 +83,39 @@ void test_vector_basic(void)
         }
     }
 
+    WHEN("Moving from another vector") {
+        vector_clear(vector);
+        for (i = 0; i < 10; ++i) {
+            item_t item = (item_t)i;
+            vector_push(vector, &item);
+        }
+
+        vector_t *mv_vector = create_vector(sizeof(item_t), 5);
+        assert_true(mv_vector != NULL);
+        for (i = 0; i < 5; ++i) {
+            item_t item = (item_t)i * 2;
+            assert_true(vector_push(mv_vector, &item) ==  FT_SUCCESS);
+        }
+        assert_true(vector_swap(vector, mv_vector, 2) == FT_SUCCESS);
+        destroy_vector(mv_vector);
+        assert_true(vector_size(vector) == 10);
+
+        assert_true(*(item_t *)vector_at(vector, 1) == 1); /* original value */
+        assert_true(*(item_t *)vector_at(vector, 2) == 0); /* inserted value */
+        assert_true(*(item_t *)vector_at(vector, 4) == 4); /* inserted value */
+        assert_true(*(item_t *)vector_at(vector, 9) == 9); /* original value */
+
+        mv_vector = create_vector(sizeof(item_t), 5);
+        assert_true(mv_vector != NULL);
+        for (i = 0; i < 5; ++i) {
+            item_t item = (item_t)i * 2;
+            assert_true(vector_push(mv_vector, &item) ==  FT_SUCCESS);
+        }
+        assert_true(vector_swap(vector, mv_vector, 10) == FT_SUCCESS);
+        destroy_vector(mv_vector);
+        assert_true(vector_size(vector) == 15);
+    }
+
     destroy_vector(vector);
 }
 

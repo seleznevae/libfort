@@ -119,7 +119,7 @@ The following compilers are currently used in continuous integration at [Travis]
 | Visual Studio 2017 | Windows Server 2016          |
 
 Pease note:
-- In case of clang on OS X before using libfort with ```wchar_t``` with real unicode symbols it may be necessary to set ```setlocale(LC_CTYPE, "");``` because otherwise standard function ```swprintf```, that libfort uses internally, may fail and _ft_to_string_ will return error.
+- In case of clang on OS X before using **libfort** with ```wchar_t``` with real unicode symbols it may be necessary to set ```setlocale(LC_CTYPE, "");``` because otherwise standard function ```swprintf```, that libfort uses internally, may fail and ```ft_to_string``` will return error.
 
 ## License
 

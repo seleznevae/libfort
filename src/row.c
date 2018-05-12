@@ -718,6 +718,7 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 #define STR_FILED cstr
 #define CREATE_ROW_FROM_STRING create_row_from_string
 #define NUMBER_OF_COLUMNS_IN_FORMAT_STRING number_of_columns_in_format_string
+#define FILL_CELL_FROM_STRING fill_cell_from_string
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CharBuf);
     if (buffer == NULL)
@@ -756,7 +757,32 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
         return row;
     }
 
-    /* todo: add processing of cols != cols_origin */
+    if (cols_origin == 1) {
+        fort_row_t *row = create_row();
+        if (row == NULL) {
+            goto clear;
+        }
+
+        fort_cell_t *cell = get_cell_and_create_if_not_exists(row, 0);
+        if (cell == NULL) {
+            destroy_row(row);
+            goto clear;
+        }
+
+        fort_status_t result = FILL_CELL_FROM_STRING(cell, buffer->str.STR_FILED);
+        if (FT_IS_ERROR(result)) {
+            destroy_row(row);
+            goto clear;
+        }
+
+        destroy_string_buffer(buffer);
+        return row;
+    }
+
+    /*
+     * todo: add processing of cols != cols_origin in a general way
+     * (when cols_origin != 1).
+     */
 
 clear:
     destroy_string_buffer(buffer);
@@ -765,6 +791,7 @@ clear:
 #undef STR_FILED
 #undef CREATE_ROW_FROM_STRING
 #undef NUMBER_OF_COLUMNS_IN_FORMAT_STRING
+#undef FILL_CELL_FROM_STRING
 }
 
 #ifdef FT_HAVE_WCHAR
@@ -774,7 +801,7 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
 #define STR_FILED wstr
 #define CREATE_ROW_FROM_STRING create_row_from_wstring
 #define NUMBER_OF_COLUMNS_IN_FORMAT_STRING number_of_columns_in_format_wstring
-
+#define FILL_CELL_FROM_STRING fill_cell_from_wstring
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CharBuf);
     if (buffer == NULL)
@@ -813,7 +840,32 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
         return row;
     }
 
-    /* todo: add processing of cols != cols_origin */
+    if (cols_origin == 1) {
+        fort_row_t *row = create_row();
+        if (row == NULL) {
+            goto clear;
+        }
+
+        fort_cell_t *cell = get_cell_and_create_if_not_exists(row, 0);
+        if (cell == NULL) {
+            destroy_row(row);
+            goto clear;
+        }
+
+        fort_status_t result = FILL_CELL_FROM_STRING(cell, buffer->str.STR_FILED);
+        if (FT_IS_ERROR(result)) {
+            destroy_row(row);
+            goto clear;
+        }
+
+        destroy_string_buffer(buffer);
+        return row;
+    }
+
+    /*
+     * todo: add processing of cols != cols_origin in a general way
+     * (when cols_origin != 1).
+     */
 
 clear:
     destroy_string_buffer(buffer);
@@ -822,6 +874,7 @@ clear:
 #undef STR_FILED
 #undef CREATE_ROW_FROM_STRING
 #undef NUMBER_OF_COLUMNS_IN_FORMAT_STRING
+#undef FILL_CELL_FROM_STRING
 }
 #endif
 

@@ -179,7 +179,7 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
     }
 
     size_t min_targ_size = pos + mv_sz;
-    if (cur_sz < min_targ_size) {
+    if (vector_capacity(cur_vec) < min_targ_size) {
         if (vector_reallocate_(cur_vec, min_targ_size) == -1)
             return FT_ERROR;
         cur_vec->m_capacity = min_targ_size;
@@ -198,7 +198,7 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
 
     memcpy(tmp,
            (char *)cur_vec->m_data + deviation,
-           cur_vec->m_item_size * (cur_sz - pos));
+           cur_vec->m_item_size * new_mv_sz);
     memcpy((char *)cur_vec->m_data + deviation,
            mv_vec->m_data,
            cur_vec->m_item_size * mv_sz);
@@ -206,6 +206,7 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
            tmp,
            cur_vec->m_item_size * new_mv_sz);
 
+    cur_vec->m_size = MAX(cur_vec->m_size, min_targ_size);
     mv_vec->m_size = new_mv_sz;
     F_FREE(tmp);
     return FT_SUCCESS;
