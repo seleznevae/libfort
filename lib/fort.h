@@ -563,7 +563,7 @@ int ft_add_separator(ft_table_t *table);
  *   Formatted table.
  * @return
  *   - The pointer to the string representation of formatted table, on success.
- *   - NULL on error with ft_errno set appropriately.
+ *   - NULL on error.
  */
 const char *ft_to_string(const ft_table_t *table);
 
@@ -631,7 +631,7 @@ extern struct ft_border_style *FT_FRAME_STYLE;
  *   - 0: Success; default border style was changed.
  *   - (<0): In case of error
  */
-int ft_set_default_border_style(struct ft_border_style *style);
+int ft_set_default_border_style(const struct ft_border_style *style);
 
 /**
  * Set border style for the table.
@@ -644,7 +644,7 @@ int ft_set_default_border_style(struct ft_border_style *style);
  *   - 0: Success; table border style was changed.
  *   - (<0): In case of error
  */
-int ft_set_border_style(ft_table_t *table, struct ft_border_style *style);
+int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
 
 
 

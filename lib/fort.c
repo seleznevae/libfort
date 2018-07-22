@@ -2350,7 +2350,7 @@ struct ft_border_style *FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME
 
 
 
-static void set_border_options_for_options(fort_table_options_t *options, struct ft_border_style *style)
+static void set_border_options_for_options(fort_table_options_t *options, const struct ft_border_style *style)
 {
     if ((struct fort_border_style *)style == &FORT_BASIC_STYLE
         || (struct fort_border_style *)style == &FORT_BASIC2_STYLE
@@ -2369,8 +2369,8 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
         return;
     }
 
-    struct ft_border_chars *border_chs = &(style->border_chs);
-    struct ft_border_chars *header_border_chs = &(style->header_border_chs);
+    const struct ft_border_chars *border_chs = &(style->border_chs);
+    const struct ft_border_chars *header_border_chs = &(style->header_border_chs);
 
 #define BOR_CHARS options->border_style.border_chars
 #define H_BOR_CHARS options->border_style.header_border_chars
@@ -2433,13 +2433,13 @@ static void set_border_options_for_options(fort_table_options_t *options, struct
 }
 
 
-int ft_set_default_border_style(struct ft_border_style *style)
+int ft_set_default_border_style(const struct ft_border_style *style)
 {
     set_border_options_for_options(&g_table_options, style);
     return FT_SUCCESS;
 }
 
-int ft_set_border_style(ft_table_t *table, struct ft_border_style *style)
+int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style)
 {
     assert(table);
     if (table->options == NULL) {

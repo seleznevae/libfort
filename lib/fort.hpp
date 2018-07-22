@@ -54,13 +54,13 @@ private:
 };
 
 const TableManipulator header(0);
-const TableManipulator endl(1);
+const TableManipulator endr(1);
 const TableManipulator separator(2);
 
 /**
- * Table - here is a short description.
+ * Table - formatted table.
  *
- * Here is detailed description.
+ * Table class is a C++ wrapper around struct ft_table.
  */
 class Table {
 public:
@@ -76,6 +76,13 @@ public:
         ft_destroy_table(table);
     }
 
+    /**
+     * Convert table to string representation.
+     *
+     * @return
+     *   - String representation of formatted table, on success.
+     *   - In case of error std::runtime_error is thrown.
+     */
     std::string to_string() const
     {
         const char *str = ft_to_string(table);
@@ -84,11 +91,37 @@ public:
         return str;
     }
 
+    /**
+     * Convert table to string representation.
+     *
+     * Table object has ownership of the returned pointer. So there is no need to
+     * free it. To take ownership user should explicitly copy the returned
+     * string with strdup or similar functions.
+     *
+     * Returned pointer may be later invalidated by:
+     * - Calling destroying the table;
+     * - Other invocations of c_str or to_string.
+     *
+     * @return
+     *   - The pointer to the string representation of formatted table, on success.
+     *   - NULL on error.
+     */
     const char *c_str() const
     {
         return ft_to_string(table);
     }
 
+    /**
+     * Write provided object to the the table.
+     *
+     * To convert object to the string representation conversion for
+     * std::ostream is used.
+     *
+     * @param arg
+     *   Obect that would be inserted in the current cell.
+     * @return
+     *   - Reference to the current table.
+     */
     template <typename T>
     Table &operator<<(const T &arg)
     {
@@ -104,7 +137,7 @@ public:
     {
         if (arg.value == header.value)
             ft_set_cell_option(table, FT_CUR_ROW, FT_ANY_ROW, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-        else if (arg.value == endl.value)
+        else if (arg.value == endr.value)
             ft_ln(table);
         else if (arg.value == separator.value)
             ft_add_separator(table);
@@ -233,6 +266,21 @@ public:
     }
 
 #endif /* __cpp_variadic_templates */
+
+
+    /**
+     * Set border style for the table.
+     *
+     * @param style
+     *   Pointer to border style.
+     * @return
+     *   - True: Success; table border style was changed.
+     *   - False: Error
+     */
+    bool set_border_style(struct ft_border_style *style)
+    {
+        return FT_IS_SUCCESS(ft_set_border_style(table, style));
+    }
 
 
 private:
