@@ -42,6 +42,35 @@ SOFTWARE.
 namespace fort
 {
 
+enum class CellOption {
+    MinWidth,
+    TextAlign,
+    TopPadding,
+    BottomPadding,
+    LeftPadding,
+    RightPading,
+    EmptyStrHeight,
+    RowType
+};
+
+enum class TableOption {
+    LeftMargin,
+    TopMargin,
+    RightMargin,
+    BottomMargin,
+};
+
+enum class TextAlign {
+    Left,
+    Center,
+    Right
+};
+
+enum class RowType {
+    Common,
+    Header
+};
+
 class TableManipulator {
 public:
     explicit TableManipulator(int i)
@@ -269,6 +298,54 @@ public:
 
 
     /**
+     * Set min width for the specified cell of the table.
+     *
+     * @param row
+     *   Cell row.
+     * @param col
+     *   Cell column.
+     * @param value
+     *   Value of the min width.
+     * @return
+     *   - 0: Success; cell option was changed.
+     *   - (<0): In case of error
+     */
+    bool set_cell_min_width(size_t row, size_t col, unsigned value)
+    {
+        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_MIN_WIDTH, value));
+    }
+
+    /**
+     * Set bottom padding for the specified cell of the table.
+     *
+     * @param row
+     *   Cell row.
+     * @param col
+     *   Cell column.
+     * @param value
+     *   Value of the bottom padding.
+     * @return
+     *   - 0: Success; cell option was changed.
+     *   - (<0): In case of error
+     */
+    bool set_cell_bottom_padding(size_t row, size_t col, unsigned value)
+    {
+        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_BOTTOM_PADDING, value));
+    }
+
+    template <CellOption option>
+    bool set_option(size_t row, size_t col, unsigned value);
+
+    template <CellOption option>
+    bool set_option(size_t row, size_t col, TextAlign align);
+
+    template <CellOption option>
+    bool set_option(size_t row, size_t col, RowType rowType);
+
+    template <TableOption option>
+    bool set_option(unsigned value);
+
+    /**
      * Set border style for the table.
      *
      * @param style
@@ -282,11 +359,76 @@ public:
         return FT_IS_SUCCESS(ft_set_border_style(table, style));
     }
 
-
+    /**
+     * Set default border style for all new formatted tables.
+     *
+     * @param style
+     *   Pointer to border style.
+     * @return
+     *   - True: Success; table border style was changed.
+     *   - False: Error
+     */
+    bool set_default_border_style(struct ft_border_style *style)
+    {
+        return FT_IS_SUCCESS(ft_set_default_border_style(style));
+    }
 private:
     ft_table_t *table;
     std::stringstream stream;
 };
+
+
+
+
+
+
+/*
+ * Declare specializations for set_option functions
+ */
+#define DECLARE_SPECS_FOR_CELL_OPTIONS_X \
+        SET_CELL_OPTION_SPEC(CellOption::MinWidth, FT_COPT_MIN_WIDTH, unsigned) \
+        SET_CELL_OPTION_SPEC(CellOption::TextAlign, FT_COPT_TEXT_ALIGN, TextAlign) \
+        SET_CELL_OPTION_SPEC(CellOption::TopPadding, FT_COPT_TOP_PADDING, unsigned) \
+        SET_CELL_OPTION_SPEC(CellOption::BottomPadding, FT_COPT_BOTTOM_PADDING, unsigned) \
+        SET_CELL_OPTION_SPEC(CellOption::LeftPadding, FT_COPT_LEFT_PADDING, unsigned) \
+        SET_CELL_OPTION_SPEC(CellOption::RightPading, FT_COPT_RIGHT_PADDING, unsigned) \
+        SET_CELL_OPTION_SPEC(CellOption::EmptyStrHeight, FT_COPT_EMPTY_STR_HEIGHT, unsigned) \
+        SET_CELL_OPTION_SPEC(CellOption::RowType, FT_COPT_ROW_TYPE, RowType)
+
+#define SET_CELL_OPTION_SPEC(CELL_OPTION, C_OPTION, VALUE_TYPE) \
+template <> \
+bool Table::set_option<CELL_OPTION>(size_t row, size_t col, VALUE_TYPE value) \
+{ \
+    return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, C_OPTION, static_cast<int>(value))); \
+}
+
+DECLARE_SPECS_FOR_CELL_OPTIONS_X
+
+#undef SET_TABLE_OPTION_SPEC
+#undef DECLARE_SPECS_FOR_CELL_OPTIONS_X
+
+
+
+#define DECLARE_SPECS_FOR_TABLE_OPTIONS_X \
+        SET_TABLE_OPTION_SPEC(TableOption::LeftMargin, FT_TOPT_LEFT_MARGIN) \
+        SET_TABLE_OPTION_SPEC(TableOption::TopMargin, FT_TOPT_TOP_MARGIN) \
+        SET_TABLE_OPTION_SPEC(TableOption::RightMargin, FT_TOPT_RIGHT_MARGIN) \
+        SET_TABLE_OPTION_SPEC(TableOption::BottomMargin, FT_TOPT_BOTTOM_MARGIN)
+
+#define SET_TABLE_OPTION_SPEC(TABLE_OPTION, TBL_OPTION) \
+template <> \
+bool Table::set_option<TABLE_OPTION>(unsigned value) \
+{ \
+    return FT_IS_SUCCESS(ft_set_tbl_option(table, TBL_OPTION, static_cast<int>(value))); \
+}
+
+DECLARE_SPECS_FOR_TABLE_OPTIONS_X
+
+#undef SET_TABLE_OPTION_SPEC
+#undef DECLARE_SPECS_FOR_TABLE_OPTIONS_X
+
+
+
 
 }
 

@@ -118,6 +118,14 @@ add_executable(${PROJECT_NAME}_test
     ${TEST_SOURCES})
 
 
+set(TEST_SOURCES_CPP
+    tests/main_test_cpp.cpp
+    tests/bb_tests_cpp/test_table_basic.cpp
+    tests/test_utils.c)
+add_executable(${PROJECT_NAME}_test_cpp
+    lib/fort.c
+    ${TEST_SOURCES_CPP})
+
 if(FORT_CXX_BUILD)
     SET_SOURCE_FILES_PROPERTIES( ${FORT_DEV_SOURCES} PROPERTIES LANGUAGE CXX)
     SET_SOURCE_FILES_PROPERTIES( ${EXAMPLE_SOURCES} PROPERTIES LANGUAGE CXX)

@@ -67,11 +67,19 @@ struct test_case {
     }
 
 struct ft_table;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int set_test_options_for_table(struct ft_table *table);
 int set_test_options_as_default(void);
 struct ft_table *create_test_int_table(int set_test_opts);
 struct ft_table *create_test_int_wtable(int set_test_opts);
+void run_test_suit(const char *test_suit_name, int n_tests, struct test_case test_suit[]);
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TESTS_H
