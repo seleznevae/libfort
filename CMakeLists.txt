@@ -226,6 +226,7 @@ if(FORT_ENABLE_ASTYLE)
         ${CMAKE_SOURCE_DIR}/tests/*.h
         ${CMAKE_SOURCE_DIR}/tests/bb_tests/*.c
         ${CMAKE_SOURCE_DIR}/tests/wb_tests/*.c
+        ${CMAKE_SOURCE_DIR}/tests/bb_tests_cpp/*.cpp
     )
 
     if(NOT WIN32 STREQUAL "1")
