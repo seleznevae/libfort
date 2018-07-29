@@ -326,6 +326,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
 
     int  written = 0;
     int tmp = 0;
+    ptrdiff_t str_it_width = 0;
     const CHAR_TYPE *beg = NULL;
     const CHAR_TYPE *end = NULL;
     CHAR_TYPE old_value;
@@ -338,7 +339,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     old_value = *end;
     *(CHAR_TYPE *)end = NULL_CHAR;
 
-    ptrdiff_t str_it_width = STR_ITER_WIDTH(beg, end);
+    str_it_width = STR_ITER_WIDTH(beg, end);
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
         return - 1;
 
@@ -411,6 +412,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 
     int  written = 0;
     int tmp = 0;
+    ptrdiff_t str_it_width = 0;
     const CHAR_TYPE *beg = NULL;
     const CHAR_TYPE *end = NULL;
     CHAR_TYPE old_value;
@@ -423,7 +425,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     old_value = *end;
     *(CHAR_TYPE *)end = NULL_CHAR;
 
-    ptrdiff_t str_it_width = STR_ITER_WIDTH(beg, end);
+    str_it_width = STR_ITER_WIDTH(beg, end);
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
         return - 1;
 

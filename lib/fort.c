@@ -3092,6 +3092,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
 
     int  written = 0;
     int tmp = 0;
+    ptrdiff_t str_it_width = 0;
     const CHAR_TYPE *beg = NULL;
     const CHAR_TYPE *end = NULL;
     CHAR_TYPE old_value;
@@ -3104,7 +3105,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     old_value = *end;
     *(CHAR_TYPE *)end = NULL_CHAR;
 
-    ptrdiff_t str_it_width = STR_ITER_WIDTH(beg, end);
+    str_it_width = STR_ITER_WIDTH(beg, end);
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
         return - 1;
 
@@ -3177,6 +3178,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 
     int  written = 0;
     int tmp = 0;
+    ptrdiff_t str_it_width = 0;
     const CHAR_TYPE *beg = NULL;
     const CHAR_TYPE *end = NULL;
     CHAR_TYPE old_value;
@@ -3189,7 +3191,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     old_value = *end;
     *(CHAR_TYPE *)end = NULL_CHAR;
 
-    ptrdiff_t str_it_width = STR_ITER_WIDTH(beg, end);
+    str_it_width = STR_ITER_WIDTH(beg, end);
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
         return - 1;
 
@@ -3835,6 +3837,8 @@ int print_row_separator(char *buffer, size_t buffer_sz,
         }
     }
 
+    size_t i = 0;
+
     /* If all chars are not printable, skip line separator */  /* todo: add processing for wchar_t */
 //    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
 //        status = 0;
@@ -3847,8 +3851,6 @@ int print_row_separator(char *buffer, size_t buffer_sz,
         status = 0;
         goto clear;
     }
-
-    size_t i = 0;
 
     /* Print left margin */
     CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, context->table_options->entire_table_options.left_margin, space_char));
@@ -4008,6 +4010,8 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
         }
     }
 
+    size_t i = 0;
+
     /* If all chars are not printable, skip line separator */  /* todo: add processing for wchar_t */
 //    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
 //        status = 0;
@@ -4020,8 +4024,6 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
         status = 0;
         goto clear;
     }
-
-    size_t i = 0;
 
     /* Print left margin */
     CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, context->table_options->entire_table_options.left_margin, space_char));

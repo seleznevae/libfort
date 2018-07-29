@@ -3,8 +3,8 @@
 [![Build Status](https://travis-ci.org/seleznevae/libfort.svg?branch=master)](https://travis-ci.org/seleznevae/libfort)
 [![Build status](https://ci.appveyor.com/api/projects/status/ll1qygb56pho95xw/branch/master?svg=true)](https://ci.appveyor.com/project/seleznevae/libfort/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/seleznevae/libfort/badge.svg?branch=master)](https://coveralls.io/github/seleznevae/libfort?branch=master)
+[![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/6QTaJLeXIf6mS6KN)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 
 **libfort** - a simple library to create formatted ASCII tables. **libfort** is written in C language and can be used in C and C++ projects. For C++ projects that use compiler with c++11 support there are also availabe convenient c++ wrappers around c functions (see **fort.hpp** in **lib** direrctory).
 
