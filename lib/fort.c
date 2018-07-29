@@ -3734,7 +3734,7 @@ int print_row_separator(char *buffer, size_t buffer_sz,
      * Regions above top row and below bottom row areconsidered full of virtual
      * GroupSlaveCell cells
      */
-    enum CellType *top_row_types = F_MALLOC(sizeof(enum CellType) * cols * 2);
+    enum CellType *top_row_types = (enum CellType *)F_MALLOC(sizeof(enum CellType) * cols * 2);
     if (top_row_types == NULL) {
         return FT_MEMORY_ERROR;
     }
@@ -3907,7 +3907,7 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
      * Regions above top row and below bottom row areconsidered full of virtual
      * GroupSlaveCell cells
      */
-    enum CellType *top_row_types = F_MALLOC(sizeof(enum CellType) * cols * 2);
+    enum CellType *top_row_types = (enum CellType *)F_MALLOC(sizeof(enum CellType) * cols * 2);
     if (top_row_types == NULL) {
         return FT_MEMORY_ERROR;
     }

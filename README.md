@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
-**libfort** - a simple library to create formatted ASCII tables. **libfort** is written in C language and can be used in C and C++ projects. For C++ projects that use compiler with c++11 support there is also availabe convenient c++ wrappers around c functions (see **fort.hpp** in **lib** direrctory).
+**libfort** - a simple library to create formatted ASCII tables. **libfort** is written in C language and can be used in C and C++ projects. For C++ projects that use compiler with c++11 support there are also availabe convenient c++ wrappers around c functions (see **fort.hpp** in **lib** direrctory).
 
 **Features:**
 - Easy to integrate (only 2 files: **fort.c** and **fort.h** from **lib** direrctory)
