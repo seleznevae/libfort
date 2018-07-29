@@ -16,6 +16,13 @@ int main()
             << "4" << "2001: A Space Odyssey" << "1968" << "8.5" << fort::endr
             << "5" << "Blade Runner" << "1982" << "8.1" << fort::endr
             << fort::endr;
+
+        using fort::CellOption;
+        using fort::TableOption;
+        table.set_option<CellOption::MinWidth>(0, 0, 20);
+        table.set_option<CellOption::TextAlign>(0, 0, fort::TextAlign::Left);
+        table.set_option<CellOption::RowType>(2, FT_ANY_COLUMN, fort::RowType::Header);
+
         std::cout << table.to_string() << std::endl;
     }
 
@@ -33,9 +40,9 @@ int main()
 
         using fort::CellOption;
         using fort::TableOption;
-        table.set_option<CellOption::MinWidth>(0, 0, 20);
-        table.set_option<CellOption::TextAlign>(0, 0, fort::TextAlign::Left);
-        table.set_option<CellOption::RowType>(2, FT_ANY_COLUMN, fort::RowType::Header);
+        table.set_cell_min_width(0, 0, 20);
+        table.set_cell_text_align(0, 0, fort::TextAlign::Left);
+        table.set_cell_row_type(2, FT_ANY_COLUMN, fort::RowType::Header);
 
 
         table.set_option<TableOption::LeftMargin>(4);

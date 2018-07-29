@@ -61,13 +61,13 @@ enum class TableOption {
 };
 
 enum class TextAlign {
-    Left,
+    Left = 0,
     Center,
     Right
 };
 
 enum class RowType {
-    Common,
+    Common = 0,
     Header
 };
 
@@ -316,6 +316,42 @@ public:
     }
 
     /**
+     * Set text alignment for the specified cell of the table.
+     *
+     * @param row
+     *   Cell row.
+     * @param col
+     *   Cell column.
+     * @param value
+     *   Value of the text alignment.
+     * @return
+     *   - 0: Success; cell option was changed.
+     *   - (<0): In case of error
+     */
+    bool set_cell_text_align(size_t row, size_t col, enum TextAlign value)
+    {
+        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_TEXT_ALIGN, static_cast<int>(value)));
+    }
+
+    /**
+     * Set top padding for the specified cell of the table.
+     *
+     * @param row
+     *   Cell row.
+     * @param col
+     *   Cell column.
+     * @param value
+     *   Value of the top padding.
+     * @return
+     *   - 0: Success; cell option was changed.
+     *   - (<0): In case of error
+     */
+    bool set_cell_top_padding(size_t row, size_t col, unsigned value)
+    {
+        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_TOP_PADDING, value));
+    }
+
+    /**
      * Set bottom padding for the specified cell of the table.
      *
      * @param row
@@ -333,14 +369,86 @@ public:
         return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_BOTTOM_PADDING, value));
     }
 
+    /**
+     * Set left padding for the specified cell of the table.
+     *
+     * @param row
+     *   Cell row.
+     * @param col
+     *   Cell column.
+     * @param value
+     *   Value of the left padding.
+     * @return
+     *   - 0: Success; cell option was changed.
+     *   - (<0): In case of error
+     */
+    bool set_cell_left_padding(size_t row, size_t col, unsigned value)
+    {
+        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_LEFT_PADDING, value));
+    }
+
+    /**
+     * Set right padding for the specified cell of the table.
+     *
+     * @param row
+     *   Cell row.
+     * @param col
+     *   Cell column.
+     * @param value
+     *   Value of the left padding.
+     * @return
+     *   - 0: Success; cell option was changed.
+     *   - (<0): In case of error
+     */
+    bool set_cell_right_padding(size_t row, size_t col, unsigned value)
+    {
+        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_RIGHT_PADDING, value));
+    }
+
+    /**
+     * Set empty string height for the specified cell of the table.
+     *
+     * @param row
+     *   Cell row.
+     * @param col
+     *   Cell column.
+     * @param value
+     *   Value of the empty string height.
+     * @return
+     *   - 0: Success; cell option was changed.
+     *   - (<0): In case of error
+     */
+    bool set_cell_empty_str_height(size_t row, size_t col, unsigned value)
+    {
+        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_EMPTY_STR_HEIGHT, value));
+    }
+
+    /**
+     * Set row type for the specified cell of the table.
+     *
+     * @param row
+     *   Cell row.
+     * @param col
+     *   Cell column.
+     * @param value
+     *   Value of the row type.
+     * @return
+     *   - 0: Success; cell option was changed.
+     *   - (<0): In case of error
+     */
+    bool set_cell_row_type(size_t row, size_t col, enum RowType value)
+    {
+        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_ROW_TYPE, static_cast<int>(value)));
+    }
+
     template <CellOption option>
     bool set_option(size_t row, size_t col, unsigned value);
 
     template <CellOption option>
-    bool set_option(size_t row, size_t col, TextAlign align);
+    bool set_option(size_t row, size_t col, enum TextAlign align);
 
     template <CellOption option>
-    bool set_option(size_t row, size_t col, RowType rowType);
+    bool set_option(size_t row, size_t col, enum RowType rowType);
 
     template <TableOption option>
     bool set_option(unsigned value);
