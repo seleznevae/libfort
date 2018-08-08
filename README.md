@@ -6,14 +6,31 @@
 [![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/tD15vwjIgeWmpPSX)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**libfort** is a simple crossplatform library to create formatted text tables. **libfort** is written in C language and can be used in C and C++ projects. For C++ projects that use compiler with c++11 support (and later) there are also availabe convenient c++ wrappers around c functions (see [`fort.hpp`](https://github.com/seleznevae/libfort/blob/master/lib/fort.hpp) in **lib** direrctory).
+**libfort** is a simple crossplatform library to create formatted text tables.
 
 **Features:**
-- Easy to integrate (only 2 files: [`fort.c`](https://github.com/seleznevae/libfort/blob/master/lib/fort.c)  and [`fort.h`](https://github.com/seleznevae/libfort/blob/master/lib/fort.h) from **lib** direrctory)
+- Easy to integrate (only 2 files)
 - Customization of appearance (various border styles and row/column/cell options for indentation, alignment, padding)
 - A number of functions to fill the table (add content by adding separate cells, rows or use _printf_ like functions)
 - Support of multiple lines in cells
 - Support of wide characters
+
+## Design goals
+- **Maintainability and robustness**. **libfort** is written in C because it is much less complicated than C++ and it can be used in both C and C++ projects and even on platforms without C++ compiler.
+- **Trivial integration.** Therefore all source code files are amalgamed in only 2 files.
+- **Heavy testing.** The goal is to cover 100% of the code (it is not reached yet) and to run tests on all major compilers and platforms.
+
+## Integration
+Add 2 files ( [`fort.c`](https://github.com/seleznevae/libfort/blob/master/lib/fort.c)  and [`fort.h`](https://github.com/seleznevae/libfort/blob/master/lib/fort.h) from **lib** direrctory) to your C or C++ project and include
+```C
+#include "fort.h"
+```
+in your source code where you will use **libfort** functions.
+
+For C++ projects that use compiler with C++11 support (and later) there are also availabe convenient C++ wrappers around C functions (see [`fort.hpp`](https://github.com/seleznevae/libfort/blob/master/lib/fort.hpp) in **lib** direrctory). In that case instead of _fort.h_ you will need to include
+```CPP
+#include "fort.hpp"
+```
 
 ## Getting Started
 
