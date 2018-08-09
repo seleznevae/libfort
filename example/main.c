@@ -36,26 +36,22 @@ void print_char_str(const char *str)
 void base_example(void)
 {
     ft_table_t *table = ft_create_table();
-    /* Set "header" type for the first row */
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-    ft_write_ln(table, "N", "Planet", "Speed, km/s");
+    ft_write_ln(table, "N", "Driver", "Time", "Avg Speed");
 
-    ft_write_ln(table, "1", "Mercury", "47.362");
-    ft_write_ln(table, "2", "Venus", "35.02");
-    ft_write_ln(table, "3", "Earth", "29.78");
+    ft_write_ln(table, "1", "Ricciardo", "1:25.945", "222.128");
+    ft_write_ln(table, "2", "Hamilton", "1:26.373", "221.027");
+    ft_write_ln(table, "3", "Verstappen", "1:26.469", "220.782");
 
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
 }
 
-void different_cell_options(void)
+void different_cell_options_example(void)
 {
     ft_table_t *table = ft_create_table();
+    /* Change border style */
     ft_set_border_style(table, FT_DOUBLE2_STYLE);
-    /* Set center alignment for the 1st column */
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    /* Set center alignment for the 3rd column */
-    ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
 
     /* Set "header" type for the first row */
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
@@ -63,8 +59,32 @@ void different_cell_options(void)
 
     ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
     ft_write_ln(table, "The Godfather", "Francis Ford Coppola", "1972", "9.2");
-    ft_write_ln(table, "12 Angry Men", "Sidney Lumet", "1957", "8.8");
     ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
+
+    /* Set center alignment for the 1st and 3rd columns */
+    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+
+    printf("%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+}
+
+void fill_table_with_data_example(void)
+{
+    ft_table_t *table = ft_create_table();
+    /* Set "header" type for the first row */
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_write_ln(table, "N", "Planet", "Speed, km/s", "Temperature, K");
+
+    /* Fill row with printf like function */
+    ft_printf_ln(table, "1|%s|%6.3f|%d", "Mercury", 47.362, 340);
+
+    /* Fill row explicitly with strings */
+    ft_write_ln(table, "2", "Venus", "35.02", "737");
+
+    /* Fill row with the array of strings */
+    const char *arr[4] = {"3", "Earth", "29.78", "288"};
+    ft_row_write_ln(table, 4, arr);
 
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
@@ -73,7 +93,8 @@ void different_cell_options(void)
 int main(void)
 {
     base_example();
-    different_cell_options();
+    different_cell_options_example();
+    fill_table_with_data_example();
 
     int result = 0;
 

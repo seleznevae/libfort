@@ -297,6 +297,27 @@ public:
 #endif /* __cpp_variadic_templates */
 
 
+    template <typename InputIt>
+    bool row_write(InputIt first, InputIt last)
+    {
+        while (first != last) {
+            *this << *first;
+            ++first;
+        }
+        return true;
+    }
+
+    template <typename InputIt>
+    bool row_write_ln(InputIt first, InputIt last)
+    {
+        while (first != last) {
+            *this << *first;
+            ++first;
+        }
+        ft_ln(table);
+        return true;
+    }
+
     /**
      * Set min width for the specified cell of the table.
      *

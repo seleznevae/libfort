@@ -47,6 +47,7 @@ Here are some examples:
 
 
 ```C
+/* C API */
 #include <stdio.h>
 #include "fort.h"
 int main(void)
@@ -54,49 +55,98 @@ int main(void)
     ft_table_t *table = ft_create_table();
     /* Set "header" type for the first row */
     ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-    ft_write_ln(table, "N", "Planet", "Speed, km/s");
+    ft_write_ln(table, "N", "Driver", "Time", "Avg Speed");
 
-    ft_write_ln(table, "1", "Mercury", "47.362");
-    ft_write_ln(table, "2", "Venus", "35.02");
-    ft_write_ln(table, "3", "Earth", "29.78");
+    ft_write_ln(table, "1", "Ricciardo", "1:25.945", "222.128");
+    ft_write_ln(table, "2", "Hamilton", "1:26.373", "221.027");
+    ft_write_ln(table, "3", "Verstappen", "1:26.469", "220.782");
 
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
 }
 ```
+
+```C++
+/* C++ API */
+#include <iostream>
+#include "fort.hpp"
+int main(void)
+{
+    fort::Table table;
+    table << fort::header
+        << "N" << "Driver" << "Time" << "Avg Speed" << fort::endr
+        << "1" << "Ricciardo" << "1:25.945" << "47.362" << fort::endr
+        << "2" << "Hamilton" << "1:26.373" << "35.02" << fort::endr
+        << "3" << "Verstappen" << "1:26.469" << "29.78" << fort::endr;
+
+    std::cout << table.to_string() << std::endl;
+}
+```
+
 Output:
 ```text
-+---+---------+-------------+
-| N | Planet  | Speed, km/s |
-+---+---------+-------------+
-| 1 | Mercury | 47.362      |
-| 2 | Venus   | 35.02       |
-| 3 | Earth   | 29.78       |
-+---+---------+-------------+
++---+------------+----------+-----------+
+| N | Driver     | Time     | Avg Speed |
++---+------------+----------+-----------+
+| 1 | Ricciardo  | 1:25.945 | 47.362    |
+| 2 | Hamilton   | 1:26.373 | 35.02     |
+| 3 | Verstappen | 1:26.469 | 29.78     |
++---+------------+----------+-----------+
 ```
 
 ### Customize table appearance
 
 ```C
-ft_table_t *table = ft_create_table();
-ft_set_border_style(table, FT_DOUBLE2_STYLE);
-/* Set center alignment for the 1st column */
-ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-/* Set center alignment for the 3rd column */
-ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+/* C API */
+#include <stdio.h>
+#include "fort.h"
+int main(void)
+{
+    ft_table_t *table = ft_create_table();
+    /* Change border style */
+    ft_set_border_style(table, FT_DOUBLE2_STYLE);
 
-/* Set "header" type for the first row */
-ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
+    /* Set "header" type for the first row */
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
 
-ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
-ft_write_ln(table, "The Godfather", "Francis Ford Coppola", "1972", "9.2");
-ft_write_ln(table, "12 Angry Men", "Sidney Lumet", "1957", "8.8");
-ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
+    ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
+    ft_write_ln(table, "The Godfather", "Francis Ford Coppola", "1972", "9.2");
+    ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
 
-printf("%s\n", ft_to_string(table));
-ft_destroy_table(table);
+    /* Set center alignment for the 1st and 3rd columns */
+    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+
+    printf("%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+}
 ```
+
+```C++
+/* C++ API */
+#include <iostream>
+#include "fort.hpp"
+int main(void)
+{
+    fort::Table table;
+    /* Change border style */
+    table.set_border_style(FT_DOUBLE2_STYLE);
+
+    table << fort::header
+        << "Movie title" << "Director" << "Year" << "Rating" << fort::endr
+        << "The Shawshank Redemption" << "Frank Darabont" << "1994" << "9.5" << fort::endr
+        << "The Godfather" << "Francis Ford Coppola" << "1972" << "9.2" << fort::endr
+        << "2001: A Space Odyssey" << "Stanley Kubrick" << "1968" << "8.5" << fort::endr;
+
+    /* Set center alignment for the 1st and 3rd columns */
+    table.set_cell_text_align(FT_ANY_ROW, 1, fort::TextAlign::Center);
+    table.set_cell_text_align(FT_ANY_ROW, 3, fort::TextAlign::Center);
+
+    std::cout << table.to_string() << std::endl;
+}
+```
+
 Output:
 ```text
 ╔══════════════════════════╤══════════════════════╤══════╤════════╗
@@ -106,12 +156,72 @@ Output:
 ╟──────────────────────────┼──────────────────────┼──────┼────────╢
 ║ The Godfather            │ Francis Ford Coppola │ 1972 │  9.2   ║
 ╟──────────────────────────┼──────────────────────┼──────┼────────╢
-║ 12 Angry Men             │     Sidney Lumet     │ 1957 │  8.8   ║
-╟──────────────────────────┼──────────────────────┼──────┼────────╢
 ║ 2001: A Space Odyssey    │   Stanley Kubrick    │ 1968 │  8.5   ║
 ╚══════════════════════════╧══════════════════════╧══════╧════════╝
 ```
 
+### Different ways to fill table with data
+
+```C
+/* C API */
+#include <stdio.h>
+#include "fort.h"
+int main(void)
+{
+    ft_table_t *table = ft_create_table();
+    /* Set "header" type for the first row */
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_write_ln(table, "N", "Planet", "Speed, km/s", "Temperature, K");
+
+    /* Fill row with printf like function */
+    ft_printf_ln(table, "1|%s|%6.3f|%d", "Mercury", 47.362, 340);
+
+    /* Fill row explicitly with strings */
+    ft_write_ln(table, "2", "Venus", "35.02", "737");
+
+    /* Fill row with the array of strings */
+    const char *arr[4] = {"3", "Earth", "29.78", "288"};
+    ft_row_write_ln(table, 4, arr);
+
+    printf("%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+}
+```
+
+```C++
+/* C++ API */
+#include <iostream>
+#include "fort.hpp"
+int main(void)
+{
+    fort::Table table;
+    table << fort::header
+        << "N" << "Planet" << "Speed, km/s" << "Temperature, K" << fort::endr;
+
+    /* Fill with << operator */
+    table << 1 << "Mercury" << 47.362 << 340 << fort::endr;
+
+    /* Fill row explicitly with strings */
+    table.write_ln("2", "Venus", "35.02", "737");
+
+    /* Fill row with data from the container */
+    std::vector<std::string> arr = {"3", "Earth", "29.78", "288"};
+    table.row_write_ln(std::begin(arr), std::end(arr));
+
+    std::cout << table.to_string() << std::endl;
+}
+```
+
+Output:
+```text
++---+---------+-------------+----------------+
+| N | Planet  | Speed, km/s | Temperature, K |
++---+---------+-------------+----------------+
+| 1 | Mercury | 47.362      | 340            |
+| 2 | Venus   | 35.02       | 737            |
+| 3 | Earth   | 29.78       | 288            |
++---+---------+-------------+----------------+
+```
 
 ## Supported platforms and compilers
 

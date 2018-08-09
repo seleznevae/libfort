@@ -1,9 +1,65 @@
 #include <iostream>
+#include <vector>
 #include "fort.hpp"
+
+void base_example(void)
+{
+    fort::Table table;
+    table << fort::header
+        << "N" << "Driver" << "Time" << "Avg Speed" << fort::endr
+        << "1" << "Ricciardo" << "1:25.945" << "47.362" << fort::endr
+        << "2" << "Hamilton" << "1:26.373" << "35.02" << fort::endr
+        << "3" << "Verstappen" << "1:26.469" << "29.78" << fort::endr;
+
+    std::cout << table.to_string() << std::endl;
+}
+
+void different_cell_options_example(void)
+{
+    fort::Table table;
+    /* Change border style */
+    table.set_border_style(FT_DOUBLE2_STYLE);
+
+    table << fort::header
+        << "Movie title" << "Director" << "Year" << "Rating" << fort::endr
+        << "The Shawshank Redemption" << "Frank Darabont" << "1994" << "9.5" << fort::endr
+        << "The Godfather" << "Francis Ford Coppola" << "1972" << "9.2" << fort::endr
+        << "2001: A Space Odyssey" << "Stanley Kubrick" << "1968" << "8.5" << fort::endr;
+
+    /* Set center alignment for the 1st and 3rd columns */
+    table.set_cell_text_align(FT_ANY_ROW, 1, fort::TextAlign::Center);
+    table.set_cell_text_align(FT_ANY_ROW, 3, fort::TextAlign::Center);
+
+    std::cout << table.to_string() << std::endl;
+}
+
+
+void fill_table_with_data_example(void)
+{
+    fort::Table table;
+    table << fort::header
+        << "N" << "Planet" << "Speed, km/s" << "Temperature, K" << fort::endr;
+
+    /* Fill with iostream << operator */
+    table << 1 << "Mercury" << 47.362 << 340 << fort::endr;
+
+    /* Fill row explicitly with strings */
+    table.write_ln("2", "Venus", "35.02", "737");
+
+    /* Fill row with data from the container */
+    std::vector<std::string> arr = {"3", "Earth", "29.78", "288"};
+    table.row_write_ln(std::begin(arr), std::end(arr));
+
+    std::cout << table.to_string() << std::endl;
+}
 
 
 int main()
 {
+    base_example();
+    different_cell_options_example();
+    fill_table_with_data_example();
+
     {
         fort::Table table;
         // Fill table with data
