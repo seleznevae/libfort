@@ -37,10 +37,16 @@ void different_cell_options_example(void)
 void fill_table_with_data_example(void)
 {
     fort::Table table;
-    table << fort::header
-        << "N" << "Planet" << "Speed, km/s" << "Temperature, K" << fort::endr;
+    table << fort::header;
+    /* Fill each cell with operator[] */
+    table [0][0] = "N";
+    table [0][1] = "Planet";
+    table [0][2] = "Speed, km/s";
+    table [0][3] = "Temperature, K";
+    table << fort::endr;
 
-    /* Fill with iostream << operator */
+
+    /* Fill with iostream operator<< */
     table << 1 << "Mercury" << 47.362 << 340 << fort::endr;
 
     /* Fill row explicitly with strings */

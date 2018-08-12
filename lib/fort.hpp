@@ -155,7 +155,7 @@ public:
     Table &operator<<(const T &arg)
     {
         stream << arg;
-        if (stream.tellp()) {
+        if (stream.tellp() >= 0) {
             ft_nwrite(table, 1, stream.str().c_str());
             stream.str(std::string());
         }
@@ -504,6 +504,53 @@ public:
 private:
     ft_table_t *table;
     std::stringstream stream;
+
+public:
+
+    /* Iterators */
+    /* todo: implement chains like table[0][0] = table [0][1] = "somethings" */
+
+    class table_cell_iterator
+    {
+    public:
+        table_cell_iterator(std::size_t row_idx, std::size_t coll_idx,Table &table)
+            :row_idx_(row_idx), coll_idx_(coll_idx), table_(table) {}
+
+        table_cell_iterator& operator=(const char *str)
+        {
+            ft_set_cur_cell(table_.table, row_idx_, coll_idx_);
+            table_.write(str);
+            return *this;
+        }
+
+    private:
+        std::size_t row_idx_;
+        std::size_t coll_idx_;
+        Table &table_;
+    };
+
+    class table_row_iterator
+    {
+    public:
+        table_row_iterator(std::size_t row_idx, Table &table)
+            :row_idx_(row_idx), table_(table) {}
+
+        struct table_cell_iterator
+        operator[](std::size_t coll_idx)
+        {
+            return table_cell_iterator(row_idx_, coll_idx, table_);
+        }
+
+    private:
+        std::size_t row_idx_;
+        Table &table_;
+    };
+
+    struct table_row_iterator
+    operator[](std::size_t row_idx)
+    {
+        return table_row_iterator(row_idx, *this);
+    }
 };
 
 

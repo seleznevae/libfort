@@ -3,10 +3,12 @@
 #include "fort.h"
 
 void test_cpp_table_basic(void);
+void test_cpp_table_write(void);
 
 
 struct test_case bb_test_suit [] = {
     {"test_cpp_table_basic", test_cpp_table_basic},
+    {"test_cpp_table_write", test_cpp_table_write},
 };
 
 
