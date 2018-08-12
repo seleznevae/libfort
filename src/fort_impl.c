@@ -332,8 +332,10 @@ int ft_nwrite(ft_table_t *table, size_t count, const char *cell_content, ...)
     for (i = 0; i < count; ++i) {
         const char *cell = va_arg(va, const char *);
         status = ft_write_impl(table, cell);
-        if (FT_IS_ERROR(status))
+        if (FT_IS_ERROR(status)) {
+            va_end(va);
             return status;
+        }
     }
     va_end(va);
     return status;
@@ -380,8 +382,10 @@ int ft_nwwrite(ft_table_t *table, size_t n, const wchar_t *cell_content, ...)
     for (i = 0; i < n; ++i) {
         const wchar_t *cell = va_arg(va, const wchar_t *);
         status = ft_wwrite_impl(table, cell);
-        if (FT_IS_ERROR(status))
+        if (FT_IS_ERROR(status)) {
+            va_end(va);
             return status;
+        }
     }
     va_end(va);
     return status;
