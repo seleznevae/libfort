@@ -28,6 +28,8 @@ SOFTWARE.
 /* DO NOT EDIT BY HAND!!! */
 
 
+#define FT_AMALGAMED_SOURCE /* Macros to make internal libfort functions static */
+
 
 /********************************************************
    Begin of file "fort_utils.h"
@@ -47,6 +49,14 @@ SOFTWARE.
 #include <stdio.h>
 #include "fort.h"
 
+/* Define FT_INTERNAL to make internal libfort functions static
+ * in the result amalgamed source file.
+ */
+#ifdef FT_AMALGAMED_SOURCE
+#define FT_INTERNAL static
+#else
+#define FT_INTERNAL
+#endif /* FT_AMALGAMED_SORCE */
 
 
 #define FORT_COL_SEPARATOR '|'
@@ -466,37 +476,39 @@ void destroy_table_options(fort_table_options_t *options);
 
 /* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
-
-
-
-/*****************************************************************************
- *               CELL
- * ***************************************************************************/
+FT_INTERNAL
 fort_cell_t *create_cell(void);
 
-
+FT_INTERNAL
 void destroy_cell(fort_cell_t *cell);
+
+FT_INTERNAL
 size_t hint_width_cell(const fort_cell_t *cell, const context_t *context);
+
+FT_INTERNAL
 size_t hint_height_cell(const fort_cell_t *cell, const context_t *context);
 
-
+FT_INTERNAL
 void set_cell_type(fort_cell_t *cell, enum CellType type);
+
+FT_INTERNAL
 enum CellType get_cell_type(const fort_cell_t *cell);
 
-/*
- * Returns number of lines in cell. If cell is empty or
- * contains empty string, then 0 is returned.
- */
-/* static int lines_number_cell(fort_cell_t *cell); */
-
+FT_INTERNAL
 int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context);
+
+FT_INTERNAL
 fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str);
 
 #ifdef FT_HAVE_WCHAR
+FT_INTERNAL
 int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context);
+
+FT_INTERNAL
 fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str);
 #endif
 
+FT_INTERNAL
 string_buffer_t *cell_get_string_buffer(fort_cell_t *cell);
 
 #endif /* CELL_H */
@@ -4922,15 +4934,12 @@ int mk_wcswidth_cjk(const wchar_t *pwcs, size_t n)
 /* #include "string_buffer.h" */ /* Commented by amalgamation script */
 #include <assert.h>
 
-/*****************************************************************************
- *               CELL
- * ***************************************************************************/
-
 struct fort_cell {
     string_buffer_t *str_buffer;
     enum CellType cell_type;
 };
 
+FT_INTERNAL
 fort_cell_t *create_cell(void)
 {
     fort_cell_t *cell = (fort_cell_t *)F_CALLOC(sizeof(fort_cell_t), 1);
@@ -4945,6 +4954,7 @@ fort_cell_t *create_cell(void)
     return cell;
 }
 
+FT_INTERNAL
 void destroy_cell(fort_cell_t *cell)
 {
     if (cell == NULL)
@@ -4953,12 +4963,14 @@ void destroy_cell(fort_cell_t *cell)
     F_FREE(cell);
 }
 
+FT_INTERNAL
 void set_cell_type(fort_cell_t *cell, enum CellType type)
 {
     assert(cell);
     cell->cell_type = type;
 }
 
+FT_INTERNAL
 enum CellType get_cell_type(const fort_cell_t *cell)
 {
     assert(cell);
@@ -4966,6 +4978,7 @@ enum CellType get_cell_type(const fort_cell_t *cell)
 }
 
 
+FT_INTERNAL
 size_t hint_width_cell(const fort_cell_t *cell, const context_t *context)
 {
     /* todo:
@@ -4985,6 +4998,7 @@ size_t hint_width_cell(const fort_cell_t *cell, const context_t *context)
     return result;
 }
 
+FT_INTERNAL
 size_t hint_height_cell(const fort_cell_t *cell, const context_t *context)
 {
     assert(cell);
@@ -5001,28 +5015,7 @@ size_t hint_height_cell(const fort_cell_t *cell, const context_t *context)
 }
 
 
-/*
- * Returns number of lines in cell. If cell is empty or
- * contains empty string, then 0 is returned.
- */
-/*
-static int lines_number_cell(fort_cell_t *cell)
-{
-    assert(cell);
-    if (cell->str_buffer == NULL || cell->str_buffer->str == NULL || cell->str_buffer->str[0] == '\0') {
-        return 0;
-    }
-
-    int result = 0;
-    char *pos = cell->str_buffer->str;
-    while ((pos = strchr(pos, '\n')) != NULL) {
-        result++;
-        pos++;
-    }
-    return result + 1;
-}
-*/
-
+FT_INTERNAL
 int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context)
 {
     const char *space_char = " ";
@@ -5068,6 +5061,7 @@ clear:
 }
 
 #ifdef FT_HAVE_WCHAR
+FT_INTERNAL
 int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context)
 {
     const char *space_char = " ";
@@ -5112,7 +5106,7 @@ clear:
 }
 #endif
 
-
+FT_INTERNAL
 fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str)
 {
     assert(str);
@@ -5122,6 +5116,7 @@ fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str)
 }
 
 #ifdef FT_HAVE_WCHAR
+FT_INTERNAL
 fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str)
 {
     assert(str);
@@ -5132,6 +5127,7 @@ fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str)
 
 #endif
 
+FT_INTERNAL
 string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
 {
     assert(cell);

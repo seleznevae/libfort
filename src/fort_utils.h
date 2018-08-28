@@ -12,6 +12,14 @@
 #include <stdio.h>
 #include "fort.h"
 
+/* Define FT_INTERNAL to make internal libfort functions static
+ * in the result amalgamed source file.
+ */
+#ifdef FT_AMALGAMED_SOURCE
+#define FT_INTERNAL static
+#else
+#define FT_INTERNAL
+#endif /* FT_AMALGAMED_SORCE */
 
 
 #define FORT_COL_SEPARATOR '|'
