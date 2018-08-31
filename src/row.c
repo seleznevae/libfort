@@ -11,7 +11,7 @@ struct fort_row {
 };
 
 
-
+FT_INTERNAL
 fort_row_t *create_row(void)
 {
     fort_row_t *row = (fort_row_t *)F_CALLOC(sizeof(fort_row_t), 1);
@@ -30,6 +30,7 @@ fort_row_t *create_row(void)
     return row;
 }
 
+FT_INTERNAL
 void destroy_row(fort_row_t *row)
 {
     size_t i = 0;
@@ -49,9 +50,7 @@ void destroy_row(fort_row_t *row)
 }
 
 
-
-
-
+FT_INTERNAL
 size_t columns_in_row(const fort_row_t *row)
 {
     if (row == NULL || row->cells == NULL)
@@ -61,6 +60,7 @@ size_t columns_in_row(const fort_row_t *row)
 }
 
 
+static
 fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnNull policy)
 {
     if (row == NULL || row->cells == NULL) {
@@ -91,21 +91,28 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
 }
 
 
+FT_INTERNAL
 fort_cell_t *get_cell(fort_row_t *row, size_t col)
 {
     return get_cell_implementation(row, col, DoNotCreate);
 }
 
+
+FT_INTERNAL
 const fort_cell_t *get_cell_c(const fort_row_t *row, size_t col)
 {
     return get_cell((fort_row_t *)row, col);
 }
 
+
+FT_INTERNAL
 fort_cell_t *get_cell_and_create_if_not_exists(fort_row_t *row, size_t col)
 {
     return get_cell_implementation(row, col, Create);
 }
 
+
+FT_INTERNAL
 fort_status_t swap_row(fort_row_t *cur_row, fort_row_t *ins_row, size_t pos)
 {
     assert(cur_row);
@@ -122,6 +129,8 @@ fort_status_t swap_row(fort_row_t *cur_row, fort_row_t *ins_row, size_t pos)
     return vector_swap(cur_row->cells, ins_row->cells, pos);
 }
 
+
+FT_INTERNAL
 size_t group_cell_number(const fort_row_t *row, size_t master_cell_col)
 {
     assert(row);
@@ -145,6 +154,8 @@ size_t group_cell_number(const fort_row_t *row, size_t master_cell_col)
     return slave_col - master_cell_col;
 }
 
+
+FT_INTERNAL
 int get_row_cell_types(const fort_row_t *row, enum CellType *types, size_t types_sz)
 {
     assert(row);
@@ -161,6 +172,8 @@ int get_row_cell_types(const fort_row_t *row, enum CellType *types, size_t types
     return FT_SUCCESS;
 }
 
+
+FT_INTERNAL
 fort_status_t row_set_cell_span(fort_row_t *row, size_t cell_column, size_t hor_span)
 {
     assert(row);
@@ -190,8 +203,7 @@ fort_status_t row_set_cell_span(fort_row_t *row, size_t cell_column, size_t hor_
 }
 
 
-
-
+FT_INTERNAL
 int print_row_separator(char *buffer, size_t buffer_sz,
                         const size_t *col_width_arr, size_t cols,
                         const fort_row_t *upper_row, const fort_row_t *lower_row,
@@ -364,7 +376,7 @@ clear:
 
 
 #ifdef FT_HAVE_WCHAR
-
+FT_INTERNAL
 int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
                          const size_t *col_width_arr, size_t cols,
                          const fort_row_t *upper_row, const fort_row_t *lower_row,
@@ -537,6 +549,7 @@ clear:
 
 #endif
 
+FT_INTERNAL
 fort_row_t *create_row_from_string(const char *str)
 {
     typedef char char_type;
@@ -625,6 +638,7 @@ clear:
 
 
 #ifdef FT_HAVE_WCHAR
+FT_INTERNAL
 fort_row_t *create_row_from_wstring(const wchar_t *str)
 {
     typedef wchar_t char_type;
@@ -711,7 +725,7 @@ clear:
 }
 #endif
 
-
+FT_INTERNAL
 fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 {
 #define VSNPRINTF vsnprintf
@@ -795,6 +809,7 @@ clear:
 }
 
 #ifdef FT_HAVE_WCHAR
+FT_INTERNAL
 fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
 {
 #define VSNPRINTF vswprintf
@@ -879,6 +894,7 @@ clear:
 #endif
 
 
+FT_INTERNAL
 int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                  size_t row_height, const context_t *context)
 {
@@ -968,7 +984,7 @@ clear:
 
 
 #ifdef FT_HAVE_WCHAR
-
+FT_INTERNAL
 int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                   size_t row_height, const context_t *context)
 {
