@@ -62,6 +62,8 @@ fort_column_options_t g_column_options = {
     FT_ALIGNED_RIGHT, /* align */
 };
 
+
+FT_INTERNAL
 fort_column_options_t create_column_options(void)
 {
     fort_column_options_t result;
@@ -72,7 +74,7 @@ fort_column_options_t create_column_options(void)
 
 
 //#define DEFAULT_CELL_OPTION  {FT_ROW_UNSPEC, FT_COLUMN_UNSPEC, 0, 0, 0}
-
+FT_INTERNAL
 fort_cell_opt_container_t *create_cell_opt_container(void)
 {
     fort_cell_opt_container_t *ret = create_vector(sizeof(fort_cell_options_t), DEFAULT_VECTOR_CAPACITY);
@@ -80,12 +82,15 @@ fort_cell_opt_container_t *create_cell_opt_container(void)
 }
 
 
+FT_INTERNAL
 void destroy_cell_opt_container(fort_cell_opt_container_t *cont)
 {
     if (cont)
         destroy_vector(cont);
 }
 
+
+FT_INTERNAL
 const fort_cell_options_t *cget_cell_opt(const fort_cell_opt_container_t *cont, size_t row, size_t col)
 {
     assert(cont);
@@ -99,6 +104,8 @@ const fort_cell_options_t *cget_cell_opt(const fort_cell_opt_container_t *cont, 
     return NULL;
 }
 
+
+FT_INTERNAL
 fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, size_t row, size_t col)
 {
     assert(cont);
@@ -120,8 +127,7 @@ fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_contain
 }
 
 
-
-
+FT_INTERNAL
 int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t row, size_t column, uint32_t option)
 {
     assert(options);
@@ -186,6 +192,7 @@ fort_fail:
 }
 
 
+FT_INTERNAL
 fort_status_t set_cell_option(fort_cell_opt_container_t *cont, size_t row, size_t col, uint32_t option, int value)
 {
     fort_cell_options_t *opt = get_cell_opt_and_create_if_not_exists(cont, row, col);
@@ -205,6 +212,8 @@ fort_status_t set_cell_option(fort_cell_opt_container_t *cont, size_t row, size_
     */
 }
 
+
+FT_INTERNAL
 fort_status_t set_default_cell_option(uint32_t option, int value)
 {
     return set_cell_option_impl(&g_default_cell_option, option, value);
@@ -537,17 +546,23 @@ fort_fail:
     return FT_EINVAL;
 }
 
+
+FT_INTERNAL
 fort_status_t set_entire_table_option(fort_table_options_t *table_options, uint32_t option, int value)
 {
     assert(table_options);
     return set_entire_table_option_internal(&table_options->entire_table_options, option, value);
 }
 
+
+FT_INTERNAL
 fort_status_t set_default_entire_table_option(uint32_t option, int value)
 {
     return set_entire_table_option_internal(&g_entire_table_options, option, value);
 }
 
+
+FT_INTERNAL
 size_t max_border_elem_strlen(struct fort_table_options *options)
 {
     assert(options);
@@ -584,6 +599,7 @@ fort_table_options_t g_table_options = {
 };
 
 
+FT_INTERNAL
 fort_table_options_t *create_table_options(void)
 {
     fort_table_options_t *options = (fort_table_options_t *)F_CALLOC(sizeof(fort_table_options_t), 1);
@@ -600,6 +616,8 @@ fort_table_options_t *create_table_options(void)
     return options;
 }
 
+
+FT_INTERNAL
 fort_table_options_t *copy_table_options(const fort_table_options_t *option)
 {
     /* todo: normal implementation, do deep copy of col options */
@@ -622,6 +640,7 @@ fort_table_options_t *copy_table_options(const fort_table_options_t *option)
 }
 
 
+FT_INTERNAL
 void destroy_table_options(fort_table_options_t *options)
 {
     if (options == NULL)

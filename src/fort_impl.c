@@ -41,12 +41,6 @@ SOFTWARE.
 #include "options.h"
 
 
-
-
-/*****************************************************************************
- *               LIBFORT
- * ***************************************************************************/
-
 ft_table_t *ft_create_table(void)
 {
     ft_table_t *result = (ft_table_t *)F_CALLOC(1, sizeof(ft_table_t));
@@ -524,15 +518,6 @@ int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_
     return status;
 }
 #endif
-
-
-
-
-
-
-/*****************************************************************************
- *               TABLE
- * ***************************************************************************/
 
 
 
