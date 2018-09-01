@@ -239,13 +239,14 @@ The following compilers are currently used in continuous integration at [Travis]
 | GCC 5.5.0          | Ubuntu 14.04.3               | 
 | GCC 6.4.0          | Ubuntu 14.04.3               | 
 | GCC 7.3.0          | Ubuntu 14.04.3               | 
+| GCC 8.1.0          | Ubuntu 14.04.3               | 
 | Clang 5.0.0        | Ubuntu 14.04.3               | 
 | AppleClang 7.3.0   | Darwin Kernel Version 15.6.0 |
 | AppleClang 8.1.0   | Darwin Kernel Version 16.7.0 |
 | AppleClang 9.1.0   | Darwin Kernel Version 17.4.0 |
 | Visual Studio 2017 | Windows Server 2016          |
 
-Pease note:
+Please note:
 - In case of clang on OS X before using **libfort** with ```wchar_t``` with real unicode symbols it may be necessary to set ```setlocale(LC_CTYPE, "");``` because otherwise standard function ```swprintf```, that libfort uses internally, may fail and ```ft_to_string``` will return error.
 
 ## License
