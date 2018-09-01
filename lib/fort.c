@@ -2885,11 +2885,13 @@ static ptrdiff_t str_iter_width(const char *beg, const char *end)
 }
 
 
+#ifdef FT_HAVE_WCHAR
 static ptrdiff_t wcs_iter_width(const wchar_t *beg, const wchar_t *end)
 {
     assert(end >= beg);
     return mk_wcswidth(beg, (end - beg));
 }
+#endif /* FT_HAVE_WCHAR */
 
 
 static size_t buf_str_len(const string_buffer_t *buf)
