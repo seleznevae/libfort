@@ -346,16 +346,6 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 #include <stdint.h>
 #include <limits.h>
 
-struct fort_column_options {
-    int col_min_width;
-    enum ft_text_alignment align;
-};
-
-extern fort_column_options_t g_column_options;
-
-FT_INTERNAL
-fort_column_options_t create_column_options(void);
-
 #define OPTION_IS_SET(ft_opts, option) ((ft_opts) & (option))
 #define OPTION_SET(ft_opts, option) ((ft_opts) |=(option))
 #define OPTION_UNSET(ft_opts, option) ((ft_opts) &= ~((uint32_t)option))
@@ -498,8 +488,10 @@ size_t max_border_elem_strlen(struct fort_table_options *);
 FT_INTERNAL
 fort_table_options_t *create_table_options(void);
 
+/*
 FT_INTERNAL
 fort_table_options_t *copy_table_options(const fort_table_options_t *option);
+*/
 
 FT_INTERNAL
 void destroy_table_options(fort_table_options_t *options);
@@ -765,22 +757,6 @@ static int get_option_value_if_exists_otherwise_default(const struct fort_cell_o
             /* todo: implement later */
             exit(333);
     }
-}
-
-
-fort_column_options_t g_column_options = {
-    0,           /* col_min_width*/
-    FT_ALIGNED_RIGHT, /* align */
-};
-
-
-FT_INTERNAL
-fort_column_options_t create_column_options(void)
-{
-    fort_column_options_t result;
-    memset(&result, '\0', sizeof(result));
-    memcpy(&result, &g_column_options, sizeof(result));
-    return result;
 }
 
 
@@ -1327,11 +1303,11 @@ fort_table_options_t *create_table_options(void)
     return options;
 }
 
-
+/*
 FT_INTERNAL
 fort_table_options_t *copy_table_options(const fort_table_options_t *option)
 {
-    /* todo: normal implementation, do deep copy of col options */
+    // todo: normal implementation, do deep copy of col options
 
     fort_table_options_t *new_opt = create_table_options();
     if (new_opt == NULL)
@@ -1349,6 +1325,7 @@ fort_table_options_t *copy_table_options(const fort_table_options_t *option)
     }
     return new_opt;
 }
+*/
 
 
 FT_INTERNAL
@@ -3158,6 +3135,7 @@ size_t buffer_text_width(string_buffer_t *buffer)
             ++n;
         }
     } else {
+#ifdef FT_HAVE_WCHAR
         while (1) {
             const wchar_t *beg = NULL;
             const wchar_t *end = NULL;
@@ -3172,7 +3150,10 @@ size_t buffer_text_width(string_buffer_t *buffer)
 
             ++n;
         }
+#endif /* FT_HAVE_WCHAR */
     }
+
+    return max_length; /* shouldn't be here */
 }
 
 

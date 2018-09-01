@@ -5,16 +5,6 @@
 #include <stdint.h>
 #include <limits.h>
 
-struct fort_column_options {
-    int col_min_width;
-    enum ft_text_alignment align;
-};
-
-extern fort_column_options_t g_column_options;
-
-FT_INTERNAL
-fort_column_options_t create_column_options(void);
-
 #define OPTION_IS_SET(ft_opts, option) ((ft_opts) & (option))
 #define OPTION_SET(ft_opts, option) ((ft_opts) |=(option))
 #define OPTION_UNSET(ft_opts, option) ((ft_opts) &= ~((uint32_t)option))
@@ -157,8 +147,10 @@ size_t max_border_elem_strlen(struct fort_table_options *);
 FT_INTERNAL
 fort_table_options_t *create_table_options(void);
 
+/*
 FT_INTERNAL
 fort_table_options_t *copy_table_options(const fort_table_options_t *option);
+*/
 
 FT_INTERNAL
 void destroy_table_options(fort_table_options_t *options);

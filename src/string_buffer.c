@@ -286,6 +286,7 @@ size_t buffer_text_width(string_buffer_t *buffer)
             ++n;
         }
     } else {
+#ifdef FT_HAVE_WCHAR
         while (1) {
             const wchar_t *beg = NULL;
             const wchar_t *end = NULL;
@@ -300,7 +301,10 @@ size_t buffer_text_width(string_buffer_t *buffer)
 
             ++n;
         }
+#endif /* FT_HAVE_WCHAR */
     }
+
+    return max_length; /* shouldn't be here */
 }
 
 

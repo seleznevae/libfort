@@ -57,22 +57,6 @@ static int get_option_value_if_exists_otherwise_default(const struct fort_cell_o
 }
 
 
-fort_column_options_t g_column_options = {
-    0,           /* col_min_width*/
-    FT_ALIGNED_RIGHT, /* align */
-};
-
-
-FT_INTERNAL
-fort_column_options_t create_column_options(void)
-{
-    fort_column_options_t result;
-    memset(&result, '\0', sizeof(result));
-    memcpy(&result, &g_column_options, sizeof(result));
-    return result;
-}
-
-
 //#define DEFAULT_CELL_OPTION  {FT_ROW_UNSPEC, FT_COLUMN_UNSPEC, 0, 0, 0}
 FT_INTERNAL
 fort_cell_opt_container_t *create_cell_opt_container(void)
@@ -616,11 +600,11 @@ fort_table_options_t *create_table_options(void)
     return options;
 }
 
-
+/*
 FT_INTERNAL
 fort_table_options_t *copy_table_options(const fort_table_options_t *option)
 {
-    /* todo: normal implementation, do deep copy of col options */
+    // todo: normal implementation, do deep copy of col options
 
     fort_table_options_t *new_opt = create_table_options();
     if (new_opt == NULL)
@@ -638,6 +622,7 @@ fort_table_options_t *copy_table_options(const fort_table_options_t *option)
     }
     return new_opt;
 }
+*/
 
 
 FT_INTERNAL
