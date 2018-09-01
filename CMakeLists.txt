@@ -133,6 +133,12 @@ if(FORT_CXX_BUILD)
 endif(FORT_CXX_BUILD)
 
 
+# ------------------------------------------------------------------------------
+# Set preprocessor macros for all test builds
+# ------------------------------------------------------------------------------
+target_compile_definitions(${PROJECT_NAME}_test_dev PRIVATE FT_TEST_BUILD=1)
+target_compile_definitions(${PROJECT_NAME}_test_cpp PRIVATE FT_TEST_BUILD=1)
+target_compile_definitions(${PROJECT_NAME}_test PRIVATE FT_TEST_BUILD=1)
 
 # ------------------------------------------------------------------------------
 # Sanitizers

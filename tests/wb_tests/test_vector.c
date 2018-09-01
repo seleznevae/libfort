@@ -45,6 +45,7 @@ void test_vector_basic(void)
             assert_true(vector_capacity(vector)  > init_capacity);
         }
 
+#ifdef FT_TEST_BUILD
         WHEN("Checking indexes of items") {
             item_t item =  6;
             assert_true(vector_index_of(vector, &item) == 3);
@@ -53,6 +54,7 @@ void test_vector_basic(void)
             item =  25;
             assert_true(vector_index_of(vector, &item) == INVALID_VEC_INDEX);
         }
+#endif
 
         WHEN("Checking access to items") {
             assert_true(*(item_t *)vector_at(vector,  0) == 0);
@@ -60,6 +62,7 @@ void test_vector_basic(void)
             assert_true((item_t *)vector_at(vector, 20) == NULL);
         }
 
+#ifdef FT_TEST_BUILD
         WHEN("Erasing items") {
             assert_true(vector_erase(vector, 20) != FT_SUCCESS);
 
@@ -73,6 +76,7 @@ void test_vector_basic(void)
             item =  26;
             assert_true(vector_index_of(vector, &item) == 11);
         }
+#endif
     }
 
     WHEN("Clearing vector") {
