@@ -632,37 +632,34 @@ struct ft_table {
     vector_t *separators;
 };
 
-static FT_INLINE
-separator_t *create_separator(int enabled)
-{
-    separator_t *res = (separator_t *)F_CALLOC(1, sizeof(separator_t));
-    if (res == NULL)
-        return NULL;
-    res->enabled = enabled;
-    return res;
-}
+FT_INTERNAL
+separator_t *create_separator(int enabled);
 
-static FT_INLINE
-void destroy_separator(separator_t *sep)
-{
-    F_FREE(sep);
-}
+FT_INTERNAL
+void destroy_separator(separator_t *sep);
 
-
-
+FT_INTERNAL
 fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols);
-fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnNull policy);
+
+FT_INTERNAL
 fort_row_t *get_row(ft_table_t *table, size_t row);
+
+FT_INTERNAL
 const fort_row_t *get_row_c(const ft_table_t *table, size_t row);
+
+FT_INTERNAL
 fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row);
 
+FT_INTERNAL
 string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table);
 
 
-
+FT_INTERNAL
 fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
         size_t **col_width_arr_p, size_t *col_width_arr_sz,
         size_t **row_height_arr_p, size_t *row_height_arr_sz);
+
+FT_INTERNAL
 fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width);
 
 #endif /* TABLE_H */
@@ -1328,10 +1325,26 @@ void destroy_table_options(fort_table_options_t *options)
 /* #include "cell.h" */ /* Commented by amalgamation script */
 /* #include "vector.h" */ /* Commented by amalgamation script */
 /* #include "row.h" */ /* Commented by amalgamation script */
-fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols);
+
+FT_INTERNAL
+separator_t *create_separator(int enabled)
+{
+    separator_t *res = (separator_t *)F_CALLOC(1, sizeof(separator_t));
+    if (res == NULL)
+        return NULL;
+    res->enabled = enabled;
+    return res;
+}
 
 
+FT_INTERNAL
+void destroy_separator(separator_t *sep)
+{
+    F_FREE(sep);
+}
 
+
+static
 fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnNull policy)
 {
     if (table == NULL || table->rows == NULL) {
@@ -1361,24 +1374,29 @@ fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnN
     return NULL;
 }
 
+
+FT_INTERNAL
 fort_row_t *get_row(ft_table_t *table, size_t row)
 {
     return get_row_implementation(table, row, DoNotCreate);
 }
 
+
+FT_INTERNAL
 const fort_row_t *get_row_c(const ft_table_t *table, size_t row)
 {
     return get_row((ft_table_t *)table, row);
 }
 
+
+FT_INTERNAL
 fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row)
 {
     return get_row_implementation(table, row, Create);
 }
 
 
-
-
+FT_INTERNAL
 string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table)
 {
     assert(table);
@@ -1397,6 +1415,7 @@ string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table)
 /*
  * Returns number of cells (rows * cols)
  */
+FT_INTERNAL
 fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols)
 {
     *rows = 0;
@@ -1413,6 +1432,8 @@ fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *col
     return FT_SUCCESS;
 }
 
+
+FT_INTERNAL
 fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
         size_t **col_width_arr_p, size_t *col_width_arr_sz,
         size_t **row_height_arr_p, size_t *row_height_arr_sz)
@@ -1519,9 +1540,11 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
     return FT_SUCCESS;
 }
 
+
 /*
  * Returns geometry in characters
  */
+FT_INTERNAL
 fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width)
 {
     if (table == NULL)
