@@ -32,6 +32,8 @@ static size_t buf_str_len(const string_buffer_t *buf)
     }
 }
 
+
+FT_INTERNAL
 size_t strchr_count(const char *str, char ch)
 {
     if (str == NULL)
@@ -47,6 +49,8 @@ size_t strchr_count(const char *str, char ch)
     return count;
 }
 
+
+FT_INTERNAL
 size_t wstrchr_count(const wchar_t *str, wchar_t ch)
 {
     if (str == NULL)
@@ -62,6 +66,8 @@ size_t wstrchr_count(const wchar_t *str, wchar_t ch)
     return count;
 }
 
+
+FT_INTERNAL
 const char *str_n_substring_beg(const char *str, char ch_separator, size_t n)
 {
     if (str == NULL)
@@ -82,6 +88,8 @@ const char *str_n_substring_beg(const char *str, char ch_separator, size_t n)
     return str ? (str + 1) : NULL;
 }
 
+
+FT_INTERNAL
 const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, size_t n)
 {
     if (str == NULL)
@@ -102,6 +110,8 @@ const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, si
     return str ? (str + 1) : NULL;
 }
 
+
+FT_INTERNAL
 void str_n_substring(const char *str, char ch_separator, size_t n, const char **begin, const char **end)
 {
     const char *beg = str_n_substring_beg(str, ch_separator, n);
@@ -121,6 +131,8 @@ void str_n_substring(const char *str, char ch_separator, size_t n, const char **
     return;
 }
 
+
+FT_INTERNAL
 void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end)
 {
     const wchar_t *beg = wstr_n_substring_beg(str, ch_separator, n);
@@ -141,6 +153,7 @@ void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const 
 }
 
 
+FT_INTERNAL
 string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type type)
 {
     size_t sz = (number_of_chars) * (type == CharBuf ? sizeof(char) : sizeof(wchar_t));
@@ -164,6 +177,8 @@ string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type 
     return result;
 }
 
+
+FT_INTERNAL
 void destroy_string_buffer(string_buffer_t *buffer)
 {
     if (buffer == NULL)
@@ -173,6 +188,8 @@ void destroy_string_buffer(string_buffer_t *buffer)
     F_FREE(buffer);
 }
 
+
+FT_INTERNAL
 fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
 {
     assert(buffer);
@@ -186,6 +203,8 @@ fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
     return FT_SUCCESS;
 }
 
+
+FT_INTERNAL
 fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
 {
     assert(buffer);
@@ -209,6 +228,9 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
     return FT_SUCCESS;
 }
 
+
+#ifdef FT_HAVE_WCHAR
+FT_INTERNAL
 fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *str)
 {
     assert(buffer);
@@ -231,9 +253,10 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
 
     return FT_SUCCESS;
 }
+#endif /* FT_HAVE_WCHAR */
 
 
-
+FT_INTERNAL
 size_t buffer_text_height(string_buffer_t *buffer)
 {
     if (buffer == NULL || buffer->str.data == NULL || buf_str_len(buffer) == 0) {
@@ -245,6 +268,8 @@ size_t buffer_text_height(string_buffer_t *buffer)
         return 1 + wstrchr_count(buffer->str.wstr, L'\n');
 }
 
+
+FT_INTERNAL
 size_t buffer_text_width(string_buffer_t *buffer)
 {
     size_t max_length = 0;
@@ -279,7 +304,7 @@ size_t buffer_text_width(string_buffer_t *buffer)
 }
 
 
-
+FT_INTERNAL
 int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t buf_len, const context_t *context)
 {
 #define CHAR_TYPE char
@@ -366,6 +391,8 @@ clear:
 }
 
 
+#ifdef FT_HAVE_WCHAR
+FT_INTERNAL
 int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t buf_len, const context_t *context)
 {
 #define CHAR_TYPE wchar_t
@@ -450,7 +477,10 @@ clear:
 #undef STR_N_SUBSTRING
 #undef STR_ITER_WIDTH
 }
+#endif /* FT_HAVE_WCHAR */
 
+
+FT_INTERNAL
 size_t string_buffer_capacity(const string_buffer_t *buffer)
 {
     assert(buffer);
@@ -460,9 +490,10 @@ size_t string_buffer_capacity(const string_buffer_t *buffer)
         return buffer->data_sz / sizeof(wchar_t);
 }
 
+
+FT_INTERNAL
 void *buffer_get_data(string_buffer_t *buffer)
 {
     assert(buffer);
     return buffer->str.data;
 }
-
