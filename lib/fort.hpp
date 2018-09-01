@@ -203,8 +203,6 @@ public:
     template <typename T, typename ...Ts>
     bool write_ln(const T &arg, const Ts &...args)
     {
-        if (sizeof...(args) == 0)
-            return write_ln(arg);
         return write(arg) && write_ln(args...);
     }
 #else /* __cpp_variadic_templates */
@@ -546,7 +544,7 @@ public:
         Table &table_;
     };
 
-    struct table_row_iterator
+    class table_row_iterator
     operator[](std::size_t row_idx)
     {
         return table_row_iterator(row_idx, *this);
