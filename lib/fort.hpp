@@ -533,7 +533,7 @@ public:
         table_row_iterator(std::size_t row_idx, Table &table)
             :row_idx_(row_idx), table_(table) {}
 
-        struct table_cell_iterator
+        class table_cell_iterator
         operator[](std::size_t coll_idx)
         {
             return table_cell_iterator(row_idx_, coll_idx, table_);
