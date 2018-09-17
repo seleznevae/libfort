@@ -8,6 +8,20 @@
 
 **libfort** is a simple crossplatform library to create formatted text tables.
 
+<!---
+╔════════╤═══════════╤══════════════════════════════════════════════════════════════╗
+║ Sed    │ Aenean    │                             Text                             ║
+╠════════╪═══════════╪══════════════════════════════════════════════════════════════╣
+║ Duis   │ Aliquam   │ Lorem ipsum dolor sit amet, consectetur adipiscing elit.     ║
+║        │           │ In accumsan felis eros, nec malesuada sapien bibendum eget.  ║
+╟────────┼───────────┼──────────────────────────────────────────────────────────────╢
+║ Mauris │ Curabitur │ Proin condimentum eros viverra nunc ultricies, at fringilla  ║
+║        │           │ quam pellentesque.                                           ║
+╟────────┴───────────┼──────────────────────────────────────────────────────────────╢
+║      Summary       │ Sed tempor est eget odio varius dignissim.                   ║
+╚════════════════════╧══════════════════════════════════════════════════════════════╝
+-->
+
 **Features:**
 - Easy to integrate (only 2 files)
 - Customization of appearance (various border styles and row/column/cell options for indentation, alignment, padding)
@@ -262,4 +276,8 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+
 

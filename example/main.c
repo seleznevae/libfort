@@ -47,6 +47,31 @@ void base_example(void)
     ft_destroy_table(table);
 }
 
+void complex_layout_example(void)
+{
+    ft_table_t *table = ft_create_table();
+    /* Change border style */
+    ft_set_border_style(table, FT_DOUBLE2_STYLE);
+
+
+    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_write_ln(table, "Sed", "Aenean", "Text");
+
+    ft_write_ln(table, "Duis", "Aliquam",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n"
+                "In accumsan felis eros, nec malesuada sapien bibendum eget.");
+    ft_write_ln(table, "Mauris", "Curabitur",
+                "Proin condimentum eros viverra nunc ultricies, at fringilla \n"
+                "quam pellentesque.");
+    ft_write_ln(table, "Summary", "", "Sed tempor est eget odio varius dignissim.");
+
+    ft_set_cell_option(table, 0, 2, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_option(table, 3, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_span(table, 3, 0, 2);
+    printf("%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+}
+
 void different_cell_options_example(void)
 {
     ft_table_t *table = ft_create_table();
@@ -95,6 +120,7 @@ int main(void)
     base_example();
     different_cell_options_example();
     fill_table_with_data_example();
+    complex_layout_example();
 
     int result = 0;
 
