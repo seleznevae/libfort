@@ -34,7 +34,7 @@ bool set_test_options_for_table(fort::Table *table)
 
 void test_cpp_table_basic(void)
 {
-    WHEN("All columns are equal and not empty") {
+    WHEN("All columns are equal and not empty.") {
         fort::Table table;
         assert_true(set_test_options_for_table(&table));
 
@@ -44,6 +44,37 @@ void test_cpp_table_basic(void)
               << "3" << "c" << "234" << "3.140000" << fort::endr;
 
         std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+
+    WHEN("Checking basic constructors and assignmets.") {
+        fort::Table table;
+        assert_true(set_test_options_for_table(&table));
+
+        table << fort::header
+              << "3" << "c" << "234" << "3.140000" << fort::endr
+              << "3" << "c" << "234" << "3.140000" << fort::endr
+              << "3" << "c" << "234" << "3.140000" << fort::endr;
+
+        fort::Table table2(std::move(table));
+        fort::Table table3;
+        table3 = std::move(table2);
+
+        std::string table_str = table3.to_string();
         std::string table_str_etalon =
             "+---+---+-----+----------+\n"
             "|   |   |     |          |\n"

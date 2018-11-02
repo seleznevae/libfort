@@ -106,6 +106,50 @@ public:
     }
 
     /**
+     * Not implemented yet.
+     */
+    Table(const Table& tbl) = delete;
+
+    /**
+     * Move contstructor.
+     */
+    Table(Table&& tbl)
+        :table(tbl.table)
+    {
+        if (tbl.stream.tellp() >= 0) {
+            stream << tbl.stream.str();
+            tbl.stream.str(std::string());
+        }
+        tbl.table = 0;
+    }
+
+    /**
+     * Not implemented yet.
+     */
+    Table& operator=(const Table& tbl) = delete;
+
+    /**
+     * Move assignment operator.
+     */
+    Table& operator=(Table&& tbl)
+    {
+        if (&tbl == this)
+            return *this;
+
+        if (tbl.table) {
+            stream.str(std::string());
+            if (tbl.stream.tellp() >= 0) {
+                stream << tbl.stream.str();
+                tbl.stream.str(std::string());
+            }
+            ft_destroy_table(table);
+            table = tbl.table;
+            tbl.table = NULL;
+        }
+        return *this;
+    }
+
+    /**
      * Convert table to string representation.
      *
      * @return
