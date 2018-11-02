@@ -269,7 +269,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     " ", " ", " ",                \
     " ", "-", " ", " ",           \
     " ", " ", " ", " ",           \
-    " ", " ", " ", " ",           \
+    " ", "-", " ", "-",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -292,7 +292,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     " ", " ", " ",                \
     " ", "-", "-", " ",           \
     " ", "-", "-", " ",           \
-    " ", " ", " ", " ",           \
+    " ", "-", " ", "-",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -307,7 +307,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      ":", ":", ":",               \
      "\0", "\0", "\0", "\0",      \
      ":", ".", ":", ":",          \
-     "+", "+", "+", "+",          \
+     "+", ":", "+", ":",          \
     },                            \
     /* header_border_chars */     \
     {                             \
@@ -315,7 +315,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     ":", ":", ":",                \
     ":", ".", ":", ":",           \
     ":", ".", ":", ":",           \
-    "+", "+", "+", "+",           \
+    "+", ".", "+", ".",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -354,7 +354,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      "│", "│", "│",               \
      "", "", "", "",              \
      "└", "─", "┴", "╯",          \
-     "┼", "┼", "┼", "┼",          \
+     "│", "─", "│", "─",          \
     },                            \
     /* header_border_chars */     \
     {                             \
@@ -362,7 +362,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     "│", "│", "│",                \
     "├", "─", "┼", "┤",           \
     "└", "─", "┴", "┘",           \
-    "┼", "┼", "┼", "┼",           \
+    "┼", "┬", "┼", "┴",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -377,7 +377,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      "│", "│", "│",               \
      "", "", "", "",              \
      "╰", "─", "┴", "╯",          \
-     "┼", "┼", "┼", "┼",          \
+     "│", "─", "│", "─",          \
     },                            \
     /* header_border_chars */     \
     {                             \
@@ -385,7 +385,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     "│", "│", "│",                \
     "├", "─", "┼", "┤",           \
     "╰", "─", "┴", "╯",           \
-    "┼", "┼", "┼", "┼",           \
+    "┼", "┬", "┼", "┴",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -409,7 +409,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     "║", "║", "║",                \
     "╠", "═", "╬", "╣",           \
     "╚", "═", "╩", "╝",           \
-    "┣", "┻", "┣", "┳",           \
+    "┣", "╦", "┣", "╩",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -457,7 +457,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     "┃", "┃", "┃",                \
     "┣", "━", "╋", "┫",           \
     "┗", "━", "┻", "┛",           \
-    "┣", "┻", "┣", "┳",           \
+    "┣", "┳", "┣", "┻",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -472,7 +472,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      "┃", "│", "┃",               \
      "┠", "─", "┼", "┨",          \
      "┗", "━", "┷", "┛",          \
-     "┣", "┻", "┣", "┳",          \
+     "┣", "┬", "┣", "┴",          \
     },                            \
     /* header_border_chars */     \
     {                             \
@@ -480,7 +480,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     "┃", "│", "┃",                \
     "┣", "━", "┿", "┫",           \
     "┗", "━", "┷", "┛",           \
-    "┣", "┻", "┣", "┳",           \
+    "┣", "┯", "┣", "┷",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -495,7 +495,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      "▌", "┃", "▐",               \
      "", "", "", "",              \
      "▙", "▄", "▄", "▟",          \
-     "┣", "┻", "┣", "┳"           \
+     "┣", "━", "┣", "━"           \
     },                            \
     /* header_border_chars */     \
     {                             \
@@ -503,7 +503,7 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     "▌", "┃", "▐",                \
     "▌", "━", "╋", "▐",           \
     "▙", "▄", "▄", "▟",           \
-    "┣", "┻", "┣", "┳",           \
+    "┣", "━", "┣", "━",           \
     },                            \
     /* separator_chars */         \
     {                             \
