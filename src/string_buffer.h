@@ -9,7 +9,9 @@
  * ***************************************************************************/
 enum str_buf_type {
     CharBuf,
+#ifdef FT_HAVE_WCHAR
     WCharBuf
+#endif /* FT_HAVE_WCHAR */
 };
 
 struct string_buffer {
@@ -27,6 +29,9 @@ string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type 
 
 FT_INTERNAL
 void destroy_string_buffer(string_buffer_t *buffer);
+
+FT_INTERNAL
+string_buffer_t *copy_string_buffer(string_buffer_t *buffer);
 
 FT_INTERNAL
 fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer);

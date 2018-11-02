@@ -237,8 +237,10 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos);
 #define FOR_EACH(type, item, vector) \
     FOR_EACH_(type, item, vector, UNIQUE_NAME(i))
 
-#ifdef FT_TEST_BUILD
+FT_INTERNAL
 vector_t *copy_vector(vector_t *);
+
+#ifdef FT_TEST_BUILD
 size_t vector_index_of(const vector_t *, const void *item);
 int vector_erase(vector_t *, size_t index);
 void vector_clear(vector_t *);
@@ -290,7 +292,9 @@ int mk_wcswidth(const wchar_t *pwcs, size_t n);
  * ***************************************************************************/
 enum str_buf_type {
     CharBuf,
+#ifdef FT_HAVE_WCHAR
     WCharBuf
+#endif /* FT_HAVE_WCHAR */
 };
 
 struct string_buffer {
@@ -308,6 +312,9 @@ string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type 
 
 FT_INTERNAL
 void destroy_string_buffer(string_buffer_t *buffer);
+
+FT_INTERNAL
+string_buffer_t *copy_string_buffer(string_buffer_t *buffer);
 
 FT_INTERNAL
 fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer);
@@ -523,13 +530,11 @@ size_t max_border_elem_strlen(struct fort_table_options *);
 FT_INTERNAL
 fort_table_options_t *create_table_options(void);
 
-/*
-FT_INTERNAL
-fort_table_options_t *copy_table_options(const fort_table_options_t *option);
-*/
-
 FT_INTERNAL
 void destroy_table_options(fort_table_options_t *options);
+
+FT_INTERNAL
+fort_table_options_t *copy_table_options(const fort_table_options_t *option);
 
 #endif /* OPTIONS_H */
 
@@ -552,6 +557,9 @@ fort_cell_t *create_cell(void);
 
 FT_INTERNAL
 void destroy_cell(fort_cell_t *cell);
+
+FT_INTERNAL
+fort_cell_t *copy_cell(fort_cell_t *cell);
 
 FT_INTERNAL
 size_t hint_width_cell(const fort_cell_t *cell, const context_t *context);
@@ -609,6 +617,9 @@ fort_row_t *create_row(void);
 
 FT_INTERNAL
 void destroy_row(fort_row_t *row);
+
+FT_INTERNAL
+fort_row_t *copy_row(fort_row_t *row);
 
 FT_INTERNAL
 fort_row_t *create_row_from_string(const char *str);
@@ -1364,31 +1375,6 @@ fort_table_options_t *create_table_options(void)
     return options;
 }
 
-/*
-FT_INTERNAL
-fort_table_options_t *copy_table_options(const fort_table_options_t *option)
-{
-    // todo: normal implementation, do deep copy of col options
-
-    fort_table_options_t *new_opt = create_table_options();
-    if (new_opt == NULL)
-        return NULL;
-
-    memcpy(new_opt, option, sizeof(fort_table_options_t));
-
-    if (option->cell_options) {
-        destroy_cell_opt_container(new_opt->cell_options);
-        new_opt->cell_options = copy_vector(option->cell_options);
-        if (new_opt->cell_options == NULL) {
-            destroy_table_options(new_opt);
-            new_opt = NULL;
-        }
-    }
-    return new_opt;
-}
-*/
-
-
 FT_INTERNAL
 void destroy_table_options(fort_table_options_t *options)
 {
@@ -1399,6 +1385,47 @@ void destroy_table_options(fort_table_options_t *options)
         destroy_cell_opt_container(options->cell_options);
     }
     F_FREE(options);
+}
+
+static
+fort_cell_opt_container_t *copy_cell_options(fort_cell_opt_container_t *cont)
+{
+    fort_cell_opt_container_t *result = create_cell_opt_container();
+    if (result == NULL)
+        return NULL;
+
+    size_t sz = vector_size(cont);
+    for (size_t i = 0; i < sz; ++i) {
+        fort_cell_options_t *opt = (fort_cell_options_t *)vector_at(cont, i);
+        if (FT_IS_ERROR(vector_push(result, opt))) {
+            destroy_cell_opt_container(result);
+            return NULL;
+        }
+    }
+    return result;
+}
+
+FT_INTERNAL
+fort_table_options_t *copy_table_options(const fort_table_options_t *option)
+{
+    // todo: normal implementation, do deep copy of col options
+
+    fort_table_options_t *new_opt = create_table_options();
+    if (new_opt == NULL)
+        return NULL;
+
+    destroy_vector(new_opt->cell_options);
+    new_opt->cell_options = copy_cell_options(option->cell_options);
+    if (new_opt == NULL) {
+        destroy_table_options(new_opt);
+        return NULL;
+    }
+
+    memcpy(&new_opt->border_style, &option->border_style, sizeof(struct fort_border_style));
+    memcpy(&new_opt->entire_table_options,
+           &option->entire_table_options, sizeof(fort_entire_table_options_t));
+
+    return new_opt;
 }
 
 
@@ -1787,6 +1814,42 @@ void ft_destroy_table(ft_table_t *table)
     destroy_string_buffer(table->conv_buffer);
     F_FREE(table);
 }
+
+ft_table_t *ft_copy_table(ft_table_t *table)
+{
+    if (table == NULL)
+        return NULL;
+
+    ft_table_t *result = ft_create_table();
+    if (result == NULL)
+        return NULL;
+
+    size_t rows_n = vector_size(table->rows);
+    for (size_t i = 0; i < rows_n; ++i) {
+        fort_row_t *row = *(fort_row_t **)vector_at(table->rows, i);
+        fort_row_t *new_row = copy_row(row);
+        if (new_row == NULL) {
+            ft_destroy_table(result);
+            return NULL;
+        }
+        vector_push(result->rows, &new_row);
+    }
+
+    /* todo: copy separators */
+
+    result->options = copy_table_options(table->options);
+    if (result->options == NULL) {
+        ft_destroy_table(result);
+        return NULL;
+    }
+
+    /* todo: copy conv_buffer  ??  */
+
+    result->cur_row = table->cur_row;
+    result->cur_col = table->cur_col;
+    return result;
+}
+
 
 void ft_ln(ft_table_t *table)
 {
@@ -2860,8 +2923,6 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
     return FT_SUCCESS;
 }
 
-
-#ifdef FT_TEST_BUILD
 vector_t *copy_vector(vector_t *v)
 {
     if (v == NULL)
@@ -2877,6 +2938,7 @@ vector_t *copy_vector(vector_t *v)
     return new_vector;
 }
 
+#ifdef FT_TEST_BUILD
 
 size_t vector_index_of(const vector_t *vector, const void *item)
 {
@@ -3114,6 +3176,34 @@ void destroy_string_buffer(string_buffer_t *buffer)
     F_FREE(buffer);
 }
 
+FT_INTERNAL
+string_buffer_t *copy_string_buffer(string_buffer_t *buffer)
+{
+    assert(buffer);
+    string_buffer_t *result = create_string_buffer(buffer->data_sz, buffer->type);
+    if (result == NULL)
+        return NULL;
+    switch (buffer->type) {
+        case CharBuf:
+            if (FT_IS_ERROR(fill_buffer_from_string(result, buffer->str.cstr))) {
+                destroy_string_buffer(buffer);
+                return NULL;
+            }
+            break;
+#ifdef FT_HAVE_WCHAR
+        case WCharBuf:
+            if (FT_IS_ERROR(fill_buffer_from_wstring(result, buffer->str.wstr))) {
+                destroy_string_buffer(buffer);
+                return NULL;
+            }
+            break;
+#endif /* FT_HAVE_WCHAR */
+        default:
+            destroy_string_buffer(result);
+            return NULL;
+    }
+    return result;
+}
 
 FT_INTERNAL
 fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
@@ -3136,17 +3226,17 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
     assert(buffer);
     assert(str);
 
-    size_t sz = strlen(str);
+//    size_t sz = strlen(str);
     char *copy = F_STRDUP(str);
     if (copy == NULL)
         return FT_MEMORY_ERROR;
 
-    while (sz >= string_buffer_capacity(buffer)) {
-        int status = realloc_string_buffer_without_copy(buffer);
-        if (!FT_IS_SUCCESS(status)) {
-            return status;
-        }
-    }
+//    while (sz >= string_buffer_capacity(buffer)) {
+//        int status = realloc_string_buffer_without_copy(buffer);
+//        if (!FT_IS_SUCCESS(status)) {
+//            return status;
+//        }
+//    }
     F_FREE(buffer->str.data);
     buffer->str.cstr = copy;
     buffer->type = CharBuf;
@@ -3162,17 +3252,17 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
     assert(buffer);
     assert(str);
 
-    size_t sz = wcslen(str);
+//    size_t sz = wcslen(str);
     wchar_t *copy = F_WCSDUP(str);
     if (copy == NULL)
         return FT_MEMORY_ERROR;
 
-    while (sz >= string_buffer_capacity(buffer)) {
-        int status = realloc_string_buffer_without_copy(buffer);
-        if (!FT_IS_SUCCESS(status)) {
-            return status;
-        }
-    }
+//    while (sz >= string_buffer_capacity(buffer)) {
+//        int status = realloc_string_buffer_without_copy(buffer);
+//        if (!FT_IS_SUCCESS(status)) {
+//            return status;
+//        }
+//    }
     F_FREE(buffer->str.data);
     buffer->str.wstr = copy;
     buffer->type = WCharBuf;
@@ -3768,6 +3858,27 @@ void destroy_row(fort_row_t *row)
     F_FREE(row);
 }
 
+FT_INTERNAL
+fort_row_t *copy_row(fort_row_t *row)
+{
+    assert(row);
+    fort_row_t *result = create_row();
+    if (result == NULL)
+        return NULL;
+
+    size_t cols_n = vector_size(row->cells);
+    for (size_t i = 0; i < cols_n; ++i) {
+        fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, i);
+        fort_cell_t *new_cell = copy_cell(cell);
+        if (new_cell == NULL) {
+            destroy_row(result);
+            return NULL;
+        }
+        vector_push(result->cells, &new_cell);
+    }
+
+    return result;
+}
 
 FT_INTERNAL
 size_t columns_in_row(const fort_row_t *row)
@@ -5074,6 +5185,22 @@ void destroy_cell(fort_cell_t *cell)
         return;
     destroy_string_buffer(cell->str_buffer);
     F_FREE(cell);
+}
+
+FT_INTERNAL
+fort_cell_t *copy_cell(fort_cell_t *cell)
+{
+    assert(cell);
+
+    fort_cell_t *result = create_cell();
+    destroy_string_buffer(result->str_buffer);
+    result->str_buffer = copy_string_buffer(cell->str_buffer);
+    if (result->str_buffer == NULL) {
+        destroy_cell(result);
+        return NULL;
+    }
+    result->cell_type = cell->cell_type;
+    return result;
 }
 
 FT_INTERNAL

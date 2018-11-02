@@ -68,6 +68,38 @@ void test_table_basic(void)
     }
 #endif
 
+    WHEN("Test table copy") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+        assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+        assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+
+        ft_table_t *table_copy = ft_copy_table(table);
+        assert_true(table != NULL);
+        const char *table_str = ft_to_string(table_copy);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+        ft_destroy_table(table_copy);
+    }
 
 
     WHEN("All columns are not equal and not empty") {

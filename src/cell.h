@@ -10,6 +10,9 @@ FT_INTERNAL
 void destroy_cell(fort_cell_t *cell);
 
 FT_INTERNAL
+fort_cell_t *copy_cell(fort_cell_t *cell);
+
+FT_INTERNAL
 size_t hint_width_cell(const fort_cell_t *cell, const context_t *context);
 
 FT_INTERNAL

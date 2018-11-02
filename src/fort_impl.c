@@ -92,6 +92,42 @@ void ft_destroy_table(ft_table_t *table)
     F_FREE(table);
 }
 
+ft_table_t *ft_copy_table(ft_table_t *table)
+{
+    if (table == NULL)
+        return NULL;
+
+    ft_table_t *result = ft_create_table();
+    if (result == NULL)
+        return NULL;
+
+    size_t rows_n = vector_size(table->rows);
+    for (size_t i = 0; i < rows_n; ++i) {
+        fort_row_t *row = *(fort_row_t **)vector_at(table->rows, i);
+        fort_row_t *new_row = copy_row(row);
+        if (new_row == NULL) {
+            ft_destroy_table(result);
+            return NULL;
+        }
+        vector_push(result->rows, &new_row);
+    }
+
+    /* todo: copy separators */
+
+    result->options = copy_table_options(table->options);
+    if (result->options == NULL) {
+        ft_destroy_table(result);
+        return NULL;
+    }
+
+    /* todo: copy conv_buffer  ??  */
+
+    result->cur_row = table->cur_row;
+    result->cur_col = table->cur_col;
+    return result;
+}
+
+
 void ft_ln(ft_table_t *table)
 {
     assert(table);

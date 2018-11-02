@@ -49,6 +49,27 @@ void destroy_row(fort_row_t *row)
     F_FREE(row);
 }
 
+FT_INTERNAL
+fort_row_t *copy_row(fort_row_t *row)
+{
+    assert(row);
+    fort_row_t *result = create_row();
+    if (result == NULL)
+        return NULL;
+
+    size_t cols_n = vector_size(row->cells);
+    for (size_t i = 0; i < cols_n; ++i) {
+        fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, i);
+        fort_cell_t *new_cell = copy_cell(cell);
+        if (new_cell == NULL) {
+            destroy_row(result);
+            return NULL;
+        }
+        vector_push(result->cells, &new_cell);
+    }
+
+    return result;
+}
 
 FT_INTERNAL
 size_t columns_in_row(const fort_row_t *row)

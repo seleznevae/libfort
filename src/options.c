@@ -626,31 +626,6 @@ fort_table_options_t *create_table_options(void)
     return options;
 }
 
-/*
-FT_INTERNAL
-fort_table_options_t *copy_table_options(const fort_table_options_t *option)
-{
-    // todo: normal implementation, do deep copy of col options
-
-    fort_table_options_t *new_opt = create_table_options();
-    if (new_opt == NULL)
-        return NULL;
-
-    memcpy(new_opt, option, sizeof(fort_table_options_t));
-
-    if (option->cell_options) {
-        destroy_cell_opt_container(new_opt->cell_options);
-        new_opt->cell_options = copy_vector(option->cell_options);
-        if (new_opt->cell_options == NULL) {
-            destroy_table_options(new_opt);
-            new_opt = NULL;
-        }
-    }
-    return new_opt;
-}
-*/
-
-
 FT_INTERNAL
 void destroy_table_options(fort_table_options_t *options)
 {
@@ -661,6 +636,47 @@ void destroy_table_options(fort_table_options_t *options)
         destroy_cell_opt_container(options->cell_options);
     }
     F_FREE(options);
+}
+
+static
+fort_cell_opt_container_t *copy_cell_options(fort_cell_opt_container_t *cont)
+{
+    fort_cell_opt_container_t *result = create_cell_opt_container();
+    if (result == NULL)
+        return NULL;
+
+    size_t sz = vector_size(cont);
+    for (size_t i = 0; i < sz; ++i) {
+        fort_cell_options_t *opt = (fort_cell_options_t *)vector_at(cont, i);
+        if (FT_IS_ERROR(vector_push(result, opt))) {
+            destroy_cell_opt_container(result);
+            return NULL;
+        }
+    }
+    return result;
+}
+
+FT_INTERNAL
+fort_table_options_t *copy_table_options(const fort_table_options_t *option)
+{
+    // todo: normal implementation, do deep copy of col options
+
+    fort_table_options_t *new_opt = create_table_options();
+    if (new_opt == NULL)
+        return NULL;
+
+    destroy_vector(new_opt->cell_options);
+    new_opt->cell_options = copy_cell_options(option->cell_options);
+    if (new_opt == NULL) {
+        destroy_table_options(new_opt);
+        return NULL;
+    }
+
+    memcpy(&new_opt->border_style, &option->border_style, sizeof(struct fort_border_style));
+    memcpy(&new_opt->entire_table_options,
+           &option->entire_table_options, sizeof(fort_entire_table_options_t));
+
+    return new_opt;
 }
 
 

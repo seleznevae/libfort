@@ -170,12 +170,10 @@ size_t max_border_elem_strlen(struct fort_table_options *);
 FT_INTERNAL
 fort_table_options_t *create_table_options(void);
 
-/*
-FT_INTERNAL
-fort_table_options_t *copy_table_options(const fort_table_options_t *option);
-*/
-
 FT_INTERNAL
 void destroy_table_options(fort_table_options_t *options);
+
+FT_INTERNAL
+fort_table_options_t *copy_table_options(const fort_table_options_t *option);
 
 #endif /* OPTIONS_H */

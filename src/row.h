@@ -16,6 +16,9 @@ FT_INTERNAL
 void destroy_row(fort_row_t *row);
 
 FT_INTERNAL
+fort_row_t *copy_row(fort_row_t *row);
+
+FT_INTERNAL
 fort_row_t *create_row_from_string(const char *str);
 
 FT_INTERNAL

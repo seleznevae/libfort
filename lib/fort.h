@@ -245,6 +245,17 @@ ft_table_t *ft_create_table(void);
 void ft_destroy_table(ft_table_t *table);
 
 /**
+ * Copy formatted table.
+ *
+ * @param table
+ *   Pointer to formatted table previousley created with ft_create_table. If
+ *   table is a null pointer, the function returns null.
+ * @return
+ *   The pointer to the new allocated ft_table_t, on success. NULL on error.
+ */
+ft_table_t *ft_copy_table(ft_table_t *table);
+
+/**
  * Move current position to the first cell of the next line(row).
  *
  * @param table

@@ -106,9 +106,23 @@ public:
     }
 
     /**
-     * Not implemented yet.
+     * Copy contstructor.
      */
-    Table(const Table& tbl) = delete;
+    Table(const Table& tbl)
+        :table(NULL)
+    {
+        if (tbl.table) {
+            ft_table_t *table_copy = ft_copy_table(tbl.table);
+            if (table_copy == NULL)
+                throw std::runtime_error("Runtime error");
+
+            stream.str(std::string());
+            if (tbl.stream.tellp() >= 0) {
+                stream << tbl.stream.str();
+            }
+            table = table_copy;
+        }
+    }
 
     /**
      * Move contstructor.
@@ -124,9 +138,27 @@ public:
     }
 
     /**
-     * Not implemented yet.
+     * Copy assignment operator.
      */
-    Table& operator=(const Table& tbl) = delete;
+    Table& operator=(const Table& tbl)
+    {
+        if (&tbl == this)
+            return *this;
+
+        if (tbl.table) {
+            ft_table_t *table_copy = ft_copy_table(tbl.table);
+            if (table_copy == NULL)
+                throw std::runtime_error("Runtime error");
+
+            stream.str(std::string());
+            if (tbl.stream.tellp() >= 0) {
+                stream << tbl.stream.str();
+            }
+            ft_destroy_table(table);
+            table = table_copy;
+        }
+        return *this;
+    }
 
     /**
      * Move assignment operator.
@@ -545,7 +577,7 @@ public:
     }
 private:
     ft_table_t *table;
-    std::stringstream stream;
+    mutable std::stringstream stream;
 
 public:
 

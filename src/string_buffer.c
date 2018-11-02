@@ -188,6 +188,34 @@ void destroy_string_buffer(string_buffer_t *buffer)
     F_FREE(buffer);
 }
 
+FT_INTERNAL
+string_buffer_t *copy_string_buffer(string_buffer_t *buffer)
+{
+    assert(buffer);
+    string_buffer_t *result = create_string_buffer(buffer->data_sz, buffer->type);
+    if (result == NULL)
+        return NULL;
+    switch (buffer->type) {
+        case CharBuf:
+            if (FT_IS_ERROR(fill_buffer_from_string(result, buffer->str.cstr))) {
+                destroy_string_buffer(buffer);
+                return NULL;
+            }
+            break;
+#ifdef FT_HAVE_WCHAR
+        case WCharBuf:
+            if (FT_IS_ERROR(fill_buffer_from_wstring(result, buffer->str.wstr))) {
+                destroy_string_buffer(buffer);
+                return NULL;
+            }
+            break;
+#endif /* FT_HAVE_WCHAR */
+        default:
+            destroy_string_buffer(result);
+            return NULL;
+    }
+    return result;
+}
 
 FT_INTERNAL
 fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
@@ -210,17 +238,17 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
     assert(buffer);
     assert(str);
 
-    size_t sz = strlen(str);
+//    size_t sz = strlen(str);
     char *copy = F_STRDUP(str);
     if (copy == NULL)
         return FT_MEMORY_ERROR;
 
-    while (sz >= string_buffer_capacity(buffer)) {
-        int status = realloc_string_buffer_without_copy(buffer);
-        if (!FT_IS_SUCCESS(status)) {
-            return status;
-        }
-    }
+//    while (sz >= string_buffer_capacity(buffer)) {
+//        int status = realloc_string_buffer_without_copy(buffer);
+//        if (!FT_IS_SUCCESS(status)) {
+//            return status;
+//        }
+//    }
     F_FREE(buffer->str.data);
     buffer->str.cstr = copy;
     buffer->type = CharBuf;
@@ -236,17 +264,17 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
     assert(buffer);
     assert(str);
 
-    size_t sz = wcslen(str);
+//    size_t sz = wcslen(str);
     wchar_t *copy = F_WCSDUP(str);
     if (copy == NULL)
         return FT_MEMORY_ERROR;
 
-    while (sz >= string_buffer_capacity(buffer)) {
-        int status = realloc_string_buffer_without_copy(buffer);
-        if (!FT_IS_SUCCESS(status)) {
-            return status;
-        }
-    }
+//    while (sz >= string_buffer_capacity(buffer)) {
+//        int status = realloc_string_buffer_without_copy(buffer);
+//        if (!FT_IS_SUCCESS(status)) {
+//            return status;
+//        }
+//    }
     F_FREE(buffer->str.data);
     buffer->str.wstr = copy;
     buffer->type = WCharBuf;
