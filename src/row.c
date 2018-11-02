@@ -306,8 +306,10 @@ int print_row_separator(char *buffer, size_t buffer_sz,
                 IV = &(*border_chars)[II_bip];
                 R = &(*border_chars)[RH_bip];
 
-                IT = &(*border_chars)[TV_bip];
-                IB = &(*border_chars)[BV_bip];
+//                IT = &(*border_chars)[TV_bip];
+//                IB = &(*border_chars)[BV_bip];
+                IT = &(*border_chars)[TI_bip];
+                IB = &(*border_chars)[BI_bip];
                 II = &(*border_chars)[IH_bip];
                 break;
             case BottomSeparator:
@@ -479,8 +481,10 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
                 IV = &(*border_chars)[II_bip];
                 R = &(*border_chars)[RH_bip];
 
-                IT = &(*border_chars)[TV_bip];
-                IB = &(*border_chars)[BV_bip];
+//                IT = &(*border_chars)[TV_bip];
+//                IB = &(*border_chars)[BV_bip];
+                IT = &(*border_chars)[TI_bip];
+                IB = &(*border_chars)[BI_bip];
                 II = &(*border_chars)[IH_bip];
                 break;
             case BottomSeparator:

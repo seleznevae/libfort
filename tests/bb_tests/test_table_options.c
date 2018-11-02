@@ -492,4 +492,64 @@ void test_table_cell_options(void)
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+
+    WHEN("Cells with spans in common and header cells") {
+        set_test_options_as_default();
+
+        table = ft_create_table();
+        ft_set_border_style(table, FT_DOUBLE2_STYLE);
+
+        int n = ft_set_cell_span(table, 0, 0, 2);
+        assert_true(n == FT_SUCCESS);
+        n = ft_set_cell_span(table, 0, 2, 3);
+        assert_true(n == FT_SUCCESS);
+        n = ft_set_cell_span(table, 1, 1, 3);
+        assert_true(n == FT_SUCCESS);
+
+        n = ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        assert_true(n == FT_SUCCESS);
+
+        n = ft_write_ln(table, "111", "2222", "33333", "444444", "55555555");
+        assert_true(n == FT_SUCCESS);
+        n = ft_write_ln(table, "2222", "33333", "444444", "55555555", "111");
+        assert_true(n == FT_SUCCESS);
+
+        n = ft_write_ln(table, "33333", "444444", "55555555", "111", "2222");
+        assert_true(n == FT_SUCCESS);
+        n = ft_write_ln(table, "2222", "33333", "444444", "55555555", "111");
+        assert_true(n == FT_SUCCESS);
+        n = ft_write_ln(table, "2222", "33333", "444444", "55555555", "111");
+        assert_true(n == FT_SUCCESS);
+
+        n = ft_set_cell_span(table, 4, 3, 2);
+        assert_true(n == FT_SUCCESS);
+
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "╔════════════════╤════════════════════════════╗\n"
+            "║                │                            ║\n"
+            "║            111 │                      33333 ║\n"
+            "║                │                            ║\n"
+            "╠═══════╤════════╧═════════════════════╤══════╣\n"
+            "║       │                              │      ║\n"
+            "║  2222 │                        33333 │  111 ║\n"
+            "║       │                              │      ║\n"
+            "╟───────┼────────┬──────────┬──────────┼──────╢\n"
+            "║       │        │          │          │      ║\n"
+            "║ 33333 │ 444444 │ 55555555 │      111 │ 2222 ║\n"
+            "║       │        │          │          │      ║\n"
+            "╟───────┼────────┼──────────┼──────────┼──────╢\n"
+            "║       │        │          │          │      ║\n"
+            "║  2222 │  33333 │   444444 │ 55555555 │  111 ║\n"
+            "║       │        │          │          │      ║\n"
+            "╟───────┼────────┼──────────┼──────────┴──────╢\n"
+            "║       │        │          │                 ║\n"
+            "║  2222 │  33333 │   444444 │        55555555 ║\n"
+            "║       │        │          │                 ║\n"
+            "╚═══════╧════════╧══════════╧═════════════════╝\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
 }

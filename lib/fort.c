@@ -405,7 +405,25 @@ fort_status_t set_default_cell_option(uint32_t option, int value);
  *****************************************************************************/
 
 /*
- *   TL TT TT TT TV TT TT TT TV TB TB TB TR        <----- TopSeparator
+ *   TL TT TT TT TV TT TT TT TT TT TT TT TR
+ *   LL          IV                      RR
+ *   LL          IV                      RR
+ *   LH IH IH IH II IH IH IH TI IH IH IH RH
+ *   LL          IV          IV          RR
+ *   LL          IV          IV          RR
+ *   LL          LI IH IH IH RI          RH
+ *   LL          IV          IV          RR
+ *   LL          IV          IV          RR
+ *   LH IH IH IH BI IH IH IH II IH IH IH RH
+ *   LL                      IV          RR
+ *   LL                      IV          RR
+ *   BL BB BB BB BV BB BB BB BV BB BB BB BR
+ */
+
+
+
+/*
+ *   TL TT TT TT TV TT TT TT TV TT TT TT TR        <----- TopSeparator
  *   LL          IV          IV          RR
  *   LH IH IH IH II IH IH IH II IH IH IH RH        <----- InsideSeparator
  *   LL          IV          IV          RR
@@ -437,6 +455,11 @@ enum BorderItemPos {
     BB_bip = 12,
     BV_bip = 13,
     BR_bip = 14,
+
+    LI_bip = 15,
+    TI_bip = 16,
+    RI_bip = 17,
+    BI_bip = 18,
 
     BorderItemPosSize
 };
@@ -929,14 +952,16 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      "+", "-", "+", "+",          \
      "|", "|", "|",               \
      "\0", "\0", "\0", "\0",      \
-     "+", "-", "+", "+"           \
+     "+", "-", "+", "+",          \
+     "+", "+", "+", "+",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     "+", "-", "+", "+",           \
     "|", "|", "|",                \
     "+", "-", "+", "+",           \
-    "+", "-", "+", "+"            \
+    "+", "-", "+", "+",           \
+    "+", "+", "+", "+",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -944,20 +969,22 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
     },                            \
 }
 
-#define BASIC2_STYLE  {            \
+#define BASIC2_STYLE  {           \
     /* border_chars */            \
     {                             \
      "+", "-", "+", "+",          \
      "|", "|", "|",               \
-     "+", "-", "+", "+",           \
-     "+", "-", "+", "+"           \
+     "+", "-", "+", "+",          \
+     "+", "-", "+", "+",          \
+     "+", "+", "+", "+",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     "+", "-", "+", "+",           \
     "|", "|", "|",                \
     "+", "-", "+", "+",           \
-    "+", "-", "+", "+"            \
+    "+", "-", "+", "+",           \
+    "+", "+", "+", "+",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -971,14 +998,16 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      " ", " ", " ", " ",          \
      " ", " ", " ",               \
      "\0", "\0", "\0", "\0",      \
-     " ", " ", " ", " "           \
+     " ", " ", " ", " ",          \
+     " ", " ", " ", " ",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     " ", " ", " ", " ",           \
     " ", " ", " ",                \
     " ", "-", " ", " ",           \
-    " ", " ", " ", " "            \
+    " ", " ", " ", " ",           \
+    " ", " ", " ", " ",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -992,14 +1021,16 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      " ", " ", " ", " ",          \
      " ", " ", " ",               \
      "\0", "\0", "\0", "\0",      \
-     " ", " ", " ", " "           \
+     " ", " ", " ", " ",          \
+     " ", " ", " ", " ",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     " ", "-", "-", " ",           \
     " ", " ", " ",                \
     " ", "-", "-", " ",           \
-    " ", "-", "-", " "            \
+    " ", "-", "-", " ",           \
+    " ", " ", " ", " ",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -1013,14 +1044,16 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      ".", ".", ".", ".",          \
      ":", ":", ":",               \
      "\0", "\0", "\0", "\0",      \
-     ":", ".", ":", ":"           \
+     ":", ".", ":", ":",          \
+     "+", "+", "+", "+",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     ".", ".", ".", ".",           \
     ":", ":", ":",                \
     ":", ".", ":", ":",           \
-    ":", ".", ":", ":"            \
+    ":", ".", ":", ":",           \
+    "+", "+", "+", "+",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -1034,14 +1067,16 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      " ", " ", " ", " ",          \
      " ", " ", " ",               \
      "\0", "\0", "\0", "\0",      \
-     " ", " ", " ", " "           \
+     " ", " ", " ", " ",          \
+     " ", " ", " ", " ",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     " ", " ", " ", " ",           \
     " ", " ", " ",                \
     "\0", "\0", "\0", "\0",       \
-    " ", " ", " ", " "            \
+    " ", " ", " ", " ",           \
+    " ", " ", " ", " ",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -1050,20 +1085,22 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
 }
 
 
-#define SOLID_STYLE  {           \
+#define SOLID_STYLE  {            \
     /* border_chars */            \
     {                             \
      "┌", "─", "┬", "┐",          \
      "│", "│", "│",               \
      "", "", "", "",              \
-     "└", "─", "┴", "╯"           \
+     "└", "─", "┴", "╯",          \
+     "┼", "┼", "┼", "┼",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     "┌", "─", "┬", "┐",           \
     "│", "│", "│",                \
     "├", "─", "┼", "┤",           \
-    "└", "─", "┴", "┘"            \
+    "└", "─", "┴", "┘",           \
+    "┼", "┼", "┼", "┼",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -1077,14 +1114,16 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      "╭", "─", "┬", "╮",          \
      "│", "│", "│",               \
      "", "", "", "",              \
-     "╰", "─", "┴", "╯"           \
+     "╰", "─", "┴", "╯",          \
+     "┼", "┼", "┼", "┼",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     "╭", "─", "┬", "╮",           \
     "│", "│", "│",                \
     "├", "─", "┼", "┤",           \
-    "╰", "─", "┴", "╯"            \
+    "╰", "─", "┴", "╯",           \
+    "┼", "┼", "┼", "┼",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -1099,14 +1138,16 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      "╔", "═", "╦", "╗",          \
      "║", "║", "║",               \
      "", "", "", "",              \
-     "╚", "═", "╩", "╝"           \
+     "╚", "═", "╩", "╝",          \
+     "┣", "┻", "┣", "┳",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     "╔", "═", "╦", "╗",           \
     "║", "║", "║",                \
     "╠", "═", "╬", "╣",           \
-    "╚", "═", "╩", "╝"            \
+    "╚", "═", "╩", "╝",           \
+    "┣", "┻", "┣", "┳",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -1115,20 +1156,22 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
 }
 
 
-#define DOUBLE2_STYLE  {           \
+#define DOUBLE2_STYLE  {          \
     /* border_chars */            \
     {                             \
      "╔", "═", "╤", "╗",          \
      "║", "│", "║",               \
      "╟", "─", "┼", "╢",          \
-     "╚", "═", "╧", "╝"           \
+     "╚", "═", "╧", "╝",          \
+     "├", "┬", "┤", "┴",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     "╔", "═", "╤", "╗",           \
     "║", "│", "║",                \
     "╠", "═", "╪", "╣",           \
-    "╚", "═", "╧", "╝"            \
+    "╚", "═", "╧", "╝",           \
+    "├", "╤", "┤", "╧",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -1143,14 +1186,16 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      "┏", "━", "┳", "┓",          \
      "┃", "┃", "┃",               \
      "", "", "", "",              \
-     "┗", "━", "┻", "┛"           \
+     "┗", "━", "┻", "┛",          \
+     "┣", "┻", "┣", "┳",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     "┏", "━", "┳", "┓",           \
     "┃", "┃", "┃",                \
     "┣", "━", "╋", "┫",           \
-    "┗", "━", "┻", "┛"            \
+    "┗", "━", "┻", "┛",           \
+    "┣", "┻", "┣", "┳",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -1164,14 +1209,16 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      "┏", "━", "┯", "┓",          \
      "┃", "│", "┃",               \
      "┠", "─", "┼", "┨",          \
-     "┗", "━", "┷", "┛"           \
+     "┗", "━", "┷", "┛",          \
+     "┣", "┻", "┣", "┳",          \
     },                            \
     /* header_border_chars */     \
     {                             \
     "┏", "━", "┯", "┓",           \
     "┃", "│", "┃",                \
     "┣", "━", "┿", "┫",           \
-    "┗", "━", "┷", "┛"            \
+    "┗", "━", "┷", "┛",           \
+    "┣", "┻", "┣", "┳",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -1185,14 +1232,16 @@ fort_status_t set_default_cell_option(uint32_t option, int value)
      "▛", "▀", "▀", "▜",          \
      "▌", "┃", "▐",               \
      "", "", "", "",              \
-     "▙", "▄", "▄", "▟"           \
+     "▙", "▄", "▄", "▟",          \
+     "┣", "┻", "┣", "┳"           \
     },                            \
     /* header_border_chars */     \
     {                             \
     "▛", "▀", "▀", "▜",           \
     "▌", "┃", "▐",                \
     "▌", "━", "╋", "▐",           \
-    "▙", "▄", "▄", "▟"            \
+    "▙", "▄", "▄", "▟",           \
+    "┣", "┻", "┣", "┳",           \
     },                            \
     /* separator_chars */         \
     {                             \
@@ -2493,6 +2542,8 @@ static void set_border_options_for_options(fort_table_options_t *options, const 
     BOR_CHARS[BL_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->out_intersect_ch;
     BOR_CHARS[II_bip] = border_chs->in_intersect_ch;
 
+    BOR_CHARS[LI_bip] = BOR_CHARS[TI_bip] = BOR_CHARS[RI_bip] = BOR_CHARS[BI_bip] = border_chs->in_intersect_ch;
+
 //    if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
 //        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
 //    }
@@ -2510,6 +2561,8 @@ static void set_border_options_for_options(fort_table_options_t *options, const 
     H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->out_intersect_ch;
     H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->out_intersect_ch;
     H_BOR_CHARS[II_bip] = header_border_chs->in_intersect_ch;
+
+    H_BOR_CHARS[LI_bip] = H_BOR_CHARS[TI_bip] = H_BOR_CHARS[RI_bip] = H_BOR_CHARS[BI_bip] = header_border_chs->in_intersect_ch;
 
 //    if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
 //        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
@@ -3972,8 +4025,10 @@ int print_row_separator(char *buffer, size_t buffer_sz,
                 IV = &(*border_chars)[II_bip];
                 R = &(*border_chars)[RH_bip];
 
-                IT = &(*border_chars)[TV_bip];
-                IB = &(*border_chars)[BV_bip];
+//                IT = &(*border_chars)[TV_bip];
+//                IB = &(*border_chars)[BV_bip];
+                IT = &(*border_chars)[TI_bip];
+                IB = &(*border_chars)[BI_bip];
                 II = &(*border_chars)[IH_bip];
                 break;
             case BottomSeparator:
@@ -4145,8 +4200,10 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
                 IV = &(*border_chars)[II_bip];
                 R = &(*border_chars)[RH_bip];
 
-                IT = &(*border_chars)[TV_bip];
-                IB = &(*border_chars)[BV_bip];
+//                IT = &(*border_chars)[TV_bip];
+//                IB = &(*border_chars)[BV_bip];
+                IT = &(*border_chars)[TI_bip];
+                IB = &(*border_chars)[BI_bip];
                 II = &(*border_chars)[IH_bip];
                 break;
             case BottomSeparator:

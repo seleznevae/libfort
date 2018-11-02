@@ -52,7 +52,25 @@ fort_status_t set_default_cell_option(uint32_t option, int value);
  *****************************************************************************/
 
 /*
- *   TL TT TT TT TV TT TT TT TV TB TB TB TR        <----- TopSeparator
+ *   TL TT TT TT TV TT TT TT TT TT TT TT TR
+ *   LL          IV                      RR
+ *   LL          IV                      RR
+ *   LH IH IH IH II IH IH IH TI IH IH IH RH
+ *   LL          IV          IV          RR
+ *   LL          IV          IV          RR
+ *   LL          LI IH IH IH RI          RH
+ *   LL          IV          IV          RR
+ *   LL          IV          IV          RR
+ *   LH IH IH IH BI IH IH IH II IH IH IH RH
+ *   LL                      IV          RR
+ *   LL                      IV          RR
+ *   BL BB BB BB BV BB BB BB BV BB BB BB BR
+ */
+
+
+
+/*
+ *   TL TT TT TT TV TT TT TT TV TT TT TT TR        <----- TopSeparator
  *   LL          IV          IV          RR
  *   LH IH IH IH II IH IH IH II IH IH IH RH        <----- InsideSeparator
  *   LL          IV          IV          RR
@@ -84,6 +102,11 @@ enum BorderItemPos {
     BB_bip = 12,
     BV_bip = 13,
     BR_bip = 14,
+
+    LI_bip = 15,
+    TI_bip = 16,
+    RI_bip = 17,
+    BI_bip = 18,
 
     BorderItemPosSize
 };

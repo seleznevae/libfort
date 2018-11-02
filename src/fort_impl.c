@@ -846,6 +846,8 @@ static void set_border_options_for_options(fort_table_options_t *options, const 
     BOR_CHARS[BL_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->out_intersect_ch;
     BOR_CHARS[II_bip] = border_chs->in_intersect_ch;
 
+    BOR_CHARS[LI_bip] = BOR_CHARS[TI_bip] = BOR_CHARS[RI_bip] = BOR_CHARS[BI_bip] = border_chs->in_intersect_ch;
+
 //    if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
 //        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
 //    }
@@ -863,6 +865,8 @@ static void set_border_options_for_options(fort_table_options_t *options, const 
     H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->out_intersect_ch;
     H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->out_intersect_ch;
     H_BOR_CHARS[II_bip] = header_border_chs->in_intersect_ch;
+
+    H_BOR_CHARS[LI_bip] = H_BOR_CHARS[TI_bip] = H_BOR_CHARS[RI_bip] = H_BOR_CHARS[BI_bip] = header_border_chs->in_intersect_ch;
 
 //    if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
 //        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';

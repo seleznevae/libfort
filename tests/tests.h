@@ -50,8 +50,8 @@ struct test_case {
     if (strcmp(str1, str2) != 0) \
     { \
         fprintf(stderr, "%s:%d(%s):Abort! Not equals strings:\n",__FILE__,__LINE__, __func__); \
-        fprintf(stderr, "Left string:\n%s\n", str1); \
-        fprintf(stderr, "Right string:\n%s\n", str2); \
+        fprintf(stderr, "Left string(len = %d):\n%s\n", (int)strlen(str1), str1); \
+        fprintf(stderr, "Right string(len = %d):\n%s\n", (int)strlen(str2), str2); \
         exit(EXIT_FAILURE); \
     }
 
@@ -60,8 +60,8 @@ struct test_case {
     { \
         fprintf(stderr, "%s:%d(%s):Abort! Not equals strings:\n",__FILE__,__LINE__, __func__); \
         setlocale(LC_CTYPE, ""); \
-        fwprintf(stdout, L"Left string:\n%ls\n", str1); \
-        fwprintf(stdout, L"Right string:\n%ls\n", str2); \
+        fwprintf(stdout, L"Left string(len = %d):\n%ls\n", (int)wcslen(str1), str1); \
+        fwprintf(stdout, L"Right string(len = %d):\n%ls\n", (int)wcslen(str2), str2); \
         fflush(stdout); \
         exit(EXIT_FAILURE); \
     }
