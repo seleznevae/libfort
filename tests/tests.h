@@ -32,8 +32,8 @@ void test_wcs_table_boundaries(void);
 void test_table_write(void);
 void test_table_border_style(void);
 void test_table_builtin_border_styles(void);
-void test_table_cell_options(void);
-void test_table_tbl_options(void);
+void test_table_cell_properties(void);
+void test_table_tbl_properties(void);
 void test_memory_errors(void);
 
 struct test_case {
@@ -73,8 +73,8 @@ struct ft_table;
 extern "C" {
 #endif
 
-int set_test_options_for_table(struct ft_table *table);
-int set_test_options_as_default(void);
+int set_test_props_for_table(struct ft_table *table);
+int set_test_properties_as_default(void);
 struct ft_table *create_test_int_table(int set_test_opts);
 struct ft_table *create_test_int_wtable(int set_test_opts);
 void run_test_suit(const char *test_suit_name, int n_tests, struct test_case test_suit[]);

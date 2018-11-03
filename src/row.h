@@ -4,7 +4,7 @@
 #include "fort_utils.h"
 #include "fort.h"
 #include <stdarg.h>
-#include "options.h"
+#include "properties.h"
 #ifdef FT_HAVE_WCHAR
 #include <wchar.h>
 #endif

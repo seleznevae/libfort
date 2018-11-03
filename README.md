@@ -27,7 +27,7 @@
 
 **Features:**
 - Easy to integrate (only 2 files)
-- Customization of appearance (various border styles and row/column/cell options for indentation, alignment, padding)
+- Customization of appearance (various border styles and row/column/cell properties for indentation, alignment, padding)
 - A number of functions to fill the table (add content by adding separate cells, rows or use _printf_ like functions)
 - Support of multiple lines in cells
 - Support of wide characters
@@ -56,7 +56,7 @@ See [wiki](https://github.com/seleznevae/libfort/wiki) of the project.
 The common libfort usage pattern: 
 - create a table (`_ft_create_table_`);
 - fill it with data (`_ft_write_ln_`, `_fr_ptrintf_ln_`, `_ft_row_write_`, ...);
-- modify basic table appearance (`_ft_set_cell_option_`, `ft_set_border_style` ...)
+- modify basic table appearance (`_ft_set_cell_prop_`, `ft_set_border_style` ...)
 - convert table to string representation (`_ft_to_string_`);
 - destroy the table (`_ft_destroy_table_`)
 
@@ -73,7 +73,8 @@ int main(void)
 {
     ft_table_t *table = ft_create_table();
     /* Set "header" type for the first row */
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+
     ft_write_ln(table, "N", "Driver", "Time", "Avg Speed");
 
     ft_write_ln(table, "1", "Ricciardo", "1:25.945", "222.128");
@@ -126,7 +127,7 @@ int main(void)
     ft_set_border_style(table, FT_DOUBLE2_STYLE);
 
     /* Set "header" type for the first row */
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
 
     ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
@@ -134,8 +135,8 @@ int main(void)
     ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
 
     /* Set center alignment for the 1st and 3rd columns */
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 3, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
 
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
@@ -189,7 +190,7 @@ int main(void)
 {
     ft_table_t *table = ft_create_table();
     /* Set "header" type for the first row */
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "N", "Planet", "Speed, km/s", "Temperature, K");
 
     /* Fill row with printf like function */

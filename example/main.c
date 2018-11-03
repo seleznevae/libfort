@@ -6,10 +6,10 @@
 static ft_table_t *create_basic_table(void)
 {
     ft_table_t *table = ft_create_table();
-    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "Rank", "Title", "Year", "Rating");
 
     ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
@@ -36,7 +36,7 @@ void print_char_str(const char *str)
 void base_example(void)
 {
     ft_table_t *table = ft_create_table();
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "N", "Driver", "Time", "Avg Speed");
 
     ft_write_ln(table, "1", "Ricciardo", "1:25.945", "222.128");
@@ -54,7 +54,7 @@ void complex_layout_example(void)
     ft_set_border_style(table, FT_DOUBLE2_STYLE);
 
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "Sed", "Aenean", "Text");
 
     ft_write_ln(table, "Duis", "Aliquam",
@@ -65,21 +65,21 @@ void complex_layout_example(void)
                 "quam pellentesque.");
     ft_write_ln(table, "Summary", "", "Sed tempor est eget odio varius dignissim.");
 
-    ft_set_cell_option(table, 0, 2, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_option(table, 3, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, 0, 2, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, 3, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
     ft_set_cell_span(table, 3, 0, 2);
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
 }
 
-void different_cell_options_example(void)
+void different_cell_properties_example(void)
 {
     ft_table_t *table = ft_create_table();
     /* Change border style */
     ft_set_border_style(table, FT_DOUBLE2_STYLE);
 
     /* Set "header" type for the first row */
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
 
     ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
@@ -87,8 +87,8 @@ void different_cell_options_example(void)
     ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
 
     /* Set center alignment for the 1st and 3rd columns */
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 3, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
 
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
@@ -98,7 +98,7 @@ void fill_table_with_data_example(void)
 {
     ft_table_t *table = ft_create_table();
     /* Set "header" type for the first row */
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "N", "Planet", "Speed, km/s", "Temperature, K");
 
     /* Fill row with printf like function */
@@ -118,7 +118,7 @@ void fill_table_with_data_example(void)
 int main(void)
 {
     base_example();
-    different_cell_options_example();
+    different_cell_properties_example();
     fill_table_with_data_example();
     complex_layout_example();
 
@@ -127,10 +127,10 @@ int main(void)
     ft_table_t *table = NULL;
 
     table = ft_create_table();
-    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_printf_ln(table, "%d|%s|%5.2f km/s", 1, "Mercury", 47.362);
 
     ft_printf_ln(table, "%d|%s|%5.2f km/s", 1, "Mercury", 47.362);
@@ -144,10 +144,10 @@ int main(void)
     /*-------------------------------------------------------------*/
 
     table = ft_create_table();
-    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "Rank", "Title", "Year", "Rating");
 
     ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
@@ -163,10 +163,10 @@ int main(void)
     /*-------------------------------------------------------------*/
 
     table = ft_create_table();
-    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_printf_ln(table, "Commodity|Farm price|Avg. spread");
 
     const char *row1[] = {"Potatoes", "$1.60", "200.94%"};
@@ -180,10 +180,10 @@ int main(void)
 
     /*-------------------------------------------------------------*/
     table = ft_create_table();
-    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_printf_ln(table, "No.|Name|Avg. Mark");
     const char *ctab[2][3] = {
             {"1", "Joe Public", "3.14"},
@@ -260,7 +260,7 @@ int main(void)
     /* Debug */
     ft_set_default_border_style(FT_SOLID_STYLE);
     table = create_basic_table();
-    ft_set_cell_option(table, FT_CUR_ROW, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, FT_CUR_ROW, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "Summary", "", "", "8.7");
     ft_set_cell_span(table, 6, 0, 3);
     ft_set_cell_span(table, 0, 0, 3);
@@ -275,10 +275,10 @@ int main(void)
     ft_set_default_border_style(FT_BASIC_STYLE);
 
     table = ft_create_table();
-    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_wwrite_ln(table, L"Ранг", L"Название", L"Год", L"Рейтинг");
 
     ft_wwrite_ln(table, L"1", L"Побег из Шоушенка", L"1994", L"9.5");

@@ -80,8 +80,8 @@ enum F_BOOL {
 
 
 
-struct fort_table_options;
-struct fort_column_options;
+struct fort_table_properties;
+struct fort_column_properties;
 struct fort_row;
 struct vector;
 struct fort_cell;
@@ -90,14 +90,14 @@ struct separator {
     int enabled;
 };
 
-typedef struct fort_table_options fort_table_options_t;
+typedef struct fort_table_properties fort_table_properties_t;
 struct fort_context {
-    fort_table_options_t *table_options;
+    fort_table_properties_t *table_properties;
     size_t row;
     size_t column;
 };
 typedef struct fort_context context_t;
-typedef struct fort_column_options fort_column_options_t;
+typedef struct fort_column_properties fort_column_properties_t;
 typedef struct vector vector_t;
 typedef struct fort_cell fort_cell_t;
 typedef struct string_buffer string_buffer_t;

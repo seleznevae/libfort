@@ -5,7 +5,7 @@ void test_table_sizes(void)
 {
     ft_table_t *table = ft_create_table();
     assert_true(table != NULL);
-    assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+    assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
 
     size_t rows = 0;
@@ -54,7 +54,7 @@ void test_table_geometry(void)
 {
     ft_table_t *table = ft_create_table();
     assert_true(table != NULL);
-    assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+    assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
     size_t height = 0;
     size_t width = 0;

@@ -1,5 +1,5 @@
 #include "cell.h"
-#include "options.h"
+#include "properties.h"
 #include "string_buffer.h"
 #include <assert.h>
 
@@ -73,13 +73,13 @@ size_t hint_width_cell(const fort_cell_t *cell, const context_t *context)
 
     assert(cell);
     assert(context);
-    size_t cell_padding_left = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_LEFT_PADDING);
-    size_t cell_padding_right = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_RIGHT_PADDING);
+    size_t cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
+    size_t cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
     size_t result = cell_padding_left + cell_padding_right;
     if (cell->str_buffer && cell->str_buffer->str.data) {
         result += buffer_text_width(cell->str_buffer);
     }
-    result = MAX(result, (size_t)get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_MIN_WIDTH));
+    result = MAX(result, (size_t)get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_MIN_WIDTH));
     return result;
 }
 
@@ -88,9 +88,9 @@ size_t hint_height_cell(const fort_cell_t *cell, const context_t *context)
 {
     assert(cell);
     assert(context);
-    size_t cell_padding_top = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TOP_PADDING);
-    size_t cell_padding_bottom = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_BOTTOM_PADDING);
-    size_t cell_empty_string_height = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_EMPTY_STR_HEIGHT);
+    size_t cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
+    size_t cell_padding_bottom = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_BOTTOM_PADDING);
+    size_t cell_empty_string_height = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_EMPTY_STR_HEIGHT);
     size_t result = cell_padding_top + cell_padding_bottom;
     if (cell->str_buffer && cell->str_buffer->str.data) {
         size_t text_height = buffer_text_height(cell->str_buffer);
@@ -115,9 +115,9 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
         return -1;
     }
 
-    unsigned int cell_padding_top = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TOP_PADDING);
-    unsigned int cell_padding_left = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_LEFT_PADDING);
-    unsigned int cell_padding_right = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_RIGHT_PADDING);
+    unsigned int cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
+    unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
+    unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
 
     if (row >= hint_height_cell(cell, context)
         || row < cell_padding_top
@@ -161,9 +161,9 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
         return -1;
     }
 
-    unsigned int cell_padding_top = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TOP_PADDING);
-    unsigned int cell_padding_left = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_LEFT_PADDING);
-    unsigned int cell_padding_right = get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_RIGHT_PADDING);
+    unsigned int cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
+    unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
+    unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
 
     if (row >= hint_height_cell(cell, context)
         || row < cell_padding_top

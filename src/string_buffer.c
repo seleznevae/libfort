@@ -1,5 +1,5 @@
 #include "string_buffer.h"
-#include "options.h"
+#include "properties.h"
 #include "wcwidth.h"
 #include <assert.h>
 #include <stddef.h>
@@ -363,7 +363,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     size_t left = 0;
     size_t right = 0;
 
-    switch (get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TEXT_ALIGN)) {
+    switch (get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TEXT_ALIGN)) {
         case FT_ALIGNED_LEFT:
             left = 0;
             right = (buf_len - 1) - content_width;
@@ -451,7 +451,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     size_t left = 0;
     size_t right = 0;
 
-    switch (get_cell_opt_value_hierarcial(context->table_options, context->row, context->column, FT_COPT_TEXT_ALIGN)) {
+    switch (get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TEXT_ALIGN)) {
         case FT_ALIGNED_LEFT:
             left = 0;
             right = (buf_len - 1) - content_width;

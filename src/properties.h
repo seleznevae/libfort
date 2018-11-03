@@ -1,18 +1,18 @@
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef PROPERTIES_H
+#define PROPERTIES_H
 
 #include "fort_utils.h"
 #include <stdint.h>
 #include <limits.h>
 
-#define OPTION_IS_SET(ft_opts, option) ((ft_opts) & (option))
-#define OPTION_SET(ft_opts, option) ((ft_opts) |=(option))
-#define OPTION_UNSET(ft_opts, option) ((ft_opts) &= ~((uint32_t)option))
+#define PROP_IS_SET(ft_props, property) ((ft_props) & (property))
+#define PROP_SET(ft_props, property) ((ft_props) |=(property))
+#define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)property))
 
-struct fort_cell_options {
+struct fort_cell_props {
     size_t cell_row;
     size_t cell_col;
-    uint32_t options;
+    uint32_t properties;
     unsigned int col_min_width;
     enum ft_text_alignment align;
     unsigned int cell_padding_top;
@@ -23,29 +23,29 @@ struct fort_cell_options {
     enum ft_row_type row_type;
 };
 
-typedef struct fort_cell_options fort_cell_options_t;
-typedef vector_t fort_cell_opt_container_t;
+typedef struct fort_cell_props fort_cell_props_t;
+typedef vector_t fort_cell_prop_container_t;
 
 FT_INTERNAL
-fort_cell_opt_container_t *create_cell_opt_container(void);
+fort_cell_prop_container_t *create_cell_prop_container(void);
 
 FT_INTERNAL
-void destroy_cell_opt_container(fort_cell_opt_container_t *cont);
+void destroy_cell_prop_container(fort_cell_prop_container_t *cont);
 
 FT_INTERNAL
-const fort_cell_options_t *cget_cell_opt(const fort_cell_opt_container_t *cont, size_t row, size_t col);
+const fort_cell_props_t *cget_cell_prop(const fort_cell_prop_container_t *cont, size_t row, size_t col);
 
 FT_INTERNAL
-fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, size_t row, size_t col);
+fort_cell_props_t *get_cell_prop_and_create_if_not_exists(fort_cell_prop_container_t *cont, size_t row, size_t col);
 
 FT_INTERNAL
-fort_status_t set_cell_option(fort_cell_opt_container_t *cont, size_t row, size_t col, uint32_t option, int value);
+fort_status_t set_cell_property(fort_cell_prop_container_t *cont, size_t row, size_t col, uint32_t property, int value);
 
 FT_INTERNAL
-int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t row, size_t column, uint32_t option);
+int get_cell_property_value_hierarcial(const fort_table_properties_t *properties, size_t row, size_t column, uint32_t property);
 
 FT_INTERNAL
-fort_status_t set_default_cell_option(uint32_t option, int value);
+fort_status_t set_default_cell_property(uint32_t property, int value);
 
 /*****************************************************************************
  *               TABLE BORDER
@@ -142,38 +142,38 @@ extern struct fort_border_style FORT_BOLD2_STYLE;
 extern struct fort_border_style FORT_FRAME_STYLE;
 
 
-struct fort_entire_table_options {
+struct fort_entire_table_properties {
     unsigned int left_margin;
     unsigned int top_margin;
     unsigned int right_margin;
     unsigned int bottom_margin;
 };
-typedef struct fort_entire_table_options fort_entire_table_options_t;
-extern fort_entire_table_options_t g_entire_table_options;
+typedef struct fort_entire_table_properties fort_entire_table_properties_t;
+extern fort_entire_table_properties_t g_entire_table_properties;
 
 FT_INTERNAL
-fort_status_t set_entire_table_option(fort_table_options_t *table_options, uint32_t option, int value);
+fort_status_t set_entire_table_property(fort_table_properties_t *table_properties, uint32_t property, int value);
 
 FT_INTERNAL
-fort_status_t set_default_entire_table_option(uint32_t option, int value);
+fort_status_t set_default_entire_table_property(uint32_t property, int value);
 
-struct fort_table_options {
+struct fort_table_properties {
     struct fort_border_style border_style;
-    fort_cell_opt_container_t *cell_options;
-    fort_entire_table_options_t entire_table_options;
+    fort_cell_prop_container_t *cell_properties;
+    fort_entire_table_properties_t entire_table_properties;
 };
-extern fort_table_options_t g_table_options;
+extern fort_table_properties_t g_table_properties;
 
 FT_INTERNAL
-size_t max_border_elem_strlen(struct fort_table_options *);
+size_t max_border_elem_strlen(struct fort_table_properties *);
 
 FT_INTERNAL
-fort_table_options_t *create_table_options(void);
+fort_table_properties_t *create_table_properties(void);
 
 FT_INTERNAL
-void destroy_table_options(fort_table_options_t *options);
+void destroy_table_properties(fort_table_properties_t *properties);
 
 FT_INTERNAL
-fort_table_options_t *copy_table_options(const fort_table_options_t *option);
+fort_table_properties_t *copy_table_properties(const fort_table_properties_t *property);
 
-#endif /* OPTIONS_H */
+#endif /* PROPERTIES_H */

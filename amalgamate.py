@@ -95,7 +95,7 @@ def main():
         "vector.h",
         "wcwidth.h",
         "string_buffer.h",
-        "options.h",
+        "properties.h",
         "cell.h",
         "row.h",
         "table.h"

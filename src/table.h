@@ -5,7 +5,7 @@
 
 struct ft_table {
     vector_t *rows;
-    fort_table_options_t *options;
+    fort_table_properties_t *properties;
     string_buffer_t *conv_buffer;
     size_t cur_row;
     size_t cur_col;

@@ -38,7 +38,7 @@ void base_example(void)
     std::cout << table.to_string() << std::endl;
 }
 
-void different_cell_options_example(void)
+void different_cell_properties_example(void)
 {
     fort::Table table;
     /* Change border style */
@@ -87,7 +87,7 @@ void fill_table_with_data_example(void)
 int main()
 {
     base_example();
-    different_cell_options_example();
+    different_cell_properties_example();
     fill_table_with_data_example();
 
     {
@@ -103,11 +103,11 @@ int main()
             << "5" << "Blade Runner" << "1982" << "8.1" << fort::endr
             << fort::endr;
 
-        using fort::CellOption;
-        using fort::TableOption;
-        table.set_option<CellOption::MinWidth>(0, 0, 20);
-        table.set_option<CellOption::TextAlign>(0, 0, fort::TextAlign::Left);
-        table.set_option<CellOption::RowType>(2, FT_ANY_COLUMN, fort::RowType::Header);
+        using fort::CellProperty;
+        using fort::TableProperty;
+        table.set_property<CellProperty::MinWidth>(0, 0, 20);
+        table.set_property<CellProperty::TextAlign>(0, 0, fort::TextAlign::Left);
+        table.set_property<CellProperty::RowType>(2, FT_ANY_COLUMN, fort::RowType::Header);
 
         std::cout << table.to_string() << std::endl;
     }
@@ -124,14 +124,14 @@ int main()
         table.write_ln("4", "2001: A Space Odyssey", "1968", "8.5");
         table.write_ln("5", "Blade Runner", "1982", "8.1");
 
-        using fort::CellOption;
-        using fort::TableOption;
+        using fort::CellProperty;
+        using fort::TableProperty;
         table.set_cell_min_width(0, 0, 20);
         table.set_cell_text_align(0, 0, fort::TextAlign::Left);
         table.set_cell_row_type(2, FT_ANY_COLUMN, fort::RowType::Header);
 
 
-        table.set_option<TableOption::LeftMargin>(4);
+        table.set_property<TableProperty::LeftMargin>(4);
 
         table.set_border_style(FT_SOLID_STYLE);
         std::cout << table.to_string();

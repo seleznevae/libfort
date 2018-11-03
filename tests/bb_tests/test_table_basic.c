@@ -9,9 +9,9 @@ void test_table_basic(void)
     WHEN("All columns are equal and not empty") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
@@ -40,9 +40,9 @@ void test_table_basic(void)
     WHEN("All columns are equal and not empty (wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_wwrite_ln(table, L"3", L"c", L"234", L"3.140000") == FT_SUCCESS);
         assert_true(ft_wwrite_ln(table, L"3", L"c", L"234", L"3.140000") == FT_SUCCESS);
         assert_true(ft_wwrite_ln(table, L"3", L"c", L"234", L"3.140000") == FT_SUCCESS);
@@ -71,9 +71,9 @@ void test_table_basic(void)
     WHEN("All columns are not equal and not empty") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "c", "234", "3.140000", "3") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "234", "3.140000", "3", "c") == FT_SUCCESS);
@@ -102,9 +102,9 @@ void test_table_basic(void)
     WHEN("All columns are not equal and not empty (wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_wwrite_ln(table, L"3", L"c", L"234", L"3.140000") == FT_SUCCESS);
         assert_true(ft_wwrite_ln(table, L"c", L"234", L"3.140000", L"3") == FT_SUCCESS);
         assert_true(ft_wwrite_ln(table, L"234", L"3.140000", L"3", L"c") == FT_SUCCESS);
@@ -133,9 +133,9 @@ void test_table_basic(void)
     WHEN("All columns are not equal and some cells are empty") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_write_ln(table, "", "", "234", "3.140000") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "c", "234", "3.140000", "") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "234", "3.140000", "", "") == FT_SUCCESS);
@@ -164,9 +164,9 @@ void test_table_basic(void)
     WHEN("All columns are not equal and some cells are empty (wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_wwrite_ln(table, L"", L"", L"234", L"3.140000") == FT_SUCCESS);
         assert_true(ft_wwrite_ln(table, L"c", L"234", L"3.140000", L"") == FT_SUCCESS);
         assert_true(ft_wwrite_ln(table, L"234", L"3.140000", L"", L"") == FT_SUCCESS);
@@ -195,9 +195,9 @@ void test_table_basic(void)
     WHEN("All cells are empty") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_write_ln(table, "", "", "", "") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "", "", "", "") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "", "", "", "") == FT_SUCCESS);
@@ -226,9 +226,9 @@ void test_table_basic(void)
     WHEN("All cells are empty (wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_wwrite_ln(table, L"", L"", L"", L"") == FT_SUCCESS);
         assert_true(ft_wwrite_ln(table, L"", L"", L"", L"") == FT_SUCCESS);
         assert_true(ft_wwrite_ln(table, L"", L"", L"", L"") == FT_SUCCESS);
@@ -265,9 +265,9 @@ void test_wcs_table_boundaries(void)
     WHEN("All columns are not equal and not empty (wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_wwrite_ln(table, L"3", L"12345\x8888\x8888", L"c") == FT_SUCCESS);   /* \x8888,\x8888  - occupy 2 columns each */
         assert_true(ft_wwrite_ln(table, L"c", L"12345678\x500", L"c") == FT_SUCCESS);  /* \x500  - occupies 1 column */
         assert_true(ft_wwrite_ln(table, L"234", L"123456789", L"c") == FT_SUCCESS);
@@ -302,9 +302,9 @@ void test_table_write(void)
     SCENARIO("Test write functions") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(FT_IS_SUCCESS(ft_write(table, "3")));
         assert_true(FT_IS_SUCCESS(ft_write(table, "c")));
         assert_true(FT_IS_SUCCESS(ft_write(table, "234")));
@@ -350,9 +350,9 @@ void test_table_write(void)
     SCENARIO("Test wwrite functions(wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"3")));
         assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"c")));
         assert_true(FT_IS_SUCCESS(ft_wwrite(table, L"234")));
@@ -398,9 +398,9 @@ void test_table_write(void)
     SCENARIO("Test nwrite functions") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_nwrite(table, 4, "3", "c", "234", "3.140000") == FT_SUCCESS);
         ft_ln(table);
         assert_true(ft_nwrite_ln(table, 4, "c", "235", "3.150000", "5") == FT_SUCCESS);
@@ -434,9 +434,9 @@ void test_table_write(void)
     SCENARIO("Test nwwrite functions(wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         assert_true(ft_nwwrite(table, 4, L"3", L"c", L"234", L"3.140000") == FT_SUCCESS);
         ft_ln(table);
         assert_true(ft_nwwrite_ln(table, 4, L"c", L"235", L"3.150000", L"5") == FT_SUCCESS);
@@ -471,9 +471,9 @@ void test_table_write(void)
     SCENARIO("Test row_write functions") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         const char *row_0[4] = {"3", "c", "234", "3.140000"};
         const char *row_1[4] = {"c", "235", "3.150000", "5"};
         const char *row_2[4] = {"234", "3.140000", "3", "c"};
@@ -512,9 +512,9 @@ void test_table_write(void)
     SCENARIO("Test row_write functions(wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         const wchar_t *row_0[4] = {L"3", L"c", L"234", L"3.140000"};
         const wchar_t *row_1[4] = {L"c", L"235", L"3.150000", L"5"};
         const wchar_t *row_2[4] = {L"234", L"3.140000", L"3", L"c"};
@@ -553,9 +553,9 @@ void test_table_write(void)
     SCENARIO("Test table_write functions") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         const char *table_cont[3][4] = {
             {"3", "c", "234", "3.140000"},
             {"c", "234", "3.140000", "3"},
@@ -587,9 +587,9 @@ void test_table_write(void)
     SCENARIO("Test table_write functions(wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         const wchar_t *table_cont[3][4] = {
             {L"3", L"c", L"234", L"3.140000"},
             {L"c", L"234", L"3.140000", L"3"},
@@ -621,9 +621,9 @@ void test_table_write(void)
     SCENARIO("Test printf functions") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         int n = ft_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true(n == 4);
         n = ft_printf(table, "%c|%s|%f|%d", 'c', "235", 3.15, 5);
@@ -661,9 +661,9 @@ void test_table_write(void)
     SCENARIO("Test printf functions(wide strings)") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         int n = ft_wprintf_ln(table, L"%d|%c|%ls|%f", 3, 'c', L"234", 3.14);
         assert_true(n == 4);
         n = ft_wprintf(table, L"%c|%ls|%f|%d", 'c', L"235", 3.15, 5);
@@ -701,9 +701,9 @@ void test_table_write(void)
     SCENARIO("Test printf functions with strings with separators inside them") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         int n = ft_printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
         assert_true(n == 4);
         n = ft_printf(table, "%c", 'c');
@@ -742,9 +742,9 @@ void test_table_write(void)
     SCENARIO("Test printf functions with strings with separators inside them") {
         table = ft_create_table();
         assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         int n = ft_wprintf_ln(table, L"%d|%c|%ls|%f", 3, 'c', L"234", 3.14);
         assert_true(n == 4);
         n = ft_wprintf(table, L"%c", 'c');
@@ -791,16 +791,16 @@ void test_table_copy(void)
         table = ft_create_table();
         assert_true(table != NULL);
 
-        assert_true(ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_BOTTOM_PADDING, 1) == FT_SUCCESS);
-        assert_true(ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_TOP_PADDING, 1) == FT_SUCCESS);
-        assert_true(ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_LEFT_PADDING, 2) == FT_SUCCESS);
-        assert_true(ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_RIGHT_PADDING, 2) == FT_SUCCESS);
+        assert_true(ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_BOTTOM_PADDING, 1) == FT_SUCCESS);
+        assert_true(ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_TOP_PADDING, 1) == FT_SUCCESS);
+        assert_true(ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_LEFT_PADDING, 2) == FT_SUCCESS);
+        assert_true(ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_RIGHT_PADDING, 2) == FT_SUCCESS);
 
 
         ft_set_border_style(table, FT_DOUBLE2_STYLE);
 
         /* Set "header" type for the first row */
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
 
         ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
@@ -810,8 +810,8 @@ void test_table_copy(void)
         ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
 
         /* Set center alignment for the 1st and 3rd columns */
-        ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-        ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+        ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+        ft_set_cell_prop(table, FT_ANY_ROW, 3, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
 
 
         ft_table_t *table_copy = ft_copy_table(table);

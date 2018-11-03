@@ -672,17 +672,17 @@ int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
 
 
 /**
- * @name Cell options identifiers.
+ * @name Cell properties identifiers.
  * @{
  */
-#define FT_COPT_MIN_WIDTH        (0x01U << 0) /**< Minimum width */
-#define FT_COPT_TEXT_ALIGN       (0x01U << 1) /**< Text alignment */
-#define FT_COPT_TOP_PADDING      (0x01U << 2) /**< Top padding for cell content */
-#define FT_COPT_BOTTOM_PADDING   (0x01U << 3) /**< Bottom padding for cell content */
-#define FT_COPT_LEFT_PADDING     (0x01U << 4) /**< Left padding for cell content */
-#define FT_COPT_RIGHT_PADDING    (0x01U << 5) /**< Right padding for cell content */
-#define FT_COPT_EMPTY_STR_HEIGHT (0x01U << 6) /**< Height of empty cell */
-#define FT_COPT_ROW_TYPE         (0x01U << 7) /**< Row type */
+#define FT_CPROP_MIN_WIDTH        (0x01U << 0) /**< Minimum width */
+#define FT_CPROP_TEXT_ALIGN       (0x01U << 1) /**< Text alignment */
+#define FT_CPROP_TOP_PADDING      (0x01U << 2) /**< Top padding for cell content */
+#define FT_CPROP_BOTTOM_PADDING   (0x01U << 3) /**< Bottom padding for cell content */
+#define FT_CPROP_LEFT_PADDING     (0x01U << 4) /**< Left padding for cell content */
+#define FT_CPROP_RIGHT_PADDING    (0x01U << 5) /**< Right padding for cell content */
+#define FT_CPROP_EMPTY_STR_HEIGHT (0x01U << 6) /**< Height of empty cell */
+#define FT_CPROP_ROW_TYPE         (0x01U << 7) /**< Row type */
 /** @} */
 
 
@@ -705,20 +705,20 @@ enum ft_row_type {
 };
 
 /**
- * Set default cell option for all new formatted tables.
+ * Set default cell property for all new formatted tables.
  *
- * @param option
- *   Cell option identifier.
+ * @param property
+ *   Cell property identifier.
  * @param value
- *   Cell option value.
+ *   Cell property value.
  * @return
- *   - 0: Success; default cell option was changed.
+ *   - 0: Success; default cell property was changed.
  *   - (<0): In case of error
  */
-int ft_set_default_cell_option(uint32_t option, int value);
+int ft_set_default_cell_prop(uint32_t property, int value);
 
 /**
- * Set option for the specified cell of the table.
+ * Set property for the specified cell of the table.
  *
  * @param table
  *   A pointer to the ft_table_t structure.
@@ -726,56 +726,56 @@ int ft_set_default_cell_option(uint32_t option, int value);
  *   Cell row.
  * @param col
  *   Cell column.
- * @param option
- *   Cell option identifier.
+ * @param property
+ *   Cell property identifier.
  * @param value
- *   Cell option value.
+ *   Cell property value.
  * @return
- *   - 0: Success; cell option was changed.
+ *   - 0: Success; cell property was changed.
  *   - (<0): In case of error
  */
-int ft_set_cell_option(ft_table_t *table, size_t row, size_t col, uint32_t option, int value);
+int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t property, int value);
 
 
 /**
- * @name Table options identifiers.
+ * @name Table properties identifiers.
  * @{
  */
-#define FT_TOPT_LEFT_MARGIN   (0x01U << 0)
-#define FT_TOPT_TOP_MARGIN    (0x01U << 1)
-#define FT_TOPT_RIGHT_MARGIN  (0x01U << 2)
-#define FT_TOPT_BOTTOM_MARGIN (0x01U << 3)
+#define FT_TPROP_LEFT_MARGIN   (0x01U << 0)
+#define FT_TPROP_TOP_MARGIN    (0x01U << 1)
+#define FT_TPROP_RIGHT_MARGIN  (0x01U << 2)
+#define FT_TPROP_BOTTOM_MARGIN (0x01U << 3)
 /** @} */
 
 
 
 /**
- * Set default table option.
+ * Set default table property.
  *
- * @param option
- *   Table option identifier.
+ * @param property
+ *   Table property identifier.
  * @param value
- *   Table option value.
+ *   Table property value.
  * @return
- *   - 0: Success; default table option was changed.
+ *   - 0: Success; default table property was changed.
  *   - (<0): In case of error
  */
-int ft_set_default_tbl_option(uint32_t option, int value);
+int ft_set_default_tbl_prop(uint32_t property, int value);
 
 /**
- * Set table option.
+ * Set table property.
  *
  * @param table
  *   A pointer to the ft_table_t structure.
- * @param option
- *   Table option identifier.
+ * @param property
+ *   Table property identifier.
  * @param value
- *   Table option value.
+ *   Table property value.
  * @return
- *   - 0: Success; default table option was changed.
+ *   - 0: Success; default table property was changed.
  *   - (<0): In case of error
  */
-int ft_set_tbl_option(ft_table_t *table, uint32_t option, int value);
+int ft_set_tbl_prop(ft_table_t *table, uint32_t property, int value);
 
 
 /**
@@ -790,7 +790,7 @@ int ft_set_tbl_option(ft_table_t *table, uint32_t option, int value);
  * @param hor_span
  *   Column span.
  * @return
- *   - 0: Success; default table option was changed.
+ *   - 0: Success; cell span was changed.
  *   - (<0): In case of error
  */
 int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span);

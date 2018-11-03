@@ -146,7 +146,7 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
 
     int combined_cells_found = 0;
     context_t context;
-    context.table_options = (table->options ? table->options : &g_table_options);
+    context.table_properties = (table->properties ? table->properties : &g_table_properties);
     size_t col = 0;
     for (col = 0; col < cols; ++col) {
         col_width_arr[col] = 0;
@@ -212,9 +212,9 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
      * paddings but be min width of the cell content without padding
      */
     /*
-    if (table->options) {
+    if (table->properties) {
         for (size_t i = 0; i < cols; ++i) {
-            col_width_arr[i] = MAX((int)col_width_arr[i], fort_options_column_width(table->options, i));
+            col_width_arr[i] = MAX((int)col_width_arr[i], fort_props_column_width(table->properties, i));
         }
     }
     */
@@ -261,16 +261,16 @@ fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *wi
     F_FREE(col_width_arr);
     F_FREE(row_height_arr);
 
-    if (table->options) {
-        *height += table->options->entire_table_options.top_margin;
-        *height += table->options->entire_table_options.bottom_margin;
-        *width += table->options->entire_table_options.left_margin;
-        *width += table->options->entire_table_options.right_margin;
+    if (table->properties) {
+        *height += table->properties->entire_table_properties.top_margin;
+        *height += table->properties->entire_table_properties.bottom_margin;
+        *width += table->properties->entire_table_properties.left_margin;
+        *width += table->properties->entire_table_properties.right_margin;
     }
 
     /* Take into account that border elements can be more than one byte long */
-    fort_table_options_t *table_options = table->options ? table->options : &g_table_options;
-    size_t max_border_elem_len = max_border_elem_strlen(table_options);
+    fort_table_properties_t *table_properties = table->properties ? table->properties : &g_table_properties;
+    size_t max_border_elem_len = max_border_elem_strlen(table_properties);
     *width *= max_border_elem_len;
 
     return FT_SUCCESS;

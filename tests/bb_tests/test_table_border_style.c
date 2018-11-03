@@ -9,7 +9,7 @@ void test_table_border_style(void)
 {
     ft_table_t *table = NULL;
 
-    set_test_options_as_default();
+    set_test_properties_as_default();
 
 
     WHEN("Changing cell separators") {
@@ -74,11 +74,11 @@ void test_table_border_style(void)
 
         ft_set_default_border_style(&brdr_style);
 
-        ft_set_default_cell_option(FT_COPT_BOTTOM_PADDING, 0);
-        ft_set_default_cell_option(FT_COPT_TOP_PADDING, 0);
-        ft_set_default_cell_option(FT_COPT_LEFT_PADDING, 1);
-        ft_set_default_cell_option(FT_COPT_RIGHT_PADDING, 1);
-        ft_set_default_cell_option(FT_COPT_EMPTY_STR_HEIGHT, 0);
+        ft_set_default_cell_prop(FT_CPROP_BOTTOM_PADDING, 0);
+        ft_set_default_cell_prop(FT_CPROP_TOP_PADDING, 0);
+        ft_set_default_cell_prop(FT_CPROP_LEFT_PADDING, 1);
+        ft_set_default_cell_prop(FT_CPROP_RIGHT_PADDING, 1);
+        ft_set_default_cell_prop(FT_CPROP_EMPTY_STR_HEIGHT, 0);
 
 
         table = create_test_int_table(0);
@@ -100,7 +100,7 @@ void test_table_border_style(void)
         table = create_test_int_table(1);
         ft_add_separator(table);
 
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         int n = ft_printf_ln(table, "%d|%d|%d|%d", 3, 4, 55, 67);
 
         assert_true(n == 4);
@@ -134,10 +134,10 @@ void test_table_border_style(void)
 static ft_table_t *create_basic_table(void)
 {
     ft_table_t *table = ft_create_table();
-    ft_set_cell_option(table, FT_ANY_ROW, 0, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_LEFT);
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "Rank", "Title", "Year", "Rating");
 
     ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");

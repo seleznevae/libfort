@@ -35,11 +35,11 @@ static int create_simple_table_and_show(void)
         goto exit;
     }
     /*
-    if (set_test_options_for_table(table) != FT_SUCCESS)
+    if (set_test_props_for_table(table) != FT_SUCCESS)
         return 2;
     */
 
-    if (ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER) != FT_SUCCESS) {
+    if (ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER) != FT_SUCCESS) {
         result = 3;
         goto exit;
     }

@@ -1,20 +1,20 @@
 #include <assert.h>
-#include "options.h"
+#include "properties.h"
 #include "fort_utils.h"
 #include "vector.h"
 
 /*****************************************************************************
- *               COLUMN OPTIONS
+ *               COLUMN PROPERTIES
  * ***************************************************************************/
 
-struct fort_cell_options g_default_cell_option = {
+struct fort_cell_props g_default_cell_properties = {
     FT_ANY_ROW,    /* cell_row */
     FT_ANY_COLUMN, /* cell_col */
 
-    /* options */
-    FT_COPT_MIN_WIDTH  | FT_COPT_TEXT_ALIGN | FT_COPT_TOP_PADDING
-    | FT_COPT_BOTTOM_PADDING | FT_COPT_LEFT_PADDING | FT_COPT_RIGHT_PADDING
-    | FT_COPT_EMPTY_STR_HEIGHT,
+    /* properties */
+    FT_CPROP_MIN_WIDTH  | FT_CPROP_TEXT_ALIGN | FT_CPROP_TOP_PADDING
+    | FT_CPROP_BOTTOM_PADDING | FT_CPROP_LEFT_PADDING | FT_CPROP_RIGHT_PADDING
+    | FT_CPROP_EMPTY_STR_HEIGHT,
 
     0,             /* col_min_width */
     FT_ALIGNED_LEFT,  /* align */
@@ -27,28 +27,28 @@ struct fort_cell_options g_default_cell_option = {
     FT_ROW_COMMON, /* row_type */
 };
 
-static int get_option_value_if_exists_otherwise_default(const struct fort_cell_options *cell_opts, uint32_t option)
+static int get_prop_value_if_exists_otherwise_default(const struct fort_cell_props *cell_opts, uint32_t property)
 {
-    if (cell_opts == NULL || !OPTION_IS_SET(cell_opts->options, option)) {
-        cell_opts = &g_default_cell_option;
+    if (cell_opts == NULL || !PROP_IS_SET(cell_opts->properties, property)) {
+        cell_opts = &g_default_cell_properties;
     }
 
-    switch (option) {
-        case FT_COPT_MIN_WIDTH:
+    switch (property) {
+        case FT_CPROP_MIN_WIDTH:
             return cell_opts->col_min_width;
-        case FT_COPT_TEXT_ALIGN:
+        case FT_CPROP_TEXT_ALIGN:
             return cell_opts->align;
-        case FT_COPT_TOP_PADDING:
+        case FT_CPROP_TOP_PADDING:
             return cell_opts->cell_padding_top;
-        case FT_COPT_BOTTOM_PADDING:
+        case FT_CPROP_BOTTOM_PADDING:
             return cell_opts->cell_padding_bottom;
-        case FT_COPT_LEFT_PADDING:
+        case FT_CPROP_LEFT_PADDING:
             return cell_opts->cell_padding_left;
-        case FT_COPT_RIGHT_PADDING:
+        case FT_CPROP_RIGHT_PADDING:
             return cell_opts->cell_padding_right;
-        case FT_COPT_EMPTY_STR_HEIGHT:
+        case FT_CPROP_EMPTY_STR_HEIGHT:
             return cell_opts->cell_empty_string_height;
-        case FT_COPT_ROW_TYPE:
+        case FT_CPROP_ROW_TYPE:
             return cell_opts->row_type;
         default:
             /* todo: implement later */
@@ -57,17 +57,16 @@ static int get_option_value_if_exists_otherwise_default(const struct fort_cell_o
 }
 
 
-//#define DEFAULT_CELL_OPTION  {FT_ROW_UNSPEC, FT_COLUMN_UNSPEC, 0, 0, 0}
 FT_INTERNAL
-fort_cell_opt_container_t *create_cell_opt_container(void)
+fort_cell_prop_container_t *create_cell_prop_container(void)
 {
-    fort_cell_opt_container_t *ret = create_vector(sizeof(fort_cell_options_t), DEFAULT_VECTOR_CAPACITY);
+    fort_cell_prop_container_t *ret = create_vector(sizeof(fort_cell_props_t), DEFAULT_VECTOR_CAPACITY);
     return ret;
 }
 
 
 FT_INTERNAL
-void destroy_cell_opt_container(fort_cell_opt_container_t *cont)
+void destroy_cell_prop_container(fort_cell_prop_container_t *cont)
 {
     if (cont)
         destroy_vector(cont);
@@ -75,13 +74,13 @@ void destroy_cell_opt_container(fort_cell_opt_container_t *cont)
 
 
 FT_INTERNAL
-const fort_cell_options_t *cget_cell_opt(const fort_cell_opt_container_t *cont, size_t row, size_t col)
+const fort_cell_props_t *cget_cell_prop(const fort_cell_prop_container_t *cont, size_t row, size_t col)
 {
     assert(cont);
     size_t sz = vector_size(cont);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        const fort_cell_options_t *opt = (const fort_cell_options_t *)vector_at_c(cont, i);
+        const fort_cell_props_t *opt = (const fort_cell_props_t *)vector_at_c(cont, i);
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
@@ -90,28 +89,27 @@ const fort_cell_options_t *cget_cell_opt(const fort_cell_opt_container_t *cont, 
 
 
 FT_INTERNAL
-fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_container_t *cont, size_t row, size_t col)
+fort_cell_props_t *get_cell_prop_and_create_if_not_exists(fort_cell_prop_container_t *cont, size_t row, size_t col)
 {
     assert(cont);
     size_t sz = vector_size(cont);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        fort_cell_options_t *opt = (fort_cell_options_t *)vector_at(cont, i);
+        fort_cell_props_t *opt = (fort_cell_props_t *)vector_at(cont, i);
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
 
-//    fort_cell_options_t opt = g_default_cell_option;// DEFAULT_CELL_OPTION;
-    fort_cell_options_t opt;
+    fort_cell_props_t opt;
     if (row == FT_ANY_ROW && col == FT_ANY_COLUMN)
-        memcpy(&opt, &g_default_cell_option, sizeof(fort_cell_options_t));
+        memcpy(&opt, &g_default_cell_properties, sizeof(fort_cell_props_t));
     else
-        memset(&opt, 0, sizeof(fort_cell_options_t));
+        memset(&opt, 0, sizeof(fort_cell_props_t));
 
     opt.cell_row = row;
     opt.cell_col = col;
     if (FT_IS_SUCCESS(vector_push(cont, &opt))) {
-        return (fort_cell_options_t *)vector_at(cont, sz);
+        return (fort_cell_props_t *)vector_at(cont, sz);
     }
 
     return NULL;
@@ -119,15 +117,15 @@ fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_contain
 
 
 FT_INTERNAL
-int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t row, size_t column, uint32_t option)
+int get_cell_property_value_hierarcial(const fort_table_properties_t *propertiess, size_t row, size_t column, uint32_t property)
 {
-    assert(options);
+    assert(propertiess);
 
-    const fort_cell_options_t *opt = NULL;
-    if (options->cell_options != NULL) {
+    const fort_cell_props_t *opt = NULL;
+    if (propertiess->cell_properties != NULL) {
         while (1) {
-            opt = cget_cell_opt(options->cell_options, row, column);
-            if (opt != NULL && OPTION_IS_SET(opt->options, option))
+            opt = cget_cell_prop(propertiess->cell_properties, row, column);
+            if (opt != NULL && PROP_IS_SET(opt->properties, property))
                 break;
             if (row != FT_ANY_ROW) {
                 row = FT_ANY_ROW;
@@ -143,36 +141,36 @@ int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t ro
         }
     }
 
-    return get_option_value_if_exists_otherwise_default(opt, option);
+    return get_prop_value_if_exists_otherwise_default(opt, property);
 }
 
 
-static fort_status_t set_cell_option_impl(fort_cell_options_t *opt, uint32_t option, int value)
+static fort_status_t set_cell_property_impl(fort_cell_props_t *opt, uint32_t property, int value)
 {
     assert(opt);
 
-    OPTION_SET(opt->options, option);
-    if (OPTION_IS_SET(option, FT_COPT_MIN_WIDTH)) {
+    PROP_SET(opt->properties, property);
+    if (PROP_IS_SET(property, FT_CPROP_MIN_WIDTH)) {
         CHECK_NOT_NEGATIVE(value);
         opt->col_min_width = value;
-    } else if (OPTION_IS_SET(option, FT_COPT_TEXT_ALIGN)) {
+    } else if (PROP_IS_SET(property, FT_CPROP_TEXT_ALIGN)) {
         opt->align = (enum ft_text_alignment)value;
-    } else if (OPTION_IS_SET(option, FT_COPT_TOP_PADDING)) {
+    } else if (PROP_IS_SET(property, FT_CPROP_TOP_PADDING)) {
         CHECK_NOT_NEGATIVE(value);
         opt->cell_padding_top = value;
-    } else if (OPTION_IS_SET(option, FT_COPT_BOTTOM_PADDING)) {
+    } else if (PROP_IS_SET(property, FT_CPROP_BOTTOM_PADDING)) {
         CHECK_NOT_NEGATIVE(value);
         opt->cell_padding_bottom = value;
-    } else if (OPTION_IS_SET(option, FT_COPT_LEFT_PADDING)) {
+    } else if (PROP_IS_SET(property, FT_CPROP_LEFT_PADDING)) {
         CHECK_NOT_NEGATIVE(value);
         opt->cell_padding_left = value;
-    } else if (OPTION_IS_SET(option, FT_COPT_RIGHT_PADDING)) {
+    } else if (PROP_IS_SET(property, FT_CPROP_RIGHT_PADDING)) {
         CHECK_NOT_NEGATIVE(value);
         opt->cell_padding_right = value;
-    } else if (OPTION_IS_SET(option, FT_COPT_EMPTY_STR_HEIGHT)) {
+    } else if (PROP_IS_SET(property, FT_CPROP_EMPTY_STR_HEIGHT)) {
         CHECK_NOT_NEGATIVE(value);
         opt->cell_empty_string_height = value;
-    } else if (OPTION_IS_SET(option, FT_COPT_ROW_TYPE)) {
+    } else if (PROP_IS_SET(property, FT_CPROP_ROW_TYPE)) {
         opt->row_type = (enum ft_row_type)value;
     }
 
@@ -184,18 +182,18 @@ fort_fail:
 
 
 FT_INTERNAL
-fort_status_t set_cell_option(fort_cell_opt_container_t *cont, size_t row, size_t col, uint32_t option, int value)
+fort_status_t set_cell_property(fort_cell_prop_container_t *cont, size_t row, size_t col, uint32_t property, int value)
 {
-    fort_cell_options_t *opt = get_cell_opt_and_create_if_not_exists(cont, row, col);
+    fort_cell_props_t *opt = get_cell_prop_and_create_if_not_exists(cont, row, col);
     if (opt == NULL)
         return FT_ERROR;
 
-    return set_cell_option_impl(opt, option, value);
+    return set_cell_property_impl(opt, property, value);
     /*
-    OPTION_SET(opt->options, option);
-    if (OPTION_IS_SET(option, FT_COPT_MIN_WIDTH)) {
+    PROP_SET(opt->propertiess, property);
+    if (PROP_IS_SET(property, FT_CPROP_MIN_WIDTH)) {
         opt->col_min_width = value;
-    } else if (OPTION_IS_SET(option, FT_COPT_TEXT_ALIGN)) {
+    } else if (PROP_IS_SET(property, FT_CPROP_TEXT_ALIGN)) {
         opt->align = value;
     }
 
@@ -205,13 +203,13 @@ fort_status_t set_cell_option(fort_cell_opt_container_t *cont, size_t row, size_
 
 
 FT_INTERNAL
-fort_status_t set_default_cell_option(uint32_t option, int value)
+fort_status_t set_default_cell_property(uint32_t property, int value)
 {
-    return set_cell_option_impl(&g_default_cell_option, option, value);
+    return set_cell_property_impl(&g_default_cell_properties, property, value);
 }
 
 /*****************************************************************************
- *               OPTIONS
+ *               PROPERTIESS
  * ***************************************************************************/
 
 
@@ -535,25 +533,25 @@ struct fort_border_style FORT_FRAME_STYLE = FRAME_STYLE;
 
 
 
-fort_entire_table_options_t g_entire_table_options = {
+fort_entire_table_properties_t g_entire_table_properties = {
     0, /* left_margin */
     0, /* top_margin */
     0, /* right_margin */
     0, /* bottom_margin */
 };
 
-static fort_status_t set_entire_table_option_internal(fort_entire_table_options_t *options, uint32_t option, int value)
+static fort_status_t set_entire_table_property_internal(fort_entire_table_properties_t *properties, uint32_t property, int value)
 {
-    assert(options);
+    assert(properties);
     CHECK_NOT_NEGATIVE(value);
-    if (OPTION_IS_SET(option, FT_TOPT_LEFT_MARGIN)) {
-        options->left_margin = value;
-    } else if (OPTION_IS_SET(option, FT_TOPT_TOP_MARGIN)) {
-        options->top_margin = value;
-    } else if (OPTION_IS_SET(option, FT_TOPT_RIGHT_MARGIN)) {
-        options->right_margin = value;
-    } else if (OPTION_IS_SET(option, FT_TOPT_BOTTOM_MARGIN)) {
-        options->bottom_margin = value;
+    if (PROP_IS_SET(property, FT_TPROP_LEFT_MARGIN)) {
+        properties->left_margin = value;
+    } else if (PROP_IS_SET(property, FT_TPROP_TOP_MARGIN)) {
+        properties->top_margin = value;
+    } else if (PROP_IS_SET(property, FT_TPROP_RIGHT_MARGIN)) {
+        properties->right_margin = value;
+    } else if (PROP_IS_SET(property, FT_TPROP_BOTTOM_MARGIN)) {
+        properties->bottom_margin = value;
     } else {
         return FT_EINVAL;
     }
@@ -565,48 +563,48 @@ fort_fail:
 
 
 FT_INTERNAL
-fort_status_t set_entire_table_option(fort_table_options_t *table_options, uint32_t option, int value)
+fort_status_t set_entire_table_property(fort_table_properties_t *table_properties, uint32_t property, int value)
 {
-    assert(table_options);
-    return set_entire_table_option_internal(&table_options->entire_table_options, option, value);
+    assert(table_properties);
+    return set_entire_table_property_internal(&table_properties->entire_table_properties, property, value);
 }
 
 
 FT_INTERNAL
-fort_status_t set_default_entire_table_option(uint32_t option, int value)
+fort_status_t set_default_entire_table_property(uint32_t property, int value)
 {
-    return set_entire_table_option_internal(&g_entire_table_options, option, value);
+    return set_entire_table_property_internal(&g_entire_table_properties, property, value);
 }
 
 
 FT_INTERNAL
-size_t max_border_elem_strlen(struct fort_table_options *options)
+size_t max_border_elem_strlen(struct fort_table_properties *properties)
 {
-    assert(options);
+    assert(properties);
     size_t result = 1;
     int i = 0;
     for (i = 0; i < BorderItemPosSize; ++i) {
-        result = MAX(result, strlen(options->border_style.border_chars[i]));
+        result = MAX(result, strlen(properties->border_style.border_chars[i]));
     }
 
     i = 0;
     for (i = 0; i < BorderItemPosSize; ++i) {
-        result = MAX(result, strlen(options->border_style.header_border_chars[i]));
+        result = MAX(result, strlen(properties->border_style.header_border_chars[i]));
     }
 
     i = 0;
     for (i = 0; i < SepratorItemPosSize; ++i) {
-        result = MAX(result, strlen(options->border_style.separator_chars[i]));
+        result = MAX(result, strlen(properties->border_style.separator_chars[i]));
     }
     return result;
 }
 
 
-fort_table_options_t g_table_options = {
+fort_table_properties_t g_table_properties = {
     /* border_style */
     BASIC_STYLE,
-    NULL,     /* cell_options */
-    /* entire_table_options */
+    NULL,     /* cell_properties */
+    /* entire_table_properties */
     {
         0, /* left_margin */
         0, /* top_margin */
@@ -617,46 +615,46 @@ fort_table_options_t g_table_options = {
 
 
 FT_INTERNAL
-fort_table_options_t *create_table_options(void)
+fort_table_properties_t *create_table_properties(void)
 {
-    fort_table_options_t *options = (fort_table_options_t *)F_CALLOC(sizeof(fort_table_options_t), 1);
-    if (options == NULL) {
+    fort_table_properties_t *properties = (fort_table_properties_t *)F_CALLOC(sizeof(fort_table_properties_t), 1);
+    if (properties == NULL) {
         return NULL;
     }
-    memcpy(options, &g_table_options, sizeof(fort_table_options_t));
-    options->cell_options = create_cell_opt_container();
-    if (options->cell_options == NULL) {
-        destroy_table_options(options);
+    memcpy(properties, &g_table_properties, sizeof(fort_table_properties_t));
+    properties->cell_properties = create_cell_prop_container();
+    if (properties->cell_properties == NULL) {
+        destroy_table_properties(properties);
         return NULL;
     }
-    memcpy(&options->entire_table_options, &g_entire_table_options, sizeof(fort_entire_table_options_t));
-    return options;
+    memcpy(&properties->entire_table_properties, &g_entire_table_properties, sizeof(fort_entire_table_properties_t));
+    return properties;
 }
 
 FT_INTERNAL
-void destroy_table_options(fort_table_options_t *options)
+void destroy_table_properties(fort_table_properties_t *properties)
 {
-    if (options == NULL)
+    if (properties == NULL)
         return;
 
-    if (options->cell_options != NULL) {
-        destroy_cell_opt_container(options->cell_options);
+    if (properties->cell_properties != NULL) {
+        destroy_cell_prop_container(properties->cell_properties);
     }
-    F_FREE(options);
+    F_FREE(properties);
 }
 
 static
-fort_cell_opt_container_t *copy_cell_options(fort_cell_opt_container_t *cont)
+fort_cell_prop_container_t *copy_cell_properties(fort_cell_prop_container_t *cont)
 {
-    fort_cell_opt_container_t *result = create_cell_opt_container();
+    fort_cell_prop_container_t *result = create_cell_prop_container();
     if (result == NULL)
         return NULL;
 
     size_t sz = vector_size(cont);
     for (size_t i = 0; i < sz; ++i) {
-        fort_cell_options_t *opt = (fort_cell_options_t *)vector_at(cont, i);
+        fort_cell_props_t *opt = (fort_cell_props_t *)vector_at(cont, i);
         if (FT_IS_ERROR(vector_push(result, opt))) {
-            destroy_cell_opt_container(result);
+            destroy_cell_prop_container(result);
             return NULL;
         }
     }
@@ -664,22 +662,22 @@ fort_cell_opt_container_t *copy_cell_options(fort_cell_opt_container_t *cont)
 }
 
 FT_INTERNAL
-fort_table_options_t *copy_table_options(const fort_table_options_t *option)
+fort_table_properties_t *copy_table_properties(const fort_table_properties_t *properties)
 {
-    fort_table_options_t *new_opt = create_table_options();
+    fort_table_properties_t *new_opt = create_table_properties();
     if (new_opt == NULL)
         return NULL;
 
-    destroy_vector(new_opt->cell_options);
-    new_opt->cell_options = copy_cell_options(option->cell_options);
+    destroy_vector(new_opt->cell_properties);
+    new_opt->cell_properties = copy_cell_properties(properties->cell_properties);
     if (new_opt == NULL) {
-        destroy_table_options(new_opt);
+        destroy_table_properties(new_opt);
         return NULL;
     }
 
-    memcpy(&new_opt->border_style, &option->border_style, sizeof(struct fort_border_style));
-    memcpy(&new_opt->entire_table_options,
-           &option->entire_table_options, sizeof(fort_entire_table_options_t));
+    memcpy(&new_opt->border_style, &properties->border_style, sizeof(struct fort_border_style));
+    memcpy(&new_opt->entire_table_properties,
+           &properties->entire_table_properties, sizeof(fort_entire_table_properties_t));
 
     return new_opt;
 }

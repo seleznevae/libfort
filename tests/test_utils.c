@@ -1,15 +1,15 @@
 #include "tests.h"
 #include "fort.h"
 
-int set_test_options_for_table(struct ft_table *table)
+int set_test_props_for_table(struct ft_table *table)
 {
     assert(table);
     int status = FT_SUCCESS;
-    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_BOTTOM_PADDING, 1);
-    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_TOP_PADDING, 1);
-    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_LEFT_PADDING, 1);
-    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_RIGHT_PADDING, 1);
-    status |= ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_EMPTY_STR_HEIGHT, 1);
+    status |= ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_BOTTOM_PADDING, 1);
+    status |= ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_TOP_PADDING, 1);
+    status |= ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_LEFT_PADDING, 1);
+    status |= ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_RIGHT_PADDING, 1);
+    status |= ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_EMPTY_STR_HEIGHT, 1);
 
     assert_true(status == FT_SUCCESS);
 
@@ -33,18 +33,18 @@ int set_test_options_for_table(struct ft_table *table)
     return ft_set_border_style(table, &brdr_style);
 }
 
-int set_test_options_as_default(void)
+int set_test_properties_as_default(void)
 {
     int status = FT_SUCCESS;
 
-    status |= ft_set_default_cell_option(FT_COPT_MIN_WIDTH, 0);
-    status |= ft_set_default_cell_option(FT_COPT_TEXT_ALIGN, FT_ALIGNED_RIGHT);
+    status |= ft_set_default_cell_prop(FT_CPROP_MIN_WIDTH, 0);
+    status |= ft_set_default_cell_prop(FT_CPROP_TEXT_ALIGN, FT_ALIGNED_RIGHT);
 
-    status |= ft_set_default_cell_option(FT_COPT_BOTTOM_PADDING, 1);
-    status |= ft_set_default_cell_option(FT_COPT_TOP_PADDING, 1);
-    status |= ft_set_default_cell_option(FT_COPT_LEFT_PADDING, 1);
-    status |= ft_set_default_cell_option(FT_COPT_RIGHT_PADDING, 1);
-    status |= ft_set_default_cell_option(FT_COPT_EMPTY_STR_HEIGHT, 1);
+    status |= ft_set_default_cell_prop(FT_CPROP_BOTTOM_PADDING, 1);
+    status |= ft_set_default_cell_prop(FT_CPROP_TOP_PADDING, 1);
+    status |= ft_set_default_cell_prop(FT_CPROP_LEFT_PADDING, 1);
+    status |= ft_set_default_cell_prop(FT_CPROP_RIGHT_PADDING, 1);
+    status |= ft_set_default_cell_prop(FT_CPROP_EMPTY_STR_HEIGHT, 1);
 
     assert_true(status == FT_SUCCESS);
 
@@ -78,12 +78,12 @@ struct ft_table *create_test_int_table(int set_test_opts)
     table = ft_create_table();
     assert_true(table != NULL);
     if (set_test_opts) {
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
     }
 
     assert_true(table != NULL);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     int n = ft_write_ln(table, "3", "4", "55", "67");
     assert(n == FT_SUCCESS);
 
@@ -108,12 +108,12 @@ struct ft_table *create_test_int_wtable(int set_test_opts)
     table = ft_create_table();
     assert_true(table != NULL);
     if (set_test_opts) {
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
     }
 
     assert_true(table != NULL);
 
-    ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     int n = ft_wwrite_ln(table, L"3", L"4", L"55", L"67");
     assert(n == FT_SUCCESS);
 

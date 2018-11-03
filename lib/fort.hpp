@@ -42,7 +42,7 @@ SOFTWARE.
 namespace fort
 {
 
-enum class CellOption {
+enum class CellProperty {
     MinWidth,
     TextAlign,
     TopPadding,
@@ -53,7 +53,7 @@ enum class CellOption {
     RowType
 };
 
-enum class TableOption {
+enum class TableProperty {
     LeftMargin,
     TopMargin,
     RightMargin,
@@ -241,7 +241,7 @@ public:
     Table &operator<<(const TableManipulator &arg)
     {
         if (arg.value == header.value)
-            ft_set_cell_option(table, FT_CUR_ROW, FT_ANY_ROW, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+            ft_set_cell_prop(table, FT_CUR_ROW, FT_ANY_ROW, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
         else if (arg.value == endr.value)
             ft_ln(table);
         else if (arg.value == separator.value)
@@ -402,12 +402,12 @@ public:
      * @param value
      *   Value of the min width.
      * @return
-     *   - 0: Success; cell option was changed.
+     *   - 0: Success; cell property was changed.
      *   - (<0): In case of error
      */
     bool set_cell_min_width(size_t row, size_t col, unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_MIN_WIDTH, value));
+        return FT_IS_SUCCESS(ft_set_cell_prop(table, row, col, FT_CPROP_MIN_WIDTH, value));
     }
 
     /**
@@ -420,12 +420,12 @@ public:
      * @param value
      *   Value of the text alignment.
      * @return
-     *   - 0: Success; cell option was changed.
+     *   - 0: Success; cell property was changed.
      *   - (<0): In case of error
      */
     bool set_cell_text_align(size_t row, size_t col, enum TextAlign value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_TEXT_ALIGN, static_cast<int>(value)));
+        return FT_IS_SUCCESS(ft_set_cell_prop(table, row, col, FT_CPROP_TEXT_ALIGN, static_cast<int>(value)));
     }
 
     /**
@@ -438,12 +438,12 @@ public:
      * @param value
      *   Value of the top padding.
      * @return
-     *   - 0: Success; cell option was changed.
+     *   - 0: Success; cell property was changed.
      *   - (<0): In case of error
      */
     bool set_cell_top_padding(size_t row, size_t col, unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_TOP_PADDING, value));
+        return FT_IS_SUCCESS(ft_set_cell_prop(table, row, col, FT_CPROP_TOP_PADDING, value));
     }
 
     /**
@@ -456,12 +456,12 @@ public:
      * @param value
      *   Value of the bottom padding.
      * @return
-     *   - 0: Success; cell option was changed.
+     *   - 0: Success; cell property was changed.
      *   - (<0): In case of error
      */
     bool set_cell_bottom_padding(size_t row, size_t col, unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_BOTTOM_PADDING, value));
+        return FT_IS_SUCCESS(ft_set_cell_prop(table, row, col, FT_CPROP_BOTTOM_PADDING, value));
     }
 
     /**
@@ -474,12 +474,12 @@ public:
      * @param value
      *   Value of the left padding.
      * @return
-     *   - 0: Success; cell option was changed.
+     *   - 0: Success; cell property was changed.
      *   - (<0): In case of error
      */
     bool set_cell_left_padding(size_t row, size_t col, unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_LEFT_PADDING, value));
+        return FT_IS_SUCCESS(ft_set_cell_prop(table, row, col, FT_CPROP_LEFT_PADDING, value));
     }
 
     /**
@@ -492,12 +492,12 @@ public:
      * @param value
      *   Value of the left padding.
      * @return
-     *   - 0: Success; cell option was changed.
+     *   - 0: Success; cell property was changed.
      *   - (<0): In case of error
      */
     bool set_cell_right_padding(size_t row, size_t col, unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_RIGHT_PADDING, value));
+        return FT_IS_SUCCESS(ft_set_cell_prop(table, row, col, FT_CPROP_RIGHT_PADDING, value));
     }
 
     /**
@@ -510,12 +510,12 @@ public:
      * @param value
      *   Value of the empty string height.
      * @return
-     *   - 0: Success; cell option was changed.
+     *   - 0: Success; cell property was changed.
      *   - (<0): In case of error
      */
     bool set_cell_empty_str_height(size_t row, size_t col, unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_EMPTY_STR_HEIGHT, value));
+        return FT_IS_SUCCESS(ft_set_cell_prop(table, row, col, FT_CPROP_EMPTY_STR_HEIGHT, value));
     }
 
     /**
@@ -528,25 +528,25 @@ public:
      * @param value
      *   Value of the row type.
      * @return
-     *   - 0: Success; cell option was changed.
+     *   - 0: Success; cell property was changed.
      *   - (<0): In case of error
      */
     bool set_cell_row_type(size_t row, size_t col, enum RowType value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, FT_COPT_ROW_TYPE, static_cast<int>(value)));
+        return FT_IS_SUCCESS(ft_set_cell_prop(table, row, col, FT_CPROP_ROW_TYPE, static_cast<int>(value)));
     }
 
-    template <CellOption option>
-    bool set_option(size_t row, size_t col, unsigned value);
+    template <CellProperty property>
+    bool set_property(size_t row, size_t col, unsigned value);
 
-    template <CellOption option>
-    bool set_option(size_t row, size_t col, enum TextAlign align);
+    template <CellProperty property>
+    bool set_property(size_t row, size_t col, enum TextAlign align);
 
-    template <CellOption option>
-    bool set_option(size_t row, size_t col, enum RowType rowType);
+    template <CellProperty property>
+    bool set_property(size_t row, size_t col, enum RowType rowType);
 
-    template <TableOption option>
-    bool set_option(unsigned value);
+    template <TableProperty property>
+    bool set_property(unsigned value);
 
     /**
      * Set border style for the table.
@@ -646,49 +646,49 @@ bool set_default_border_style(struct ft_border_style *style)
 
 
 /*
- * Declare specializations for set_option functions
+ * Declare specializations for set_property functions
  */
-#define DECLARE_SPECS_FOR_CELL_OPTIONS_X \
-        SET_CELL_OPTION_SPEC(CellOption::MinWidth, FT_COPT_MIN_WIDTH, unsigned) \
-        SET_CELL_OPTION_SPEC(CellOption::TextAlign, FT_COPT_TEXT_ALIGN, TextAlign) \
-        SET_CELL_OPTION_SPEC(CellOption::TopPadding, FT_COPT_TOP_PADDING, unsigned) \
-        SET_CELL_OPTION_SPEC(CellOption::BottomPadding, FT_COPT_BOTTOM_PADDING, unsigned) \
-        SET_CELL_OPTION_SPEC(CellOption::LeftPadding, FT_COPT_LEFT_PADDING, unsigned) \
-        SET_CELL_OPTION_SPEC(CellOption::RightPading, FT_COPT_RIGHT_PADDING, unsigned) \
-        SET_CELL_OPTION_SPEC(CellOption::EmptyStrHeight, FT_COPT_EMPTY_STR_HEIGHT, unsigned) \
-        SET_CELL_OPTION_SPEC(CellOption::RowType, FT_COPT_ROW_TYPE, RowType)
+#define DECLARE_SPECS_FOR_CELL_PROPS_X \
+        SET_CELL_PROP_SPEC(CellProperty::MinWidth, FT_CPROP_MIN_WIDTH, unsigned) \
+        SET_CELL_PROP_SPEC(CellProperty::TextAlign, FT_CPROP_TEXT_ALIGN, TextAlign) \
+        SET_CELL_PROP_SPEC(CellProperty::TopPadding, FT_CPROP_TOP_PADDING, unsigned) \
+        SET_CELL_PROP_SPEC(CellProperty::BottomPadding, FT_CPROP_BOTTOM_PADDING, unsigned) \
+        SET_CELL_PROP_SPEC(CellProperty::LeftPadding, FT_CPROP_LEFT_PADDING, unsigned) \
+        SET_CELL_PROP_SPEC(CellProperty::RightPading, FT_CPROP_RIGHT_PADDING, unsigned) \
+        SET_CELL_PROP_SPEC(CellProperty::EmptyStrHeight, FT_CPROP_EMPTY_STR_HEIGHT, unsigned) \
+        SET_CELL_PROP_SPEC(CellProperty::RowType, FT_CPROP_ROW_TYPE, RowType)
 
-#define SET_CELL_OPTION_SPEC(CELL_OPTION, C_OPTION, VALUE_TYPE) \
+#define SET_CELL_PROP_SPEC(CELL_OPTION, C_OPTION, VALUE_TYPE) \
 template <> \
-bool Table::set_option<CELL_OPTION>(size_t row, size_t col, VALUE_TYPE value) \
+bool Table::set_property<CELL_OPTION>(size_t row, size_t col, VALUE_TYPE value) \
 { \
-    return FT_IS_SUCCESS(ft_set_cell_option(table, row, col, C_OPTION, static_cast<int>(value))); \
+    return FT_IS_SUCCESS(ft_set_cell_prop(table, row, col, C_OPTION, static_cast<int>(value))); \
 }
 
-DECLARE_SPECS_FOR_CELL_OPTIONS_X
+DECLARE_SPECS_FOR_CELL_PROPS_X
 
-#undef SET_TABLE_OPTION_SPEC
-#undef DECLARE_SPECS_FOR_CELL_OPTIONS_X
+#undef SET_TABLE_PROP_SPEC
+#undef DECLARE_SPECS_FOR_PROPS_X
 
 
 
-#define DECLARE_SPECS_FOR_TABLE_OPTIONS_X \
-        SET_TABLE_OPTION_SPEC(TableOption::LeftMargin, FT_TOPT_LEFT_MARGIN) \
-        SET_TABLE_OPTION_SPEC(TableOption::TopMargin, FT_TOPT_TOP_MARGIN) \
-        SET_TABLE_OPTION_SPEC(TableOption::RightMargin, FT_TOPT_RIGHT_MARGIN) \
-        SET_TABLE_OPTION_SPEC(TableOption::BottomMargin, FT_TOPT_BOTTOM_MARGIN)
+#define DECLARE_SPECS_FOR_TABLE_PROPS_X \
+        SET_TABLE_PROP_SPEC(TableProperty::LeftMargin, FT_TPROP_LEFT_MARGIN) \
+        SET_TABLE_PROP_SPEC(TableProperty::TopMargin, FT_TPROP_TOP_MARGIN) \
+        SET_TABLE_PROP_SPEC(TableProperty::RightMargin, FT_TPROP_RIGHT_MARGIN) \
+        SET_TABLE_PROP_SPEC(TableProperty::BottomMargin, FT_TPROP_BOTTOM_MARGIN)
 
-#define SET_TABLE_OPTION_SPEC(TABLE_OPTION, TBL_OPTION) \
+#define SET_TABLE_PROP_SPEC(TABLE_OPTION, TBL_OPTION) \
 template <> \
-bool Table::set_option<TABLE_OPTION>(unsigned value) \
+bool Table::set_property<TABLE_OPTION>(unsigned value) \
 { \
-    return FT_IS_SUCCESS(ft_set_tbl_option(table, TBL_OPTION, static_cast<int>(value))); \
+    return FT_IS_SUCCESS(ft_set_tbl_prop(table, TBL_OPTION, static_cast<int>(value))); \
 }
 
-DECLARE_SPECS_FOR_TABLE_OPTIONS_X
+DECLARE_SPECS_FOR_TABLE_PROPS_X
 
-#undef SET_TABLE_OPTION_SPEC
-#undef DECLARE_SPECS_FOR_TABLE_OPTIONS_X
+#undef SET_TABLE_PROP_SPEC
+#undef DECLARE_SPECS_FOR_TABLE_PROPS_X
 
 
 

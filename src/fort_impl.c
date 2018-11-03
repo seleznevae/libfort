@@ -38,7 +38,7 @@ SOFTWARE.
 #include "string_buffer.h"
 #include "table.h"
 #include "row.h"
-#include "options.h"
+#include "properties.h"
 
 
 ft_table_t *ft_create_table(void)
@@ -58,7 +58,7 @@ ft_table_t *ft_create_table(void)
         F_FREE(result);
         return NULL;
     }
-    result->options = NULL;
+    result->properties = NULL;
     result->conv_buffer = NULL;
     result->cur_row = 0;
     result->cur_col = 0;
@@ -87,7 +87,7 @@ void ft_destroy_table(ft_table_t *table)
         }
         destroy_vector(table->separators);
     }
-    destroy_table_options(table->options);
+    destroy_table_properties(table->properties);
     destroy_string_buffer(table->conv_buffer);
     F_FREE(table);
 }
@@ -124,8 +124,8 @@ ft_table_t *ft_copy_table(ft_table_t *table)
     }
 
 
-    result->options = copy_table_options(table->options);
-    if (result->options == NULL) {
+    result->properties = copy_table_properties(table->properties);
+    if (result->properties == NULL) {
         ft_destroy_table(result);
         return NULL;
     }
@@ -622,14 +622,14 @@ const char *ft_to_string(const ft_table_t *table)
     int tmp = 0;
     size_t i = 0;
     context_t context;
-    context.table_options = (table->options ? table->options : &g_table_options);
+    context.table_properties = (table->properties ? table->properties : &g_table_properties);
     fort_row_t *prev_row = NULL;
     fort_row_t *cur_row = NULL;
     separator_t *cur_sep = NULL;
     size_t sep_size = vector_size(table->separators);
 
     /* Print top margin */
-    for (i = 0; i < context.table_options->entire_table_options.top_margin; ++i) {
+    for (i = 0; i < context.table_properties->entire_table_properties.top_margin; ++i) {
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
     }
@@ -648,7 +648,7 @@ const char *ft_to_string(const ft_table_t *table)
     CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
 
     /* Print bottom margin */
-    for (i = 0; i < context.table_options->entire_table_options.bottom_margin; ++i) {
+    for (i = 0; i < context.table_properties->entire_table_properties.bottom_margin; ++i) {
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
     }
@@ -727,14 +727,14 @@ const wchar_t *ft_to_wstring(const ft_table_t *table)
     int tmp = 0;
     size_t i = 0;
     context_t context;
-    context.table_options = (table->options ? table->options : &g_table_options);
+    context.table_properties = (table->properties ? table->properties : &g_table_properties);
     fort_row_t *prev_row = NULL;
     fort_row_t *cur_row = NULL;
     separator_t *cur_sep = NULL;
     size_t sep_size = vector_size(table->separators);
 
     /* Print top margin */
-    for (i = 0; i < context.table_options->entire_table_options.top_margin; ++i) {
+    for (i = 0; i < context.table_properties->entire_table_properties.top_margin; ++i) {
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
     }
@@ -753,7 +753,7 @@ const wchar_t *ft_to_wstring(const ft_table_t *table)
     CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
 
     /* Print bottom margin */
-    for (i = 0; i < context.table_options->entire_table_options.bottom_margin; ++i) {
+    for (i = 0; i < context.table_properties->entire_table_properties.bottom_margin; ++i) {
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
     }
@@ -844,7 +844,7 @@ struct ft_border_style *FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME
 
 
 
-static void set_border_options_for_options(fort_table_options_t *options, const struct ft_border_style *style)
+static void set_border_props_for_props(fort_table_properties_t *properties, const struct ft_border_style *style)
 {
     if ((struct fort_border_style *)style == &FORT_BASIC_STYLE
         || (struct fort_border_style *)style == &FORT_BASIC2_STYLE
@@ -859,16 +859,16 @@ static void set_border_options_for_options(fort_table_options_t *options, const 
         || (struct fort_border_style *)style == &FORT_BOLD_STYLE
         || (struct fort_border_style *)style == &FORT_BOLD2_STYLE
         || (struct fort_border_style *)style == &FORT_FRAME_STYLE) {
-        memcpy(&(options->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
+        memcpy(&(properties->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
         return;
     }
 
     const struct ft_border_chars *border_chs = &(style->border_chs);
     const struct ft_border_chars *header_border_chs = &(style->header_border_chs);
 
-#define BOR_CHARS options->border_style.border_chars
-#define H_BOR_CHARS options->border_style.header_border_chars
-#define SEP_CHARS options->border_style.separator_chars
+#define BOR_CHARS properties->border_style.border_chars
+#define H_BOR_CHARS properties->border_style.header_border_chars
+#define SEP_CHARS properties->border_style.separator_chars
 
     /*
     BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->top_border_ch;
@@ -933,36 +933,36 @@ static void set_border_options_for_options(fort_table_options_t *options, const 
 
 int ft_set_default_border_style(const struct ft_border_style *style)
 {
-    set_border_options_for_options(&g_table_options, style);
+    set_border_props_for_props(&g_table_properties, style);
     return FT_SUCCESS;
 }
 
 int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style)
 {
     assert(table);
-    if (table->options == NULL) {
-        table->options = create_table_options();
-        if (table->options == NULL)
+    if (table->properties == NULL) {
+        table->properties = create_table_properties();
+        if (table->properties == NULL)
             return FT_MEMORY_ERROR;
     }
-    set_border_options_for_options(table->options, style);
+    set_border_props_for_props(table->properties, style);
     return FT_SUCCESS;
 }
 
 
 
-int ft_set_cell_option(ft_table_t *table, size_t row, size_t col, uint32_t option, int value)
+int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t property, int value)
 {
     assert(table);
 
-    if (table->options == NULL) {
-        table->options = create_table_options();
-        if (table->options == NULL)
+    if (table->properties == NULL) {
+        table->properties = create_table_properties();
+        if (table->properties == NULL)
             return FT_MEMORY_ERROR;
     }
-    if (table->options->cell_options == NULL) {
-        table->options->cell_options = create_cell_opt_container();
-        if (table->options->cell_options == NULL) {
+    if (table->properties->cell_properties == NULL) {
+        table->properties->cell_properties = create_cell_prop_container();
+        if (table->properties->cell_properties == NULL) {
             return FT_ERROR;
         }
     }
@@ -972,30 +972,30 @@ int ft_set_cell_option(ft_table_t *table, size_t row, size_t col, uint32_t optio
     if (row == FT_CUR_COLUMN)
         col = table->cur_col;
 
-    return set_cell_option(table->options->cell_options, row, col, option, value);
+    return set_cell_property(table->properties->cell_properties, row, col, property, value);
 }
 
-int ft_set_default_cell_option(uint32_t option, int value)
+int ft_set_default_cell_prop(uint32_t property, int value)
 {
-    return set_default_cell_option(option, value);
+    return set_default_cell_property(property, value);
 }
 
 
-int ft_set_default_tbl_option(uint32_t option, int value)
+int ft_set_default_tbl_prop(uint32_t property, int value)
 {
-    return set_default_entire_table_option(option, value);
+    return set_default_entire_table_property(property, value);
 }
 
-int ft_set_tbl_option(ft_table_t *table, uint32_t option, int value)
+int ft_set_tbl_prop(ft_table_t *table, uint32_t property, int value)
 {
     assert(table);
 
-    if (table->options == NULL) {
-        table->options = create_table_options();
-        if (table->options == NULL)
+    if (table->properties == NULL) {
+        table->properties = create_table_properties();
+        if (table->properties == NULL)
             return FT_MEMORY_ERROR;
     }
-    return set_entire_table_option(table->options, option, value);
+    return set_entire_table_property(table->properties, property, value);
 }
 
 void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
