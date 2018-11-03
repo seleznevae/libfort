@@ -38,10 +38,9 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos);
 #define FOR_EACH(type, item, vector) \
     FOR_EACH_(type, item, vector, UNIQUE_NAME(i))
 
-FT_INTERNAL
-vector_t *copy_vector(vector_t *);
 
 #ifdef FT_TEST_BUILD
+vector_t *copy_vector(vector_t *);
 size_t vector_index_of(const vector_t *, const void *item);
 int vector_erase(vector_t *, size_t index);
 void vector_clear(vector_t *);

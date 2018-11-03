@@ -659,8 +659,6 @@ fort_cell_opt_container_t *copy_cell_options(fort_cell_opt_container_t *cont)
 FT_INTERNAL
 fort_table_options_t *copy_table_options(const fort_table_options_t *option)
 {
-    // todo: normal implementation, do deep copy of col options
-
     fort_table_options_t *new_opt = create_table_options();
     if (new_opt == NULL)
         return NULL;
