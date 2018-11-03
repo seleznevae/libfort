@@ -5,6 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/seleznevae/libfort/badge.svg?branch=master)](https://coveralls.io/github/seleznevae/libfort?branch=master)
 [![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/tD15vwjIgeWmpPSX)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Doc](https://img.shields.io/badge/doc-wiki-blue.svg)](https://github.com/seleznevae/libfort/wiki)
 
 **libfort** is a simple crossplatform library to create formatted text tables.
 
