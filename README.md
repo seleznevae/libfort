@@ -47,6 +47,8 @@ For C++ projects that use compiler with C++11 support (and later) there are also
 ```CPP
 #include "fort.hpp"
 ```
+## Documentation
+See [wiki](https://github.com/seleznevae/libfort/wiki) of the project.
 
 ## Getting Started
 
