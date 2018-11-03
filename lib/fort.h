@@ -676,7 +676,7 @@ int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
  * @{
  */
 #define FT_COPT_MIN_WIDTH        (0x01U << 0) /**< Minimum width */
-#define FT_COPT_TEXT_ALIGN       (0x01U << 1) /**< Text alignmemnt */
+#define FT_COPT_TEXT_ALIGN       (0x01U << 1) /**< Text alignment */
 #define FT_COPT_TOP_PADDING      (0x01U << 2) /**< Top padding for cell content */
 #define FT_COPT_BOTTOM_PADDING   (0x01U << 3) /**< Bottom padding for cell content */
 #define FT_COPT_LEFT_PADDING     (0x01U << 4) /**< Left padding for cell content */

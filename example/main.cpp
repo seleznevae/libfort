@@ -2,6 +2,30 @@
 #include <vector>
 #include "fort.hpp"
 
+fort::Table create_basic_table(void)
+{
+    fort::Table table;
+    /* Set table border style */
+    table.set_border_style(FT_BASIC_STYLE);
+
+    // Fill table with data
+    table << fort::header
+        << "Rank" << "Title" << "Year" << "Rating" << fort::endr
+        << "1" << "The Shawshank Redemption" << "1994" << "9.5" << fort::endr
+        << "2" << "12 Angry Men" << "1957" << "8.8" << fort::endr
+        << "3" << "It's a Wonderful Life" << "1946" << "8.6" << fort::endr
+        << fort::separator
+        << "4" << "2001: A Space Odyssey" << "1968" << "8.5" << fort::endr
+        << "5" << "Blade Runner" << "1982" << "8.1" << fort::endr
+        << fort::endr;
+
+    table.set_cell_text_align(FT_ANY_ROW, 0, fort::TextAlign::Center);
+    table.set_cell_text_align(FT_ANY_ROW, 1, fort::TextAlign::Left);
+
+    std::cout << table.to_string() << std::endl;
+    return table;
+}
+
 void base_example(void)
 {
     fort::Table table;

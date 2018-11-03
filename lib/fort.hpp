@@ -563,17 +563,18 @@ public:
     }
 
     /**
-     * Set default border style for all new formatted tables.
+     * Set current cell position.
      *
-     * @param style
-     *   Pointer to border style.
-     * @return
-     *   - True: Success; table border style was changed.
-     *   - False: Error
+     * Current cell - cell that will be edited with all modifiing functions.
+     *
+     * @param row
+     *   New row number for the current cell.
+     * @param col
+     *   New row number for the current cell.
      */
-    bool set_default_border_style(struct ft_border_style *style)
+    void set_cur_cell(size_t row, size_t col)
     {
-        return FT_IS_SUCCESS(ft_set_default_border_style(style));
+        ft_set_cur_cell(table, row, col);
     }
 private:
     ft_table_t *table;
@@ -628,7 +629,19 @@ public:
 };
 
 
-
+/**
+ * Set default border style for all new formatted tables.
+ *
+ * @param style
+ *   Pointer to border style.
+ * @return
+ *   - True: Success; table border style was changed.
+ *   - False: Error
+ */
+bool set_default_border_style(struct ft_border_style *style)
+{
+    return FT_IS_SUCCESS(ft_set_default_border_style(style));
+}
 
 
 
