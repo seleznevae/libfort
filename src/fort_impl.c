@@ -112,7 +112,17 @@ ft_table_t *ft_copy_table(ft_table_t *table)
         vector_push(result->rows, &new_row);
     }
 
-    /* todo: copy separators */
+    size_t sep_sz = vector_size(table->separators);
+    for (size_t i = 0; i < sep_sz; ++i) {
+        separator_t *sep = *(separator_t **)vector_at(table->separators, i);
+        separator_t *new_sep = copy_separator(sep);
+        if (new_sep == NULL) {
+            ft_destroy_table(result);
+            return NULL;
+        }
+        vector_push(result->separators, &new_sep);
+    }
+
 
     result->options = copy_table_options(table->options);
     if (result->options == NULL) {

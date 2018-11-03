@@ -25,6 +25,7 @@ void test_string_buffer(void);
 void test_table_sizes(void);
 void test_table_geometry(void);
 void test_table_basic(void);
+void test_table_copy(void);
 #ifdef FT_HAVE_WCHAR
 void test_wcs_table_boundaries(void);
 #endif

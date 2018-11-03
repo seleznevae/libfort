@@ -22,6 +22,14 @@ void destroy_separator(separator_t *sep)
 }
 
 
+FT_INTERNAL
+separator_t *copy_separator(separator_t *sep)
+{
+    assert(sep);
+    return create_separator(sep->enabled);
+}
+
+
 static
 fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnNull policy)
 {

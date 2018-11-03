@@ -19,6 +19,9 @@ FT_INTERNAL
 void destroy_separator(separator_t *sep);
 
 FT_INTERNAL
+separator_t *copy_separator(separator_t *sep);
+
+FT_INTERNAL
 fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols);
 
 FT_INTERNAL

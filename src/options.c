@@ -100,7 +100,14 @@ fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_contain
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
-    fort_cell_options_t opt = g_default_cell_option;// DEFAULT_CELL_OPTION;
+
+//    fort_cell_options_t opt = g_default_cell_option;// DEFAULT_CELL_OPTION;
+    fort_cell_options_t opt;
+    if (row == FT_ANY_ROW && col == FT_ANY_COLUMN)
+        memcpy(&opt, &g_default_cell_option, sizeof(fort_cell_options_t));
+    else
+        memset(&opt, 0, sizeof(fort_cell_options_t));
+
     opt.cell_row = row;
     opt.cell_col = col;
     if (FT_IS_SUCCESS(vector_push(cont, &opt))) {
@@ -120,7 +127,7 @@ int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t ro
     if (options->cell_options != NULL) {
         while (1) {
             opt = cget_cell_opt(options->cell_options, row, column);
-            if (opt != NULL)
+            if (opt != NULL && OPTION_IS_SET(opt->options, option))
                 break;
             if (row != FT_ANY_ROW) {
                 row = FT_ANY_ROW;

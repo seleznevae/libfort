@@ -9,6 +9,7 @@ struct test_case wb_test_suit [] = {
     {"test_string_buffer", test_string_buffer},
     {"test_table_sizes", test_table_sizes},
     {"test_table_geometry", test_table_geometry},
+    {"test_table_copy", test_table_copy},
 };
 #endif
 

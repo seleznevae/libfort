@@ -74,7 +74,11 @@ void test_cpp_table_basic(void)
         fort::Table table3;
         table3 = std::move(table2);
 
-        std::string table_str = table3.to_string();
+        fort::Table table4(table3);
+        fort::Table table5;
+        table5 = table4;
+
+        std::string table_str = table5.to_string();
         std::string table_str_etalon =
             "+---+---+-----+----------+\n"
             "|   |   |     |          |\n"

@@ -713,6 +713,9 @@ FT_INTERNAL
 void destroy_separator(separator_t *sep);
 
 FT_INTERNAL
+separator_t *copy_separator(separator_t *sep);
+
+FT_INTERNAL
 fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols);
 
 FT_INTERNAL
@@ -848,7 +851,14 @@ fort_cell_options_t *get_cell_opt_and_create_if_not_exists(fort_cell_opt_contain
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
-    fort_cell_options_t opt = g_default_cell_option;// DEFAULT_CELL_OPTION;
+
+//    fort_cell_options_t opt = g_default_cell_option;// DEFAULT_CELL_OPTION;
+    fort_cell_options_t opt;
+    if (row == FT_ANY_ROW && col == FT_ANY_COLUMN)
+        memcpy(&opt, &g_default_cell_option, sizeof(fort_cell_options_t));
+    else
+        memset(&opt, 0, sizeof(fort_cell_options_t));
+
     opt.cell_row = row;
     opt.cell_col = col;
     if (FT_IS_SUCCESS(vector_push(cont, &opt))) {
@@ -868,7 +878,7 @@ int get_cell_opt_value_hierarcial(const fort_table_options_t *options, size_t ro
     if (options->cell_options != NULL) {
         while (1) {
             opt = cget_cell_opt(options->cell_options, row, column);
-            if (opt != NULL)
+            if (opt != NULL && OPTION_IS_SET(opt->options, option))
                 break;
             if (row != FT_ANY_ROW) {
                 row = FT_ANY_ROW;
@@ -1461,6 +1471,14 @@ void destroy_separator(separator_t *sep)
 }
 
 
+FT_INTERNAL
+separator_t *copy_separator(separator_t *sep)
+{
+    assert(sep);
+    return create_separator(sep->enabled);
+}
+
+
 static
 fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnNull policy)
 {
@@ -1832,7 +1850,17 @@ ft_table_t *ft_copy_table(ft_table_t *table)
         vector_push(result->rows, &new_row);
     }
 
-    /* todo: copy separators */
+    size_t sep_sz = vector_size(table->separators);
+    for (size_t i = 0; i < sep_sz; ++i) {
+        separator_t *sep = *(separator_t **)vector_at(table->separators, i);
+        separator_t *new_sep = copy_separator(sep);
+        if (new_sep == NULL) {
+            ft_destroy_table(result);
+            return NULL;
+        }
+        vector_push(result->separators, &new_sep);
+    }
+
 
     result->options = copy_table_options(table->options);
     if (result->options == NULL) {

@@ -68,40 +68,6 @@ void test_table_basic(void)
     }
 #endif
 
-    WHEN("Test table copy") {
-        table = ft_create_table();
-        assert_true(table != NULL);
-        assert_true(set_test_options_for_table(table) == FT_SUCCESS);
-
-        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
-        assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
-        assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
-        assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
-
-        ft_table_t *table_copy = ft_copy_table(table);
-        assert_true(table != NULL);
-        const char *table_str = ft_to_string(table_copy);
-        assert_true(table_str != NULL);
-        const char *table_str_etalon =
-            "+---+---+-----+----------+\n"
-            "|   |   |     |          |\n"
-            "| 3 | c | 234 | 3.140000 |\n"
-            "|   |   |     |          |\n"
-            "+---+---+-----+----------+\n"
-            "|   |   |     |          |\n"
-            "| 3 | c | 234 | 3.140000 |\n"
-            "|   |   |     |          |\n"
-            "+---+---+-----+----------+\n"
-            "|   |   |     |          |\n"
-            "| 3 | c | 234 | 3.140000 |\n"
-            "|   |   |     |          |\n"
-            "+---+---+-----+----------+\n";
-        assert_str_equal(table_str, table_str_etalon);
-        ft_destroy_table(table);
-        ft_destroy_table(table_copy);
-    }
-
-
     WHEN("All columns are not equal and not empty") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -815,3 +781,67 @@ void test_table_write(void)
 #endif
 
 }
+
+
+void test_table_copy(void)
+{
+    ft_table_t *table = NULL;
+
+    WHEN("Test table copy") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+
+        assert_true(ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_BOTTOM_PADDING, 1) == FT_SUCCESS);
+        assert_true(ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_TOP_PADDING, 1) == FT_SUCCESS);
+        assert_true(ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_LEFT_PADDING, 2) == FT_SUCCESS);
+        assert_true(ft_set_cell_option(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_COPT_RIGHT_PADDING, 2) == FT_SUCCESS);
+
+
+        ft_set_border_style(table, FT_DOUBLE2_STYLE);
+
+        /* Set "header" type for the first row */
+        ft_set_cell_option(table, 0, FT_ANY_COLUMN, FT_COPT_ROW_TYPE, FT_ROW_HEADER);
+        ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
+
+        ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
+        ft_write_ln(table, "The Godfather", "Francis Ford Coppola", "1972", "9.2");
+        ft_add_separator(table);
+
+        ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
+
+        /* Set center alignment for the 1st and 3rd columns */
+        ft_set_cell_option(table, FT_ANY_ROW, 1, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+        ft_set_cell_option(table, FT_ANY_ROW, 3, FT_COPT_TEXT_ALIGN, FT_ALIGNED_CENTER);
+
+
+        ft_table_t *table_copy = ft_copy_table(table);
+
+        assert_true(table != NULL);
+        const char *table_str = ft_to_string(table_copy);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "╔════════════════════════════╤════════════════════════╤════════╤══════════╗\n"
+            "║                            │                        │        │          ║\n"
+            "║  Movie title               │        Director        │  Year  │  Rating  ║\n"
+            "║                            │                        │        │          ║\n"
+            "╠════════════════════════════╪════════════════════════╪════════╪══════════╣\n"
+            "║                            │                        │        │          ║\n"
+            "║  The Shawshank Redemption  │     Frank Darabont     │  1994  │   9.5    ║\n"
+            "║                            │                        │        │          ║\n"
+            "╟────────────────────────────┼────────────────────────┼────────┼──────────╢\n"
+            "║                            │                        │        │          ║\n"
+            "║  The Godfather             │  Francis Ford Coppola  │  1972  │   9.2    ║\n"
+            "║                            │                        │        │          ║\n"
+            "╠════════════════════════════╪════════════════════════╪════════╪══════════╣\n"
+            "║                            │                        │        │          ║\n"
+            "║  2001: A Space Odyssey     │    Stanley Kubrick     │  1968  │   8.5    ║\n"
+            "║                            │                        │        │          ║\n"
+            "╚════════════════════════════╧════════════════════════╧════════╧══════════╝\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+        ft_destroy_table(table_copy);
+    }
+}
+
+
+
