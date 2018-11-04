@@ -54,11 +54,11 @@ See [wiki](https://github.com/seleznevae/libfort/wiki) of the project.
 ## Getting Started
 
 The common libfort usage pattern: 
-- create a table (`_ft_create_table_`);
-- fill it with data (`_ft_write_ln_`, `_fr_ptrintf_ln_`, `_ft_row_write_`, ...);
-- modify basic table appearance (`_ft_set_cell_prop_`, `ft_set_border_style` ...)
-- convert table to string representation (`_ft_to_string_`);
-- destroy the table (`_ft_destroy_table_`)
+- create a table (`ft_create_table`);
+- fill it with data (`ft_write_ln`, `fr_ptrintf_ln`, `ft_row_write`, ...);
+- modify basic table appearance (`ft_set_cell_prop`, `ft_set_border_style` ...)
+- convert table to string representation (`ft_to_string`);
+- destroy the table (`ft_destroy_table`)
 
 Here are some examples:
 
