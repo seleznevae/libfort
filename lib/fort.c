@@ -3100,7 +3100,7 @@ const char *str_n_substring_beg(const char *str, char ch_separator, size_t n)
     return str ? (str + 1) : NULL;
 }
 
-
+#ifdef FT_HAVE_WCHAR
 FT_INTERNAL
 const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, size_t n)
 {
@@ -3121,6 +3121,7 @@ const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, si
     }
     return str ? (str + 1) : NULL;
 }
+#endif /* FT_HAVE_WCHAR */
 
 
 FT_INTERNAL
@@ -3143,7 +3144,7 @@ void str_n_substring(const char *str, char ch_separator, size_t n, const char **
     return;
 }
 
-
+#ifdef FT_HAVE_WCHAR
 FT_INTERNAL
 void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end)
 {
@@ -3163,6 +3164,7 @@ void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const 
     *end = en;
     return;
 }
+#endif /* FT_HAVE_WCHAR */
 
 
 FT_INTERNAL
@@ -3182,8 +3184,10 @@ string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type 
 
     if (sz && type == CharBuf) {
         result->str.cstr[0] = '\0';
+#ifdef FT_HAVE_WCHAR
     } else if (sz && type == WCharBuf) {
         result->str.wstr[0] = L'\0';
+#endif /* FT_HAVE_WCHAR */
     }
 
     return result;
