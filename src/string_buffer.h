@@ -57,11 +57,13 @@ FT_INTERNAL
 size_t buffer_text_width(string_buffer_t *buffer);
 
 FT_INTERNAL
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t buf_len, const context_t *context);
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t total_buf_len,
+                  const context_t *context, const char *content_style_tag, const char *reset_content_style_tag);
 
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t buf_len, const context_t *context);
+int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t total_buf_len,
+                   const context_t *context, const char *content_style_tag, const char *reset_content_style_tag);
 #endif /* FT_HAVE_WCHAR */
 
 #endif /* STRING_BUFFER_H */

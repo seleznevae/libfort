@@ -36,10 +36,12 @@ fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row);
 FT_INTERNAL
 string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table);
 
+
 FT_INTERNAL
 fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
         size_t **col_width_arr_p, size_t *col_width_arr_sz,
-        size_t **row_height_arr_p, size_t *row_height_arr_sz);
+        size_t **row_height_arr_p, size_t *row_height_arr_sz,
+        enum request_geom_type geom);
 
 FT_INTERNAL
 fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width);

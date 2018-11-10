@@ -195,6 +195,9 @@ int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
     if (n * str_len > INT_MAX)
         return -1;
 
+    if (str_len == 0)
+        return 0;
+
     int status = snprintf(buf, length, "%0*d", (int)(n * str_len), 0);
     if (status < 0)
         return status;
@@ -240,8 +243,36 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
     /* This function doesn't work properly with multibyte characters
      * so it is better return an error in this case
      */
-    if (str_len > 1)
-        return -1;
+    if (str_len > 1) {
+        const unsigned char *p = (const unsigned char *)str;
+        while (*p) {
+            if (*p <= 127)
+                p++;
+            else {
+                const int SIZE = 64;
+                wchar_t wcs[SIZE];
+                const char *ptr = str;
+                int length;
+                length = mbsrtowcs(wcs, (const char **)&ptr, SIZE, NULL);
+                wcs[length] = L'\0';
+                if (length > 1) {
+                    return -1;
+                } else {
+                    swprintf(buf, length, L"%0*d", (int)(n * str_len), 0);
+                    int k = n;
+                    while (k) {
+                        *buf = *wcs;
+                        ++buf;
+                        --k;
+                    }
+                    buf[n] = L'\0';
+                    return n;
+                }
+
+//                return -1;
+            }
+        }
+    }
 
     if (length <= n * str_len)
         return -1;
@@ -249,11 +280,12 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
     if (n == 0)
         return 0;
 
-
-
     /* To ensure valid return value it is safely not print such big strings */
     if (n * str_len > INT_MAX)
         return -1;
+
+    if (str_len == 0)
+        return 0;
 
     int status = swprintf(buf, length, L"%0*d", (int)(n * str_len), 0);
     if (status < 0)

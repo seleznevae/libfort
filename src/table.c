@@ -122,7 +122,8 @@ fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *col
 FT_INTERNAL
 fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
         size_t **col_width_arr_p, size_t *col_width_arr_sz,
-        size_t **row_height_arr_p, size_t *row_height_arr_sz)
+        size_t **row_height_arr_p, size_t *row_height_arr_sz,
+        enum request_geom_type geom)
 {
     if (table == NULL) {
         return FT_ERROR;
@@ -159,7 +160,7 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
             if (cell) {
                 switch (get_cell_type(cell)) {
                     case CommonCell:
-                        col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context));
+                        col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context, geom));
                         break;
                     case GroupMasterCell:
                         combined_cells_found = 1;
@@ -184,7 +185,7 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
                 context.row = row;
                 if (cell) {
                     if (get_cell_type(cell) == GroupMasterCell) {
-                        size_t hint_width = hint_width_cell(cell, &context);
+                        size_t hint_width = hint_width_cell(cell, &context, geom);
                         size_t slave_col = col + group_cell_number(row_p, col);
                         size_t cur_adj_col = col;
                         size_t group_width = col_width_arr[col];
@@ -243,7 +244,7 @@ fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *wi
     size_t *col_width_arr = NULL;
     size_t *row_height_arr = NULL;
 
-    int status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
+    int status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, INTERN_REPR_GEOMETRY);
     if (FT_IS_ERROR(status))
         return status;
 

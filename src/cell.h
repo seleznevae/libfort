@@ -13,7 +13,7 @@ FT_INTERNAL
 fort_cell_t *copy_cell(fort_cell_t *cell);
 
 FT_INTERNAL
-size_t hint_width_cell(const fort_cell_t *cell, const context_t *context);
+size_t hint_width_cell(const fort_cell_t *cell, const context_t *context, enum request_geom_type geom);
 
 FT_INTERNAL
 size_t hint_height_cell(const fort_cell_t *cell, const context_t *context);

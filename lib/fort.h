@@ -683,8 +683,49 @@ int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
 #define FT_CPROP_RIGHT_PADDING    (0x01U << 5) /**< Right padding for cell content */
 #define FT_CPROP_EMPTY_STR_HEIGHT (0x01U << 6) /**< Height of empty cell */
 #define FT_CPROP_ROW_TYPE         (0x01U << 7) /**< Row type */
+#define FT_CPROP_CONT_FG_COLOR    (0x01U << 8) /**< Cell content foreground text color */
+#define FT_CPROP_CELL_BG_COLOR    (0x01U << 9) /**< Cell background color */
+#define FT_CPROP_CONT_BG_COLOR    (0x01U << 10) /**< Cell content background color */
+#define FT_CPROP_CELL_TEXT_STYLE  (0x01U << 11) /**< Cell text style */
+#define FT_CPROP_CONT_TEXT_STYLE  (0x01U << 12) /**< Cell content text style */
 /** @} */
 
+
+/**
+ * @name Colors.
+ * @{
+ */
+#define FT_COLOR_DEFAULT           0
+#define FT_COLOR_BLACK             1
+#define FT_COLOR_RED               2
+#define FT_COLOR_GREEN             3
+#define FT_COLOR_YELLOW            4
+#define FT_COLOR_BLUE              5
+#define FT_COLOR_MAGENTA           6
+#define FT_COLOR_CYAN              7
+#define FT_COLOR_LIGHT_GRAY        8
+#define FT_COLOR_DARK_GRAY         9
+#define FT_COLOR_LIGHT_RED         10
+#define FT_COLOR_LIGHT_GREEN       11
+#define FT_COLOR_LIGHT_YELLOW      12
+#define FT_COLOR_LIGHT_BLUE        13
+#define FT_COLOR_LIGHT_MAGENTA     15
+#define FT_COLOR_LIGHT_CYAN        16
+#define FT_COLOR_LIGHT_WHYTE       17
+/** @} */
+
+/**
+ * @name Text styles.
+ * @{
+ */
+#define FT_TSTYLE_DEFAULT           0
+#define FT_TSTYLE_BOLD              1
+#define FT_TSTYLE_DIM               2
+#define FT_TSTYLE_UNDERLINED        3
+#define FT_TSTYLE_BLINK             4
+#define FT_TSTYLE_INVERTED          5
+#define FT_TSTYLE_HIDDEN            6
+/** @} */
 
 
 /**

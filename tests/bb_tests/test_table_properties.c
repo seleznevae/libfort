@@ -137,6 +137,118 @@ void test_table_cell_properties(void)
     ft_table_t *table = NULL;
 
 
+    WHEN("Setting property for one cell") {
+        set_test_properties_as_default();
+
+        table = create_test_int_table(0);
+        ft_set_cell_prop(table, 1, 1, FT_CPROP_TOP_PADDING, 2);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 |   | 55 | 67 |\n"
+            "|   | 4 |    |    |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+    WHEN("Setting property for the row") {
+        set_test_properties_as_default();
+
+        table = create_test_int_table(0);
+        ft_set_cell_prop(table, 1, FT_ANY_COLUMN, FT_CPROP_TOP_PADDING, 2);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+    WHEN("Setting property for the column") {
+        set_test_properties_as_default();
+
+        table = create_test_int_table(0);
+        ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TOP_PADDING, 2);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 |   | 55 | 67 |\n"
+            "|   | 4 |    |    |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 |   | 55 | 67 |\n"
+            "|   | 4 |    |    |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 |   | 55 | 67 |\n"
+            "|   | 4 |    |    |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+    WHEN("Setting property for all cells in the table") {
+        set_test_properties_as_default();
+
+        table = create_test_int_table(0);
+        ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_TOP_PADDING, 2);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
     WHEN("All paddings = 1") {
         set_test_properties_as_default();
 
@@ -553,3 +665,248 @@ void test_table_cell_properties(void)
         ft_destroy_table(table);
     }
 }
+
+
+
+void test_table_text_styles(void)
+{
+    ft_table_t *table = NULL;
+    set_test_properties_as_default();
+
+    WHEN("Simple table with one cell and foreground content color") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_FG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS);
+        assert(ft_write(table, "42") == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+----+\n"
+            "|\033[33m\033[39m    |\n"
+            "| \033[33m42\033[39m |\n"
+            "|\033[33m\033[39m    |\n"
+            "+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    WHEN("Simple table with one cell and foreground color(wide strings case)") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_FG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS);
+        assert(ft_wwrite(table, L"42") == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+----+\n"
+            L"|\033[33m\033[39m    |\n"
+            L"| \033[33m42\033[39m |\n"
+            L"|\033[33m\033[39m    |\n"
+            L"+----+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+
+    WHEN("Simple table with one cell and background content color") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_BG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS);
+        assert(ft_write(table, "42") == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+----+\n"
+            "|\033[43m\033[49m    |\n"
+            "| \033[43m42\033[49m |\n"
+            "|\033[43m\033[49m    |\n"
+            "+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    WHEN("Simple table with one cell and background content color(wide strings case)") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_BG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS);
+        assert(ft_wwrite(table, L"42") == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+----+\n"
+            L"|\033[43m\033[49m    |\n"
+            L"| \033[43m42\033[49m |\n"
+            L"|\033[43m\033[49m    |\n"
+            L"+----+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+
+    WHEN("Simple table with one cell and background cell color") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_BG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS);
+        assert(ft_write(table, "42") == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+----+\n"
+            "|\033[43m    \033[49m|\n"
+            "|\033[43m 42 \033[49m|\n"
+            "|\033[43m    \033[49m|\n"
+            "+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    WHEN("Simple table with one cell and background cell color(wide strings case)") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_BG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS);
+        assert(ft_wwrite(table, L"42") == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+----+\n"
+            L"|\033[43m    \033[49m|\n"
+            L"|\033[43m 42 \033[49m|\n"
+            L"|\033[43m    \033[49m|\n"
+            L"+----+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+
+    WHEN("Simple table with one cell and content style") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS);
+        assert(ft_write(table, "42") == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+----+\n"
+            "|\033[4m\033[24m    |\n"
+            "| \033[4m42\033[24m |\n"
+            "|\033[4m\033[24m    |\n"
+            "+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    WHEN("Simple table with one cell and content style(wide strings case)") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS);
+        assert(ft_wwrite(table, L"42") == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+----+\n"
+            L"|\033[4m\033[24m    |\n"
+            L"| \033[4m42\033[24m |\n"
+            L"|\033[4m\033[24m    |\n"
+            L"+----+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+
+    WHEN("Simple table with one cell and cell style") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS);
+        assert(ft_write(table, "42") == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+----+\n"
+            "|\033[4m    \033[24m|\n"
+            "|\033[4m 42 \033[24m|\n"
+            "|\033[4m    \033[24m|\n"
+            "+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    WHEN("Simple table with one cell and cell style(wide strings case)") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS);
+        assert(ft_wwrite(table, L"42") == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+----+\n"
+            L"|\033[4m    \033[24m|\n"
+            L"|\033[4m 42 \033[24m|\n"
+            L"|\033[4m    \033[24m|\n"
+            L"+----+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+
+    WHEN("Simple table with one cell background color, content foreground color and style.") {
+        set_test_properties_as_default();
+
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_FG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_BG_COLOR, FT_COLOR_RED) == FT_SUCCESS);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS);
+        assert(ft_write(table, "42") == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+----+\n"
+            "|\033[41m\033[4m\033[33m\033[24m\033[39m    \033[49m|\n"
+            "|\033[41m \033[4m\033[33m42\033[24m\033[39m \033[49m|\n"
+            "|\033[41m\033[4m\033[33m\033[24m\033[39m    \033[49m|\n"
+            "+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    WHEN("Simple table with one cell background color, content foreground color and style.") {
+        set_test_properties_as_default();
+
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_FG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_BG_COLOR, FT_COLOR_RED) == FT_SUCCESS);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS);
+        assert(ft_wwrite(table, L"42") == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+----+\n"
+            L"|\033[41m\033[4m\033[33m\033[24m\033[39m    \033[49m|\n"
+            L"|\033[41m \033[4m\033[33m42\033[24m\033[39m \033[49m|\n"
+            L"|\033[41m\033[4m\033[33m\033[24m\033[39m    \033[49m|\n"
+            L"+----+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+}
+

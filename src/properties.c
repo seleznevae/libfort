@@ -1,7 +1,254 @@
+#include "fort_utils.h"
 #include <assert.h>
 #include "properties.h"
-#include "fort_utils.h"
 #include "vector.h"
+
+#define FT_RESET_COLOR "\033[0m"
+
+const char *fg_colors[] = {
+    "",
+    "\033[30m",
+    "\033[31m",
+    "\033[32m",
+    "\033[33m",
+    "\033[34m",
+    "\033[35m",
+    "\033[36m",
+    "\033[37m",
+    "\033[90m",
+    "\033[91m",
+    "\033[92m",
+    "\033[93m",
+    "\033[94m",
+    "\033[95m",
+    "\033[96m",
+    "\033[97m",
+};
+
+const char *reset_fg_colors[] = {
+    "",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+};
+
+const char *bg_colors[] = {
+    "",
+    "\033[40m",
+    "\033[41m",
+    "\033[42m",
+    "\033[43m",
+    "\033[44m",
+    "\033[45m",
+    "\033[46m",
+    "\033[47m",
+    "\033[100m",
+    "\033[101m",
+    "\033[102m",
+    "\033[103m",
+    "\033[104m",
+    "\033[105m",
+    "\033[106m",
+    "\033[107m",
+};
+
+const char *reset_bg_colors[] = {
+    "",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+};
+
+
+const char *text_styles[] = {
+    "",
+    "\033[1m",
+    "\033[2m",
+    "\033[4m",
+    "\033[5m",
+    "\033[7m",
+    "\033[8m",
+};
+
+const char *reset_text_styles[] = {
+    "",
+    "\033[21m",
+    "\033[22m",
+    "\033[24m",
+    "\033[25m",
+    "\033[27m",
+    "\033[28m",
+};
+
+
+static const size_t n_fg_colors = sizeof(fg_colors) / sizeof(fg_colors[0]);
+static const size_t n_bg_colors = sizeof(bg_colors) / sizeof(bg_colors[0]);
+static const size_t n_styles = sizeof(text_styles) / sizeof(text_styles[0]);
+
+void get_style_tag_for_cell(const fort_table_properties_t *props,
+                            size_t row, size_t col, char *style_tag, size_t sz)
+{
+    (void)sz;
+
+    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_BG_COLOR);
+    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
+
+    style_tag[0] = '\0';
+
+    if (text_style < n_styles) {
+        strcat(style_tag, text_styles[text_style]);
+    } else {
+        goto error;
+    }
+
+    if (bg_color_number < n_bg_colors) {
+        strcat(style_tag, bg_colors[bg_color_number]);
+    } else {
+        goto error;
+    }
+
+    return;
+
+error:
+    // shouldn't be here
+    assert(0);
+    style_tag[0] = '\0';
+    return;
+}
+
+void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
+                                  size_t row, size_t col, char *reset_style_tag, size_t sz)
+{
+    (void)sz;
+
+    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_BG_COLOR);
+    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
+
+    reset_style_tag[0] = '\0';
+
+    if (text_style < n_styles) {
+        strcat(reset_style_tag, reset_text_styles[text_style]);
+    } else {
+        goto error;
+    }
+
+    if (bg_color_number < n_bg_colors) {
+        strcat(reset_style_tag, reset_bg_colors[bg_color_number]);
+    } else {
+        goto error;
+    }
+
+    return;
+
+error:
+    // shouldn't be here
+    assert(0);
+    reset_style_tag[0] = '\0';
+    return;
+}
+
+
+void get_style_tag_for_content(const fort_table_properties_t *props,
+                               size_t row, size_t col, char *style_tag, size_t sz)
+{
+    (void)sz;
+
+    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
+    unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
+    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_BG_COLOR);
+
+    style_tag[0] = '\0';
+
+    if (text_style < n_styles) {
+        strcat(style_tag, text_styles[text_style]);
+    } else {
+        goto error;
+    }
+
+    if (fg_color_number < n_fg_colors) {
+        strcat(style_tag, fg_colors[fg_color_number]);
+    } else {
+        goto error;
+    }
+
+    if (bg_color_number < n_bg_colors) {
+        strcat(style_tag, bg_colors[bg_color_number]);
+    } else {
+        goto error;
+    }
+
+    return;
+
+error:
+    // shouldn't be here
+    assert(0);
+    style_tag[0] = '\0';
+    return;
+}
+
+void get_reset_style_tag_for_content(const fort_table_properties_t *props,
+                                     size_t row, size_t col, char *reset_style_tag, size_t sz)
+{
+    (void)sz;
+
+    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
+    unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
+    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_BG_COLOR);
+
+    reset_style_tag[0] = '\0';
+
+    if (text_style < n_styles) {
+        strcat(reset_style_tag, reset_text_styles[text_style]);
+    } else {
+        goto error;
+    }
+
+    if (fg_color_number < n_fg_colors) {
+        strcat(reset_style_tag, reset_fg_colors[fg_color_number]);
+    } else {
+        goto error;
+    }
+
+    if (bg_color_number < n_bg_colors) {
+        strcat(reset_style_tag, reset_bg_colors[bg_color_number]);
+    } else {
+        goto error;
+    }
+
+    return;
+
+error:
+    // shouldn't be here
+    assert(0);
+    reset_style_tag[0] = '\0';
+    return;
+}
 
 /*****************************************************************************
  *               COLUMN PROPERTIES
@@ -14,7 +261,8 @@ struct fort_cell_props g_default_cell_properties = {
     /* properties */
     FT_CPROP_MIN_WIDTH  | FT_CPROP_TEXT_ALIGN | FT_CPROP_TOP_PADDING
     | FT_CPROP_BOTTOM_PADDING | FT_CPROP_LEFT_PADDING | FT_CPROP_RIGHT_PADDING
-    | FT_CPROP_EMPTY_STR_HEIGHT,
+    | FT_CPROP_EMPTY_STR_HEIGHT | FT_CPROP_CONT_FG_COLOR | FT_CPROP_CELL_BG_COLOR
+    | FT_CPROP_CONT_BG_COLOR | FT_CPROP_CELL_TEXT_STYLE | FT_CPROP_CONT_TEXT_STYLE,
 
     0,             /* col_min_width */
     FT_ALIGNED_LEFT,  /* align */
@@ -25,6 +273,11 @@ struct fort_cell_props g_default_cell_properties = {
     1,      /* cell_empty_string_height */
 
     FT_ROW_COMMON, /* row_type */
+    FT_COLOR_DEFAULT, /* content_fg_color_number */
+    FT_COLOR_DEFAULT, /* content_bg_color_number */
+    FT_COLOR_DEFAULT, /* cell_bg_color_number */
+    FT_TSTYLE_DEFAULT, /* cell_text_style */
+    FT_TSTYLE_DEFAULT, /* content_text_style */
 };
 
 static int get_prop_value_if_exists_otherwise_default(const struct fort_cell_props *cell_opts, uint32_t property)
@@ -50,6 +303,16 @@ static int get_prop_value_if_exists_otherwise_default(const struct fort_cell_pro
             return cell_opts->cell_empty_string_height;
         case FT_CPROP_ROW_TYPE:
             return cell_opts->row_type;
+        case FT_CPROP_CONT_FG_COLOR:
+            return cell_opts->content_fg_color_number;
+        case FT_CPROP_CONT_BG_COLOR:
+            return cell_opts->content_bg_color_number;
+        case FT_CPROP_CELL_BG_COLOR:
+            return cell_opts->cell_bg_color_number;
+        case FT_CPROP_CELL_TEXT_STYLE:
+            return cell_opts->cell_text_style;
+        case FT_CPROP_CONT_TEXT_STYLE:
+            return cell_opts->content_text_style;
         default:
             /* todo: implement later */
             exit(333);
@@ -120,6 +383,7 @@ FT_INTERNAL
 int get_cell_property_value_hierarcial(const fort_table_properties_t *propertiess, size_t row, size_t column, uint32_t property)
 {
     assert(propertiess);
+    size_t row_origin = row;
 
     const fort_cell_props_t *opt = NULL;
     if (propertiess->cell_properties != NULL) {
@@ -127,14 +391,28 @@ int get_cell_property_value_hierarcial(const fort_table_properties_t *properties
             opt = cget_cell_prop(propertiess->cell_properties, row, column);
             if (opt != NULL && PROP_IS_SET(opt->properties, property))
                 break;
-            if (row != FT_ANY_ROW) {
+
+            if (row != FT_ANY_ROW && column != FT_ANY_COLUMN) {
                 row = FT_ANY_ROW;
                 continue;
-            }
-            if (column != FT_ANY_COLUMN) {
+            } else if (row == FT_ANY_ROW && column != FT_ANY_COLUMN) {
+                row = row_origin;
+                column = FT_ANY_COLUMN;
+                continue;
+            } else if (row != FT_ANY_ROW  && column == FT_ANY_COLUMN) {
+                row = FT_ANY_ROW;
                 column = FT_ANY_COLUMN;
                 continue;
             }
+
+//            if (row != FT_ANY_ROW) {
+//                row = FT_ANY_ROW;
+//                continue;
+//            }
+//            if (column != FT_ANY_COLUMN) {
+//                column = FT_ANY_COLUMN;
+//                continue;
+//            }
 
             opt = NULL;
             break;
@@ -172,6 +450,16 @@ static fort_status_t set_cell_property_impl(fort_cell_props_t *opt, uint32_t pro
         opt->cell_empty_string_height = value;
     } else if (PROP_IS_SET(property, FT_CPROP_ROW_TYPE)) {
         opt->row_type = (enum ft_row_type)value;
+    } else if (PROP_IS_SET(property, FT_CPROP_CONT_FG_COLOR)) {
+        opt->content_fg_color_number = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_CONT_BG_COLOR)) {
+        opt->content_bg_color_number = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_CELL_BG_COLOR)) {
+        opt->cell_bg_color_number = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_CELL_TEXT_STYLE)) {
+        opt->cell_text_style = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_CONT_TEXT_STYLE)) {
+        opt->content_text_style = value;
     }
 
     return FT_SUCCESS;

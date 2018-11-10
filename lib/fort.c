@@ -142,15 +142,16 @@ typedef struct fort_row fort_row_t;
 /*typedef struct ft_table ft_table_t;*/
 typedef struct separator separator_t;
 
-
-
-
 enum CellType {
     CommonCell,
     GroupMasterCell,
     GroupSlaveCell
 };
 
+enum request_geom_type {
+    VISIBLE_GEOMETRY,
+    INTERN_REPR_GEOMETRY
+};
 
 /*****************************************************************************
  *               LIBFORT helpers
@@ -180,6 +181,15 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
             goto clear; \
         } \
         written += tmp; \
+    } while(0)
+
+#define CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(statement) \
+    do { \
+        tmp = statement; \
+        if (tmp < 0) {\
+            goto clear; \
+        } \
+        invisible_written += tmp; \
     } while(0)
 
 
@@ -339,11 +349,13 @@ FT_INTERNAL
 size_t buffer_text_width(string_buffer_t *buffer);
 
 FT_INTERNAL
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t buf_len, const context_t *context);
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t total_buf_len,
+                  const context_t *context, const char *content_style_tag, const char *reset_content_style_tag);
 
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t buf_len, const context_t *context);
+int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t total_buf_len,
+                   const context_t *context, const char *content_style_tag, const char *reset_content_style_tag);
 #endif /* FT_HAVE_WCHAR */
 
 #endif /* STRING_BUFFER_H */
@@ -368,6 +380,19 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 #define PROP_SET(ft_props, property) ((ft_props) |=(property))
 #define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)property))
 
+#define TEXT_STYLE_TAG_MAX_SIZE 64
+
+void get_style_tag_for_cell(const fort_table_properties_t *props,
+                            size_t row, size_t col, char *style_tag, size_t sz);
+void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
+                                  size_t row, size_t col, char *style_tag, size_t sz);
+
+void get_style_tag_for_content(const fort_table_properties_t *props,
+                               size_t row, size_t col, char *style_tag, size_t sz);
+void get_reset_style_tag_for_content(const fort_table_properties_t *props,
+                                     size_t row, size_t col, char *style_tag, size_t sz);
+
+
 struct fort_cell_props {
     size_t cell_row;
     size_t cell_col;
@@ -380,6 +405,11 @@ struct fort_cell_props {
     unsigned int cell_padding_right;
     unsigned int cell_empty_string_height;
     enum ft_row_type row_type;
+    unsigned int content_fg_color_number;
+    unsigned int content_bg_color_number;
+    unsigned int cell_bg_color_number;
+    unsigned int cell_text_style;
+    unsigned int content_text_style;
 };
 
 typedef struct fort_cell_props fort_cell_props_t;
@@ -561,7 +591,7 @@ FT_INTERNAL
 fort_cell_t *copy_cell(fort_cell_t *cell);
 
 FT_INTERNAL
-size_t hint_width_cell(const fort_cell_t *cell, const context_t *context);
+size_t hint_width_cell(const fort_cell_t *cell, const context_t *context, enum request_geom_type geom);
 
 FT_INTERNAL
 size_t hint_height_cell(const fort_cell_t *cell, const context_t *context);
@@ -730,10 +760,12 @@ fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row);
 FT_INTERNAL
 string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table);
 
+
 FT_INTERNAL
 fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
         size_t **col_width_arr_p, size_t *col_width_arr_sz,
-        size_t **row_height_arr_p, size_t *row_height_arr_sz);
+        size_t **row_height_arr_p, size_t *row_height_arr_sz,
+        enum request_geom_type geom);
 
 FT_INTERNAL
 fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width);
@@ -749,10 +781,257 @@ fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *wi
    Begin of file "properties.c"
  ********************************************************/
 
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 #include <assert.h>
 /* #include "properties.h" */ /* Commented by amalgamation script */
-/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 /* #include "vector.h" */ /* Commented by amalgamation script */
+
+#define FT_RESET_COLOR "\033[0m"
+
+const char *fg_colors[] = {
+    "",
+    "\033[30m",
+    "\033[31m",
+    "\033[32m",
+    "\033[33m",
+    "\033[34m",
+    "\033[35m",
+    "\033[36m",
+    "\033[37m",
+    "\033[90m",
+    "\033[91m",
+    "\033[92m",
+    "\033[93m",
+    "\033[94m",
+    "\033[95m",
+    "\033[96m",
+    "\033[97m",
+};
+
+const char *reset_fg_colors[] = {
+    "",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+    "\033[39m",
+};
+
+const char *bg_colors[] = {
+    "",
+    "\033[40m",
+    "\033[41m",
+    "\033[42m",
+    "\033[43m",
+    "\033[44m",
+    "\033[45m",
+    "\033[46m",
+    "\033[47m",
+    "\033[100m",
+    "\033[101m",
+    "\033[102m",
+    "\033[103m",
+    "\033[104m",
+    "\033[105m",
+    "\033[106m",
+    "\033[107m",
+};
+
+const char *reset_bg_colors[] = {
+    "",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+    "\033[49m",
+};
+
+
+const char *text_styles[] = {
+    "",
+    "\033[1m",
+    "\033[2m",
+    "\033[4m",
+    "\033[5m",
+    "\033[7m",
+    "\033[8m",
+};
+
+const char *reset_text_styles[] = {
+    "",
+    "\033[21m",
+    "\033[22m",
+    "\033[24m",
+    "\033[25m",
+    "\033[27m",
+    "\033[28m",
+};
+
+
+static const size_t n_fg_colors = sizeof(fg_colors) / sizeof(fg_colors[0]);
+static const size_t n_bg_colors = sizeof(bg_colors) / sizeof(bg_colors[0]);
+static const size_t n_styles = sizeof(text_styles) / sizeof(text_styles[0]);
+
+void get_style_tag_for_cell(const fort_table_properties_t *props,
+                            size_t row, size_t col, char *style_tag, size_t sz)
+{
+    (void)sz;
+
+    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_BG_COLOR);
+    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
+
+    style_tag[0] = '\0';
+
+    if (text_style < n_styles) {
+        strcat(style_tag, text_styles[text_style]);
+    } else {
+        goto error;
+    }
+
+    if (bg_color_number < n_bg_colors) {
+        strcat(style_tag, bg_colors[bg_color_number]);
+    } else {
+        goto error;
+    }
+
+    return;
+
+error:
+    // shouldn't be here
+    assert(0);
+    style_tag[0] = '\0';
+    return;
+}
+
+void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
+                                  size_t row, size_t col, char *reset_style_tag, size_t sz)
+{
+    (void)sz;
+
+    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_BG_COLOR);
+    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
+
+    reset_style_tag[0] = '\0';
+
+    if (text_style < n_styles) {
+        strcat(reset_style_tag, reset_text_styles[text_style]);
+    } else {
+        goto error;
+    }
+
+    if (bg_color_number < n_bg_colors) {
+        strcat(reset_style_tag, reset_bg_colors[bg_color_number]);
+    } else {
+        goto error;
+    }
+
+    return;
+
+error:
+    // shouldn't be here
+    assert(0);
+    reset_style_tag[0] = '\0';
+    return;
+}
+
+
+void get_style_tag_for_content(const fort_table_properties_t *props,
+                               size_t row, size_t col, char *style_tag, size_t sz)
+{
+    (void)sz;
+
+    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
+    unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
+    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_BG_COLOR);
+
+    style_tag[0] = '\0';
+
+    if (text_style < n_styles) {
+        strcat(style_tag, text_styles[text_style]);
+    } else {
+        goto error;
+    }
+
+    if (fg_color_number < n_fg_colors) {
+        strcat(style_tag, fg_colors[fg_color_number]);
+    } else {
+        goto error;
+    }
+
+    if (bg_color_number < n_bg_colors) {
+        strcat(style_tag, bg_colors[bg_color_number]);
+    } else {
+        goto error;
+    }
+
+    return;
+
+error:
+    // shouldn't be here
+    assert(0);
+    style_tag[0] = '\0';
+    return;
+}
+
+void get_reset_style_tag_for_content(const fort_table_properties_t *props,
+                                     size_t row, size_t col, char *reset_style_tag, size_t sz)
+{
+    (void)sz;
+
+    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
+    unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
+    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_BG_COLOR);
+
+    reset_style_tag[0] = '\0';
+
+    if (text_style < n_styles) {
+        strcat(reset_style_tag, reset_text_styles[text_style]);
+    } else {
+        goto error;
+    }
+
+    if (fg_color_number < n_fg_colors) {
+        strcat(reset_style_tag, reset_fg_colors[fg_color_number]);
+    } else {
+        goto error;
+    }
+
+    if (bg_color_number < n_bg_colors) {
+        strcat(reset_style_tag, reset_bg_colors[bg_color_number]);
+    } else {
+        goto error;
+    }
+
+    return;
+
+error:
+    // shouldn't be here
+    assert(0);
+    reset_style_tag[0] = '\0';
+    return;
+}
 
 /*****************************************************************************
  *               COLUMN PROPERTIES
@@ -765,7 +1044,8 @@ struct fort_cell_props g_default_cell_properties = {
     /* properties */
     FT_CPROP_MIN_WIDTH  | FT_CPROP_TEXT_ALIGN | FT_CPROP_TOP_PADDING
     | FT_CPROP_BOTTOM_PADDING | FT_CPROP_LEFT_PADDING | FT_CPROP_RIGHT_PADDING
-    | FT_CPROP_EMPTY_STR_HEIGHT,
+    | FT_CPROP_EMPTY_STR_HEIGHT | FT_CPROP_CONT_FG_COLOR | FT_CPROP_CELL_BG_COLOR
+    | FT_CPROP_CONT_BG_COLOR | FT_CPROP_CELL_TEXT_STYLE | FT_CPROP_CONT_TEXT_STYLE,
 
     0,             /* col_min_width */
     FT_ALIGNED_LEFT,  /* align */
@@ -776,6 +1056,11 @@ struct fort_cell_props g_default_cell_properties = {
     1,      /* cell_empty_string_height */
 
     FT_ROW_COMMON, /* row_type */
+    FT_COLOR_DEFAULT, /* content_fg_color_number */
+    FT_COLOR_DEFAULT, /* content_bg_color_number */
+    FT_COLOR_DEFAULT, /* cell_bg_color_number */
+    FT_TSTYLE_DEFAULT, /* cell_text_style */
+    FT_TSTYLE_DEFAULT, /* content_text_style */
 };
 
 static int get_prop_value_if_exists_otherwise_default(const struct fort_cell_props *cell_opts, uint32_t property)
@@ -801,6 +1086,16 @@ static int get_prop_value_if_exists_otherwise_default(const struct fort_cell_pro
             return cell_opts->cell_empty_string_height;
         case FT_CPROP_ROW_TYPE:
             return cell_opts->row_type;
+        case FT_CPROP_CONT_FG_COLOR:
+            return cell_opts->content_fg_color_number;
+        case FT_CPROP_CONT_BG_COLOR:
+            return cell_opts->content_bg_color_number;
+        case FT_CPROP_CELL_BG_COLOR:
+            return cell_opts->cell_bg_color_number;
+        case FT_CPROP_CELL_TEXT_STYLE:
+            return cell_opts->cell_text_style;
+        case FT_CPROP_CONT_TEXT_STYLE:
+            return cell_opts->content_text_style;
         default:
             /* todo: implement later */
             exit(333);
@@ -871,6 +1166,7 @@ FT_INTERNAL
 int get_cell_property_value_hierarcial(const fort_table_properties_t *propertiess, size_t row, size_t column, uint32_t property)
 {
     assert(propertiess);
+    size_t row_origin = row;
 
     const fort_cell_props_t *opt = NULL;
     if (propertiess->cell_properties != NULL) {
@@ -878,14 +1174,28 @@ int get_cell_property_value_hierarcial(const fort_table_properties_t *properties
             opt = cget_cell_prop(propertiess->cell_properties, row, column);
             if (opt != NULL && PROP_IS_SET(opt->properties, property))
                 break;
-            if (row != FT_ANY_ROW) {
+
+            if (row != FT_ANY_ROW && column != FT_ANY_COLUMN) {
                 row = FT_ANY_ROW;
                 continue;
-            }
-            if (column != FT_ANY_COLUMN) {
+            } else if (row == FT_ANY_ROW && column != FT_ANY_COLUMN) {
+                row = row_origin;
+                column = FT_ANY_COLUMN;
+                continue;
+            } else if (row != FT_ANY_ROW  && column == FT_ANY_COLUMN) {
+                row = FT_ANY_ROW;
                 column = FT_ANY_COLUMN;
                 continue;
             }
+
+//            if (row != FT_ANY_ROW) {
+//                row = FT_ANY_ROW;
+//                continue;
+//            }
+//            if (column != FT_ANY_COLUMN) {
+//                column = FT_ANY_COLUMN;
+//                continue;
+//            }
 
             opt = NULL;
             break;
@@ -923,6 +1233,16 @@ static fort_status_t set_cell_property_impl(fort_cell_props_t *opt, uint32_t pro
         opt->cell_empty_string_height = value;
     } else if (PROP_IS_SET(property, FT_CPROP_ROW_TYPE)) {
         opt->row_type = (enum ft_row_type)value;
+    } else if (PROP_IS_SET(property, FT_CPROP_CONT_FG_COLOR)) {
+        opt->content_fg_color_number = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_CONT_BG_COLOR)) {
+        opt->content_bg_color_number = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_CELL_BG_COLOR)) {
+        opt->cell_bg_color_number = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_CELL_TEXT_STYLE)) {
+        opt->cell_text_style = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_CONT_TEXT_STYLE)) {
+        opt->content_text_style = value;
     }
 
     return FT_SUCCESS;
@@ -1569,7 +1889,8 @@ fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *col
 FT_INTERNAL
 fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
         size_t **col_width_arr_p, size_t *col_width_arr_sz,
-        size_t **row_height_arr_p, size_t *row_height_arr_sz)
+        size_t **row_height_arr_p, size_t *row_height_arr_sz,
+        enum request_geom_type geom)
 {
     if (table == NULL) {
         return FT_ERROR;
@@ -1606,7 +1927,7 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
             if (cell) {
                 switch (get_cell_type(cell)) {
                     case CommonCell:
-                        col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context));
+                        col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context, geom));
                         break;
                     case GroupMasterCell:
                         combined_cells_found = 1;
@@ -1631,7 +1952,7 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
                 context.row = row;
                 if (cell) {
                     if (get_cell_type(cell) == GroupMasterCell) {
-                        size_t hint_width = hint_width_cell(cell, &context);
+                        size_t hint_width = hint_width_cell(cell, &context, geom);
                         size_t slave_col = col + group_cell_number(row_p, col);
                         size_t cur_adj_col = col;
                         size_t group_width = col_width_arr[col];
@@ -1690,7 +2011,7 @@ fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *wi
     size_t *col_width_arr = NULL;
     size_t *row_height_arr = NULL;
 
-    int status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
+    int status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, INTERN_REPR_GEOMETRY);
     if (FT_IS_ERROR(status))
         return status;
 
@@ -2347,7 +2668,7 @@ const char *ft_to_string(const ft_table_t *table)
     size_t rows = 0;
     size_t *col_width_arr = NULL;
     size_t *row_height_arr = NULL;
-    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
+    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, VISIBLE_GEOMETRY);
     if (FT_IS_ERROR(status))
         return NULL;
 
@@ -2451,7 +2772,7 @@ const wchar_t *ft_to_wstring(const ft_table_t *table)
     size_t rows = 0;
     size_t *col_width_arr = NULL;
     size_t *row_height_arr = NULL;
-    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
+    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, VISIBLE_GEOMETRY);
 
     if (rows == 0)
         return EMPTY_STRING;
@@ -3353,7 +3674,8 @@ size_t buffer_text_width(string_buffer_t *buffer)
 
 
 FT_INTERNAL
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t buf_len, const context_t *context)
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t total_buf_len,
+                  const context_t *context, const char *content_style_tag, const char *reset_content_style_tag)
 {
 #define CHAR_TYPE char
 #define NULL_CHAR '\0'
@@ -3366,6 +3688,8 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
 #define SNPRINT_N_STRINGS  snprint_n_strings
 #define STR_N_SUBSTRING str_n_substring
 #define STR_ITER_WIDTH str_iter_width
+
+    size_t buf_len = total_buf_len - strlen(content_style_tag) - strlen(reset_content_style_tag);
 
     if (buffer == NULL || buffer->str.data == NULL
         || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
@@ -3404,7 +3728,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     const CHAR_TYPE *end = NULL;
     CHAR_TYPE old_value;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, left, SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
 
     STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
     if (beg == NULL || end == NULL)
@@ -3416,10 +3740,13 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
         return - 1;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
+
     *(CHAR_TYPE *)end = old_value;
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, right, SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
     return written;
 
 clear:
@@ -3441,7 +3768,8 @@ clear:
 
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t buf_len, const context_t *context)
+int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t total_buf_len,
+                   const context_t *context, const char *content_style_tag, const char *reset_content_style_tag)
 {
 #define CHAR_TYPE wchar_t
 #define NULL_CHAR L'\0'
@@ -3454,6 +3782,8 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 #define SNPRINT_N_STRINGS  wsnprint_n_string
 #define STR_N_SUBSTRING wstr_n_substring
 #define STR_ITER_WIDTH wcs_iter_width
+
+    size_t buf_len = total_buf_len - strlen(content_style_tag) - strlen(reset_content_style_tag);
 
     if (buffer == NULL || buffer->str.data == NULL
         || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
@@ -3492,7 +3822,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     const CHAR_TYPE *end = NULL;
     CHAR_TYPE old_value;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, left, SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
 
     STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
     if (beg == NULL || end == NULL)
@@ -3504,10 +3834,13 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
         return - 1;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
+
     *(CHAR_TYPE *)end = old_value;
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, right, SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
     return written;
 
 clear:
@@ -3752,6 +4085,9 @@ int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
     if (n * str_len > INT_MAX)
         return -1;
 
+    if (str_len == 0)
+        return 0;
+
     int status = snprintf(buf, length, "%0*d", (int)(n * str_len), 0);
     if (status < 0)
         return status;
@@ -3797,8 +4133,36 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
     /* This function doesn't work properly with multibyte characters
      * so it is better return an error in this case
      */
-    if (str_len > 1)
-        return -1;
+    if (str_len > 1) {
+        const unsigned char *p = (const unsigned char *)str;
+        while (*p) {
+            if (*p <= 127)
+                p++;
+            else {
+                const int SIZE = 64;
+                wchar_t wcs[SIZE];
+                const char *ptr = str;
+                int length;
+                length = mbsrtowcs(wcs, (const char **)&ptr, SIZE, NULL);
+                wcs[length] = L'\0';
+                if (length > 1) {
+                    return -1;
+                } else {
+                    swprintf(buf, length, L"%0*d", (int)(n * str_len), 0);
+                    int k = n;
+                    while (k) {
+                        *buf = *wcs;
+                        ++buf;
+                        --k;
+                    }
+                    buf[n] = L'\0';
+                    return n;
+                }
+
+//                return -1;
+            }
+        }
+    }
 
     if (length <= n * str_len)
         return -1;
@@ -3806,11 +4170,12 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
     if (n == 0)
         return 0;
 
-
-
     /* To ensure valid return value it is safely not print such big strings */
     if (n * str_len > INT_MAX)
         return -1;
+
+    if (str_len == 0)
+        return 0;
 
     int status = swprintf(buf, length, L"%0*d", (int)(n * str_len), 0);
     if (status < 0)
@@ -5245,9 +5610,8 @@ enum CellType get_cell_type(const fort_cell_t *cell)
     return cell->cell_type;
 }
 
-
 FT_INTERNAL
-size_t hint_width_cell(const fort_cell_t *cell, const context_t *context)
+size_t hint_width_cell(const fort_cell_t *cell, const context_t *context, enum request_geom_type geom)
 {
     /* todo:
      * At the moment min width includes paddings. Maybe it is better that min width weren't include
@@ -5263,6 +5627,25 @@ size_t hint_width_cell(const fort_cell_t *cell, const context_t *context)
         result += buffer_text_width(cell->str_buffer);
     }
     result = MAX(result, (size_t)get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_MIN_WIDTH));
+
+    if (geom == INTERN_REPR_GEOMETRY) {
+        char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+        get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        result += strlen(cell_style_tag);
+
+        char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+        get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        result += strlen(reset_cell_style_tag);
+
+        char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+        get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        result += strlen(content_style_tag);
+
+        char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+        get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        result += strlen(reset_content_style_tag);
+    }
+
     return result;
 }
 
@@ -5287,14 +5670,12 @@ FT_INTERNAL
 int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context)
 {
     const char *space_char = " ";
-    int (*buffer_printf_)(string_buffer_t *, size_t, char *, size_t, const context_t *) = buffer_printf;
+    int (*buffer_printf_)(string_buffer_t *, size_t, char *, size_t, const context_t *, const char *, const char *) = buffer_printf;
 //    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
     int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
 
-
-
     if (cell == NULL || buf_len == 0
-        || (buf_len <= hint_width_cell(cell, context))) {
+        || (buf_len <= hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
         return -1;
     }
 
@@ -5302,30 +5683,83 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
     unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
 
+    int written = 0;
+    int invisible_written = 0;
+    int tmp = 0;
+//    int left = cell_padding_left;
+//    int right = cell_padding_right;
+
+    /* todo: Dirty hack with changing buf_len! need refactoring. */
+    /* Also maybe it is better to move all struff with colors to buffers? */
+    char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(cell_style_tag);
+
+    char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(reset_cell_style_tag);
+
+    char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(content_style_tag);
+
+    char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(reset_content_style_tag);
+
+    /*    CELL_STYLE_T   LEFT_PADDING   CONTENT_STYLE_T  CONTENT   RESET_CONTENT_STYLE_T    RIGHT_PADDING   RESET_CELL_STYLE_T
+     *  |              |              |                |         |                       |                |                    |
+     *        L1                                                                                                    R1
+     *                     L2                                                                   R2
+     *                                     L3                               R3
+     */
+
+    size_t L2 = cell_padding_left;
+
+    size_t R2 = cell_padding_right;
+    size_t R3 = strlen(reset_cell_style_tag);
+
+#define TOTAL_WRITTEN (written + invisible_written)
+#define RIGHT (cell_padding_right + extra_right)
+
+#define WRITE_CELL_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, cell_style_tag))
+#define WRITE_RESET_CELL_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_cell_style_tag))
+#define WRITE_CONTENT_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, content_style_tag))
+#define WRITE_RESET_CONTENT_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_content_style_tag))
+
     if (row >= hint_height_cell(cell, context)
         || row < cell_padding_top
         || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
-        return snprint_n_strings_(buf, buf_len, buf_len - 1, space_char);
+        WRITE_CELL_STYLE_TAG;
+        WRITE_CONTENT_STYLE_TAG;
+        WRITE_RESET_CONTENT_STYLE_TAG;
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
+        WRITE_RESET_CELL_STYLE_TAG;
+        return TOTAL_WRITTEN;
     }
 
+    WRITE_CELL_STYLE_TAG;
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, L2, space_char));
+    if (cell->str_buffer) {
+        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, context, content_style_tag, reset_content_style_tag));
+    } else {
+        WRITE_CONTENT_STYLE_TAG;
+        WRITE_RESET_CONTENT_STYLE_TAG;
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, space_char));
+    }
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
+    WRITE_RESET_CELL_STYLE_TAG;
 
-    int written = 0;
-    int tmp = 0;
-    int left = cell_padding_left;
-    int right = cell_padding_right;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, left, space_char));
-
-    if (cell->str_buffer)
-        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + written, buf_len - written - right, context));
-    else
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, buf_len - written - right, space_char));
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, right, space_char));
-
-    return written;
+    return TOTAL_WRITTEN;
 
 clear:
     return -1;
+#undef WRITE_CELL_STYLE_TAG
+#undef WRITE_RESET_CELL_STYLE_TAG
+#undef WRITE_CONTENT_STYLE_TAG
+#undef WRITE_RESET_CONTENT_STYLE_TAG
+#undef TOTAL_WRITTEN
+#undef RIGHT
 }
 
 #ifdef FT_HAVE_WCHAR
@@ -5333,14 +5767,12 @@ FT_INTERNAL
 int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context)
 {
     const char *space_char = " ";
-    int (*buffer_printf_)(string_buffer_t *, size_t, wchar_t *, size_t, const context_t *) = buffer_wprintf;
+    int (*buffer_printf_)(string_buffer_t *, size_t, wchar_t *, size_t, const context_t *, const char *, const char *) = buffer_wprintf;
 //    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
     int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
 
-
-
     if (cell == NULL || buf_len == 0
-        || (buf_len <= hint_width_cell(cell, context))) {
+        || (buf_len <= hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
         return -1;
     }
 
@@ -5348,29 +5780,81 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
     unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
     unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
 
+    int written = 0;
+    int invisible_written = 0;
+    int tmp = 0;
+
+    /* todo: Dirty hack with changing buf_len! need refactoring. */
+    /* Also maybe it is better to move all struff with colors to buffers? */
+    char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(cell_style_tag);
+
+    char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(reset_cell_style_tag);
+
+    char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(content_style_tag);
+
+    char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(reset_content_style_tag);
+
+    /*    CELL_STYLE_T   LEFT_PADDING   CONTENT_STYLE_T  CONTENT   RESET_CONTENT_STYLE_T    RIGHT_PADDING   RESET_CELL_STYLE_T
+     *  |              |              |                |         |                       |                |                    |
+     *        L1                                                                                                    R1
+     *                     L2                                                                   R2
+     *                                     L3                               R3
+     */
+
+    size_t L2 = cell_padding_left;
+
+    size_t R2 = cell_padding_right;
+    size_t R3 = strlen(reset_cell_style_tag);
+
+#define TOTAL_WRITTEN (written + invisible_written)
+#define RIGHT (right + extra_right)
+
+#define WRITE_CELL_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, cell_style_tag))
+#define WRITE_RESET_CELL_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_cell_style_tag))
+#define WRITE_CONTENT_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, content_style_tag))
+#define WRITE_RESET_CONTENT_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_content_style_tag))
+
     if (row >= hint_height_cell(cell, context)
         || row < cell_padding_top
         || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
-        return snprint_n_strings_(buf, buf_len, buf_len - 1, space_char);
+        WRITE_CELL_STYLE_TAG;
+        WRITE_CONTENT_STYLE_TAG;
+        WRITE_RESET_CONTENT_STYLE_TAG;
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
+        WRITE_RESET_CELL_STYLE_TAG;
+        return TOTAL_WRITTEN;
     }
 
-    int written = 0;
-    int tmp = 0;
-    int left = cell_padding_left;
-    int right = cell_padding_right;
+    WRITE_CELL_STYLE_TAG;
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, L2, space_char));
+    if (cell->str_buffer) {
+        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, context, content_style_tag, reset_content_style_tag));
+    } else {
+        WRITE_CONTENT_STYLE_TAG;
+        WRITE_RESET_CONTENT_STYLE_TAG;
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, space_char));
+    }
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
+    WRITE_RESET_CELL_STYLE_TAG;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, left, space_char));
-
-    if (cell->str_buffer)
-        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + written, buf_len - written - right, context));
-    else
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, buf_len - written - right, space_char));
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + written, buf_len - written, right, space_char));
-
-    return written;
+    return TOTAL_WRITTEN;
 
 clear:
     return -1;
+#undef WRITE_CELL_STYLE_TAG
+#undef WRITE_RESET_CELL_STYLE_TAG
+#undef WRITE_CONTENT_STYLE_TAG
+#undef WRITE_RESET_CONTENT_STYLE_TAG
+#undef TOTAL_WRITTEN
+#undef RIGHT
 }
 #endif
 

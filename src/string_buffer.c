@@ -341,7 +341,8 @@ size_t buffer_text_width(string_buffer_t *buffer)
 
 
 FT_INTERNAL
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t buf_len, const context_t *context)
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t total_buf_len,
+                  const context_t *context, const char *content_style_tag, const char *reset_content_style_tag)
 {
 #define CHAR_TYPE char
 #define NULL_CHAR '\0'
@@ -354,6 +355,8 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
 #define SNPRINT_N_STRINGS  snprint_n_strings
 #define STR_N_SUBSTRING str_n_substring
 #define STR_ITER_WIDTH str_iter_width
+
+    size_t buf_len = total_buf_len - strlen(content_style_tag) - strlen(reset_content_style_tag);
 
     if (buffer == NULL || buffer->str.data == NULL
         || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
@@ -392,7 +395,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     const CHAR_TYPE *end = NULL;
     CHAR_TYPE old_value;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, left, SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
 
     STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
     if (beg == NULL || end == NULL)
@@ -404,10 +407,13 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
         return - 1;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
+
     *(CHAR_TYPE *)end = old_value;
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, right, SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
     return written;
 
 clear:
@@ -429,7 +435,8 @@ clear:
 
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t buf_len, const context_t *context)
+int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t total_buf_len,
+                   const context_t *context, const char *content_style_tag, const char *reset_content_style_tag)
 {
 #define CHAR_TYPE wchar_t
 #define NULL_CHAR L'\0'
@@ -442,6 +449,8 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 #define SNPRINT_N_STRINGS  wsnprint_n_string
 #define STR_N_SUBSTRING wstr_n_substring
 #define STR_ITER_WIDTH wcs_iter_width
+
+    size_t buf_len = total_buf_len - strlen(content_style_tag) - strlen(reset_content_style_tag);
 
     if (buffer == NULL || buffer->str.data == NULL
         || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
@@ -480,7 +489,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     const CHAR_TYPE *end = NULL;
     CHAR_TYPE old_value;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, left, SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
 
     STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
     if (beg == NULL || end == NULL)
@@ -492,10 +501,13 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
         return - 1;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
+
     *(CHAR_TYPE *)end = old_value;
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, buf_len - written, right, SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
     return written;
 
 clear:

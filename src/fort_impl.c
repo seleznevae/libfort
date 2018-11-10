@@ -611,7 +611,7 @@ const char *ft_to_string(const ft_table_t *table)
     size_t rows = 0;
     size_t *col_width_arr = NULL;
     size_t *row_height_arr = NULL;
-    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
+    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, VISIBLE_GEOMETRY);
     if (FT_IS_ERROR(status))
         return NULL;
 
@@ -715,7 +715,7 @@ const wchar_t *ft_to_wstring(const ft_table_t *table)
     size_t rows = 0;
     size_t *col_width_arr = NULL;
     size_t *row_height_arr = NULL;
-    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows);
+    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, VISIBLE_GEOMETRY);
 
     if (rows == 0)
         return EMPTY_STRING;

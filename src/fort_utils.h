@@ -105,15 +105,16 @@ typedef struct fort_row fort_row_t;
 /*typedef struct ft_table ft_table_t;*/
 typedef struct separator separator_t;
 
-
-
-
 enum CellType {
     CommonCell,
     GroupMasterCell,
     GroupSlaveCell
 };
 
+enum request_geom_type {
+    VISIBLE_GEOMETRY,
+    INTERN_REPR_GEOMETRY
+};
 
 /*****************************************************************************
  *               LIBFORT helpers
@@ -143,6 +144,15 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
             goto clear; \
         } \
         written += tmp; \
+    } while(0)
+
+#define CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(statement) \
+    do { \
+        tmp = statement; \
+        if (tmp < 0) {\
+            goto clear; \
+        } \
+        invisible_written += tmp; \
     } while(0)
 
 

@@ -33,6 +33,7 @@ void test_table_write(void);
 void test_table_border_style(void);
 void test_table_builtin_border_styles(void);
 void test_table_cell_properties(void);
+void test_table_text_styles(void);
 void test_table_tbl_properties(void);
 void test_memory_errors(void);
 

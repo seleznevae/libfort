@@ -9,6 +9,19 @@
 #define PROP_SET(ft_props, property) ((ft_props) |=(property))
 #define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)property))
 
+#define TEXT_STYLE_TAG_MAX_SIZE 64
+
+void get_style_tag_for_cell(const fort_table_properties_t *props,
+                            size_t row, size_t col, char *style_tag, size_t sz);
+void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
+                                  size_t row, size_t col, char *style_tag, size_t sz);
+
+void get_style_tag_for_content(const fort_table_properties_t *props,
+                               size_t row, size_t col, char *style_tag, size_t sz);
+void get_reset_style_tag_for_content(const fort_table_properties_t *props,
+                                     size_t row, size_t col, char *style_tag, size_t sz);
+
+
 struct fort_cell_props {
     size_t cell_row;
     size_t cell_col;
@@ -21,6 +34,11 @@ struct fort_cell_props {
     unsigned int cell_padding_right;
     unsigned int cell_empty_string_height;
     enum ft_row_type row_type;
+    unsigned int content_fg_color_number;
+    unsigned int content_bg_color_number;
+    unsigned int cell_bg_color_number;
+    unsigned int cell_text_style;
+    unsigned int content_text_style;
 };
 
 typedef struct fort_cell_props fort_cell_props_t;
