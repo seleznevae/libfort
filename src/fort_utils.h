@@ -134,7 +134,9 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
 /*int snprint_n_chars(char *buf, size_t length, size_t n, char ch);*/
 /*int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);*/
 int snprint_n_strings(char *buf, size_t length, size_t n, const char *str);
+#if defined(FT_HAVE_WCHAR)
 int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
+#endif
 
 
 #define CHCK_RSLT_ADD_TO_WRITTEN(statement) \

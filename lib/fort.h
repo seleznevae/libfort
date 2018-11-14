@@ -721,10 +721,11 @@ int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
 #define FT_TSTYLE_DEFAULT           0
 #define FT_TSTYLE_BOLD              1
 #define FT_TSTYLE_DIM               2
-#define FT_TSTYLE_UNDERLINED        3
-#define FT_TSTYLE_BLINK             4
-#define FT_TSTYLE_INVERTED          5
-#define FT_TSTYLE_HIDDEN            6
+#define FT_TSTYLE_ITALIC            3
+#define FT_TSTYLE_UNDERLINED        4
+#define FT_TSTYLE_BLINK             5
+#define FT_TSTYLE_INVERTED          6
+#define FT_TSTYLE_HIDDEN            7
 /** @} */
 
 

@@ -11,13 +11,19 @@
 
 #define TEXT_STYLE_TAG_MAX_SIZE 64
 
+FT_INTERNAL
 void get_style_tag_for_cell(const fort_table_properties_t *props,
                             size_t row, size_t col, char *style_tag, size_t sz);
+
+FT_INTERNAL
 void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
                                   size_t row, size_t col, char *style_tag, size_t sz);
 
+FT_INTERNAL
 void get_style_tag_for_content(const fort_table_properties_t *props,
                                size_t row, size_t col, char *style_tag, size_t sz);
+
+FT_INTERNAL
 void get_reset_style_tag_for_content(const fort_table_properties_t *props,
                                      size_t row, size_t col, char *style_tag, size_t sz);
 

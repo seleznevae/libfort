@@ -171,7 +171,9 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
 /*int snprint_n_chars(char *buf, size_t length, size_t n, char ch);*/
 /*int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);*/
 int snprint_n_strings(char *buf, size_t length, size_t n, const char *str);
+#if defined(FT_HAVE_WCHAR)
 int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
+#endif
 
 
 #define CHCK_RSLT_ADD_TO_WRITTEN(statement) \
@@ -382,13 +384,19 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 
 #define TEXT_STYLE_TAG_MAX_SIZE 64
 
+FT_INTERNAL
 void get_style_tag_for_cell(const fort_table_properties_t *props,
                             size_t row, size_t col, char *style_tag, size_t sz);
+
+FT_INTERNAL
 void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
                                   size_t row, size_t col, char *style_tag, size_t sz);
 
+FT_INTERNAL
 void get_style_tag_for_content(const fort_table_properties_t *props,
                                size_t row, size_t col, char *style_tag, size_t sz);
+
+FT_INTERNAL
 void get_reset_style_tag_for_content(const fort_table_properties_t *props,
                                      size_t row, size_t col, char *style_tag, size_t sz);
 
@@ -873,6 +881,7 @@ const char *text_styles[] = {
     "",
     "\033[1m",
     "\033[2m",
+    "\033[3m",
     "\033[4m",
     "\033[5m",
     "\033[7m",
@@ -883,6 +892,7 @@ const char *reset_text_styles[] = {
     "",
     "\033[21m",
     "\033[22m",
+    "\033[23m",
     "\033[24m",
     "\033[25m",
     "\033[27m",
@@ -4126,12 +4136,15 @@ int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
 //    return (int)n;
 //}
 
+#if defined(FT_HAVE_WCHAR)
+#define WCS_SIZE 64
+
 int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);
 
-    /* This function doesn't work properly with multibyte characters
-     * so it is better return an error in this case
+    /* note: baybe it's, better to return -1 in case of multibyte character strings
+     * (not sure this case is done correctly).
      */
     if (str_len > 1) {
         const unsigned char *p = (const unsigned char *)str;
@@ -4139,17 +4152,16 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
             if (*p <= 127)
                 p++;
             else {
-                const int SIZE = 64;
-                wchar_t wcs[SIZE];
+                wchar_t wcs[WCS_SIZE];
                 const char *ptr = str;
-                int length;
-                length = mbsrtowcs(wcs, (const char **)&ptr, SIZE, NULL);
-                wcs[length] = L'\0';
-                if (length > 1) {
+                size_t length;
+                length = mbsrtowcs(wcs, (const char **)&ptr, WCS_SIZE, NULL);
+                /* for simplicity */
+                if ((length == (size_t) - 1) || length > 1) {
                     return -1;
                 } else {
-                    swprintf(buf, length, L"%0*d", (int)(n * str_len), 0);
-                    int k = n;
+                    wcs[length] = L'\0';
+                    size_t k = n;
                     while (k) {
                         *buf = *wcs;
                         ++buf;
@@ -4158,8 +4170,6 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
                     buf[n] = L'\0';
                     return n;
                 }
-
-//                return -1;
             }
         }
     }
@@ -4189,7 +4199,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
     }
     return (int)(n * str_len);
 }
-
+#endif
 
 /********************************************************
    End of file "fort_utils.c"
