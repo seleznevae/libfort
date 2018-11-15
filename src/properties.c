@@ -523,6 +523,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     "+", "-", "+", "+",           \
+    "+", "+",                     \
     },                            \
 }
 
@@ -546,6 +547,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     "+", "-", "+", "+",           \
+    "+", "+",                     \
     },                            \
 }
 
@@ -569,6 +571,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     " ", "-", " ", " ",           \
+    " ", " ",                     \
     },                            \
 }
 
@@ -592,6 +595,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     " ", "-", "-", " ",           \
+    "-", "-",                     \
     },                            \
 }
 
@@ -615,6 +619,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     ":", ".", ":", ":",           \
+    ":", ":",                     \
     },                            \
 }
 
@@ -638,6 +643,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     " ", " ", " ", " ",           \
+    " ", " ",                     \
     },                            \
 }
 
@@ -662,6 +668,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     "├", "─", "┼", "┤",           \
+    "┬", "┴",                     \
     },                            \
 }
 
@@ -685,6 +692,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     "├", "─", "┼", "┤",           \
+    "┬", "┴",                     \
     },                            \
 }
 
@@ -709,6 +717,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     "╠", "═", "╬", "╣",           \
+    "╦", "╩",                     \
     },                            \
 }
 
@@ -733,6 +742,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     "╠", "═", "╪", "╣",           \
+    "╤", "╧",                     \
     },                            \
 }
 
@@ -757,6 +767,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     "┣", "━", "╋", "┫",           \
+    "┳", "┻",                     \
     },                            \
 }
 
@@ -780,6 +791,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     "┣", "━", "┿", "┫",           \
+    "┯", "┷",                     \
     },                            \
 }
 
@@ -803,6 +815,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     /* separator_chars */         \
     {                             \
     "▌", "━", "╋", "▐",           \
+    "╋", "╋",                     \
     },                            \
 }
 

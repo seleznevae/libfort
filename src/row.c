@@ -306,9 +306,17 @@ int print_row_separator(char *buffer, size_t buffer_sz,
         IV = &(context->table_properties->border_style.separator_chars[II_sip]);
         R = &(context->table_properties->border_style.separator_chars[RH_sip]);
 
-        IT = &(context->table_properties->border_style.separator_chars[II_sip]);
-        IB = &(context->table_properties->border_style.separator_chars[II_sip]);
+        IT = &(context->table_properties->border_style.separator_chars[TI_sip]);
+        IB = &(context->table_properties->border_style.separator_chars[BI_sip]);
         II = &(context->table_properties->border_style.separator_chars[IH_sip]);
+
+        if (lower_row == NULL) {
+            L = &(*border_chars)[BL_bip];
+            R = &(*border_chars)[BR_bip];
+        } else if (upper_row == NULL) {
+            L = &(*border_chars)[TL_bip];
+            R = &(*border_chars)[TR_bip];
+        }
     } else {
         switch (separatorPos) {
             case TopSeparator:
@@ -481,9 +489,17 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
         IV = &(context->table_properties->border_style.separator_chars[II_sip]);
         R = &(context->table_properties->border_style.separator_chars[RH_sip]);
 
-        IT = &(context->table_properties->border_style.separator_chars[II_sip]);
-        IB = &(context->table_properties->border_style.separator_chars[II_sip]);
+        IT = &(context->table_properties->border_style.separator_chars[TI_sip]);
+        IB = &(context->table_properties->border_style.separator_chars[BI_sip]);
         II = &(context->table_properties->border_style.separator_chars[IH_sip]);
+
+        if (lower_row == NULL) {
+            L = &(*border_chars)[BL_bip];
+            R = &(*border_chars)[BR_bip];
+        } else if (upper_row == NULL) {
+            L = &(*border_chars)[TL_bip];
+            R = &(*border_chars)[TR_bip];
+        }
     } else {
         switch (separatorPos) {
             case TopSeparator:

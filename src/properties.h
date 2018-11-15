@@ -142,6 +142,9 @@ enum SeparatorItemPos {
     II_sip = 2,
     RH_sip = 3,
 
+    TI_sip = 4,
+    BI_sip = 5,
+
     SepratorItemPosSize
 };
 

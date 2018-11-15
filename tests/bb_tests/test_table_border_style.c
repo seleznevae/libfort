@@ -128,6 +128,39 @@ void test_table_border_style(void)
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+
+    WHEN("Separator complex testing") {
+        table = ft_create_table();
+        ft_set_border_style(table, FT_DOUBLE2_STYLE);
+        assert(table);
+
+        ft_add_separator(table);
+        assert_true(ft_write_ln(table, "1", "2", "3") == FT_SUCCESS);
+        ft_add_separator(table);
+        assert_true(ft_write_ln(table, "1", "2", "3") == FT_SUCCESS);
+        ft_add_separator(table);
+        ft_set_cell_span(table, 2, 0, 2);
+        assert_true(ft_write_ln(table, "1", "2", "3") == FT_SUCCESS);
+        ft_add_separator(table);
+        ft_set_cell_span(table, 3, 1, 2);
+        assert_true(ft_write_ln(table, "1", "2", "3") == FT_SUCCESS);
+        ft_add_separator(table);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "╔═══╤═══╤═══╗\n"
+            "║ 1 │ 2 │ 3 ║\n"
+            "╠═══╪═══╪═══╣\n"
+            "║ 1 │ 2 │ 3 ║\n"
+            "╠═══╧═══╪═══╣\n"
+            "║     1 │ 3 ║\n"
+            "╠═══╤═══╧═══╣\n"
+            "║ 1 │     2 ║\n"
+            "╚═══╧═══════╝\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
 }
 
 

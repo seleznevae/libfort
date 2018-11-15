@@ -146,6 +146,65 @@ void custom_border_style_example(void)
     ft_destroy_table(table);
 }
 
+
+void colorfull_table(void)
+{
+    setlocale(LC_CTYPE, "");
+
+    ft_table_t *table = ft_create_table();
+    ft_set_border_style(table, FT_DOUBLE_STYLE);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+
+    /* Filling table with data */
+    ft_wwrite_ln(table, L"Test", L"Iterations", L"ms/op", L"Ticks", L"Passed");
+    ft_wwrite_ln(table, L"n-body", L"1000", L"1.6", L"1,500,000", L"✔");
+    ft_add_separator(table);
+    ft_wwrite_ln(table, L"regex-redux", L"1000", L"0.8", L"8,000,000");
+    ft_wwrite_ln(table, L"", L"2500", L"3.9", L"27,000,000", L"✖");
+    ft_wwrite_ln(table, L"", L"10000", L"12.5", L"96,800,000");
+    ft_add_separator(table);
+    ft_wwrite_ln(table, L"mandelbrot", L"1000", L"8.1", L"89,000,000");
+    ft_wwrite_ln(table, L"", L"2500", L"19.8", L"320,000,000", L"✔");
+    ft_wwrite_ln(table, L"", L"10000", L"60.7", L"987,000,000");
+    ft_add_separator(table);
+    ft_set_cell_span(table, 8, 0, 4);
+    ft_wwrite_ln(table, L"Total result", L"", L"", L"", L"✖");
+
+
+    /* Setting text styles */
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD);
+    ft_set_cell_prop(table, 8, FT_ANY_COLUMN, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD);
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD);
+    ft_set_cell_prop(table, FT_ANY_ROW, 4, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD);
+    ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_ITALIC);
+
+
+    /* Set alignment */
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_RIGHT);
+    ft_set_cell_prop(table, FT_ANY_ROW, 2, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_RIGHT);
+    ft_set_cell_prop(table, FT_ANY_ROW, 3, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_RIGHT);
+    ft_set_cell_prop(table, FT_ANY_ROW, 4, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, 8, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+
+    /* Set colors */
+    ft_set_cell_prop(table, 1, 4, FT_CPROP_CONT_FG_COLOR, FT_COLOR_GREEN);
+    ft_set_cell_prop(table, 3, 4, FT_CPROP_CONT_FG_COLOR, FT_COLOR_RED);
+    ft_set_cell_prop(table, 6, 4, FT_CPROP_CONT_FG_COLOR, FT_COLOR_GREEN);
+    ft_set_cell_prop(table, 8, 4, FT_CPROP_CONT_FG_COLOR, FT_COLOR_RED);
+    ft_set_cell_prop(table, 3, 2, FT_CPROP_CONT_FG_COLOR, FT_COLOR_RED);
+    ft_set_cell_prop(table, 4, 3, FT_CPROP_CONT_BG_COLOR, FT_COLOR_LIGHT_RED);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_CONT_FG_COLOR, FT_COLOR_LIGHT_BLUE);
+
+    const wchar_t *table_wstr = ft_to_wstring(table);
+    if (table_wstr) {
+        fwprintf(stderr, L"Table:\n%ls\n ", table_wstr);
+    } else {
+        fwprintf(stderr, L"Table conversion failed !!!\n ");
+    }
+
+    ft_destroy_table(table);
+}
+
 int main(void)
 {
     base_example();
@@ -153,6 +212,7 @@ int main(void)
     fill_table_with_data_example();
     complex_layout_example();
     custom_border_style_example();
+    colorfull_table();
 
     int result = 0;
 

@@ -922,6 +922,7 @@ static void set_border_props_for_props(fort_table_properties_t *properties, cons
     }
 
     SEP_CHARS[LH_sip] = SEP_CHARS[RH_sip] = SEP_CHARS[II_sip] = header_border_chs->out_intersect_ch;
+    SEP_CHARS[TI_sip] = SEP_CHARS[BI_sip] = header_border_chs->out_intersect_ch;
     SEP_CHARS[IH_sip] = style->hor_separator_char;
 
 
