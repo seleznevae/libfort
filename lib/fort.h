@@ -624,6 +624,7 @@ extern struct ft_border_style *FT_DOT_STYLE;
 extern struct ft_border_style *FT_EMPTY_STYLE;
 extern struct ft_border_style *FT_SOLID_STYLE;
 extern struct ft_border_style *FT_SOLID_ROUND_STYLE;
+extern struct ft_border_style *FT_NICE_STYLE;
 extern struct ft_border_style *FT_DOUBLE_STYLE;
 extern struct ft_border_style *FT_DOUBLE2_STYLE;
 extern struct ft_border_style *FT_BOLD_STYLE;

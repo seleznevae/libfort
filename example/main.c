@@ -152,7 +152,7 @@ void colorfull_table(void)
     setlocale(LC_CTYPE, "");
 
     ft_table_t *table = ft_create_table();
-    ft_set_border_style(table, FT_DOUBLE_STYLE);
+    ft_set_border_style(table, FT_NICE_STYLE);
     ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
 
     /* Filling table with data */
@@ -170,14 +170,12 @@ void colorfull_table(void)
     ft_set_cell_span(table, 8, 0, 4);
     ft_wwrite_ln(table, L"Total result", L"", L"", L"", L"✖");
 
-
     /* Setting text styles */
     ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD);
     ft_set_cell_prop(table, 8, FT_ANY_COLUMN, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD);
     ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD);
     ft_set_cell_prop(table, FT_ANY_ROW, 4, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD);
     ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_ITALIC);
-
 
     /* Set alignment */
     ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_RIGHT);
@@ -195,9 +193,13 @@ void colorfull_table(void)
     ft_set_cell_prop(table, 4, 3, FT_CPROP_CONT_BG_COLOR, FT_COLOR_LIGHT_RED);
     ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_CONT_FG_COLOR, FT_COLOR_LIGHT_BLUE);
 
+    /* Move table to the center of the screen */
+    ft_set_tbl_prop(table, FT_TPROP_TOP_MARGIN, 1);
+    ft_set_tbl_prop(table, FT_TPROP_LEFT_MARGIN, 10);
+
     const wchar_t *table_wstr = ft_to_wstring(table);
     if (table_wstr) {
-        fwprintf(stderr, L"Table:\n%ls\n ", table_wstr);
+        fwprintf(stderr, L"Table:\n%ls\n\n ", table_wstr);
     } else {
         fwprintf(stderr, L"Table conversion failed !!!\n ");
     }

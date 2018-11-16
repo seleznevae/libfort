@@ -696,8 +696,7 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     },                            \
 }
 
-
-#define DOUBLE_STYLE  {           \
+#define NICE_STYLE  {             \
     /* border_chars */            \
     {                             \
      "╔", "═", "╦", "╗",          \
@@ -716,10 +715,36 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     },                            \
     /* separator_chars */         \
     {                             \
-    "╠", "═", "╬", "╣",           \
-    "╦", "╩",                     \
+    "╟", "─", "╫", "╢",           \
+    "╥", "╨",                     \
     },                            \
 }
+
+#define DOUBLE_STYLE  {         \
+    /* border_chars */          \
+    {                           \
+     "╔", "═", "╦", "╗",        \
+     "║", "║", "║",             \
+     "", "", "", "",            \
+     "╚", "═", "╩", "╝",        \
+     "┣", "┻", "┣", "┳",        \
+    },                          \
+    /* header_border_chars */   \
+    {                           \
+    "╔", "═", "╦", "╗",         \
+    "║", "║", "║",              \
+    "╠", "═", "╬", "╣",         \
+    "╚", "═", "╩", "╝",         \
+    "┣", "╦", "┣", "╩",         \
+    },                          \
+    /* separator_chars */       \
+    {                           \
+    "╠", "═", "╬", "╣",         \
+    "╦", "╩",                   \
+    },                          \
+}
+
+
 
 
 #define DOUBLE2_STYLE  {          \
@@ -828,6 +853,7 @@ struct fort_border_style FORT_DOT_STYLE = DOT_STYLE;
 struct fort_border_style FORT_EMPTY_STYLE = EMPTY_STYLE;
 struct fort_border_style FORT_SOLID_STYLE = SOLID_STYLE;
 struct fort_border_style FORT_SOLID_ROUND_STYLE = SOLID_ROUND_STYLE;
+struct fort_border_style FORT_NICE_STYLE = NICE_STYLE;
 struct fort_border_style FORT_DOUBLE_STYLE = DOUBLE_STYLE;
 struct fort_border_style FORT_DOUBLE2_STYLE = DOUBLE2_STYLE;
 struct fort_border_style FORT_BOLD_STYLE = BOLD_STYLE;

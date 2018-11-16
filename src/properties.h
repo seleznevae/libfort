@@ -162,6 +162,7 @@ extern struct fort_border_style FORT_DOT_STYLE;
 extern struct fort_border_style FORT_EMPTY_STYLE;
 extern struct fort_border_style FORT_SOLID_STYLE;
 extern struct fort_border_style FORT_SOLID_ROUND_STYLE;
+extern struct fort_border_style FORT_NICE_STYLE;
 extern struct fort_border_style FORT_DOUBLE_STYLE;
 extern struct fort_border_style FORT_DOUBLE2_STYLE;
 extern struct fort_border_style FORT_BOLD_STYLE;
