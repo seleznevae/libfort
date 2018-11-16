@@ -110,6 +110,18 @@ script:
   - ./libfort_test_dev
   - ./libfort_test
 
+  # Test without WCHAR support
+  - cd ..
+  - rm -r build/*
+  - mkdir -p build
+  - cd build
+  - cmake .. -DFORT_ENABLE_WCHAR=OFF  
+  - cmake --build . --target all 
+  - ls
+  - ./libfort_example
+  - ./libfort_test_dev
+  - ./libfort_test
+
   # Test build without optimizations and with ubsan
   - |
     if [ "${CC}" = 'gcc-7' ]; then
