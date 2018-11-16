@@ -418,8 +418,8 @@ struct fort_cell_props {
     unsigned int content_fg_color_number;
     unsigned int content_bg_color_number;
     unsigned int cell_bg_color_number;
-    unsigned int cell_text_style;
-    unsigned int content_text_style;
+    enum ft_text_style cell_text_style;
+    enum ft_text_style content_text_style;
 };
 
 typedef struct fort_cell_props fort_cell_props_t;
@@ -920,8 +920,12 @@ void get_style_tag_for_cell(const fort_table_properties_t *props,
 
     style_tag[0] = '\0';
 
-    if (text_style < n_styles) {
-        strcat(style_tag, text_styles[text_style]);
+    if (text_style < (1U << n_styles)) {
+        for (size_t i = 0; i < n_styles; ++i) {
+            if (text_style & (1 << i)) {
+                strcat(style_tag, text_styles[i]);
+            }
+        }
     } else {
         goto error;
     }
@@ -951,8 +955,12 @@ void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
 
     reset_style_tag[0] = '\0';
 
-    if (text_style < n_styles) {
-        strcat(reset_style_tag, reset_text_styles[text_style]);
+    if (text_style < (1U << n_styles)) {
+        for (size_t i = 0; i < n_styles; ++i) {
+            if (text_style & (1 << i)) {
+                strcat(reset_style_tag, reset_text_styles[i]);
+            }
+        }
     } else {
         goto error;
     }
@@ -984,8 +992,12 @@ void get_style_tag_for_content(const fort_table_properties_t *props,
 
     style_tag[0] = '\0';
 
-    if (text_style < n_styles) {
-        strcat(style_tag, text_styles[text_style]);
+    if (text_style < (1U << n_styles)) {
+        for (size_t i = 0; i < n_styles; ++i) {
+            if (text_style & (1 << i)) {
+                strcat(style_tag, text_styles[i]);
+            }
+        }
     } else {
         goto error;
     }
@@ -1022,8 +1034,12 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
 
     reset_style_tag[0] = '\0';
 
-    if (text_style < n_styles) {
-        strcat(reset_style_tag, reset_text_styles[text_style]);
+    if (text_style < (1U << n_styles)) {
+        for (size_t i = 0; i < n_styles; ++i) {
+            if (text_style & (1 << i)) {
+                strcat(reset_style_tag, reset_text_styles[i]);
+            }
+        }
     } else {
         goto error;
     }
@@ -1256,9 +1272,24 @@ static fort_status_t set_cell_property_impl(fort_cell_props_t *opt, uint32_t pro
     } else if (PROP_IS_SET(property, FT_CPROP_CELL_BG_COLOR)) {
         opt->cell_bg_color_number = value;
     } else if (PROP_IS_SET(property, FT_CPROP_CELL_TEXT_STYLE)) {
-        opt->cell_text_style = value;
+//        opt->cell_text_style = value;
+        enum ft_text_style v = (enum ft_text_style)value;
+        if (v == FT_TSTYLE_DEFAULT) {
+            opt->cell_text_style = FT_TSTYLE_DEFAULT;
+        } else {
+//            opt->cell_text_style &= ~((unsigned)FT_TSTYLE_DEFAULT);
+            opt->cell_text_style |= v;
+        }
     } else if (PROP_IS_SET(property, FT_CPROP_CONT_TEXT_STYLE)) {
-        opt->content_text_style = value;
+//        opt->content_text_style = value;
+
+        enum ft_text_style v = (enum ft_text_style)value;
+        if (v == FT_TSTYLE_DEFAULT) {
+            opt->content_text_style = v;
+        } else {
+            //          opt->cell_text_style &= ~((unsigned)FT_TSTYLE_DEFAULT);
+            opt->content_text_style |= v;
+        }
     }
 
     return FT_SUCCESS;

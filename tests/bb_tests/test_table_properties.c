@@ -825,6 +825,46 @@ void test_table_text_styles(void)
     }
 #endif
 
+    WHEN("Simple table with one cell and multiple content style") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD) == FT_SUCCESS);
+        assert(ft_write(table, "42") == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+----+\n"
+            "|\033[1m\033[4m\033[21m\033[24m    |\n"
+            "| \033[1m\033[4m42\033[21m\033[24m |\n"
+            "|\033[1m\033[4m\033[21m\033[24m    |\n"
+            "+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    WHEN("Simple table with one cell and multiple content style(wide strings case)") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD) == FT_SUCCESS);
+        assert(ft_wwrite(table, L"42") == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+----+\n"
+            L"|\033[1m\033[4m\033[21m\033[24m    |\n"
+            L"| \033[1m\033[4m42\033[21m\033[24m |\n"
+            L"|\033[1m\033[4m\033[21m\033[24m    |\n"
+            L"+----+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+
     WHEN("Simple table with one cell and cell style") {
         table = ft_create_table();
         assert(table);
@@ -862,6 +902,47 @@ void test_table_text_styles(void)
         ft_destroy_table(table);
     }
 #endif
+
+    WHEN("Simple table with one cell and multiple cell style") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_TEXT_STYLE, FT_TSTYLE_BOLD) == FT_SUCCESS);
+        assert(ft_write(table, "42") == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+----+\n"
+            "|\033[1m\033[4m    \033[21m\033[24m|\n"
+            "|\033[1m\033[4m 42 \033[21m\033[24m|\n"
+            "|\033[1m\033[4m    \033[21m\033[24m|\n"
+            "+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    WHEN("Simple table with one cell and multiple cell style(wide strings case)") {
+        table = ft_create_table();
+        assert(table);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS);
+        assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_TEXT_STYLE, FT_TSTYLE_BOLD) == FT_SUCCESS);
+        assert(ft_wwrite(table, L"42") == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+----+\n"
+            L"|\033[1m\033[4m    \033[21m\033[24m|\n"
+            L"|\033[1m\033[4m 42 \033[21m\033[24m|\n"
+            L"|\033[1m\033[4m    \033[21m\033[24m|\n"
+            L"+----+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+
 
     WHEN("Simple table with one cell background color, content foreground color and style.") {
         set_test_properties_as_default();

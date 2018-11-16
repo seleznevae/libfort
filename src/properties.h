@@ -43,8 +43,8 @@ struct fort_cell_props {
     unsigned int content_fg_color_number;
     unsigned int content_bg_color_number;
     unsigned int cell_bg_color_number;
-    unsigned int cell_text_style;
-    unsigned int content_text_style;
+    enum ft_text_style cell_text_style;
+    enum ft_text_style content_text_style;
 };
 
 typedef struct fort_cell_props fort_cell_props_t;

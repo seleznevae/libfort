@@ -716,18 +716,18 @@ int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
 /** @} */
 
 /**
- * @name Text styles.
- * @{
+ * Text styles.
  */
-#define FT_TSTYLE_DEFAULT           0
-#define FT_TSTYLE_BOLD              1
-#define FT_TSTYLE_DIM               2
-#define FT_TSTYLE_ITALIC            3
-#define FT_TSTYLE_UNDERLINED        4
-#define FT_TSTYLE_BLINK             5
-#define FT_TSTYLE_INVERTED          6
-#define FT_TSTYLE_HIDDEN            7
-/** @} */
+enum ft_text_style {
+    FT_TSTYLE_DEFAULT    = (1U << 0),
+    FT_TSTYLE_BOLD       = (1U << 1),
+    FT_TSTYLE_DIM        = (1U << 2),
+    FT_TSTYLE_ITALIC     = (1U << 3),
+    FT_TSTYLE_UNDERLINED = (1U << 4),
+    FT_TSTYLE_BLINK      = (1U << 5),
+    FT_TSTYLE_INVERTED   = (1U << 6),
+    FT_TSTYLE_HIDDEN     = (1U << 7)
+};
 
 
 /**
