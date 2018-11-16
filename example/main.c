@@ -149,6 +149,8 @@ void custom_border_style_example(void)
 
 void colorfull_table(void)
 {
+#if defined(FT_HAVE_WCHAR)
+
     setlocale(LC_CTYPE, "");
 
     ft_table_t *table = ft_create_table();
@@ -205,6 +207,7 @@ void colorfull_table(void)
     }
 
     ft_destroy_table(table);
+#endif
 }
 
 int main(void)

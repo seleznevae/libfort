@@ -7,7 +7,7 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 # Built options
 option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
 option(FORT_ENABLE_ASTYLE "Enable astyle" OFF)
-option(FORT_ENABLE_WCHAR "Enable wchar support" ON)
+option(FORT_ENABLE_WCHAR "Enable wchar support" OFF)
 set(FORT_BUILD_TYPE "common" CACHE STRING "Build types(common, asan, ubsan, coveralls)")
 
 
