@@ -23,7 +23,7 @@
 ╚════════════════════╧══════════════════════════════════════════════════════════════╝
 -->
 
-![TableSample](https://github.com/seleznevae/libfort/blob/master/docs/images/carbon2.png)
+![TableSample](https://github.com/seleznevae/libfort/blob/master/docs/images/color_table.png)
 
 **Features:**
 - Easy to integrate (only 2 files)
