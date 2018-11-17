@@ -260,13 +260,13 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
             else {
                 wchar_t wcs[WCS_SIZE];
                 const char *ptr = str;
-                size_t length;
-                length = mbsrtowcs(wcs, (const char **)&ptr, WCS_SIZE, NULL);
+                size_t wcs_len;
+                wcs_len = mbsrtowcs(wcs, (const char **)&ptr, WCS_SIZE, NULL);
                 /* for simplicity */
-                if ((length == (size_t) - 1) || length > 1) {
+                if ((wcs_len == (size_t) - 1) || wcs_len > 1) {
                     return -1;
                 } else {
-                    wcs[length] = L'\0';
+                    wcs[wcs_len] = L'\0';
                     size_t k = n;
                     while (k) {
                         *buf = *wcs;

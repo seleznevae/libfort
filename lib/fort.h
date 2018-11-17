@@ -693,27 +693,27 @@ int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
 
 
 /**
- * @name Colors.
- * @{
+ * Colors.
  */
-#define FT_COLOR_DEFAULT           0
-#define FT_COLOR_BLACK             1
-#define FT_COLOR_RED               2
-#define FT_COLOR_GREEN             3
-#define FT_COLOR_YELLOW            4
-#define FT_COLOR_BLUE              5
-#define FT_COLOR_MAGENTA           6
-#define FT_COLOR_CYAN              7
-#define FT_COLOR_LIGHT_GRAY        8
-#define FT_COLOR_DARK_GRAY         9
-#define FT_COLOR_LIGHT_RED         10
-#define FT_COLOR_LIGHT_GREEN       11
-#define FT_COLOR_LIGHT_YELLOW      12
-#define FT_COLOR_LIGHT_BLUE        13
-#define FT_COLOR_LIGHT_MAGENTA     15
-#define FT_COLOR_LIGHT_CYAN        16
-#define FT_COLOR_LIGHT_WHYTE       17
-/** @} */
+enum ft_color {
+    FT_COLOR_DEFAULT        = 0,
+    FT_COLOR_BLACK          = 1,
+    FT_COLOR_RED            = 2,
+    FT_COLOR_GREEN          = 3,
+    FT_COLOR_YELLOW         = 4,
+    FT_COLOR_BLUE           = 5,
+    FT_COLOR_MAGENTA        = 6,
+    FT_COLOR_CYAN           = 7,
+    FT_COLOR_LIGHT_GRAY     = 8,
+    FT_COLOR_DARK_GRAY      = 9,
+    FT_COLOR_LIGHT_RED      = 10,
+    FT_COLOR_LIGHT_GREEN    = 11,
+    FT_COLOR_LIGHT_YELLOW   = 12,
+    FT_COLOR_LIGHT_BLUE     = 13,
+    FT_COLOR_LIGHT_MAGENTA  = 15,
+    FT_COLOR_LIGHT_CYAN     = 16,
+    FT_COLOR_LIGHT_WHYTE    = 17
+};
 
 /**
  * Text styles.

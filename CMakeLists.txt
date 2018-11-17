@@ -52,8 +52,19 @@ if("${FORT_COMPILER}" STREQUAL "MSVC")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
 else("${FORT_COMPILER}" STREQUAL "MSVC")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -Wextra -Werror -std=c99 -Wpedantic")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -Wextra -Werror -std=c++11")
+    set(ADDITIONAL_WARNINGS "\
+        -Wduplicated-cond \
+        -Wlogical-op  \
+        -Wdouble-promotion \
+        -Wshadow \
+        -Wformat=2 \
+        -Wno-variadic-macros \
+        -Wcast-align \
+        ")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -Wextra -Werror -std=c99 -Wpedantic ${ADDITIONAL_WARNINGS}")
+
+    set(ADDITIONAL_WARNINGS "${ADDITIONAL_WARNINGS} -Wuseless-cast ")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -Wextra -Werror -std=c++11 ${ADDITIONAL_WARNINGS}")
 endif("${FORT_COMPILER}" STREQUAL "MSVC")
 
 

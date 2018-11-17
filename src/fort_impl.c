@@ -847,20 +847,20 @@ struct ft_border_style *FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME
 
 static void set_border_props_for_props(fort_table_properties_t *properties, const struct ft_border_style *style)
 {
-    if ((struct fort_border_style *)style == &FORT_BASIC_STYLE
-        || (struct fort_border_style *)style == &FORT_BASIC2_STYLE
-        || (struct fort_border_style *)style == &FORT_SIMPLE_STYLE
-        || (struct fort_border_style *)style == &FORT_DOT_STYLE
-        || (struct fort_border_style *)style == &FORT_PLAIN_STYLE
-        || (struct fort_border_style *)style == &FORT_EMPTY_STYLE
-        || (struct fort_border_style *)style == &FORT_SOLID_STYLE
-        || (struct fort_border_style *)style == &FORT_SOLID_ROUND_STYLE
-        || (struct fort_border_style *)style == &FORT_NICE_STYLE
-        || (struct fort_border_style *)style == &FORT_DOUBLE_STYLE
-        || (struct fort_border_style *)style == &FORT_DOUBLE2_STYLE
-        || (struct fort_border_style *)style == &FORT_BOLD_STYLE
-        || (struct fort_border_style *)style == &FORT_BOLD2_STYLE
-        || (struct fort_border_style *)style == &FORT_FRAME_STYLE) {
+    if ((const struct fort_border_style *)style == &FORT_BASIC_STYLE
+        || (const struct fort_border_style *)style == &FORT_BASIC2_STYLE
+        || (const struct fort_border_style *)style == &FORT_SIMPLE_STYLE
+        || (const struct fort_border_style *)style == &FORT_DOT_STYLE
+        || (const struct fort_border_style *)style == &FORT_PLAIN_STYLE
+        || (const struct fort_border_style *)style == &FORT_EMPTY_STYLE
+        || (const struct fort_border_style *)style == &FORT_SOLID_STYLE
+        || (const struct fort_border_style *)style == &FORT_SOLID_ROUND_STYLE
+        || (const struct fort_border_style *)style == &FORT_NICE_STYLE
+        || (const struct fort_border_style *)style == &FORT_DOUBLE_STYLE
+        || (const struct fort_border_style *)style == &FORT_DOUBLE2_STYLE
+        || (const struct fort_border_style *)style == &FORT_BOLD_STYLE
+        || (const struct fort_border_style *)style == &FORT_BOLD2_STYLE
+        || (const struct fort_border_style *)style == &FORT_FRAME_STYLE) {
         memcpy(&(properties->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
         return;
     }

@@ -1272,22 +1272,17 @@ static fort_status_t set_cell_property_impl(fort_cell_props_t *opt, uint32_t pro
     } else if (PROP_IS_SET(property, FT_CPROP_CELL_BG_COLOR)) {
         opt->cell_bg_color_number = value;
     } else if (PROP_IS_SET(property, FT_CPROP_CELL_TEXT_STYLE)) {
-//        opt->cell_text_style = value;
         enum ft_text_style v = (enum ft_text_style)value;
         if (v == FT_TSTYLE_DEFAULT) {
             opt->cell_text_style = FT_TSTYLE_DEFAULT;
         } else {
-//            opt->cell_text_style &= ~((unsigned)FT_TSTYLE_DEFAULT);
             opt->cell_text_style |= v;
         }
     } else if (PROP_IS_SET(property, FT_CPROP_CONT_TEXT_STYLE)) {
-//        opt->content_text_style = value;
-
         enum ft_text_style v = (enum ft_text_style)value;
         if (v == FT_TSTYLE_DEFAULT) {
             opt->content_text_style = v;
         } else {
-            //          opt->cell_text_style &= ~((unsigned)FT_TSTYLE_DEFAULT);
             opt->content_text_style |= v;
         }
     }
@@ -2990,20 +2985,20 @@ struct ft_border_style *FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME
 
 static void set_border_props_for_props(fort_table_properties_t *properties, const struct ft_border_style *style)
 {
-    if ((struct fort_border_style *)style == &FORT_BASIC_STYLE
-        || (struct fort_border_style *)style == &FORT_BASIC2_STYLE
-        || (struct fort_border_style *)style == &FORT_SIMPLE_STYLE
-        || (struct fort_border_style *)style == &FORT_DOT_STYLE
-        || (struct fort_border_style *)style == &FORT_PLAIN_STYLE
-        || (struct fort_border_style *)style == &FORT_EMPTY_STYLE
-        || (struct fort_border_style *)style == &FORT_SOLID_STYLE
-        || (struct fort_border_style *)style == &FORT_SOLID_ROUND_STYLE
-        || (struct fort_border_style *)style == &FORT_NICE_STYLE
-        || (struct fort_border_style *)style == &FORT_DOUBLE_STYLE
-        || (struct fort_border_style *)style == &FORT_DOUBLE2_STYLE
-        || (struct fort_border_style *)style == &FORT_BOLD_STYLE
-        || (struct fort_border_style *)style == &FORT_BOLD2_STYLE
-        || (struct fort_border_style *)style == &FORT_FRAME_STYLE) {
+    if ((const struct fort_border_style *)style == &FORT_BASIC_STYLE
+        || (const struct fort_border_style *)style == &FORT_BASIC2_STYLE
+        || (const struct fort_border_style *)style == &FORT_SIMPLE_STYLE
+        || (const struct fort_border_style *)style == &FORT_DOT_STYLE
+        || (const struct fort_border_style *)style == &FORT_PLAIN_STYLE
+        || (const struct fort_border_style *)style == &FORT_EMPTY_STYLE
+        || (const struct fort_border_style *)style == &FORT_SOLID_STYLE
+        || (const struct fort_border_style *)style == &FORT_SOLID_ROUND_STYLE
+        || (const struct fort_border_style *)style == &FORT_NICE_STYLE
+        || (const struct fort_border_style *)style == &FORT_DOUBLE_STYLE
+        || (const struct fort_border_style *)style == &FORT_DOUBLE2_STYLE
+        || (const struct fort_border_style *)style == &FORT_BOLD_STYLE
+        || (const struct fort_border_style *)style == &FORT_BOLD2_STYLE
+        || (const struct fort_border_style *)style == &FORT_FRAME_STYLE) {
         memcpy(&(properties->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
         return;
     }
@@ -4239,13 +4234,13 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
             else {
                 wchar_t wcs[WCS_SIZE];
                 const char *ptr = str;
-                size_t length;
-                length = mbsrtowcs(wcs, (const char **)&ptr, WCS_SIZE, NULL);
+                size_t wcs_len;
+                wcs_len = mbsrtowcs(wcs, (const char **)&ptr, WCS_SIZE, NULL);
                 /* for simplicity */
-                if ((length == (size_t) - 1) || length > 1) {
+                if ((wcs_len == (size_t) - 1) || wcs_len > 1) {
                     return -1;
                 } else {
-                    wcs[length] = L'\0';
+                    wcs[wcs_len] = L'\0';
                     size_t k = n;
                     while (k) {
                         *buf = *wcs;
