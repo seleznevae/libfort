@@ -58,10 +58,17 @@ else("${FORT_COMPILER}" STREQUAL "MSVC")
         -Wformat=2 \
         -Wno-variadic-macros \
         -Wcast-align \
+        -Wstrict-aliasing=2 \
+        -Wstrict-overflow=5 \
+        -Wfloat-equal \
+        -Wwrite-strings \
         ")
+    if("${FORT_COMPILER}" STREQUAL "GNU")
+        set(ADDITIONAL_WARNINGS "${ADDITIONAL_WARNINGS} -Wtrampolines -Wlogical-op")
+    endif("${FORT_COMPILER}" STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -Wextra -Werror -std=c99 -Wpedantic ${ADDITIONAL_WARNINGS}")
 
-    set(ADDITIONAL_WARNINGS "${ADDITIONAL_WARNINGS} -Wuseless-cast ")
+    set(ADDITIONAL_WARNINGS "${ADDITIONAL_WARNINGS} ")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -Wextra -Werror -std=c++11 ${ADDITIONAL_WARNINGS}")
 endif("${FORT_COMPILER}" STREQUAL "MSVC")
 

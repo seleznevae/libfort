@@ -588,8 +588,8 @@ public:
     class table_cell_iterator
     {
     public:
-        table_cell_iterator(std::size_t row_idx, std::size_t coll_idx,Table &table)
-            :row_idx_(row_idx), coll_idx_(coll_idx), table_(table) {}
+        table_cell_iterator(std::size_t row_idx, std::size_t coll_idx, Table &tbl)
+            :row_idx_(row_idx), coll_idx_(coll_idx), table_(tbl) {}
 
         table_cell_iterator& operator=(const char *str)
         {
@@ -607,8 +607,8 @@ public:
     class table_row_iterator
     {
     public:
-        table_row_iterator(std::size_t row_idx, Table &table)
-            :row_idx_(row_idx), table_(table) {}
+        table_row_iterator(std::size_t row_idx, Table &tbl)
+            :row_idx_(row_idx), table_(tbl) {}
 
         class table_cell_iterator
         operator[](std::size_t coll_idx)

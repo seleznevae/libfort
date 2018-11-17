@@ -164,7 +164,7 @@ void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col)
     table->cur_col = col;
 }
 
-
+FT_PRINTF_ATTRIBUTE_FORMAT(3, 0)
 static int ft_row_printf_impl(ft_table_t *table, size_t row, const char *fmt, va_list *va)
 {
 #define CREATE_ROW_FROM_FMT_STRING create_row_from_fmt_string
