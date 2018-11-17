@@ -2,16 +2,13 @@
 #include <assert.h>
 #include <string.h>
 
-/*****************************************************************************
- *               VECTOR IMPLEMENTATIONS
- * ***************************************************************************/
-
 struct vector {
     size_t m_size;
     void  *m_data;
     size_t m_capacity;
     size_t m_item_size;
 };
+
 
 static int vector_reallocate_(vector_t *vector, size_t new_capacity)
 {
@@ -25,7 +22,7 @@ static int vector_reallocate_(vector_t *vector, size_t new_capacity)
     return 0;
 }
 
-/* ------------ Constructors & Destructors ----------------------------- */
+
 FT_INTERNAL
 vector_t *create_vector(size_t item_size, size_t capacity)
 {
@@ -60,13 +57,6 @@ void destroy_vector(vector_t *vector)
 }
 
 
-/*
-FT_INTERNAL
-
-*/
-
-
-/* ----------- Nonmodifying functions --------------------------------- */
 FT_INTERNAL
 size_t vector_size(const vector_t *vector)
 {
@@ -82,7 +72,7 @@ size_t vector_capacity(const vector_t *vector)
     return vector->m_capacity;
 }
 
-/* ----------- Modifying functions ------------------------------------- */
+
 FT_INTERNAL
 int vector_push(vector_t *vector, const void *item)
 {

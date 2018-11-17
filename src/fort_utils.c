@@ -249,8 +249,8 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);
 
-    /* note: baybe it's, better to return -1 in case of multibyte character strings
-     * (not sure this case is done correctly).
+    /* note: baybe it's, better to return -1 in case of multibyte character
+     * strings (not sure this case is done correctly).
      */
     if (str_len > 1) {
         const unsigned char *p = (const unsigned char *)str;

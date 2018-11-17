@@ -490,7 +490,9 @@ int ft_row_wwrite(ft_table_t *table, size_t cols, const wchar_t *cells[])
     for (i = 0; i < cols; ++i) {
         int status = ft_wwrite_impl(table, cells[i]);
         if (FT_IS_ERROR(status)) {
-            /* todo: maybe current pos in case of error should be equal to the one before function call? */
+            /* todo: maybe current pos in case of error should be equal
+             * to the one before function call?
+             */
             return status;
         }
     }
@@ -517,7 +519,9 @@ int ft_table_write(ft_table_t *table, size_t rows, size_t cols, const char *tabl
     for (i = 0; i < rows; ++i) {
         int status = ft_row_write(table, cols, (const char **)&table_cells[i * cols]);
         if (FT_IS_ERROR(status)) {
-            /* todo: maybe current pos in case of error should be equal to the one before function call? */
+            /* todo: maybe current pos in case of error should be equal
+             * to the one before function call?
+             */
             return status;
         }
         if (i != rows - 1)
@@ -545,7 +549,9 @@ int ft_table_wwrite(ft_table_t *table, size_t rows, size_t cols, const wchar_t *
     for (i = 0; i < rows; ++i) {
         int status = ft_row_wwrite(table, cols, (const wchar_t **)&table_cells[i * cols]);
         if (FT_IS_ERROR(status)) {
-            /* todo: maybe current pos in case of error should be equal to the one before function call? */
+            /* todo: maybe current pos in case of error should be equal
+             * to the one before function call?
+             */
             return status;
         }
         if (i != rows - 1)
@@ -773,30 +779,6 @@ clear:
 #endif
 
 
-/*
- *  TMP
- */
-//static int dummy_function(void)
-//#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
-//__attribute__ ((unused))
-//#endif
-//;
-
-//static int dummy_function(void)
-//{
-//    if (0) {
-//        vector_t *v = create_vector(1, DEFAULT_VECTOR_CAPACITY);
-//        vector_clear(v);
-//        vector_erase(v, 0);
-//        vector_index_of(v, NULL);
-//        vector_capacity(v);
-//    }
-//    return 0;
-//}
-
-
-
-
 int ft_add_separator(ft_table_t *table)
 {
     assert(table);
@@ -822,10 +804,6 @@ int ft_add_separator(ft_table_t *table)
     return FT_SUCCESS;
 }
 
-
-
-
-/* ******************************************************************************* */
 
 
 struct ft_border_style *FT_BASIC_STYLE = (struct ft_border_style *) &FORT_BASIC_STYLE;

@@ -71,11 +71,10 @@ int get_cell_property_value_hierarcial(const fort_table_properties_t *properties
 FT_INTERNAL
 fort_status_t set_default_cell_property(uint32_t property, int value);
 
-/*****************************************************************************
- *               TABLE BORDER
- *****************************************************************************/
 
-/*
+/*         TABLE BORDER DESRIPTION
+ *
+ *
  *   TL TT TT TT TV TT TT TT TT TT TT TT TR
  *   LL          IV                      RR
  *   LL          IV                      RR
@@ -92,8 +91,9 @@ fort_status_t set_default_cell_property(uint32_t property, int value);
  */
 
 
-
-/*
+/*      HORIZONTAL SEPARATOR DESCRIPTION
+ *
+ *
  *   TL TT TT TT TV TT TT TT TV TT TT TT TR        <----- TopSeparator
  *   LL          IV          IV          RR
  *   LH IH IH IH II IH IH IH II IH IH IH RH        <----- InsideSeparator

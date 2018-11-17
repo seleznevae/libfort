@@ -268,9 +268,6 @@ error:
     return;
 }
 
-/*****************************************************************************
- *               COLUMN PROPERTIES
- * ***************************************************************************/
 
 struct fort_cell_props g_default_cell_properties = {
     FT_ANY_ROW,    /* cell_row */
@@ -423,15 +420,6 @@ int get_cell_property_value_hierarcial(const fort_table_properties_t *properties
                 continue;
             }
 
-//            if (row != FT_ANY_ROW) {
-//                row = FT_ANY_ROW;
-//                continue;
-//            }
-//            if (column != FT_ANY_COLUMN) {
-//                column = FT_ANY_COLUMN;
-//                continue;
-//            }
-
             opt = NULL;
             break;
         }
@@ -523,10 +511,6 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
 {
     return set_cell_property_impl(&g_default_cell_properties, property, value);
 }
-
-/*****************************************************************************
- *               PROPERTIESS
- * ***************************************************************************/
 
 
 #define BASIC_STYLE  {            \
@@ -1036,6 +1020,3 @@ fort_table_properties_t *copy_table_properties(const fort_table_properties_t *pr
 
     return new_opt;
 }
-
-
-

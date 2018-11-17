@@ -446,11 +446,10 @@ int get_cell_property_value_hierarcial(const fort_table_properties_t *properties
 FT_INTERNAL
 fort_status_t set_default_cell_property(uint32_t property, int value);
 
-/*****************************************************************************
- *               TABLE BORDER
- *****************************************************************************/
 
-/*
+/*         TABLE BORDER DESRIPTION
+ *
+ *
  *   TL TT TT TT TV TT TT TT TT TT TT TT TR
  *   LL          IV                      RR
  *   LL          IV                      RR
@@ -467,8 +466,9 @@ fort_status_t set_default_cell_property(uint32_t property, int value);
  */
 
 
-
-/*
+/*      HORIZONTAL SEPARATOR DESCRIPTION
+ *
+ *
  *   TL TT TT TT TV TT TT TT TV TT TT TT TR        <----- TopSeparator
  *   LL          IV          IV          RR
  *   LH IH IH IH II IH IH IH II IH IH IH RH        <----- InsideSeparator
@@ -1066,9 +1066,6 @@ error:
     return;
 }
 
-/*****************************************************************************
- *               COLUMN PROPERTIES
- * ***************************************************************************/
 
 struct fort_cell_props g_default_cell_properties = {
     FT_ANY_ROW,    /* cell_row */
@@ -1221,15 +1218,6 @@ int get_cell_property_value_hierarcial(const fort_table_properties_t *properties
                 continue;
             }
 
-//            if (row != FT_ANY_ROW) {
-//                row = FT_ANY_ROW;
-//                continue;
-//            }
-//            if (column != FT_ANY_COLUMN) {
-//                column = FT_ANY_COLUMN;
-//                continue;
-//            }
-
             opt = NULL;
             break;
         }
@@ -1321,10 +1309,6 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
 {
     return set_cell_property_impl(&g_default_cell_properties, property, value);
 }
-
-/*****************************************************************************
- *               PROPERTIESS
- * ***************************************************************************/
 
 
 #define BASIC_STYLE  {            \
@@ -1834,9 +1818,6 @@ fort_table_properties_t *copy_table_properties(const fort_table_properties_t *pr
 
     return new_opt;
 }
-
-
-
 
 /********************************************************
    End of file "properties.c"
@@ -2629,7 +2610,9 @@ int ft_row_wwrite(ft_table_t *table, size_t cols, const wchar_t *cells[])
     for (i = 0; i < cols; ++i) {
         int status = ft_wwrite_impl(table, cells[i]);
         if (FT_IS_ERROR(status)) {
-            /* todo: maybe current pos in case of error should be equal to the one before function call? */
+            /* todo: maybe current pos in case of error should be equal
+             * to the one before function call?
+             */
             return status;
         }
     }
@@ -2656,7 +2639,9 @@ int ft_table_write(ft_table_t *table, size_t rows, size_t cols, const char *tabl
     for (i = 0; i < rows; ++i) {
         int status = ft_row_write(table, cols, (const char **)&table_cells[i * cols]);
         if (FT_IS_ERROR(status)) {
-            /* todo: maybe current pos in case of error should be equal to the one before function call? */
+            /* todo: maybe current pos in case of error should be equal
+             * to the one before function call?
+             */
             return status;
         }
         if (i != rows - 1)
@@ -2684,7 +2669,9 @@ int ft_table_wwrite(ft_table_t *table, size_t rows, size_t cols, const wchar_t *
     for (i = 0; i < rows; ++i) {
         int status = ft_row_wwrite(table, cols, (const wchar_t **)&table_cells[i * cols]);
         if (FT_IS_ERROR(status)) {
-            /* todo: maybe current pos in case of error should be equal to the one before function call? */
+            /* todo: maybe current pos in case of error should be equal
+             * to the one before function call?
+             */
             return status;
         }
         if (i != rows - 1)
@@ -2912,30 +2899,6 @@ clear:
 #endif
 
 
-/*
- *  TMP
- */
-//static int dummy_function(void)
-//#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
-//__attribute__ ((unused))
-//#endif
-//;
-
-//static int dummy_function(void)
-//{
-//    if (0) {
-//        vector_t *v = create_vector(1, DEFAULT_VECTOR_CAPACITY);
-//        vector_clear(v);
-//        vector_erase(v, 0);
-//        vector_index_of(v, NULL);
-//        vector_capacity(v);
-//    }
-//    return 0;
-//}
-
-
-
-
 int ft_add_separator(ft_table_t *table)
 {
     assert(table);
@@ -2961,10 +2924,6 @@ int ft_add_separator(ft_table_t *table)
     return FT_SUCCESS;
 }
 
-
-
-
-/* ******************************************************************************* */
 
 
 struct ft_border_style *FT_BASIC_STYLE = (struct ft_border_style *) &FORT_BASIC_STYLE;
@@ -3176,16 +3135,13 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
 #include <assert.h>
 #include <string.h>
 
-/*****************************************************************************
- *               VECTOR IMPLEMENTATIONS
- * ***************************************************************************/
-
 struct vector {
     size_t m_size;
     void  *m_data;
     size_t m_capacity;
     size_t m_item_size;
 };
+
 
 static int vector_reallocate_(vector_t *vector, size_t new_capacity)
 {
@@ -3199,7 +3155,7 @@ static int vector_reallocate_(vector_t *vector, size_t new_capacity)
     return 0;
 }
 
-/* ------------ Constructors & Destructors ----------------------------- */
+
 FT_INTERNAL
 vector_t *create_vector(size_t item_size, size_t capacity)
 {
@@ -3234,13 +3190,6 @@ void destroy_vector(vector_t *vector)
 }
 
 
-/*
-FT_INTERNAL
-
-*/
-
-
-/* ----------- Nonmodifying functions --------------------------------- */
 FT_INTERNAL
 size_t vector_size(const vector_t *vector)
 {
@@ -3256,7 +3205,7 @@ size_t vector_capacity(const vector_t *vector)
     return vector->m_capacity;
 }
 
-/* ----------- Modifying functions ------------------------------------- */
+
 FT_INTERNAL
 int vector_push(vector_t *vector, const void *item)
 {
@@ -3506,6 +3455,7 @@ const char *str_n_substring_beg(const char *str, char ch_separator, size_t n)
     return str ? (str + 1) : NULL;
 }
 
+
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
 const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, size_t n)
@@ -3549,6 +3499,7 @@ void str_n_substring(const char *str, char ch_separator, size_t n, const char **
     *end = en;
     return;
 }
+
 
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
@@ -4224,8 +4175,8 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);
 
-    /* note: baybe it's, better to return -1 in case of multibyte character strings
-     * (not sure this case is done correctly).
+    /* note: baybe it's, better to return -1 in case of multibyte character
+     * strings (not sure this case is done correctly).
      */
     if (str_len > 1) {
         const unsigned char *p = (const unsigned char *)str;
@@ -5232,10 +5183,8 @@ FT_INTERNAL
 int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                  size_t row_height, const context_t *context)
 {
-//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
     int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
     int (*cell_printf_)(fort_cell_t *, size_t, char *, size_t, const context_t *) = cell_printf;
-
 
     assert(context);
     const char *space_char = " ";
@@ -5322,10 +5271,8 @@ FT_INTERNAL
 int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                   size_t row_height, const context_t *context)
 {
-//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
     int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
     int (*cell_printf_)(fort_cell_t *, size_t, wchar_t *, size_t, const context_t *) = cell_wprintf;
-
 
     assert(context);
     const char *space_char = " ";

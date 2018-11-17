@@ -939,10 +939,8 @@ FT_INTERNAL
 int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                  size_t row_height, const context_t *context)
 {
-//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
     int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
     int (*cell_printf_)(fort_cell_t *, size_t, char *, size_t, const context_t *) = cell_printf;
-
 
     assert(context);
     const char *space_char = " ";
@@ -1029,10 +1027,8 @@ FT_INTERNAL
 int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
                   size_t row_height, const context_t *context)
 {
-//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
     int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
     int (*cell_printf_)(fort_cell_t *, size_t, wchar_t *, size_t, const context_t *) = cell_wprintf;
-
 
     assert(context);
     const char *space_char = " ";

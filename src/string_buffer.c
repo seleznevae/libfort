@@ -88,6 +88,7 @@ const char *str_n_substring_beg(const char *str, char ch_separator, size_t n)
     return str ? (str + 1) : NULL;
 }
 
+
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
 const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, size_t n)
@@ -131,6 +132,7 @@ void str_n_substring(const char *str, char ch_separator, size_t n, const char **
     *end = en;
     return;
 }
+
 
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
