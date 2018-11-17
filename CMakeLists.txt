@@ -53,8 +53,6 @@ if("${FORT_COMPILER}" STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
 else("${FORT_COMPILER}" STREQUAL "MSVC")
     set(ADDITIONAL_WARNINGS "\
-        -Wduplicated-cond \
-        -Wlogical-op  \
         -Wdouble-promotion \
         -Wshadow \
         -Wformat=2 \
