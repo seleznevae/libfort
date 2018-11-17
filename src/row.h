@@ -21,6 +21,7 @@ fort_row_t *copy_row(fort_row_t *row);
 FT_INTERNAL
 fort_row_t *create_row_from_string(const char *str);
 
+FT_PRINTF_ATTRIBUTE_FORMAT(1, 0)
 FT_INTERNAL
 fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args);
 
