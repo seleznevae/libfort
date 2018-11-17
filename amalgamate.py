@@ -1,5 +1,6 @@
 
 import os
+import sys
 
 def comment_line(line):
     return "/* {} */ /* Commented by amalgamation script */".format(line)
@@ -84,7 +85,10 @@ def is_c_source_file(file):
 
 def main():
     config = {}
-    config["output_file"] = "./lib/fort.c"
+    if len(sys.argv) >= 3 and sys.argv[1] == "-o":
+        config["output_file"] = sys.argv[2]
+    else:
+        config["output_file"] = "./lib/fort.c"
     config["src_dir"] = "./src"
     all_files = os.listdir(config["src_dir"])
     config["src_files"] = filter(is_c_source_file, all_files)
