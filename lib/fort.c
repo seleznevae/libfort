@@ -4249,7 +4249,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
                         --k;
                     }
                     buf[n] = L'\0';
-                    return n;
+                    return (int)n;
                 }
             }
         }
