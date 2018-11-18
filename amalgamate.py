@@ -91,7 +91,7 @@ def main():
         config["output_file"] = "./lib/fort.c"
     config["src_dir"] = "./src"
     all_files = os.listdir(config["src_dir"])
-    config["src_files"] = filter(is_c_source_file, all_files)
+    config["src_files"] = sorted(filter(is_c_source_file, all_files))
 
     # config["header_files"] = filter(is_c_header_file, all_files)
     config["header_files"] = [

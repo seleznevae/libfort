@@ -793,6 +793,1688 @@ fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *wi
 
 
 /********************************************************
+   Begin of file "cell.c"
+ ********************************************************/
+
+/* #include "cell.h" */ /* Commented by amalgamation script */
+/* #include "properties.h" */ /* Commented by amalgamation script */
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
+#include <assert.h>
+
+struct fort_cell {
+    string_buffer_t *str_buffer;
+    enum CellType cell_type;
+};
+
+FT_INTERNAL
+fort_cell_t *create_cell(void)
+{
+    fort_cell_t *cell = (fort_cell_t *)F_CALLOC(sizeof(fort_cell_t), 1);
+    if (cell == NULL)
+        return NULL;
+    cell->str_buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CharBuf);
+    if (cell->str_buffer == NULL) {
+        F_FREE(cell);
+        return NULL;
+    }
+    cell->cell_type = CommonCell;
+    return cell;
+}
+
+FT_INTERNAL
+void destroy_cell(fort_cell_t *cell)
+{
+    if (cell == NULL)
+        return;
+    destroy_string_buffer(cell->str_buffer);
+    F_FREE(cell);
+}
+
+FT_INTERNAL
+fort_cell_t *copy_cell(fort_cell_t *cell)
+{
+    assert(cell);
+
+    fort_cell_t *result = create_cell();
+    destroy_string_buffer(result->str_buffer);
+    result->str_buffer = copy_string_buffer(cell->str_buffer);
+    if (result->str_buffer == NULL) {
+        destroy_cell(result);
+        return NULL;
+    }
+    result->cell_type = cell->cell_type;
+    return result;
+}
+
+FT_INTERNAL
+void set_cell_type(fort_cell_t *cell, enum CellType type)
+{
+    assert(cell);
+    cell->cell_type = type;
+}
+
+FT_INTERNAL
+enum CellType get_cell_type(const fort_cell_t *cell)
+{
+    assert(cell);
+    return cell->cell_type;
+}
+
+FT_INTERNAL
+size_t hint_width_cell(const fort_cell_t *cell, const context_t *context, enum request_geom_type geom)
+{
+    /* todo:
+     * At the moment min width includes paddings. Maybe it is better that min width weren't include
+     * paddings but be min width of the cell content without padding
+     */
+
+    assert(cell);
+    assert(context);
+    size_t cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
+    size_t cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
+    size_t result = cell_padding_left + cell_padding_right;
+    if (cell->str_buffer && cell->str_buffer->str.data) {
+        result += buffer_text_width(cell->str_buffer);
+    }
+    result = MAX(result, (size_t)get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_MIN_WIDTH));
+
+    if (geom == INTERN_REPR_GEOMETRY) {
+        char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+        get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        result += strlen(cell_style_tag);
+
+        char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+        get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        result += strlen(reset_cell_style_tag);
+
+        char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+        get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        result += strlen(content_style_tag);
+
+        char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+        get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        result += strlen(reset_content_style_tag);
+    }
+
+    return result;
+}
+
+FT_INTERNAL
+size_t hint_height_cell(const fort_cell_t *cell, const context_t *context)
+{
+    assert(cell);
+    assert(context);
+    size_t cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
+    size_t cell_padding_bottom = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_BOTTOM_PADDING);
+    size_t cell_empty_string_height = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_EMPTY_STR_HEIGHT);
+    size_t result = cell_padding_top + cell_padding_bottom;
+    if (cell->str_buffer && cell->str_buffer->str.data) {
+        size_t text_height = buffer_text_height(cell->str_buffer);
+        result += text_height == 0 ? cell_empty_string_height : text_height;
+    }
+    return result;
+}
+
+
+FT_INTERNAL
+int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context)
+{
+    const char *space_char = " ";
+    int (*buffer_printf_)(string_buffer_t *, size_t, char *, size_t, const context_t *, const char *, const char *) = buffer_printf;
+//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
+    int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
+
+    if (cell == NULL || buf_len == 0
+        || (buf_len <= hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
+        return -1;
+    }
+
+    unsigned int cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
+    unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
+    unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
+
+    int written = 0;
+    int invisible_written = 0;
+    int tmp = 0;
+//    int left = cell_padding_left;
+//    int right = cell_padding_right;
+
+    /* todo: Dirty hack with changing buf_len! need refactoring. */
+    /* Also maybe it is better to move all struff with colors to buffers? */
+    char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(cell_style_tag);
+
+    char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(reset_cell_style_tag);
+
+    char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(content_style_tag);
+
+    char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(reset_content_style_tag);
+
+    /*    CELL_STYLE_T   LEFT_PADDING   CONTENT_STYLE_T  CONTENT   RESET_CONTENT_STYLE_T    RIGHT_PADDING   RESET_CELL_STYLE_T
+     *  |              |              |                |         |                       |                |                    |
+     *        L1                                                                                                    R1
+     *                     L2                                                                   R2
+     *                                     L3                               R3
+     */
+
+    size_t L2 = cell_padding_left;
+
+    size_t R2 = cell_padding_right;
+    size_t R3 = strlen(reset_cell_style_tag);
+
+#define TOTAL_WRITTEN (written + invisible_written)
+#define RIGHT (cell_padding_right + extra_right)
+
+#define WRITE_CELL_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, cell_style_tag))
+#define WRITE_RESET_CELL_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_cell_style_tag))
+#define WRITE_CONTENT_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, content_style_tag))
+#define WRITE_RESET_CONTENT_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_content_style_tag))
+
+    if (row >= hint_height_cell(cell, context)
+        || row < cell_padding_top
+        || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
+        WRITE_CELL_STYLE_TAG;
+        WRITE_CONTENT_STYLE_TAG;
+        WRITE_RESET_CONTENT_STYLE_TAG;
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
+        WRITE_RESET_CELL_STYLE_TAG;
+        return TOTAL_WRITTEN;
+    }
+
+    WRITE_CELL_STYLE_TAG;
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, L2, space_char));
+    if (cell->str_buffer) {
+        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, context, content_style_tag, reset_content_style_tag));
+    } else {
+        WRITE_CONTENT_STYLE_TAG;
+        WRITE_RESET_CONTENT_STYLE_TAG;
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, space_char));
+    }
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
+    WRITE_RESET_CELL_STYLE_TAG;
+
+    return TOTAL_WRITTEN;
+
+clear:
+    return -1;
+#undef WRITE_CELL_STYLE_TAG
+#undef WRITE_RESET_CELL_STYLE_TAG
+#undef WRITE_CONTENT_STYLE_TAG
+#undef WRITE_RESET_CONTENT_STYLE_TAG
+#undef TOTAL_WRITTEN
+#undef RIGHT
+}
+
+#ifdef FT_HAVE_WCHAR
+FT_INTERNAL
+int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context)
+{
+    const char *space_char = " ";
+    int (*buffer_printf_)(string_buffer_t *, size_t, wchar_t *, size_t, const context_t *, const char *, const char *) = buffer_wprintf;
+//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
+    int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
+
+    if (cell == NULL || buf_len == 0
+        || (buf_len <= hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
+        return -1;
+    }
+
+    unsigned int cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
+    unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
+    unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
+
+    int written = 0;
+    int invisible_written = 0;
+    int tmp = 0;
+
+    /* todo: Dirty hack with changing buf_len! need refactoring. */
+    /* Also maybe it is better to move all struff with colors to buffers? */
+    char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(cell_style_tag);
+
+    char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(reset_cell_style_tag);
+
+    char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(content_style_tag);
+
+    char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    buf_len += strlen(reset_content_style_tag);
+
+    /*    CELL_STYLE_T   LEFT_PADDING   CONTENT_STYLE_T  CONTENT   RESET_CONTENT_STYLE_T    RIGHT_PADDING   RESET_CELL_STYLE_T
+     *  |              |              |                |         |                       |                |                    |
+     *        L1                                                                                                    R1
+     *                     L2                                                                   R2
+     *                                     L3                               R3
+     */
+
+    size_t L2 = cell_padding_left;
+
+    size_t R2 = cell_padding_right;
+    size_t R3 = strlen(reset_cell_style_tag);
+
+#define TOTAL_WRITTEN (written + invisible_written)
+#define RIGHT (right + extra_right)
+
+#define WRITE_CELL_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, cell_style_tag))
+#define WRITE_RESET_CELL_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_cell_style_tag))
+#define WRITE_CONTENT_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, content_style_tag))
+#define WRITE_RESET_CONTENT_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_content_style_tag))
+
+    if (row >= hint_height_cell(cell, context)
+        || row < cell_padding_top
+        || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
+        WRITE_CELL_STYLE_TAG;
+        WRITE_CONTENT_STYLE_TAG;
+        WRITE_RESET_CONTENT_STYLE_TAG;
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
+        WRITE_RESET_CELL_STYLE_TAG;
+        return TOTAL_WRITTEN;
+    }
+
+    WRITE_CELL_STYLE_TAG;
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, L2, space_char));
+    if (cell->str_buffer) {
+        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, context, content_style_tag, reset_content_style_tag));
+    } else {
+        WRITE_CONTENT_STYLE_TAG;
+        WRITE_RESET_CONTENT_STYLE_TAG;
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, space_char));
+    }
+    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
+    WRITE_RESET_CELL_STYLE_TAG;
+
+    return TOTAL_WRITTEN;
+
+clear:
+    return -1;
+#undef WRITE_CELL_STYLE_TAG
+#undef WRITE_RESET_CELL_STYLE_TAG
+#undef WRITE_CONTENT_STYLE_TAG
+#undef WRITE_RESET_CONTENT_STYLE_TAG
+#undef TOTAL_WRITTEN
+#undef RIGHT
+}
+#endif
+
+FT_INTERNAL
+fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str)
+{
+    assert(str);
+    assert(cell);
+
+    return fill_buffer_from_string(cell->str_buffer, str);
+}
+
+#ifdef FT_HAVE_WCHAR
+FT_INTERNAL
+fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str)
+{
+    assert(str);
+    assert(cell);
+
+    return fill_buffer_from_wstring(cell->str_buffer, str);
+}
+
+#endif
+
+FT_INTERNAL
+string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
+{
+    assert(cell);
+    assert(cell->str_buffer);
+    return cell->str_buffer;
+}
+
+
+/********************************************************
+   End of file "cell.c"
+ ********************************************************/
+
+
+/********************************************************
+   Begin of file "fort_impl.c"
+ ********************************************************/
+
+/*
+libfort
+
+MIT License
+
+Copyright (c) 2017 - 2018 Seleznev Anton
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+#include <stdlib.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include "fort.h"
+#include <assert.h>
+#include <string.h>
+#include <wchar.h>
+#include <ctype.h>
+
+/* #include "vector.h" */ /* Commented by amalgamation script */
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
+/* #include "table.h" */ /* Commented by amalgamation script */
+/* #include "row.h" */ /* Commented by amalgamation script */
+/* #include "properties.h" */ /* Commented by amalgamation script */
+
+
+ft_table_t *ft_create_table(void)
+{
+    ft_table_t *result = (ft_table_t *)F_CALLOC(1, sizeof(ft_table_t));
+    if (result == NULL)
+        return NULL;
+
+    result->rows = create_vector(sizeof(fort_row_t *), DEFAULT_VECTOR_CAPACITY);
+    if (result->rows == NULL) {
+        F_FREE(result);
+        return NULL;
+    }
+    result->separators = create_vector(sizeof(separator_t *), DEFAULT_VECTOR_CAPACITY);
+    if (result->separators == NULL) {
+        destroy_vector(result->rows);
+        F_FREE(result);
+        return NULL;
+    }
+    result->properties = NULL;
+    result->conv_buffer = NULL;
+    result->cur_row = 0;
+    result->cur_col = 0;
+    return result;
+}
+
+
+void ft_destroy_table(ft_table_t *table)
+{
+    size_t i = 0;
+
+    if (table == NULL)
+        return;
+
+    if (table->rows) {
+        size_t row_n = vector_size(table->rows);
+        for (i = 0; i < row_n; ++i) {
+            destroy_row(*(fort_row_t **)vector_at(table->rows, i));
+        }
+        destroy_vector(table->rows);
+    }
+    if (table->separators) {
+        size_t row_n = vector_size(table->separators);
+        for (i = 0; i < row_n; ++i) {
+            destroy_separator(*(separator_t **)vector_at(table->separators, i));
+        }
+        destroy_vector(table->separators);
+    }
+    destroy_table_properties(table->properties);
+    destroy_string_buffer(table->conv_buffer);
+    F_FREE(table);
+}
+
+ft_table_t *ft_copy_table(ft_table_t *table)
+{
+    if (table == NULL)
+        return NULL;
+
+    ft_table_t *result = ft_create_table();
+    if (result == NULL)
+        return NULL;
+
+    size_t rows_n = vector_size(table->rows);
+    for (size_t i = 0; i < rows_n; ++i) {
+        fort_row_t *row = *(fort_row_t **)vector_at(table->rows, i);
+        fort_row_t *new_row = copy_row(row);
+        if (new_row == NULL) {
+            ft_destroy_table(result);
+            return NULL;
+        }
+        vector_push(result->rows, &new_row);
+    }
+
+    size_t sep_sz = vector_size(table->separators);
+    for (size_t i = 0; i < sep_sz; ++i) {
+        separator_t *sep = *(separator_t **)vector_at(table->separators, i);
+        separator_t *new_sep = copy_separator(sep);
+        if (new_sep == NULL) {
+            ft_destroy_table(result);
+            return NULL;
+        }
+        vector_push(result->separators, &new_sep);
+    }
+
+
+    result->properties = copy_table_properties(table->properties);
+    if (result->properties == NULL) {
+        ft_destroy_table(result);
+        return NULL;
+    }
+
+    /* todo: copy conv_buffer  ??  */
+
+    result->cur_row = table->cur_row;
+    result->cur_col = table->cur_col;
+    return result;
+}
+
+
+void ft_ln(ft_table_t *table)
+{
+    assert(table);
+    table->cur_col = 0;
+    table->cur_row++;
+}
+
+size_t ft_cur_row(ft_table_t *table)
+{
+    assert(table);
+    return table->cur_row;
+}
+
+size_t ft_cur_col(ft_table_t *table)
+{
+    assert(table);
+    return table->cur_col;
+}
+
+void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col)
+{
+    assert(table);
+    table->cur_row = row;
+    table->cur_col = col;
+}
+
+FT_PRINTF_ATTRIBUTE_FORMAT(3, 0)
+static int ft_row_printf_impl(ft_table_t *table, size_t row, const char *fmt, va_list *va)
+{
+#define CREATE_ROW_FROM_FMT_STRING create_row_from_fmt_string
+    size_t i = 0;
+    size_t new_cols = 0;
+
+    if (table == NULL)
+        return -1;
+
+    fort_row_t *new_row = CREATE_ROW_FROM_FMT_STRING(fmt, va);
+
+    if (new_row == NULL) {
+        return -1;
+    }
+
+    fort_row_t **cur_row_p = NULL;
+    size_t sz = vector_size(table->rows);
+    if (row >= sz) {
+        size_t push_n = row - sz + 1;
+        for (i = 0; i < push_n; ++i) {
+            fort_row_t *padding_row = create_row();
+            if (padding_row == NULL)
+                goto clear;
+
+            if (FT_IS_ERROR(vector_push(table->rows, &padding_row))) {
+                destroy_row(padding_row);
+                goto clear;
+            }
+        }
+    }
+    /* todo: clearing pushed items in case of error ?? */
+
+    new_cols = columns_in_row(new_row);
+    cur_row_p = (fort_row_t **)vector_at(table->rows, row);
+    swap_row(*cur_row_p, new_row, table->cur_col);
+
+    table->cur_col += new_cols;
+    destroy_row(new_row);
+    return (int)new_cols;
+
+clear:
+    destroy_row(new_row);
+    return -1;
+#undef CREATE_ROW_FROM_FMT_STRING
+}
+
+#ifdef FT_HAVE_WCHAR
+static int ft_row_wprintf_impl(ft_table_t *table, size_t row, const wchar_t *fmt, va_list *va)
+{
+#define CREATE_ROW_FROM_FMT_STRING create_row_from_fmt_wstring
+    size_t i = 0;
+    size_t new_cols = 0;
+
+    if (table == NULL)
+        return -1;
+
+    fort_row_t *new_row = CREATE_ROW_FROM_FMT_STRING(fmt, va);
+
+    if (new_row == NULL) {
+        return -1;
+    }
+
+    fort_row_t **cur_row_p = NULL;
+    size_t sz = vector_size(table->rows);
+    if (row >= sz) {
+        size_t push_n = row - sz + 1;
+        for (i = 0; i < push_n; ++i) {
+            fort_row_t *padding_row = create_row();
+            if (padding_row == NULL)
+                goto clear;
+
+            if (FT_IS_ERROR(vector_push(table->rows, &padding_row))) {
+                destroy_row(padding_row);
+                goto clear;
+            }
+        }
+    }
+    /* todo: clearing pushed items in case of error ?? */
+
+    new_cols = columns_in_row(new_row);
+    cur_row_p = (fort_row_t **)vector_at(table->rows, row);
+    swap_row(*cur_row_p, new_row, table->cur_col);
+
+    table->cur_col += new_cols;
+    destroy_row(new_row);
+    return (int)new_cols;
+
+clear:
+    destroy_row(new_row);
+    return -1;
+#undef CREATE_ROW_FROM_FMT_STRING
+}
+#endif
+
+#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
+#define FT_PRINTF ft_printf
+#define FT_PRINTF_LN ft_printf_ln
+#else
+#define FT_PRINTF ft_printf_impl
+#define FT_PRINTF_LN ft_printf_ln_impl
+#endif
+
+
+
+int FT_PRINTF(ft_table_t *table, const char *fmt, ...)
+{
+    assert(table);
+    va_list va;
+    va_start(va, fmt);
+    int result = ft_row_printf_impl(table, table->cur_row, fmt, &va);
+    va_end(va);
+    return result;
+}
+
+int FT_PRINTF_LN(ft_table_t *table, const char *fmt, ...)
+{
+    assert(table);
+    va_list va;
+    va_start(va, fmt);
+    int result = ft_row_printf_impl(table, table->cur_row, fmt, &va);
+    if (result >= 0) {
+        ft_ln(table);
+    }
+    va_end(va);
+    return result;
+}
+
+#undef FT_PRINTF
+#undef FT_PRINTF_LN
+#undef FT_HDR_PRINTF
+#undef FT_HDR_PRINTF_LN
+
+#ifdef FT_HAVE_WCHAR
+int ft_wprintf(ft_table_t *table, const wchar_t *fmt, ...)
+{
+    assert(table);
+    va_list va;
+    va_start(va, fmt);
+    int result = ft_row_wprintf_impl(table, table->cur_row, fmt, &va);
+    va_end(va);
+    return result;
+}
+
+int ft_wprintf_ln(ft_table_t *table, const wchar_t *fmt, ...)
+{
+    assert(table);
+    va_list va;
+    va_start(va, fmt);
+    int result = ft_row_wprintf_impl(table, table->cur_row, fmt, &va);
+    if (result >= 0) {
+        ft_ln(table);
+    }
+    va_end(va);
+    return result;
+}
+
+#endif
+
+
+static int ft_write_impl(ft_table_t *table, const char *cell_content)
+{
+    assert(table);
+    string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
+    if (str_buffer == NULL)
+        return FT_ERROR;
+
+    int status = fill_buffer_from_string(str_buffer, cell_content);
+    if (FT_IS_SUCCESS(status)) {
+        table->cur_col++;
+    }
+    return status;
+}
+
+
+#ifdef FT_HAVE_WCHAR
+
+static int ft_wwrite_impl(ft_table_t *table, const wchar_t *cell_content)
+{
+    assert(table);
+    string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
+    if (str_buffer == NULL)
+        return FT_ERROR;
+
+    int status = fill_buffer_from_wstring(str_buffer, cell_content);
+    if (FT_IS_SUCCESS(status)) {
+        table->cur_col++;
+    }
+    return status;
+}
+
+#endif
+
+
+int ft_nwrite(ft_table_t *table, size_t count, const char *cell_content, ...)
+{
+    size_t i = 0;
+    assert(table);
+    int status = ft_write_impl(table, cell_content);
+    if (FT_IS_ERROR(status))
+        return status;
+
+    va_list va;
+    va_start(va, cell_content);
+    --count;
+    for (i = 0; i < count; ++i) {
+        const char *cell = va_arg(va, const char *);
+        status = ft_write_impl(table, cell);
+        if (FT_IS_ERROR(status)) {
+            va_end(va);
+            return status;
+        }
+    }
+    va_end(va);
+    return status;
+}
+
+int ft_nwrite_ln(ft_table_t *table, size_t count, const char *cell_content, ...)
+{
+    size_t i = 0;
+    assert(table);
+    int status = ft_write_impl(table, cell_content);
+    if (FT_IS_ERROR(status))
+        return status;
+
+    va_list va;
+    va_start(va, cell_content);
+    --count;
+    for (i = 0; i < count; ++i) {
+        const char *cell = va_arg(va, const char *);
+        status = ft_write_impl(table, cell);
+        if (FT_IS_ERROR(status)) {
+            va_end(va);
+            return status;
+        }
+    }
+    va_end(va);
+
+    ft_ln(table);
+    return status;
+}
+
+#ifdef FT_HAVE_WCHAR
+
+int ft_nwwrite(ft_table_t *table, size_t n, const wchar_t *cell_content, ...)
+{
+    size_t i = 0;
+    assert(table);
+    int status = ft_wwrite_impl(table, cell_content);
+    if (FT_IS_ERROR(status))
+        return status;
+
+    va_list va;
+    va_start(va, cell_content);
+    --n;
+    for (i = 0; i < n; ++i) {
+        const wchar_t *cell = va_arg(va, const wchar_t *);
+        status = ft_wwrite_impl(table, cell);
+        if (FT_IS_ERROR(status)) {
+            va_end(va);
+            return status;
+        }
+    }
+    va_end(va);
+    return status;
+}
+
+int ft_nwwrite_ln(ft_table_t *table, size_t n, const wchar_t *cell_content, ...)
+{
+    size_t i = 0;
+    assert(table);
+    int status = ft_wwrite_impl(table, cell_content);
+    if (FT_IS_ERROR(status))
+        return status;
+
+    va_list va;
+    va_start(va, cell_content);
+    --n;
+    for (i = 0; i < n; ++i) {
+        const wchar_t *cell = va_arg(va, const wchar_t *);
+        status = ft_wwrite_impl(table, cell);
+        if (FT_IS_ERROR(status)) {
+            va_end(va);
+            return status;
+        }
+    }
+    va_end(va);
+
+    ft_ln(table);
+    return status;
+}
+#endif
+
+
+int ft_row_write(ft_table_t *table, size_t cols, const char *cells[])
+{
+    size_t i = 0;
+    assert(table);
+    for (i = 0; i < cols; ++i) {
+        int status = ft_write_impl(table, cells[i]);
+        if (FT_IS_ERROR(status)) {
+            /* todo: maybe current pos in case of error should be equal to the one before function call? */
+            return status;
+        }
+    }
+    return FT_SUCCESS;
+}
+
+int ft_row_write_ln(ft_table_t *table, size_t cols, const char *cells[])
+{
+    assert(table);
+    int status = ft_row_write(table, cols, cells);
+    if (FT_IS_SUCCESS(status)) {
+        ft_ln(table);
+    }
+    return status;
+}
+
+#ifdef FT_HAVE_WCHAR
+int ft_row_wwrite(ft_table_t *table, size_t cols, const wchar_t *cells[])
+{
+    size_t i = 0;
+    assert(table);
+    for (i = 0; i < cols; ++i) {
+        int status = ft_wwrite_impl(table, cells[i]);
+        if (FT_IS_ERROR(status)) {
+            /* todo: maybe current pos in case of error should be equal
+             * to the one before function call?
+             */
+            return status;
+        }
+    }
+    return FT_SUCCESS;
+}
+
+int ft_row_wwrite_ln(ft_table_t *table, size_t cols, const wchar_t *cells[])
+{
+    assert(table);
+    int status = ft_row_wwrite(table, cols, cells);
+    if (FT_IS_SUCCESS(status)) {
+        ft_ln(table);
+    }
+    return status;
+}
+#endif
+
+
+
+int ft_table_write(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[])
+{
+    size_t i = 0;
+    assert(table);
+    for (i = 0; i < rows; ++i) {
+        int status = ft_row_write(table, cols, (const char **)&table_cells[i * cols]);
+        if (FT_IS_ERROR(status)) {
+            /* todo: maybe current pos in case of error should be equal
+             * to the one before function call?
+             */
+            return status;
+        }
+        if (i != rows - 1)
+            ft_ln(table);
+    }
+    return FT_SUCCESS;
+}
+
+int ft_table_write_ln(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[])
+{
+    assert(table);
+    int status = ft_table_write(table, rows, cols, table_cells);
+    if (FT_IS_SUCCESS(status)) {
+        ft_ln(table);
+    }
+    return status;
+}
+
+
+#ifdef FT_HAVE_WCHAR
+int ft_table_wwrite(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[])
+{
+    size_t i = 0;
+    assert(table);
+    for (i = 0; i < rows; ++i) {
+        int status = ft_row_wwrite(table, cols, (const wchar_t **)&table_cells[i * cols]);
+        if (FT_IS_ERROR(status)) {
+            /* todo: maybe current pos in case of error should be equal
+             * to the one before function call?
+             */
+            return status;
+        }
+        if (i != rows - 1)
+            ft_ln(table);
+    }
+    return FT_SUCCESS;
+}
+
+int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[])
+{
+    assert(table);
+    int status = ft_table_wwrite(table, rows, cols, table_cells);
+    if (FT_IS_SUCCESS(status)) {
+        ft_ln(table);
+    }
+    return status;
+}
+#endif
+
+
+
+const char *ft_to_string(const ft_table_t *table)
+{
+    typedef char char_type;
+    const enum str_buf_type buf_type = CharBuf;
+    const char *space_char = " ";
+    const char *new_line_char = "\n";
+#define EMPTY_STRING ""
+    int (*snprintf_row_)(const fort_row_t *, char *, size_t, size_t *, size_t, size_t, const context_t *) = snprintf_row;
+    int (*print_row_separator_)(char *, size_t,
+                                const size_t *, size_t,
+                                const fort_row_t *, const fort_row_t *,
+                                enum HorSeparatorPos, const separator_t *,
+                                const context_t *) = print_row_separator;
+//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
+    int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
+    assert(table);
+
+    /* Determing size of table string representation */
+    size_t height = 0;
+    size_t width = 0;
+    int status = table_geometry(table, &height, &width);
+    if (FT_IS_ERROR(status)) {
+        return NULL;
+    }
+    size_t sz = height * width + 1;
+
+    /* Allocate string buffer for string representation */
+    if (table->conv_buffer == NULL) {
+        ((ft_table_t *)table)->conv_buffer = create_string_buffer(sz, buf_type);
+        if (table->conv_buffer == NULL)
+            return NULL;
+    }
+    while (string_buffer_capacity(table->conv_buffer) < sz) {
+        if (FT_IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
+            return NULL;
+        }
+    }
+    char_type *buffer = (char_type *)buffer_get_data(table->conv_buffer);
+
+
+    size_t cols = 0;
+    size_t rows = 0;
+    size_t *col_width_arr = NULL;
+    size_t *row_height_arr = NULL;
+    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, VISIBLE_GEOMETRY);
+    if (FT_IS_ERROR(status))
+        return NULL;
+
+    if (rows == 0)
+        return EMPTY_STRING;
+
+    int written = 0;
+    int tmp = 0;
+    size_t i = 0;
+    context_t context;
+    context.table_properties = (table->properties ? table->properties : &g_table_properties);
+    fort_row_t *prev_row = NULL;
+    fort_row_t *cur_row = NULL;
+    separator_t *cur_sep = NULL;
+    size_t sep_size = vector_size(table->separators);
+
+    /* Print top margin */
+    for (i = 0; i < context.table_properties->entire_table_properties.top_margin; ++i) {
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
+    }
+
+    for (i = 0; i < rows; ++i) {
+        cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+        cur_row = *(fort_row_t **)vector_at(table->rows, i);
+        enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
+        context.row = i;
+        CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprintf_row_(cur_row, buffer + written, sz - written, col_width_arr, cols, row_height_arr[i], &context));
+        prev_row = cur_row;
+    }
+    cur_row = NULL;
+    cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+    CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
+
+    /* Print bottom margin */
+    for (i = 0; i < context.table_properties->entire_table_properties.bottom_margin; ++i) {
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
+    }
+
+
+    F_FREE(col_width_arr);
+    F_FREE(row_height_arr);
+    return buffer;
+
+clear:
+    F_FREE(col_width_arr);
+    F_FREE(row_height_arr);
+//    F_FREE(buffer);
+    return NULL;
+#undef EMPTY_STRING
+}
+
+
+#ifdef FT_HAVE_WCHAR
+
+const wchar_t *ft_to_wstring(const ft_table_t *table)
+{
+    typedef wchar_t char_type;
+    const enum str_buf_type buf_type = WCharBuf;
+    const char *space_char = " ";
+    const char *new_line_char = "\n";
+#define EMPTY_STRING L""
+    int (*snprintf_row_)(const fort_row_t *, wchar_t *, size_t, size_t *, size_t, size_t, const context_t *) = wsnprintf_row;
+    int (*print_row_separator_)(wchar_t *, size_t,
+                                const size_t *, size_t,
+                                const fort_row_t *, const fort_row_t *,
+                                enum HorSeparatorPos, const separator_t *,
+                                const context_t *) = wprint_row_separator;
+//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
+    int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
+
+
+    assert(table);
+
+    /* Determing size of table string representation */
+    size_t height = 0;
+    size_t width = 0;
+    int status = table_geometry(table, &height, &width);
+    if (FT_IS_ERROR(status)) {
+        return NULL;
+    }
+    size_t sz = height * width + 1;
+
+    /* Allocate string buffer for string representation */
+    if (table->conv_buffer == NULL) {
+        ((ft_table_t *)table)->conv_buffer = create_string_buffer(sz, buf_type);
+        if (table->conv_buffer == NULL)
+            return NULL;
+    }
+    while (string_buffer_capacity(table->conv_buffer) < sz) {
+        if (FT_IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
+            return NULL;
+        }
+    }
+    char_type *buffer = (char_type *)buffer_get_data(table->conv_buffer);
+
+
+    size_t cols = 0;
+    size_t rows = 0;
+    size_t *col_width_arr = NULL;
+    size_t *row_height_arr = NULL;
+    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, VISIBLE_GEOMETRY);
+
+    if (rows == 0)
+        return EMPTY_STRING;
+
+    if (FT_IS_ERROR(status))
+        return NULL;
+
+    int written = 0;
+    int tmp = 0;
+    size_t i = 0;
+    context_t context;
+    context.table_properties = (table->properties ? table->properties : &g_table_properties);
+    fort_row_t *prev_row = NULL;
+    fort_row_t *cur_row = NULL;
+    separator_t *cur_sep = NULL;
+    size_t sep_size = vector_size(table->separators);
+
+    /* Print top margin */
+    for (i = 0; i < context.table_properties->entire_table_properties.top_margin; ++i) {
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
+    }
+
+    for (i = 0; i < rows; ++i) {
+        cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+        cur_row = *(fort_row_t **)vector_at(table->rows, i);
+        enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
+        context.row = i;
+        CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprintf_row_(cur_row, buffer + written, sz - written, col_width_arr, cols, row_height_arr[i], &context));
+        prev_row = cur_row;
+    }
+    cur_row = NULL;
+    cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+    CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
+
+    /* Print bottom margin */
+    for (i = 0; i < context.table_properties->entire_table_properties.bottom_margin; ++i) {
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
+    }
+
+    F_FREE(col_width_arr);
+    F_FREE(row_height_arr);
+    return buffer;
+
+clear:
+    F_FREE(col_width_arr);
+    F_FREE(row_height_arr);
+//    F_FREE(buffer);
+    return NULL;
+#undef EMPTY_STRING
+}
+
+#endif
+
+
+int ft_add_separator(ft_table_t *table)
+{
+    assert(table);
+    assert(table->separators);
+
+    while (vector_size(table->separators) <= table->cur_row) {
+        separator_t *sep_p = create_separator(F_FALSE);
+        if (sep_p == NULL)
+            return FT_MEMORY_ERROR;
+        int status = vector_push(table->separators, &sep_p);
+        if (FT_IS_ERROR(status))
+            return status;
+    }
+
+    separator_t **sep_p = (separator_t **)vector_at(table->separators, table->cur_row);
+    if (*sep_p == NULL)
+        *sep_p = create_separator(F_TRUE);
+    else
+        (*sep_p)->enabled = F_TRUE;
+
+    if (*sep_p == NULL)
+        return FT_ERROR;
+    return FT_SUCCESS;
+}
+
+
+
+struct ft_border_style *FT_BASIC_STYLE = (struct ft_border_style *) &FORT_BASIC_STYLE;
+struct ft_border_style *FT_BASIC2_STYLE = (struct ft_border_style *) &FORT_BASIC2_STYLE;
+struct ft_border_style *FT_SIMPLE_STYLE = (struct ft_border_style *) &FORT_SIMPLE_STYLE;
+struct ft_border_style *FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_STYLE;
+struct ft_border_style *FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
+struct ft_border_style *FT_EMPTY_STYLE  = (struct ft_border_style *) &FORT_EMPTY_STYLE;
+struct ft_border_style *FT_SOLID_STYLE  = (struct ft_border_style *) &FORT_SOLID_STYLE;
+struct ft_border_style *FT_SOLID_ROUND_STYLE  = (struct ft_border_style *) &FORT_SOLID_ROUND_STYLE;
+struct ft_border_style *FT_NICE_STYLE  = (struct ft_border_style *) &FORT_NICE_STYLE;
+struct ft_border_style *FT_DOUBLE_STYLE  = (struct ft_border_style *) &FORT_DOUBLE_STYLE;
+struct ft_border_style *FT_DOUBLE2_STYLE  = (struct ft_border_style *) &FORT_DOUBLE2_STYLE;
+struct ft_border_style *FT_BOLD_STYLE  = (struct ft_border_style *) &FORT_BOLD_STYLE;
+struct ft_border_style *FT_BOLD2_STYLE  = (struct ft_border_style *) &FORT_BOLD2_STYLE;
+struct ft_border_style *FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME_STYLE;
+
+
+
+static void set_border_props_for_props(fort_table_properties_t *properties, const struct ft_border_style *style)
+{
+    if ((const struct fort_border_style *)style == &FORT_BASIC_STYLE
+        || (const struct fort_border_style *)style == &FORT_BASIC2_STYLE
+        || (const struct fort_border_style *)style == &FORT_SIMPLE_STYLE
+        || (const struct fort_border_style *)style == &FORT_DOT_STYLE
+        || (const struct fort_border_style *)style == &FORT_PLAIN_STYLE
+        || (const struct fort_border_style *)style == &FORT_EMPTY_STYLE
+        || (const struct fort_border_style *)style == &FORT_SOLID_STYLE
+        || (const struct fort_border_style *)style == &FORT_SOLID_ROUND_STYLE
+        || (const struct fort_border_style *)style == &FORT_NICE_STYLE
+        || (const struct fort_border_style *)style == &FORT_DOUBLE_STYLE
+        || (const struct fort_border_style *)style == &FORT_DOUBLE2_STYLE
+        || (const struct fort_border_style *)style == &FORT_BOLD_STYLE
+        || (const struct fort_border_style *)style == &FORT_BOLD2_STYLE
+        || (const struct fort_border_style *)style == &FORT_FRAME_STYLE) {
+        memcpy(&(properties->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
+        return;
+    }
+
+    const struct ft_border_chars *border_chs = &(style->border_chs);
+    const struct ft_border_chars *header_border_chs = &(style->header_border_chs);
+
+#define BOR_CHARS properties->border_style.border_chars
+#define H_BOR_CHARS properties->border_style.header_border_chars
+#define SEP_CHARS properties->border_style.separator_chars
+
+    /*
+    BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->top_border_ch;
+    BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = border_chs->separator_ch;
+    BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->bottom_border_ch;
+    BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
+
+    H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->top_border_ch;
+    H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->separator_ch;
+    H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->bottom_border_ch;
+    H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
+    */
+
+    BOR_CHARS[TT_bip] = border_chs->top_border_ch;
+    BOR_CHARS[IH_bip] = border_chs->separator_ch;
+    BOR_CHARS[BB_bip] = border_chs->bottom_border_ch;
+    BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
+
+    BOR_CHARS[TL_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->out_intersect_ch;
+    BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = border_chs->out_intersect_ch;
+    BOR_CHARS[BL_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->out_intersect_ch;
+    BOR_CHARS[II_bip] = border_chs->in_intersect_ch;
+
+    BOR_CHARS[LI_bip] = BOR_CHARS[TI_bip] = BOR_CHARS[RI_bip] = BOR_CHARS[BI_bip] = border_chs->in_intersect_ch;
+
+//    if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
+//        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
+//    }
+    if (strlen(border_chs->separator_ch) == 0 && strlen(border_chs->in_intersect_ch) == 0) {
+        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = "\0";
+    }
+
+
+    H_BOR_CHARS[TT_bip] = header_border_chs->top_border_ch;
+    H_BOR_CHARS[IH_bip] = header_border_chs->separator_ch;
+    H_BOR_CHARS[BB_bip] = header_border_chs->bottom_border_ch;
+    H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
+
+    H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->out_intersect_ch;
+    H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->out_intersect_ch;
+    H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->out_intersect_ch;
+    H_BOR_CHARS[II_bip] = header_border_chs->in_intersect_ch;
+
+    H_BOR_CHARS[LI_bip] = H_BOR_CHARS[TI_bip] = H_BOR_CHARS[RI_bip] = H_BOR_CHARS[BI_bip] = header_border_chs->in_intersect_ch;
+
+//    if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
+//        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
+//    }
+    if (strlen(header_border_chs->separator_ch) == 0 && strlen(header_border_chs->in_intersect_ch) == 0) {
+        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = "\0";
+    }
+
+    SEP_CHARS[LH_sip] = SEP_CHARS[RH_sip] = SEP_CHARS[II_sip] = header_border_chs->out_intersect_ch;
+    SEP_CHARS[TI_sip] = SEP_CHARS[BI_sip] = header_border_chs->out_intersect_ch;
+    SEP_CHARS[IH_sip] = style->hor_separator_char;
+
+
+#undef BOR_CHARS
+#undef H_BOR_CHARS
+#undef SEP_CHARS
+}
+
+
+int ft_set_default_border_style(const struct ft_border_style *style)
+{
+    set_border_props_for_props(&g_table_properties, style);
+    return FT_SUCCESS;
+}
+
+int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style)
+{
+    assert(table);
+    if (table->properties == NULL) {
+        table->properties = create_table_properties();
+        if (table->properties == NULL)
+            return FT_MEMORY_ERROR;
+    }
+    set_border_props_for_props(table->properties, style);
+    return FT_SUCCESS;
+}
+
+
+
+int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t property, int value)
+{
+    assert(table);
+
+    if (table->properties == NULL) {
+        table->properties = create_table_properties();
+        if (table->properties == NULL)
+            return FT_MEMORY_ERROR;
+    }
+    if (table->properties->cell_properties == NULL) {
+        table->properties->cell_properties = create_cell_prop_container();
+        if (table->properties->cell_properties == NULL) {
+            return FT_ERROR;
+        }
+    }
+
+    if (row == FT_CUR_ROW)
+        row = table->cur_row;
+    if (row == FT_CUR_COLUMN)
+        col = table->cur_col;
+
+    return set_cell_property(table->properties->cell_properties, row, col, property, value);
+}
+
+int ft_set_default_cell_prop(uint32_t property, int value)
+{
+    return set_default_cell_property(property, value);
+}
+
+
+int ft_set_default_tbl_prop(uint32_t property, int value)
+{
+    return set_default_entire_table_property(property, value);
+}
+
+int ft_set_tbl_prop(ft_table_t *table, uint32_t property, int value)
+{
+    assert(table);
+
+    if (table->properties == NULL) {
+        table->properties = create_table_properties();
+        if (table->properties == NULL)
+            return FT_MEMORY_ERROR;
+    }
+    return set_entire_table_property(table->properties, property, value);
+}
+
+void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
+{
+    set_memory_funcs(f_malloc, f_free);
+}
+
+int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
+{
+    assert(table);
+    if (hor_span < 2)
+        return FT_EINVAL;
+
+    if (row == FT_CUR_ROW)
+        row = table->cur_row;
+    if (row == FT_CUR_COLUMN)
+        col = table->cur_col;
+
+    fort_row_t *row_p = get_row_and_create_if_not_exists(table, row);
+    if (row_p == NULL)
+        return FT_ERROR;
+
+    return row_set_cell_span(row_p, col, hor_span);
+}
+
+/********************************************************
+   End of file "fort_impl.c"
+ ********************************************************/
+
+
+/********************************************************
+   Begin of file "fort_utils.c"
+ ********************************************************/
+
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
+#ifdef FT_HAVE_WCHAR
+#include <wchar.h>
+#endif
+
+
+
+/*****************************************************************************
+ *               LIBFORT helpers
+ *****************************************************************************/
+
+#ifndef FT_MICROSOFT_COMPILER
+void *(*fort_malloc)(size_t size) = &malloc;
+void (*fort_free)(void *ptr) = &free;
+void *(*fort_calloc)(size_t nmemb, size_t size) = &calloc;
+void *(*fort_realloc)(void *ptr, size_t size) = &realloc;
+#else
+static void *local_malloc(size_t size)
+{
+    return malloc(size);
+}
+
+static void local_free(void *ptr)
+{
+    free(ptr);
+}
+
+static void *local_calloc(size_t nmemb, size_t size)
+{
+    return calloc(nmemb, size);
+}
+
+static void *local_realloc(void *ptr, size_t size)
+{
+    return realloc(ptr, size);
+}
+
+void *(*fort_malloc)(size_t size) = &local_malloc;
+void (*fort_free)(void *ptr) = &local_free;
+void *(*fort_calloc)(size_t nmemb, size_t size) = &local_calloc;
+void *(*fort_realloc)(void *ptr, size_t size) = &local_realloc;
+#endif
+
+static void *custom_fort_calloc(size_t nmemb, size_t size)
+{
+    size_t total_size = nmemb * size;
+    void *result = F_MALLOC(total_size);
+    if (result != NULL)
+        memset(result, 0, total_size);
+    return result;
+}
+
+static void *custom_fort_realloc(void *ptr, size_t size)
+{
+    if (ptr == NULL)
+        return F_MALLOC(size);
+    if (size == 0) {
+        F_FREE(ptr);
+        return NULL;
+    }
+
+    void *new_chunk = F_MALLOC(size);
+    if (new_chunk == NULL)
+        return NULL;
+
+    /*
+     * In theory we should copy MIN(size, size allocated for ptr) bytes,
+     * but this is rather dummy implementation so we don't care about it
+     */
+    memcpy(new_chunk, ptr, size);
+    F_FREE(ptr);
+    return new_chunk;
+}
+
+void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
+{
+    assert((f_malloc == NULL && f_free == NULL) /* Use std functions */
+           || (f_malloc != NULL && f_free != NULL) /* Use custom functions */);
+
+    if (f_malloc == NULL && f_free == NULL) {
+#ifndef FT_MICROSOFT_COMPILER
+        fort_malloc = &malloc;
+        fort_free = &free;
+        fort_calloc = &calloc;
+        fort_realloc = &realloc;
+#else
+        fort_malloc = &local_malloc;
+        fort_free = &local_free;
+        fort_calloc = &local_calloc;
+        fort_realloc = &local_realloc;
+#endif
+    } else {
+        fort_malloc = f_malloc;
+        fort_free = f_free;
+        fort_calloc = &custom_fort_calloc;
+        fort_realloc = &custom_fort_realloc;
+    }
+
+}
+
+
+char *fort_strdup(const char *str)
+{
+    if (str == NULL)
+        return NULL;
+
+    size_t sz = strlen(str);
+    char *str_copy = (char *)F_MALLOC((sz + 1) * sizeof(char));
+    if (str_copy == NULL)
+        return NULL;
+
+    strcpy(str_copy, str);
+    return str_copy;
+}
+
+#if defined(FT_HAVE_WCHAR)
+wchar_t *fort_wcsdup(const wchar_t *str)
+{
+    if (str == NULL)
+        return NULL;
+
+    size_t sz = wcslen(str);
+    wchar_t *str_copy = (wchar_t *)F_MALLOC((sz + 1) * sizeof(wchar_t));
+    if (str_copy == NULL)
+        return NULL;
+
+    wcscpy(str_copy, str);
+    return str_copy;
+}
+#endif
+
+
+size_t number_of_columns_in_format_string(const char *fmt)
+{
+    int separator_counter = 0;
+    const char *pos = fmt;
+    while (1) {
+        pos = strchr(pos, FORT_COL_SEPARATOR);
+        if (pos == NULL)
+            break;
+
+        separator_counter++;
+        ++pos;
+    }
+    return separator_counter + 1;
+}
+
+#if defined(FT_HAVE_WCHAR)
+size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
+{
+    int separator_counter = 0;
+    const wchar_t *pos = fmt;
+    while (1) {
+        pos = wcschr(pos, FORT_COL_SEPARATOR);
+        if (pos == NULL)
+            break;
+
+        separator_counter++;
+        ++pos;
+    }
+    return separator_counter + 1;
+}
+#endif
+
+
+
+//int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
+//{
+//    if (length <= n)
+//        return -1;
+
+//    if (n == 0)
+//        return 0;
+
+//    /* To ensure valid return value it is safely not print such big strings */
+//    if (n > INT_MAX)
+//        return -1;
+
+//    int status = snprintf(buf, length, "%0*d", (int)n, 0);
+//    if (status < 0)
+//        return status;
+
+//    size_t i = 0;
+//    for (i = 0; i < n; ++i) {
+//        *buf = ch;
+//        buf++;
+//    }
+//    return (int)n;
+//}
+
+int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
+{
+    size_t str_len = strlen(str);
+    if (length <= n * str_len)
+        return -1;
+
+    if (n == 0)
+        return 0;
+
+    /* To ensure valid return value it is safely not print such big strings */
+    if (n * str_len > INT_MAX)
+        return -1;
+
+    if (str_len == 0)
+        return 0;
+
+    int status = snprintf(buf, length, "%0*d", (int)(n * str_len), 0);
+    if (status < 0)
+        return status;
+
+    size_t i = 0;
+    for (i = 0; i < n; ++i) {
+        const char *str_p = str;
+        while (*str_p)
+            *(buf++) = *(str_p++);
+    }
+    return (int)(n * str_len);
+}
+
+
+//int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
+//{
+//    if (length <= n)
+//        return -1;
+
+//    if (n == 0)
+//        return 0;
+
+//    /* To ensure valid return value it is safely not print such big strings */
+//    if (n > INT_MAX)
+//        return -1;
+
+//    int status = swprintf(buf, length, L"%0*d", (int)n, 0);
+//    if (status < 0)
+//        return status;
+
+//    size_t i = 0;
+//    for (i = 0; i < n; ++i) {
+//        *buf = ch;
+//        buf++;
+//    }
+//    return (int)n;
+//}
+
+#if defined(FT_HAVE_WCHAR)
+#define WCS_SIZE 64
+
+int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
+{
+    size_t str_len = strlen(str);
+
+    /* note: baybe it's, better to return -1 in case of multibyte character
+     * strings (not sure this case is done correctly).
+     */
+    if (str_len > 1) {
+        const unsigned char *p = (const unsigned char *)str;
+        while (*p) {
+            if (*p <= 127)
+                p++;
+            else {
+                wchar_t wcs[WCS_SIZE];
+                const char *ptr = str;
+                size_t wcs_len;
+                wcs_len = mbsrtowcs(wcs, (const char **)&ptr, WCS_SIZE, NULL);
+                /* for simplicity */
+                if ((wcs_len == (size_t) - 1) || wcs_len > 1) {
+                    return -1;
+                } else {
+                    wcs[wcs_len] = L'\0';
+                    size_t k = n;
+                    while (k) {
+                        *buf = *wcs;
+                        ++buf;
+                        --k;
+                    }
+                    buf[n] = L'\0';
+                    return (int)n;
+                }
+            }
+        }
+    }
+
+    if (length <= n * str_len)
+        return -1;
+
+    if (n == 0)
+        return 0;
+
+    /* To ensure valid return value it is safely not print such big strings */
+    if (n * str_len > INT_MAX)
+        return -1;
+
+    if (str_len == 0)
+        return 0;
+
+    int status = swprintf(buf, length, L"%0*d", (int)(n * str_len), 0);
+    if (status < 0)
+        return status;
+
+    size_t i = 0;
+    for (i = 0; i < n; ++i) {
+        const char *str_p = str;
+        while (*str_p)
+            *(buf++) = (wchar_t) * (str_p++);
+    }
+    return (int)(n * str_len);
+}
+#endif
+
+/********************************************************
+   End of file "fort_utils.c"
+ ********************************************************/
+
+
+/********************************************************
    Begin of file "properties.c"
  ********************************************************/
 
@@ -1821,2420 +3503,6 @@ fort_table_properties_t *copy_table_properties(const fort_table_properties_t *pr
 
 /********************************************************
    End of file "properties.c"
- ********************************************************/
-
-
-/********************************************************
-   Begin of file "table.c"
- ********************************************************/
-
-/* #include "table.h" */ /* Commented by amalgamation script */
-/* #include "string_buffer.h" */ /* Commented by amalgamation script */
-/* #include "cell.h" */ /* Commented by amalgamation script */
-/* #include "vector.h" */ /* Commented by amalgamation script */
-/* #include "row.h" */ /* Commented by amalgamation script */
-
-FT_INTERNAL
-separator_t *create_separator(int enabled)
-{
-    separator_t *res = (separator_t *)F_CALLOC(1, sizeof(separator_t));
-    if (res == NULL)
-        return NULL;
-    res->enabled = enabled;
-    return res;
-}
-
-
-FT_INTERNAL
-void destroy_separator(separator_t *sep)
-{
-    F_FREE(sep);
-}
-
-
-FT_INTERNAL
-separator_t *copy_separator(separator_t *sep)
-{
-    assert(sep);
-    return create_separator(sep->enabled);
-}
-
-
-static
-fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnNull policy)
-{
-    if (table == NULL || table->rows == NULL) {
-        return NULL;
-    }
-
-    switch (policy) {
-        case DoNotCreate:
-            if (row < vector_size(table->rows)) {
-                return *(fort_row_t **)vector_at(table->rows, row);
-            }
-            return NULL;
-            break;
-        case Create:
-            while (row >= vector_size(table->rows)) {
-                fort_row_t *new_row = create_row();
-                if (new_row == NULL)
-                    return NULL;
-                if (FT_IS_ERROR(vector_push(table->rows, &new_row))) {
-                    destroy_row(new_row);
-                    return NULL;
-                }
-            }
-            return *(fort_row_t **)vector_at(table->rows, row);
-            break;
-    }
-    return NULL;
-}
-
-
-FT_INTERNAL
-fort_row_t *get_row(ft_table_t *table, size_t row)
-{
-    return get_row_implementation(table, row, DoNotCreate);
-}
-
-
-FT_INTERNAL
-const fort_row_t *get_row_c(const ft_table_t *table, size_t row)
-{
-    return get_row((ft_table_t *)table, row);
-}
-
-
-FT_INTERNAL
-fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row)
-{
-    return get_row_implementation(table, row, Create);
-}
-
-
-FT_INTERNAL
-string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table)
-{
-    assert(table);
-
-    fort_row_t *row = get_row_and_create_if_not_exists(table, table->cur_row);
-    if (row == NULL)
-        return NULL;
-    fort_cell_t *cell = get_cell_and_create_if_not_exists(row, table->cur_col);
-    if (cell == NULL)
-        return NULL;
-
-    return cell_get_string_buffer(cell);
-}
-
-
-/*
- * Returns number of cells (rows * cols)
- */
-FT_INTERNAL
-fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols)
-{
-    *rows = 0;
-    *cols = 0;
-    if (table && table->rows) {
-        *rows = vector_size(table->rows);
-        fort_row_t *row = NULL;
-        FOR_EACH(fort_row_t *, row, table->rows) {
-            size_t cols_in_row = columns_in_row(row);
-            if (cols_in_row > *cols)
-                *cols = cols_in_row;
-        }
-    }
-    return FT_SUCCESS;
-}
-
-
-FT_INTERNAL
-fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
-        size_t **col_width_arr_p, size_t *col_width_arr_sz,
-        size_t **row_height_arr_p, size_t *row_height_arr_sz,
-        enum request_geom_type geom)
-{
-    if (table == NULL) {
-        return FT_ERROR;
-    }
-
-
-
-    size_t cols = 0;
-    size_t rows = 0;
-    int status = get_table_sizes(table, &rows, &cols);
-    if (FT_IS_ERROR(status))
-        return status;
-
-    size_t *col_width_arr = (size_t *)F_CALLOC(sizeof(size_t), cols);
-    size_t *row_height_arr = (size_t *)F_CALLOC(sizeof(size_t), rows);
-    if (col_width_arr == NULL || row_height_arr == NULL) {
-        F_FREE(col_width_arr);
-        F_FREE(row_height_arr);
-        return FT_ERROR;
-    }
-
-    int combined_cells_found = 0;
-    context_t context;
-    context.table_properties = (table->properties ? table->properties : &g_table_properties);
-    size_t col = 0;
-    for (col = 0; col < cols; ++col) {
-        col_width_arr[col] = 0;
-        size_t row = 0;
-        for (row = 0; row < rows; ++row) {
-            const fort_row_t *row_p = get_row_c(table, row);
-            const fort_cell_t *cell = get_cell_c(row_p, col);
-            context.column = col;
-            context.row = row;
-            if (cell) {
-                switch (get_cell_type(cell)) {
-                    case CommonCell:
-                        col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context, geom));
-                        break;
-                    case GroupMasterCell:
-                        combined_cells_found = 1;
-                        break;
-                    case GroupSlaveCell:
-                        ; /* Do nothing */
-                        break;
-                }
-                row_height_arr[row] = MAX(row_height_arr[row], hint_height_cell(cell, &context));
-            }
-        }
-    }
-
-    if (combined_cells_found) {
-        col = 0;
-        for (col = 0; col < cols; ++col) {
-            size_t row = 0;
-            for (row = 0; row < rows; ++row) {
-                const fort_row_t *row_p = get_row_c(table, row);
-                const fort_cell_t *cell = get_cell_c(row_p, col);
-                context.column = col;
-                context.row = row;
-                if (cell) {
-                    if (get_cell_type(cell) == GroupMasterCell) {
-                        size_t hint_width = hint_width_cell(cell, &context, geom);
-                        size_t slave_col = col + group_cell_number(row_p, col);
-                        size_t cur_adj_col = col;
-                        size_t group_width = col_width_arr[col];
-                        size_t i;
-                        for (i = col + 1; i < slave_col; ++i)
-                            group_width += col_width_arr[i] + FORT_COL_SEPARATOR_LENGTH;
-                        /* adjust col. widths */
-                        while (1) {
-                            if (group_width >= hint_width)
-                                break;
-                            col_width_arr[cur_adj_col] += 1;
-                            group_width++;
-                            cur_adj_col++;
-                            if (cur_adj_col == slave_col)
-                                cur_adj_col = col;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /* todo: Maybe it is better to move min width checking to a particular cell width checking.
-     * At the moment min width includes paddings. Maybe it is better that min width weren't include
-     * paddings but be min width of the cell content without padding
-     */
-    /*
-    if (table->properties) {
-        for (size_t i = 0; i < cols; ++i) {
-            col_width_arr[i] = MAX((int)col_width_arr[i], fort_props_column_width(table->properties, i));
-        }
-    }
-    */
-
-    *col_width_arr_p = col_width_arr;
-    *col_width_arr_sz = cols;
-    *row_height_arr_p = row_height_arr;
-    *row_height_arr_sz = rows;
-    return FT_SUCCESS;
-}
-
-
-/*
- * Returns geometry in characters
- */
-FT_INTERNAL
-fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width)
-{
-    if (table == NULL)
-        return FT_ERROR;
-
-    *height = 0;
-    *width = 0;
-    size_t cols = 0;
-    size_t rows = 0;
-    size_t *col_width_arr = NULL;
-    size_t *row_height_arr = NULL;
-
-    int status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, INTERN_REPR_GEOMETRY);
-    if (FT_IS_ERROR(status))
-        return status;
-
-    *width = 1 + (cols == 0 ? 1 : cols) + 1; /* for boundaries (that take 1 symbol) + newline   */
-    size_t i = 0;
-    for (i = 0; i < cols; ++i) {
-        *width += col_width_arr[i];
-    }
-
-    /* todo: add check for non printable horizontal row separators */
-    *height = 1 + (rows == 0 ? 1 : rows); /* for boundaries (that take 1 symbol)  */
-    for (i = 0; i < rows; ++i) {
-        *height += row_height_arr[i];
-    }
-    F_FREE(col_width_arr);
-    F_FREE(row_height_arr);
-
-    if (table->properties) {
-        *height += table->properties->entire_table_properties.top_margin;
-        *height += table->properties->entire_table_properties.bottom_margin;
-        *width += table->properties->entire_table_properties.left_margin;
-        *width += table->properties->entire_table_properties.right_margin;
-    }
-
-    /* Take into account that border elements can be more than one byte long */
-    fort_table_properties_t *table_properties = table->properties ? table->properties : &g_table_properties;
-    size_t max_border_elem_len = max_border_elem_strlen(table_properties);
-    *width *= max_border_elem_len;
-
-    return FT_SUCCESS;
-
-}
-
-
-/********************************************************
-   End of file "table.c"
- ********************************************************/
-
-
-/********************************************************
-   Begin of file "fort_impl.c"
- ********************************************************/
-
-/*
-libfort
-
-MIT License
-
-Copyright (c) 2017 - 2018 Seleznev Anton
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include "fort.h"
-#include <assert.h>
-#include <string.h>
-#include <wchar.h>
-#include <ctype.h>
-
-/* #include "vector.h" */ /* Commented by amalgamation script */
-/* #include "fort_utils.h" */ /* Commented by amalgamation script */
-/* #include "string_buffer.h" */ /* Commented by amalgamation script */
-/* #include "table.h" */ /* Commented by amalgamation script */
-/* #include "row.h" */ /* Commented by amalgamation script */
-/* #include "properties.h" */ /* Commented by amalgamation script */
-
-
-ft_table_t *ft_create_table(void)
-{
-    ft_table_t *result = (ft_table_t *)F_CALLOC(1, sizeof(ft_table_t));
-    if (result == NULL)
-        return NULL;
-
-    result->rows = create_vector(sizeof(fort_row_t *), DEFAULT_VECTOR_CAPACITY);
-    if (result->rows == NULL) {
-        F_FREE(result);
-        return NULL;
-    }
-    result->separators = create_vector(sizeof(separator_t *), DEFAULT_VECTOR_CAPACITY);
-    if (result->separators == NULL) {
-        destroy_vector(result->rows);
-        F_FREE(result);
-        return NULL;
-    }
-    result->properties = NULL;
-    result->conv_buffer = NULL;
-    result->cur_row = 0;
-    result->cur_col = 0;
-    return result;
-}
-
-
-void ft_destroy_table(ft_table_t *table)
-{
-    size_t i = 0;
-
-    if (table == NULL)
-        return;
-
-    if (table->rows) {
-        size_t row_n = vector_size(table->rows);
-        for (i = 0; i < row_n; ++i) {
-            destroy_row(*(fort_row_t **)vector_at(table->rows, i));
-        }
-        destroy_vector(table->rows);
-    }
-    if (table->separators) {
-        size_t row_n = vector_size(table->separators);
-        for (i = 0; i < row_n; ++i) {
-            destroy_separator(*(separator_t **)vector_at(table->separators, i));
-        }
-        destroy_vector(table->separators);
-    }
-    destroy_table_properties(table->properties);
-    destroy_string_buffer(table->conv_buffer);
-    F_FREE(table);
-}
-
-ft_table_t *ft_copy_table(ft_table_t *table)
-{
-    if (table == NULL)
-        return NULL;
-
-    ft_table_t *result = ft_create_table();
-    if (result == NULL)
-        return NULL;
-
-    size_t rows_n = vector_size(table->rows);
-    for (size_t i = 0; i < rows_n; ++i) {
-        fort_row_t *row = *(fort_row_t **)vector_at(table->rows, i);
-        fort_row_t *new_row = copy_row(row);
-        if (new_row == NULL) {
-            ft_destroy_table(result);
-            return NULL;
-        }
-        vector_push(result->rows, &new_row);
-    }
-
-    size_t sep_sz = vector_size(table->separators);
-    for (size_t i = 0; i < sep_sz; ++i) {
-        separator_t *sep = *(separator_t **)vector_at(table->separators, i);
-        separator_t *new_sep = copy_separator(sep);
-        if (new_sep == NULL) {
-            ft_destroy_table(result);
-            return NULL;
-        }
-        vector_push(result->separators, &new_sep);
-    }
-
-
-    result->properties = copy_table_properties(table->properties);
-    if (result->properties == NULL) {
-        ft_destroy_table(result);
-        return NULL;
-    }
-
-    /* todo: copy conv_buffer  ??  */
-
-    result->cur_row = table->cur_row;
-    result->cur_col = table->cur_col;
-    return result;
-}
-
-
-void ft_ln(ft_table_t *table)
-{
-    assert(table);
-    table->cur_col = 0;
-    table->cur_row++;
-}
-
-size_t ft_cur_row(ft_table_t *table)
-{
-    assert(table);
-    return table->cur_row;
-}
-
-size_t ft_cur_col(ft_table_t *table)
-{
-    assert(table);
-    return table->cur_col;
-}
-
-void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col)
-{
-    assert(table);
-    table->cur_row = row;
-    table->cur_col = col;
-}
-
-FT_PRINTF_ATTRIBUTE_FORMAT(3, 0)
-static int ft_row_printf_impl(ft_table_t *table, size_t row, const char *fmt, va_list *va)
-{
-#define CREATE_ROW_FROM_FMT_STRING create_row_from_fmt_string
-    size_t i = 0;
-    size_t new_cols = 0;
-
-    if (table == NULL)
-        return -1;
-
-    fort_row_t *new_row = CREATE_ROW_FROM_FMT_STRING(fmt, va);
-
-    if (new_row == NULL) {
-        return -1;
-    }
-
-    fort_row_t **cur_row_p = NULL;
-    size_t sz = vector_size(table->rows);
-    if (row >= sz) {
-        size_t push_n = row - sz + 1;
-        for (i = 0; i < push_n; ++i) {
-            fort_row_t *padding_row = create_row();
-            if (padding_row == NULL)
-                goto clear;
-
-            if (FT_IS_ERROR(vector_push(table->rows, &padding_row))) {
-                destroy_row(padding_row);
-                goto clear;
-            }
-        }
-    }
-    /* todo: clearing pushed items in case of error ?? */
-
-    new_cols = columns_in_row(new_row);
-    cur_row_p = (fort_row_t **)vector_at(table->rows, row);
-    swap_row(*cur_row_p, new_row, table->cur_col);
-
-    table->cur_col += new_cols;
-    destroy_row(new_row);
-    return (int)new_cols;
-
-clear:
-    destroy_row(new_row);
-    return -1;
-#undef CREATE_ROW_FROM_FMT_STRING
-}
-
-#ifdef FT_HAVE_WCHAR
-static int ft_row_wprintf_impl(ft_table_t *table, size_t row, const wchar_t *fmt, va_list *va)
-{
-#define CREATE_ROW_FROM_FMT_STRING create_row_from_fmt_wstring
-    size_t i = 0;
-    size_t new_cols = 0;
-
-    if (table == NULL)
-        return -1;
-
-    fort_row_t *new_row = CREATE_ROW_FROM_FMT_STRING(fmt, va);
-
-    if (new_row == NULL) {
-        return -1;
-    }
-
-    fort_row_t **cur_row_p = NULL;
-    size_t sz = vector_size(table->rows);
-    if (row >= sz) {
-        size_t push_n = row - sz + 1;
-        for (i = 0; i < push_n; ++i) {
-            fort_row_t *padding_row = create_row();
-            if (padding_row == NULL)
-                goto clear;
-
-            if (FT_IS_ERROR(vector_push(table->rows, &padding_row))) {
-                destroy_row(padding_row);
-                goto clear;
-            }
-        }
-    }
-    /* todo: clearing pushed items in case of error ?? */
-
-    new_cols = columns_in_row(new_row);
-    cur_row_p = (fort_row_t **)vector_at(table->rows, row);
-    swap_row(*cur_row_p, new_row, table->cur_col);
-
-    table->cur_col += new_cols;
-    destroy_row(new_row);
-    return (int)new_cols;
-
-clear:
-    destroy_row(new_row);
-    return -1;
-#undef CREATE_ROW_FROM_FMT_STRING
-}
-#endif
-
-#if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
-#define FT_PRINTF ft_printf
-#define FT_PRINTF_LN ft_printf_ln
-#else
-#define FT_PRINTF ft_printf_impl
-#define FT_PRINTF_LN ft_printf_ln_impl
-#endif
-
-
-
-int FT_PRINTF(ft_table_t *table, const char *fmt, ...)
-{
-    assert(table);
-    va_list va;
-    va_start(va, fmt);
-    int result = ft_row_printf_impl(table, table->cur_row, fmt, &va);
-    va_end(va);
-    return result;
-}
-
-int FT_PRINTF_LN(ft_table_t *table, const char *fmt, ...)
-{
-    assert(table);
-    va_list va;
-    va_start(va, fmt);
-    int result = ft_row_printf_impl(table, table->cur_row, fmt, &va);
-    if (result >= 0) {
-        ft_ln(table);
-    }
-    va_end(va);
-    return result;
-}
-
-#undef FT_PRINTF
-#undef FT_PRINTF_LN
-#undef FT_HDR_PRINTF
-#undef FT_HDR_PRINTF_LN
-
-#ifdef FT_HAVE_WCHAR
-int ft_wprintf(ft_table_t *table, const wchar_t *fmt, ...)
-{
-    assert(table);
-    va_list va;
-    va_start(va, fmt);
-    int result = ft_row_wprintf_impl(table, table->cur_row, fmt, &va);
-    va_end(va);
-    return result;
-}
-
-int ft_wprintf_ln(ft_table_t *table, const wchar_t *fmt, ...)
-{
-    assert(table);
-    va_list va;
-    va_start(va, fmt);
-    int result = ft_row_wprintf_impl(table, table->cur_row, fmt, &va);
-    if (result >= 0) {
-        ft_ln(table);
-    }
-    va_end(va);
-    return result;
-}
-
-#endif
-
-
-static int ft_write_impl(ft_table_t *table, const char *cell_content)
-{
-    assert(table);
-    string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
-    if (str_buffer == NULL)
-        return FT_ERROR;
-
-    int status = fill_buffer_from_string(str_buffer, cell_content);
-    if (FT_IS_SUCCESS(status)) {
-        table->cur_col++;
-    }
-    return status;
-}
-
-
-#ifdef FT_HAVE_WCHAR
-
-static int ft_wwrite_impl(ft_table_t *table, const wchar_t *cell_content)
-{
-    assert(table);
-    string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
-    if (str_buffer == NULL)
-        return FT_ERROR;
-
-    int status = fill_buffer_from_wstring(str_buffer, cell_content);
-    if (FT_IS_SUCCESS(status)) {
-        table->cur_col++;
-    }
-    return status;
-}
-
-#endif
-
-
-int ft_nwrite(ft_table_t *table, size_t count, const char *cell_content, ...)
-{
-    size_t i = 0;
-    assert(table);
-    int status = ft_write_impl(table, cell_content);
-    if (FT_IS_ERROR(status))
-        return status;
-
-    va_list va;
-    va_start(va, cell_content);
-    --count;
-    for (i = 0; i < count; ++i) {
-        const char *cell = va_arg(va, const char *);
-        status = ft_write_impl(table, cell);
-        if (FT_IS_ERROR(status)) {
-            va_end(va);
-            return status;
-        }
-    }
-    va_end(va);
-    return status;
-}
-
-int ft_nwrite_ln(ft_table_t *table, size_t count, const char *cell_content, ...)
-{
-    size_t i = 0;
-    assert(table);
-    int status = ft_write_impl(table, cell_content);
-    if (FT_IS_ERROR(status))
-        return status;
-
-    va_list va;
-    va_start(va, cell_content);
-    --count;
-    for (i = 0; i < count; ++i) {
-        const char *cell = va_arg(va, const char *);
-        status = ft_write_impl(table, cell);
-        if (FT_IS_ERROR(status)) {
-            va_end(va);
-            return status;
-        }
-    }
-    va_end(va);
-
-    ft_ln(table);
-    return status;
-}
-
-#ifdef FT_HAVE_WCHAR
-
-int ft_nwwrite(ft_table_t *table, size_t n, const wchar_t *cell_content, ...)
-{
-    size_t i = 0;
-    assert(table);
-    int status = ft_wwrite_impl(table, cell_content);
-    if (FT_IS_ERROR(status))
-        return status;
-
-    va_list va;
-    va_start(va, cell_content);
-    --n;
-    for (i = 0; i < n; ++i) {
-        const wchar_t *cell = va_arg(va, const wchar_t *);
-        status = ft_wwrite_impl(table, cell);
-        if (FT_IS_ERROR(status)) {
-            va_end(va);
-            return status;
-        }
-    }
-    va_end(va);
-    return status;
-}
-
-int ft_nwwrite_ln(ft_table_t *table, size_t n, const wchar_t *cell_content, ...)
-{
-    size_t i = 0;
-    assert(table);
-    int status = ft_wwrite_impl(table, cell_content);
-    if (FT_IS_ERROR(status))
-        return status;
-
-    va_list va;
-    va_start(va, cell_content);
-    --n;
-    for (i = 0; i < n; ++i) {
-        const wchar_t *cell = va_arg(va, const wchar_t *);
-        status = ft_wwrite_impl(table, cell);
-        if (FT_IS_ERROR(status)) {
-            va_end(va);
-            return status;
-        }
-    }
-    va_end(va);
-
-    ft_ln(table);
-    return status;
-}
-#endif
-
-
-int ft_row_write(ft_table_t *table, size_t cols, const char *cells[])
-{
-    size_t i = 0;
-    assert(table);
-    for (i = 0; i < cols; ++i) {
-        int status = ft_write_impl(table, cells[i]);
-        if (FT_IS_ERROR(status)) {
-            /* todo: maybe current pos in case of error should be equal to the one before function call? */
-            return status;
-        }
-    }
-    return FT_SUCCESS;
-}
-
-int ft_row_write_ln(ft_table_t *table, size_t cols, const char *cells[])
-{
-    assert(table);
-    int status = ft_row_write(table, cols, cells);
-    if (FT_IS_SUCCESS(status)) {
-        ft_ln(table);
-    }
-    return status;
-}
-
-#ifdef FT_HAVE_WCHAR
-int ft_row_wwrite(ft_table_t *table, size_t cols, const wchar_t *cells[])
-{
-    size_t i = 0;
-    assert(table);
-    for (i = 0; i < cols; ++i) {
-        int status = ft_wwrite_impl(table, cells[i]);
-        if (FT_IS_ERROR(status)) {
-            /* todo: maybe current pos in case of error should be equal
-             * to the one before function call?
-             */
-            return status;
-        }
-    }
-    return FT_SUCCESS;
-}
-
-int ft_row_wwrite_ln(ft_table_t *table, size_t cols, const wchar_t *cells[])
-{
-    assert(table);
-    int status = ft_row_wwrite(table, cols, cells);
-    if (FT_IS_SUCCESS(status)) {
-        ft_ln(table);
-    }
-    return status;
-}
-#endif
-
-
-
-int ft_table_write(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[])
-{
-    size_t i = 0;
-    assert(table);
-    for (i = 0; i < rows; ++i) {
-        int status = ft_row_write(table, cols, (const char **)&table_cells[i * cols]);
-        if (FT_IS_ERROR(status)) {
-            /* todo: maybe current pos in case of error should be equal
-             * to the one before function call?
-             */
-            return status;
-        }
-        if (i != rows - 1)
-            ft_ln(table);
-    }
-    return FT_SUCCESS;
-}
-
-int ft_table_write_ln(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[])
-{
-    assert(table);
-    int status = ft_table_write(table, rows, cols, table_cells);
-    if (FT_IS_SUCCESS(status)) {
-        ft_ln(table);
-    }
-    return status;
-}
-
-
-#ifdef FT_HAVE_WCHAR
-int ft_table_wwrite(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[])
-{
-    size_t i = 0;
-    assert(table);
-    for (i = 0; i < rows; ++i) {
-        int status = ft_row_wwrite(table, cols, (const wchar_t **)&table_cells[i * cols]);
-        if (FT_IS_ERROR(status)) {
-            /* todo: maybe current pos in case of error should be equal
-             * to the one before function call?
-             */
-            return status;
-        }
-        if (i != rows - 1)
-            ft_ln(table);
-    }
-    return FT_SUCCESS;
-}
-
-int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[])
-{
-    assert(table);
-    int status = ft_table_wwrite(table, rows, cols, table_cells);
-    if (FT_IS_SUCCESS(status)) {
-        ft_ln(table);
-    }
-    return status;
-}
-#endif
-
-
-
-const char *ft_to_string(const ft_table_t *table)
-{
-    typedef char char_type;
-    const enum str_buf_type buf_type = CharBuf;
-    const char *space_char = " ";
-    const char *new_line_char = "\n";
-#define EMPTY_STRING ""
-    int (*snprintf_row_)(const fort_row_t *, char *, size_t, size_t *, size_t, size_t, const context_t *) = snprintf_row;
-    int (*print_row_separator_)(char *, size_t,
-                                const size_t *, size_t,
-                                const fort_row_t *, const fort_row_t *,
-                                enum HorSeparatorPos, const separator_t *,
-                                const context_t *) = print_row_separator;
-//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
-    int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
-    assert(table);
-
-    /* Determing size of table string representation */
-    size_t height = 0;
-    size_t width = 0;
-    int status = table_geometry(table, &height, &width);
-    if (FT_IS_ERROR(status)) {
-        return NULL;
-    }
-    size_t sz = height * width + 1;
-
-    /* Allocate string buffer for string representation */
-    if (table->conv_buffer == NULL) {
-        ((ft_table_t *)table)->conv_buffer = create_string_buffer(sz, buf_type);
-        if (table->conv_buffer == NULL)
-            return NULL;
-    }
-    while (string_buffer_capacity(table->conv_buffer) < sz) {
-        if (FT_IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
-            return NULL;
-        }
-    }
-    char_type *buffer = (char_type *)buffer_get_data(table->conv_buffer);
-
-
-    size_t cols = 0;
-    size_t rows = 0;
-    size_t *col_width_arr = NULL;
-    size_t *row_height_arr = NULL;
-    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, VISIBLE_GEOMETRY);
-    if (FT_IS_ERROR(status))
-        return NULL;
-
-    if (rows == 0)
-        return EMPTY_STRING;
-
-    int written = 0;
-    int tmp = 0;
-    size_t i = 0;
-    context_t context;
-    context.table_properties = (table->properties ? table->properties : &g_table_properties);
-    fort_row_t *prev_row = NULL;
-    fort_row_t *cur_row = NULL;
-    separator_t *cur_sep = NULL;
-    size_t sep_size = vector_size(table->separators);
-
-    /* Print top margin */
-    for (i = 0; i < context.table_properties->entire_table_properties.top_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
-    }
-
-    for (i = 0; i < rows; ++i) {
-        cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-        cur_row = *(fort_row_t **)vector_at(table->rows, i);
-        enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
-        context.row = i;
-        CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprintf_row_(cur_row, buffer + written, sz - written, col_width_arr, cols, row_height_arr[i], &context));
-        prev_row = cur_row;
-    }
-    cur_row = NULL;
-    cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-    CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
-
-    /* Print bottom margin */
-    for (i = 0; i < context.table_properties->entire_table_properties.bottom_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
-    }
-
-
-    F_FREE(col_width_arr);
-    F_FREE(row_height_arr);
-    return buffer;
-
-clear:
-    F_FREE(col_width_arr);
-    F_FREE(row_height_arr);
-//    F_FREE(buffer);
-    return NULL;
-#undef EMPTY_STRING
-}
-
-
-#ifdef FT_HAVE_WCHAR
-
-const wchar_t *ft_to_wstring(const ft_table_t *table)
-{
-    typedef wchar_t char_type;
-    const enum str_buf_type buf_type = WCharBuf;
-    const char *space_char = " ";
-    const char *new_line_char = "\n";
-#define EMPTY_STRING L""
-    int (*snprintf_row_)(const fort_row_t *, wchar_t *, size_t, size_t *, size_t, size_t, const context_t *) = wsnprintf_row;
-    int (*print_row_separator_)(wchar_t *, size_t,
-                                const size_t *, size_t,
-                                const fort_row_t *, const fort_row_t *,
-                                enum HorSeparatorPos, const separator_t *,
-                                const context_t *) = wprint_row_separator;
-//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
-    int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
-
-
-    assert(table);
-
-    /* Determing size of table string representation */
-    size_t height = 0;
-    size_t width = 0;
-    int status = table_geometry(table, &height, &width);
-    if (FT_IS_ERROR(status)) {
-        return NULL;
-    }
-    size_t sz = height * width + 1;
-
-    /* Allocate string buffer for string representation */
-    if (table->conv_buffer == NULL) {
-        ((ft_table_t *)table)->conv_buffer = create_string_buffer(sz, buf_type);
-        if (table->conv_buffer == NULL)
-            return NULL;
-    }
-    while (string_buffer_capacity(table->conv_buffer) < sz) {
-        if (FT_IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
-            return NULL;
-        }
-    }
-    char_type *buffer = (char_type *)buffer_get_data(table->conv_buffer);
-
-
-    size_t cols = 0;
-    size_t rows = 0;
-    size_t *col_width_arr = NULL;
-    size_t *row_height_arr = NULL;
-    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, VISIBLE_GEOMETRY);
-
-    if (rows == 0)
-        return EMPTY_STRING;
-
-    if (FT_IS_ERROR(status))
-        return NULL;
-
-    int written = 0;
-    int tmp = 0;
-    size_t i = 0;
-    context_t context;
-    context.table_properties = (table->properties ? table->properties : &g_table_properties);
-    fort_row_t *prev_row = NULL;
-    fort_row_t *cur_row = NULL;
-    separator_t *cur_sep = NULL;
-    size_t sep_size = vector_size(table->separators);
-
-    /* Print top margin */
-    for (i = 0; i < context.table_properties->entire_table_properties.top_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
-    }
-
-    for (i = 0; i < rows; ++i) {
-        cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-        cur_row = *(fort_row_t **)vector_at(table->rows, i);
-        enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
-        context.row = i;
-        CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprintf_row_(cur_row, buffer + written, sz - written, col_width_arr, cols, row_height_arr[i], &context));
-        prev_row = cur_row;
-    }
-    cur_row = NULL;
-    cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-    CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
-
-    /* Print bottom margin */
-    for (i = 0; i < context.table_properties->entire_table_properties.bottom_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
-    }
-
-    F_FREE(col_width_arr);
-    F_FREE(row_height_arr);
-    return buffer;
-
-clear:
-    F_FREE(col_width_arr);
-    F_FREE(row_height_arr);
-//    F_FREE(buffer);
-    return NULL;
-#undef EMPTY_STRING
-}
-
-#endif
-
-
-int ft_add_separator(ft_table_t *table)
-{
-    assert(table);
-    assert(table->separators);
-
-    while (vector_size(table->separators) <= table->cur_row) {
-        separator_t *sep_p = create_separator(F_FALSE);
-        if (sep_p == NULL)
-            return FT_MEMORY_ERROR;
-        int status = vector_push(table->separators, &sep_p);
-        if (FT_IS_ERROR(status))
-            return status;
-    }
-
-    separator_t **sep_p = (separator_t **)vector_at(table->separators, table->cur_row);
-    if (*sep_p == NULL)
-        *sep_p = create_separator(F_TRUE);
-    else
-        (*sep_p)->enabled = F_TRUE;
-
-    if (*sep_p == NULL)
-        return FT_ERROR;
-    return FT_SUCCESS;
-}
-
-
-
-struct ft_border_style *FT_BASIC_STYLE = (struct ft_border_style *) &FORT_BASIC_STYLE;
-struct ft_border_style *FT_BASIC2_STYLE = (struct ft_border_style *) &FORT_BASIC2_STYLE;
-struct ft_border_style *FT_SIMPLE_STYLE = (struct ft_border_style *) &FORT_SIMPLE_STYLE;
-struct ft_border_style *FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_STYLE;
-struct ft_border_style *FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
-struct ft_border_style *FT_EMPTY_STYLE  = (struct ft_border_style *) &FORT_EMPTY_STYLE;
-struct ft_border_style *FT_SOLID_STYLE  = (struct ft_border_style *) &FORT_SOLID_STYLE;
-struct ft_border_style *FT_SOLID_ROUND_STYLE  = (struct ft_border_style *) &FORT_SOLID_ROUND_STYLE;
-struct ft_border_style *FT_NICE_STYLE  = (struct ft_border_style *) &FORT_NICE_STYLE;
-struct ft_border_style *FT_DOUBLE_STYLE  = (struct ft_border_style *) &FORT_DOUBLE_STYLE;
-struct ft_border_style *FT_DOUBLE2_STYLE  = (struct ft_border_style *) &FORT_DOUBLE2_STYLE;
-struct ft_border_style *FT_BOLD_STYLE  = (struct ft_border_style *) &FORT_BOLD_STYLE;
-struct ft_border_style *FT_BOLD2_STYLE  = (struct ft_border_style *) &FORT_BOLD2_STYLE;
-struct ft_border_style *FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME_STYLE;
-
-
-
-static void set_border_props_for_props(fort_table_properties_t *properties, const struct ft_border_style *style)
-{
-    if ((const struct fort_border_style *)style == &FORT_BASIC_STYLE
-        || (const struct fort_border_style *)style == &FORT_BASIC2_STYLE
-        || (const struct fort_border_style *)style == &FORT_SIMPLE_STYLE
-        || (const struct fort_border_style *)style == &FORT_DOT_STYLE
-        || (const struct fort_border_style *)style == &FORT_PLAIN_STYLE
-        || (const struct fort_border_style *)style == &FORT_EMPTY_STYLE
-        || (const struct fort_border_style *)style == &FORT_SOLID_STYLE
-        || (const struct fort_border_style *)style == &FORT_SOLID_ROUND_STYLE
-        || (const struct fort_border_style *)style == &FORT_NICE_STYLE
-        || (const struct fort_border_style *)style == &FORT_DOUBLE_STYLE
-        || (const struct fort_border_style *)style == &FORT_DOUBLE2_STYLE
-        || (const struct fort_border_style *)style == &FORT_BOLD_STYLE
-        || (const struct fort_border_style *)style == &FORT_BOLD2_STYLE
-        || (const struct fort_border_style *)style == &FORT_FRAME_STYLE) {
-        memcpy(&(properties->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
-        return;
-    }
-
-    const struct ft_border_chars *border_chs = &(style->border_chs);
-    const struct ft_border_chars *header_border_chs = &(style->header_border_chs);
-
-#define BOR_CHARS properties->border_style.border_chars
-#define H_BOR_CHARS properties->border_style.header_border_chars
-#define SEP_CHARS properties->border_style.separator_chars
-
-    /*
-    BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->top_border_ch;
-    BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = border_chs->separator_ch;
-    BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->bottom_border_ch;
-    BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
-
-    H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->top_border_ch;
-    H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->separator_ch;
-    H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->bottom_border_ch;
-    H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
-    */
-
-    BOR_CHARS[TT_bip] = border_chs->top_border_ch;
-    BOR_CHARS[IH_bip] = border_chs->separator_ch;
-    BOR_CHARS[BB_bip] = border_chs->bottom_border_ch;
-    BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
-
-    BOR_CHARS[TL_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->out_intersect_ch;
-    BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = border_chs->out_intersect_ch;
-    BOR_CHARS[BL_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->out_intersect_ch;
-    BOR_CHARS[II_bip] = border_chs->in_intersect_ch;
-
-    BOR_CHARS[LI_bip] = BOR_CHARS[TI_bip] = BOR_CHARS[RI_bip] = BOR_CHARS[BI_bip] = border_chs->in_intersect_ch;
-
-//    if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
-//        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
-//    }
-    if (strlen(border_chs->separator_ch) == 0 && strlen(border_chs->in_intersect_ch) == 0) {
-        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = "\0";
-    }
-
-
-    H_BOR_CHARS[TT_bip] = header_border_chs->top_border_ch;
-    H_BOR_CHARS[IH_bip] = header_border_chs->separator_ch;
-    H_BOR_CHARS[BB_bip] = header_border_chs->bottom_border_ch;
-    H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
-
-    H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->out_intersect_ch;
-    H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->out_intersect_ch;
-    H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->out_intersect_ch;
-    H_BOR_CHARS[II_bip] = header_border_chs->in_intersect_ch;
-
-    H_BOR_CHARS[LI_bip] = H_BOR_CHARS[TI_bip] = H_BOR_CHARS[RI_bip] = H_BOR_CHARS[BI_bip] = header_border_chs->in_intersect_ch;
-
-//    if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
-//        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
-//    }
-    if (strlen(header_border_chs->separator_ch) == 0 && strlen(header_border_chs->in_intersect_ch) == 0) {
-        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = "\0";
-    }
-
-    SEP_CHARS[LH_sip] = SEP_CHARS[RH_sip] = SEP_CHARS[II_sip] = header_border_chs->out_intersect_ch;
-    SEP_CHARS[TI_sip] = SEP_CHARS[BI_sip] = header_border_chs->out_intersect_ch;
-    SEP_CHARS[IH_sip] = style->hor_separator_char;
-
-
-#undef BOR_CHARS
-#undef H_BOR_CHARS
-#undef SEP_CHARS
-}
-
-
-int ft_set_default_border_style(const struct ft_border_style *style)
-{
-    set_border_props_for_props(&g_table_properties, style);
-    return FT_SUCCESS;
-}
-
-int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style)
-{
-    assert(table);
-    if (table->properties == NULL) {
-        table->properties = create_table_properties();
-        if (table->properties == NULL)
-            return FT_MEMORY_ERROR;
-    }
-    set_border_props_for_props(table->properties, style);
-    return FT_SUCCESS;
-}
-
-
-
-int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t property, int value)
-{
-    assert(table);
-
-    if (table->properties == NULL) {
-        table->properties = create_table_properties();
-        if (table->properties == NULL)
-            return FT_MEMORY_ERROR;
-    }
-    if (table->properties->cell_properties == NULL) {
-        table->properties->cell_properties = create_cell_prop_container();
-        if (table->properties->cell_properties == NULL) {
-            return FT_ERROR;
-        }
-    }
-
-    if (row == FT_CUR_ROW)
-        row = table->cur_row;
-    if (row == FT_CUR_COLUMN)
-        col = table->cur_col;
-
-    return set_cell_property(table->properties->cell_properties, row, col, property, value);
-}
-
-int ft_set_default_cell_prop(uint32_t property, int value)
-{
-    return set_default_cell_property(property, value);
-}
-
-
-int ft_set_default_tbl_prop(uint32_t property, int value)
-{
-    return set_default_entire_table_property(property, value);
-}
-
-int ft_set_tbl_prop(ft_table_t *table, uint32_t property, int value)
-{
-    assert(table);
-
-    if (table->properties == NULL) {
-        table->properties = create_table_properties();
-        if (table->properties == NULL)
-            return FT_MEMORY_ERROR;
-    }
-    return set_entire_table_property(table->properties, property, value);
-}
-
-void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
-{
-    set_memory_funcs(f_malloc, f_free);
-}
-
-int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
-{
-    assert(table);
-    if (hor_span < 2)
-        return FT_EINVAL;
-
-    if (row == FT_CUR_ROW)
-        row = table->cur_row;
-    if (row == FT_CUR_COLUMN)
-        col = table->cur_col;
-
-    fort_row_t *row_p = get_row_and_create_if_not_exists(table, row);
-    if (row_p == NULL)
-        return FT_ERROR;
-
-    return row_set_cell_span(row_p, col, hor_span);
-}
-
-/********************************************************
-   End of file "fort_impl.c"
- ********************************************************/
-
-
-/********************************************************
-   Begin of file "vector.c"
- ********************************************************/
-
-/* #include "vector.h" */ /* Commented by amalgamation script */
-#include <assert.h>
-#include <string.h>
-
-struct vector {
-    size_t m_size;
-    void  *m_data;
-    size_t m_capacity;
-    size_t m_item_size;
-};
-
-
-static int vector_reallocate_(vector_t *vector, size_t new_capacity)
-{
-    assert(vector);
-    assert(new_capacity > vector->m_capacity);
-
-    size_t new_size = new_capacity * vector->m_item_size;
-    vector->m_data = F_REALLOC(vector->m_data, new_size);
-    if (vector->m_data == NULL)
-        return -1;
-    return 0;
-}
-
-
-FT_INTERNAL
-vector_t *create_vector(size_t item_size, size_t capacity)
-{
-    vector_t *vector = (vector_t *)F_MALLOC(sizeof(vector_t));
-    if (vector == NULL) {
-        SYS_LOG_ERROR("Failed to allocate memory for asock vector");
-        return NULL;
-    }
-
-    size_t init_size = MAX(item_size * capacity, 1);
-    vector->m_data = F_MALLOC(init_size);
-    if (vector->m_data == NULL) {
-        SYS_LOG_ERROR("Failed to allocate memory for asock vector inern. buffer");
-        F_FREE(vector);
-        return NULL;
-    }
-
-    vector->m_size      = 0;
-    vector->m_capacity  = capacity;
-    vector->m_item_size = item_size;
-
-    return vector;
-}
-
-
-FT_INTERNAL
-void destroy_vector(vector_t *vector)
-{
-    assert(vector);
-    F_FREE(vector->m_data);
-    F_FREE(vector);
-}
-
-
-FT_INTERNAL
-size_t vector_size(const vector_t *vector)
-{
-    assert(vector);
-    return vector->m_size;
-}
-
-
-FT_INTERNAL
-size_t vector_capacity(const vector_t *vector)
-{
-    assert(vector);
-    return vector->m_capacity;
-}
-
-
-FT_INTERNAL
-int vector_push(vector_t *vector, const void *item)
-{
-    assert(vector);
-    assert(item);
-
-    if (vector->m_size == vector->m_capacity) {
-        if (vector_reallocate_(vector, vector->m_capacity * 2) == -1)
-            return FT_ERROR;
-        vector->m_capacity = vector->m_capacity * 2;
-    }
-
-    ptrdiff_t deviation = vector->m_size * vector->m_item_size;
-    memcpy((char *)vector->m_data + deviation, item, vector->m_item_size);
-
-    ++(vector->m_size);
-
-    return FT_SUCCESS;
-}
-
-
-FT_INTERNAL
-const void *vector_at_c(const vector_t *vector, size_t index)
-{
-    if (index >= vector->m_size)
-        return NULL;
-
-    return (char *)vector->m_data + index * vector->m_item_size;
-}
-
-
-FT_INTERNAL
-void *vector_at(vector_t *vector, size_t index)
-{
-    if (index >= vector->m_size)
-        return NULL;
-
-    return (char *)vector->m_data + index * vector->m_item_size;
-}
-
-
-FT_INTERNAL
-fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
-{
-    assert(cur_vec);
-    assert(mv_vec);
-    assert(cur_vec != mv_vec);
-    assert(cur_vec->m_item_size == mv_vec->m_item_size);
-
-    size_t cur_sz = vector_size(cur_vec);
-    size_t mv_sz = vector_size(mv_vec);
-    if (mv_sz == 0) {
-        return FT_SUCCESS;
-    }
-
-    size_t min_targ_size = pos + mv_sz;
-    if (vector_capacity(cur_vec) < min_targ_size) {
-        if (vector_reallocate_(cur_vec, min_targ_size) == -1)
-            return FT_ERROR;
-        cur_vec->m_capacity = min_targ_size;
-    }
-
-    ptrdiff_t deviation = pos * cur_vec->m_item_size;
-    void *tmp = NULL;
-    size_t new_mv_sz = 0;
-    if (cur_sz > pos) {
-        new_mv_sz = MIN(cur_sz - pos, mv_sz);
-        tmp = F_MALLOC(cur_vec->m_item_size * new_mv_sz);
-        if (tmp == NULL) {
-            return FT_MEMORY_ERROR;
-        }
-    }
-
-    if (tmp) {
-        memcpy(tmp,
-               (char *)cur_vec->m_data + deviation,
-               cur_vec->m_item_size * new_mv_sz);
-    }
-
-    memcpy((char *)cur_vec->m_data + deviation,
-           mv_vec->m_data,
-           cur_vec->m_item_size * mv_sz);
-
-    if (tmp) {
-        memcpy(mv_vec->m_data,
-               tmp,
-               cur_vec->m_item_size * new_mv_sz);
-    }
-
-    cur_vec->m_size = MAX(cur_vec->m_size, min_targ_size);
-    mv_vec->m_size = new_mv_sz;
-    F_FREE(tmp);
-    return FT_SUCCESS;
-}
-
-
-#ifdef FT_TEST_BUILD
-
-vector_t *copy_vector(vector_t *v)
-{
-    if (v == NULL)
-        return NULL;
-
-    vector_t *new_vector = create_vector(v->m_item_size, v->m_capacity);
-    if (new_vector == NULL)
-        return NULL;
-
-    memcpy(new_vector->m_data, v->m_data, v->m_item_size * v->m_size);
-    new_vector->m_size      = v->m_size ;
-    new_vector->m_item_size = v->m_item_size ;
-    return new_vector;
-}
-
-size_t vector_index_of(const vector_t *vector, const void *item)
-{
-    assert(vector);
-    assert(item);
-
-    size_t i = 0;
-    for (i = 0; i < vector->m_size; ++i) {
-        void *data_pos = (char *)vector->m_data + i * vector->m_item_size;
-        if (memcmp(data_pos, item, vector->m_item_size) == 0) {
-            return i;
-        }
-    }
-    return INVALID_VEC_INDEX;
-}
-
-
-int vector_erase(vector_t *vector, size_t index)
-{
-    assert(vector);
-
-    if (vector->m_size == 0 || index >= vector->m_size)
-        return FT_ERROR;
-
-    memmove((char *)vector->m_data + vector->m_item_size * index,
-            (char *)vector->m_data + vector->m_item_size * (index + 1),
-            (vector->m_size - 1 - index) * vector->m_item_size);
-    vector->m_size--;
-    return FT_SUCCESS;
-}
-
-
-void vector_clear(vector_t *vector)
-{
-    vector->m_size = 0;
-}
-#endif
-
-/********************************************************
-   End of file "vector.c"
- ********************************************************/
-
-
-/********************************************************
-   Begin of file "string_buffer.c"
- ********************************************************/
-
-/* #include "string_buffer.h" */ /* Commented by amalgamation script */
-/* #include "properties.h" */ /* Commented by amalgamation script */
-/* #include "wcwidth.h" */ /* Commented by amalgamation script */
-#include <assert.h>
-#include <stddef.h>
-#include <wchar.h>
-
-
-static ptrdiff_t str_iter_width(const char *beg, const char *end)
-{
-    assert(end >= beg);
-    return (end - beg);
-}
-
-
-#ifdef FT_HAVE_WCHAR
-static ptrdiff_t wcs_iter_width(const wchar_t *beg, const wchar_t *end)
-{
-    assert(end >= beg);
-    return mk_wcswidth(beg, (end - beg));
-}
-#endif /* FT_HAVE_WCHAR */
-
-
-static size_t buf_str_len(const string_buffer_t *buf)
-{
-    assert(buf);
-    if (buf->type == CharBuf) {
-        return strlen(buf->str.cstr);
-    } else {
-        return wcslen(buf->str.wstr);
-    }
-}
-
-
-FT_INTERNAL
-size_t strchr_count(const char *str, char ch)
-{
-    if (str == NULL)
-        return 0;
-
-    size_t count = 0;
-    str = strchr(str, ch);
-    while (str) {
-        count++;
-        str++;
-        str = strchr(str, ch);
-    }
-    return count;
-}
-
-
-FT_INTERNAL
-size_t wstrchr_count(const wchar_t *str, wchar_t ch)
-{
-    if (str == NULL)
-        return 0;
-
-    size_t count = 0;
-    str = wcschr(str, ch);
-    while (str) {
-        count++;
-        str++;
-        str = wcschr(str, ch);
-    }
-    return count;
-}
-
-
-FT_INTERNAL
-const char *str_n_substring_beg(const char *str, char ch_separator, size_t n)
-{
-    if (str == NULL)
-        return NULL;
-
-    if (n == 0)
-        return str;
-
-    str = strchr(str, ch_separator);
-    --n;
-    while (n > 0) {
-        if (str == NULL)
-            return NULL;
-        --n;
-        str++;
-        str = strchr(str, ch_separator);
-    }
-    return str ? (str + 1) : NULL;
-}
-
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, size_t n)
-{
-    if (str == NULL)
-        return NULL;
-
-    if (n == 0)
-        return str;
-
-    str = wcschr(str, ch_separator);
-    --n;
-    while (n > 0) {
-        if (str == NULL)
-            return NULL;
-        --n;
-        str++;
-        str = wcschr(str, ch_separator);
-    }
-    return str ? (str + 1) : NULL;
-}
-#endif /* FT_HAVE_WCHAR */
-
-
-FT_INTERNAL
-void str_n_substring(const char *str, char ch_separator, size_t n, const char **begin, const char **end)
-{
-    const char *beg = str_n_substring_beg(str, ch_separator, n);
-    if (beg == NULL) {
-        *begin = NULL;
-        *end = NULL;
-        return;
-    }
-
-    const char *en = strchr(beg, ch_separator);
-    if (en == NULL) {
-        en = str + strlen(str);
-    }
-
-    *begin = beg;
-    *end = en;
-    return;
-}
-
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end)
-{
-    const wchar_t *beg = wstr_n_substring_beg(str, ch_separator, n);
-    if (beg == NULL) {
-        *begin = NULL;
-        *end = NULL;
-        return;
-    }
-
-    const wchar_t *en = wcschr(beg, ch_separator);
-    if (en == NULL) {
-        en = str + wcslen(str);
-    }
-
-    *begin = beg;
-    *end = en;
-    return;
-}
-#endif /* FT_HAVE_WCHAR */
-
-
-FT_INTERNAL
-string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type type)
-{
-    size_t sz = (number_of_chars) * (type == CharBuf ? sizeof(char) : sizeof(wchar_t));
-    string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
-    if (result == NULL)
-        return NULL;
-    result->str.data = F_MALLOC(sz);
-    if (result->str.data == NULL) {
-        F_FREE(result);
-        return NULL;
-    }
-    result->data_sz = sz;
-    result->type = type;
-
-    if (sz && type == CharBuf) {
-        result->str.cstr[0] = '\0';
-#ifdef FT_HAVE_WCHAR
-    } else if (sz && type == WCharBuf) {
-        result->str.wstr[0] = L'\0';
-#endif /* FT_HAVE_WCHAR */
-    }
-
-    return result;
-}
-
-
-FT_INTERNAL
-void destroy_string_buffer(string_buffer_t *buffer)
-{
-    if (buffer == NULL)
-        return;
-    F_FREE(buffer->str.data);
-    buffer->str.data = NULL;
-    F_FREE(buffer);
-}
-
-FT_INTERNAL
-string_buffer_t *copy_string_buffer(string_buffer_t *buffer)
-{
-    assert(buffer);
-    string_buffer_t *result = create_string_buffer(buffer->data_sz, buffer->type);
-    if (result == NULL)
-        return NULL;
-    switch (buffer->type) {
-        case CharBuf:
-            if (FT_IS_ERROR(fill_buffer_from_string(result, buffer->str.cstr))) {
-                destroy_string_buffer(buffer);
-                return NULL;
-            }
-            break;
-#ifdef FT_HAVE_WCHAR
-        case WCharBuf:
-            if (FT_IS_ERROR(fill_buffer_from_wstring(result, buffer->str.wstr))) {
-                destroy_string_buffer(buffer);
-                return NULL;
-            }
-            break;
-#endif /* FT_HAVE_WCHAR */
-        default:
-            destroy_string_buffer(result);
-            return NULL;
-    }
-    return result;
-}
-
-FT_INTERNAL
-fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
-{
-    assert(buffer);
-    char *new_str = (char *)F_MALLOC(buffer->data_sz * 2);
-    if (new_str == NULL) {
-        return FT_MEMORY_ERROR;
-    }
-    F_FREE(buffer->str.data);
-    buffer->str.data = new_str;
-    buffer->data_sz *= 2;
-    return FT_SUCCESS;
-}
-
-
-FT_INTERNAL
-fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
-{
-    assert(buffer);
-    assert(str);
-
-//    size_t sz = strlen(str);
-    char *copy = F_STRDUP(str);
-    if (copy == NULL)
-        return FT_MEMORY_ERROR;
-
-//    while (sz >= string_buffer_capacity(buffer)) {
-//        int status = realloc_string_buffer_without_copy(buffer);
-//        if (!FT_IS_SUCCESS(status)) {
-//            return status;
-//        }
-//    }
-    F_FREE(buffer->str.data);
-    buffer->str.cstr = copy;
-    buffer->type = CharBuf;
-
-    return FT_SUCCESS;
-}
-
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *str)
-{
-    assert(buffer);
-    assert(str);
-
-//    size_t sz = wcslen(str);
-    wchar_t *copy = F_WCSDUP(str);
-    if (copy == NULL)
-        return FT_MEMORY_ERROR;
-
-//    while (sz >= string_buffer_capacity(buffer)) {
-//        int status = realloc_string_buffer_without_copy(buffer);
-//        if (!FT_IS_SUCCESS(status)) {
-//            return status;
-//        }
-//    }
-    F_FREE(buffer->str.data);
-    buffer->str.wstr = copy;
-    buffer->type = WCharBuf;
-
-    return FT_SUCCESS;
-}
-#endif /* FT_HAVE_WCHAR */
-
-
-FT_INTERNAL
-size_t buffer_text_height(string_buffer_t *buffer)
-{
-    if (buffer == NULL || buffer->str.data == NULL || buf_str_len(buffer) == 0) {
-        return 0;
-    }
-    if (buffer->type == CharBuf)
-        return 1 + strchr_count(buffer->str.cstr, '\n');
-    else
-        return 1 + wstrchr_count(buffer->str.wstr, L'\n');
-}
-
-
-FT_INTERNAL
-size_t buffer_text_width(string_buffer_t *buffer)
-{
-    size_t max_length = 0;
-    int n = 0;
-    if (buffer->type == CharBuf) {
-        while (1) {
-            const char *beg = NULL;
-            const char *end = NULL;
-            str_n_substring(buffer->str.cstr, '\n', n, &beg, &end);
-            if (beg == NULL || end == NULL)
-                return max_length;
-
-            max_length = MAX(max_length, (size_t)(end - beg));
-            ++n;
-        }
-    } else {
-#ifdef FT_HAVE_WCHAR
-        while (1) {
-            const wchar_t *beg = NULL;
-            const wchar_t *end = NULL;
-            wstr_n_substring(buffer->str.wstr, L'\n', n, &beg, &end);
-            if (beg == NULL || end == NULL)
-                return max_length;
-
-            int line_width = mk_wcswidth(beg, end - beg);
-            if (line_width < 0) /* For safety */
-                line_width = 0;
-            max_length = MAX(max_length, (size_t)line_width);
-
-            ++n;
-        }
-#endif /* FT_HAVE_WCHAR */
-    }
-
-    return max_length; /* shouldn't be here */
-}
-
-
-FT_INTERNAL
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t total_buf_len,
-                  const context_t *context, const char *content_style_tag, const char *reset_content_style_tag)
-{
-#define CHAR_TYPE char
-#define NULL_CHAR '\0'
-#define NEWLINE_CHAR '\n'
-#define SPACE_CHAR " "
-#define SNPRINTF_FMT_STR "%*s"
-#define SNPRINTF snprintf
-#define BUFFER_STR str.cstr
-//#define SNPRINT_N_CHARS  snprint_n_chars
-#define SNPRINT_N_STRINGS  snprint_n_strings
-#define STR_N_SUBSTRING str_n_substring
-#define STR_ITER_WIDTH str_iter_width
-
-    size_t buf_len = total_buf_len - strlen(content_style_tag) - strlen(reset_content_style_tag);
-
-    if (buffer == NULL || buffer->str.data == NULL
-        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
-        return -1;
-    }
-
-    size_t content_width = buffer_text_width(buffer);
-    if ((buf_len - 1) < content_width)
-        return -1;
-
-    size_t left = 0;
-    size_t right = 0;
-
-    switch (get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TEXT_ALIGN)) {
-        case FT_ALIGNED_LEFT:
-            left = 0;
-            right = (buf_len - 1) - content_width;
-            break;
-        case FT_ALIGNED_CENTER:
-            left = ((buf_len - 1) - content_width) / 2;
-            right = ((buf_len - 1) - content_width) - left;
-            break;
-        case FT_ALIGNED_RIGHT:
-            left = (buf_len - 1) - content_width;
-            right = 0;
-            break;
-        default:
-            assert(0);
-            break;
-    }
-
-    int  written = 0;
-    int tmp = 0;
-    ptrdiff_t str_it_width = 0;
-    const CHAR_TYPE *beg = NULL;
-    const CHAR_TYPE *end = NULL;
-    CHAR_TYPE old_value;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
-
-    STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
-    if (beg == NULL || end == NULL)
-        return -1;
-    old_value = *end;
-    *(CHAR_TYPE *)end = NULL_CHAR;
-
-    str_it_width = STR_ITER_WIDTH(beg, end);
-    if (str_it_width < 0 || content_width < (size_t)str_it_width)
-        return - 1;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
-
-    *(CHAR_TYPE *)end = old_value;
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
-    return written;
-
-clear:
-    return -1;
-
-#undef CHAR_TYPE
-#undef NULL_CHAR
-#undef NEWLINE_CHAR
-#undef SPACE_CHAR
-#undef SNPRINTF_FMT_STR
-#undef SNPRINTF
-#undef BUFFER_STR
-//#undef SNPRINT_N_CHARS
-#undef SNPRINT_N_STRINGS
-#undef STR_N_SUBSTRING
-#undef STR_ITER_WIDTH
-}
-
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t total_buf_len,
-                   const context_t *context, const char *content_style_tag, const char *reset_content_style_tag)
-{
-#define CHAR_TYPE wchar_t
-#define NULL_CHAR L'\0'
-#define NEWLINE_CHAR L'\n'
-#define SPACE_CHAR " "
-#define SNPRINTF_FMT_STR L"%*ls"
-#define SNPRINTF swprintf
-#define BUFFER_STR str.wstr
-//#define SNPRINT_N_CHARS  wsnprint_n_chars
-#define SNPRINT_N_STRINGS  wsnprint_n_string
-#define STR_N_SUBSTRING wstr_n_substring
-#define STR_ITER_WIDTH wcs_iter_width
-
-    size_t buf_len = total_buf_len - strlen(content_style_tag) - strlen(reset_content_style_tag);
-
-    if (buffer == NULL || buffer->str.data == NULL
-        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
-        return -1;
-    }
-
-    size_t content_width = buffer_text_width(buffer);
-    if ((buf_len - 1) < content_width)
-        return -1;
-
-    size_t left = 0;
-    size_t right = 0;
-
-    switch (get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TEXT_ALIGN)) {
-        case FT_ALIGNED_LEFT:
-            left = 0;
-            right = (buf_len - 1) - content_width;
-            break;
-        case FT_ALIGNED_CENTER:
-            left = ((buf_len - 1) - content_width) / 2;
-            right = ((buf_len - 1) - content_width) - left;
-            break;
-        case FT_ALIGNED_RIGHT:
-            left = (buf_len - 1) - content_width;
-            right = 0;
-            break;
-        default:
-            assert(0);
-            break;
-    }
-
-    int  written = 0;
-    int tmp = 0;
-    ptrdiff_t str_it_width = 0;
-    const CHAR_TYPE *beg = NULL;
-    const CHAR_TYPE *end = NULL;
-    CHAR_TYPE old_value;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
-
-    STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
-    if (beg == NULL || end == NULL)
-        return -1;
-    old_value = *end;
-    *(CHAR_TYPE *)end = NULL_CHAR;
-
-    str_it_width = STR_ITER_WIDTH(beg, end);
-    if (str_it_width < 0 || content_width < (size_t)str_it_width)
-        return - 1;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
-
-    *(CHAR_TYPE *)end = old_value;
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
-    return written;
-
-clear:
-    return -1;
-
-#undef CHAR_TYPE
-#undef NULL_CHAR
-#undef NEWLINE_CHAR
-#undef SPACE_CHAR
-#undef SNPRINTF_FMT_STR
-#undef SNPRINTF
-#undef BUFFER_STR
-//#undef SNPRINT_N_CHARS
-#undef SNPRINT_N_STRINGS
-#undef STR_N_SUBSTRING
-#undef STR_ITER_WIDTH
-}
-#endif /* FT_HAVE_WCHAR */
-
-
-FT_INTERNAL
-size_t string_buffer_capacity(const string_buffer_t *buffer)
-{
-    assert(buffer);
-    if (buffer->type == CharBuf)
-        return buffer->data_sz;
-    else
-        return buffer->data_sz / sizeof(wchar_t);
-}
-
-
-FT_INTERNAL
-void *buffer_get_data(string_buffer_t *buffer)
-{
-    assert(buffer);
-    return buffer->str.data;
-}
-
-/********************************************************
-   End of file "string_buffer.c"
- ********************************************************/
-
-
-/********************************************************
-   Begin of file "fort_utils.c"
- ********************************************************/
-
-/* #include "fort_utils.h" */ /* Commented by amalgamation script */
-#ifdef FT_HAVE_WCHAR
-#include <wchar.h>
-#endif
-
-
-
-/*****************************************************************************
- *               LIBFORT helpers
- *****************************************************************************/
-
-#ifndef FT_MICROSOFT_COMPILER
-void *(*fort_malloc)(size_t size) = &malloc;
-void (*fort_free)(void *ptr) = &free;
-void *(*fort_calloc)(size_t nmemb, size_t size) = &calloc;
-void *(*fort_realloc)(void *ptr, size_t size) = &realloc;
-#else
-static void *local_malloc(size_t size)
-{
-    return malloc(size);
-}
-
-static void local_free(void *ptr)
-{
-    free(ptr);
-}
-
-static void *local_calloc(size_t nmemb, size_t size)
-{
-    return calloc(nmemb, size);
-}
-
-static void *local_realloc(void *ptr, size_t size)
-{
-    return realloc(ptr, size);
-}
-
-void *(*fort_malloc)(size_t size) = &local_malloc;
-void (*fort_free)(void *ptr) = &local_free;
-void *(*fort_calloc)(size_t nmemb, size_t size) = &local_calloc;
-void *(*fort_realloc)(void *ptr, size_t size) = &local_realloc;
-#endif
-
-static void *custom_fort_calloc(size_t nmemb, size_t size)
-{
-    size_t total_size = nmemb * size;
-    void *result = F_MALLOC(total_size);
-    if (result != NULL)
-        memset(result, 0, total_size);
-    return result;
-}
-
-static void *custom_fort_realloc(void *ptr, size_t size)
-{
-    if (ptr == NULL)
-        return F_MALLOC(size);
-    if (size == 0) {
-        F_FREE(ptr);
-        return NULL;
-    }
-
-    void *new_chunk = F_MALLOC(size);
-    if (new_chunk == NULL)
-        return NULL;
-
-    /*
-     * In theory we should copy MIN(size, size allocated for ptr) bytes,
-     * but this is rather dummy implementation so we don't care about it
-     */
-    memcpy(new_chunk, ptr, size);
-    F_FREE(ptr);
-    return new_chunk;
-}
-
-void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
-{
-    assert((f_malloc == NULL && f_free == NULL) /* Use std functions */
-           || (f_malloc != NULL && f_free != NULL) /* Use custom functions */);
-
-    if (f_malloc == NULL && f_free == NULL) {
-#ifndef FT_MICROSOFT_COMPILER
-        fort_malloc = &malloc;
-        fort_free = &free;
-        fort_calloc = &calloc;
-        fort_realloc = &realloc;
-#else
-        fort_malloc = &local_malloc;
-        fort_free = &local_free;
-        fort_calloc = &local_calloc;
-        fort_realloc = &local_realloc;
-#endif
-    } else {
-        fort_malloc = f_malloc;
-        fort_free = f_free;
-        fort_calloc = &custom_fort_calloc;
-        fort_realloc = &custom_fort_realloc;
-    }
-
-}
-
-
-char *fort_strdup(const char *str)
-{
-    if (str == NULL)
-        return NULL;
-
-    size_t sz = strlen(str);
-    char *str_copy = (char *)F_MALLOC((sz + 1) * sizeof(char));
-    if (str_copy == NULL)
-        return NULL;
-
-    strcpy(str_copy, str);
-    return str_copy;
-}
-
-#if defined(FT_HAVE_WCHAR)
-wchar_t *fort_wcsdup(const wchar_t *str)
-{
-    if (str == NULL)
-        return NULL;
-
-    size_t sz = wcslen(str);
-    wchar_t *str_copy = (wchar_t *)F_MALLOC((sz + 1) * sizeof(wchar_t));
-    if (str_copy == NULL)
-        return NULL;
-
-    wcscpy(str_copy, str);
-    return str_copy;
-}
-#endif
-
-
-size_t number_of_columns_in_format_string(const char *fmt)
-{
-    int separator_counter = 0;
-    const char *pos = fmt;
-    while (1) {
-        pos = strchr(pos, FORT_COL_SEPARATOR);
-        if (pos == NULL)
-            break;
-
-        separator_counter++;
-        ++pos;
-    }
-    return separator_counter + 1;
-}
-
-#if defined(FT_HAVE_WCHAR)
-size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
-{
-    int separator_counter = 0;
-    const wchar_t *pos = fmt;
-    while (1) {
-        pos = wcschr(pos, FORT_COL_SEPARATOR);
-        if (pos == NULL)
-            break;
-
-        separator_counter++;
-        ++pos;
-    }
-    return separator_counter + 1;
-}
-#endif
-
-
-
-//int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
-//{
-//    if (length <= n)
-//        return -1;
-
-//    if (n == 0)
-//        return 0;
-
-//    /* To ensure valid return value it is safely not print such big strings */
-//    if (n > INT_MAX)
-//        return -1;
-
-//    int status = snprintf(buf, length, "%0*d", (int)n, 0);
-//    if (status < 0)
-//        return status;
-
-//    size_t i = 0;
-//    for (i = 0; i < n; ++i) {
-//        *buf = ch;
-//        buf++;
-//    }
-//    return (int)n;
-//}
-
-int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
-{
-    size_t str_len = strlen(str);
-    if (length <= n * str_len)
-        return -1;
-
-    if (n == 0)
-        return 0;
-
-    /* To ensure valid return value it is safely not print such big strings */
-    if (n * str_len > INT_MAX)
-        return -1;
-
-    if (str_len == 0)
-        return 0;
-
-    int status = snprintf(buf, length, "%0*d", (int)(n * str_len), 0);
-    if (status < 0)
-        return status;
-
-    size_t i = 0;
-    for (i = 0; i < n; ++i) {
-        const char *str_p = str;
-        while (*str_p)
-            *(buf++) = *(str_p++);
-    }
-    return (int)(n * str_len);
-}
-
-
-//int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
-//{
-//    if (length <= n)
-//        return -1;
-
-//    if (n == 0)
-//        return 0;
-
-//    /* To ensure valid return value it is safely not print such big strings */
-//    if (n > INT_MAX)
-//        return -1;
-
-//    int status = swprintf(buf, length, L"%0*d", (int)n, 0);
-//    if (status < 0)
-//        return status;
-
-//    size_t i = 0;
-//    for (i = 0; i < n; ++i) {
-//        *buf = ch;
-//        buf++;
-//    }
-//    return (int)n;
-//}
-
-#if defined(FT_HAVE_WCHAR)
-#define WCS_SIZE 64
-
-int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
-{
-    size_t str_len = strlen(str);
-
-    /* note: baybe it's, better to return -1 in case of multibyte character
-     * strings (not sure this case is done correctly).
-     */
-    if (str_len > 1) {
-        const unsigned char *p = (const unsigned char *)str;
-        while (*p) {
-            if (*p <= 127)
-                p++;
-            else {
-                wchar_t wcs[WCS_SIZE];
-                const char *ptr = str;
-                size_t wcs_len;
-                wcs_len = mbsrtowcs(wcs, (const char **)&ptr, WCS_SIZE, NULL);
-                /* for simplicity */
-                if ((wcs_len == (size_t) - 1) || wcs_len > 1) {
-                    return -1;
-                } else {
-                    wcs[wcs_len] = L'\0';
-                    size_t k = n;
-                    while (k) {
-                        *buf = *wcs;
-                        ++buf;
-                        --k;
-                    }
-                    buf[n] = L'\0';
-                    return (int)n;
-                }
-            }
-        }
-    }
-
-    if (length <= n * str_len)
-        return -1;
-
-    if (n == 0)
-        return 0;
-
-    /* To ensure valid return value it is safely not print such big strings */
-    if (n * str_len > INT_MAX)
-        return -1;
-
-    if (str_len == 0)
-        return 0;
-
-    int status = swprintf(buf, length, L"%0*d", (int)(n * str_len), 0);
-    if (status < 0)
-        return status;
-
-    size_t i = 0;
-    for (i = 0; i < n; ++i) {
-        const char *str_p = str;
-        while (*str_p)
-            *(buf++) = (wchar_t) * (str_p++);
-    }
-    return (int)(n * str_len);
-}
-#endif
-
-/********************************************************
-   End of file "fort_utils.c"
  ********************************************************/
 
 
@@ -5363,6 +4631,1089 @@ clear:
 
 
 /********************************************************
+   Begin of file "string_buffer.c"
+ ********************************************************/
+
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
+/* #include "properties.h" */ /* Commented by amalgamation script */
+/* #include "wcwidth.h" */ /* Commented by amalgamation script */
+#include <assert.h>
+#include <stddef.h>
+#include <wchar.h>
+
+
+static ptrdiff_t str_iter_width(const char *beg, const char *end)
+{
+    assert(end >= beg);
+    return (end - beg);
+}
+
+
+#ifdef FT_HAVE_WCHAR
+static ptrdiff_t wcs_iter_width(const wchar_t *beg, const wchar_t *end)
+{
+    assert(end >= beg);
+    return mk_wcswidth(beg, (end - beg));
+}
+#endif /* FT_HAVE_WCHAR */
+
+
+static size_t buf_str_len(const string_buffer_t *buf)
+{
+    assert(buf);
+    if (buf->type == CharBuf) {
+        return strlen(buf->str.cstr);
+    } else {
+        return wcslen(buf->str.wstr);
+    }
+}
+
+
+FT_INTERNAL
+size_t strchr_count(const char *str, char ch)
+{
+    if (str == NULL)
+        return 0;
+
+    size_t count = 0;
+    str = strchr(str, ch);
+    while (str) {
+        count++;
+        str++;
+        str = strchr(str, ch);
+    }
+    return count;
+}
+
+
+FT_INTERNAL
+size_t wstrchr_count(const wchar_t *str, wchar_t ch)
+{
+    if (str == NULL)
+        return 0;
+
+    size_t count = 0;
+    str = wcschr(str, ch);
+    while (str) {
+        count++;
+        str++;
+        str = wcschr(str, ch);
+    }
+    return count;
+}
+
+
+FT_INTERNAL
+const char *str_n_substring_beg(const char *str, char ch_separator, size_t n)
+{
+    if (str == NULL)
+        return NULL;
+
+    if (n == 0)
+        return str;
+
+    str = strchr(str, ch_separator);
+    --n;
+    while (n > 0) {
+        if (str == NULL)
+            return NULL;
+        --n;
+        str++;
+        str = strchr(str, ch_separator);
+    }
+    return str ? (str + 1) : NULL;
+}
+
+
+#ifdef FT_HAVE_WCHAR
+FT_INTERNAL
+const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, size_t n)
+{
+    if (str == NULL)
+        return NULL;
+
+    if (n == 0)
+        return str;
+
+    str = wcschr(str, ch_separator);
+    --n;
+    while (n > 0) {
+        if (str == NULL)
+            return NULL;
+        --n;
+        str++;
+        str = wcschr(str, ch_separator);
+    }
+    return str ? (str + 1) : NULL;
+}
+#endif /* FT_HAVE_WCHAR */
+
+
+FT_INTERNAL
+void str_n_substring(const char *str, char ch_separator, size_t n, const char **begin, const char **end)
+{
+    const char *beg = str_n_substring_beg(str, ch_separator, n);
+    if (beg == NULL) {
+        *begin = NULL;
+        *end = NULL;
+        return;
+    }
+
+    const char *en = strchr(beg, ch_separator);
+    if (en == NULL) {
+        en = str + strlen(str);
+    }
+
+    *begin = beg;
+    *end = en;
+    return;
+}
+
+
+#ifdef FT_HAVE_WCHAR
+FT_INTERNAL
+void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end)
+{
+    const wchar_t *beg = wstr_n_substring_beg(str, ch_separator, n);
+    if (beg == NULL) {
+        *begin = NULL;
+        *end = NULL;
+        return;
+    }
+
+    const wchar_t *en = wcschr(beg, ch_separator);
+    if (en == NULL) {
+        en = str + wcslen(str);
+    }
+
+    *begin = beg;
+    *end = en;
+    return;
+}
+#endif /* FT_HAVE_WCHAR */
+
+
+FT_INTERNAL
+string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type type)
+{
+    size_t sz = (number_of_chars) * (type == CharBuf ? sizeof(char) : sizeof(wchar_t));
+    string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
+    if (result == NULL)
+        return NULL;
+    result->str.data = F_MALLOC(sz);
+    if (result->str.data == NULL) {
+        F_FREE(result);
+        return NULL;
+    }
+    result->data_sz = sz;
+    result->type = type;
+
+    if (sz && type == CharBuf) {
+        result->str.cstr[0] = '\0';
+#ifdef FT_HAVE_WCHAR
+    } else if (sz && type == WCharBuf) {
+        result->str.wstr[0] = L'\0';
+#endif /* FT_HAVE_WCHAR */
+    }
+
+    return result;
+}
+
+
+FT_INTERNAL
+void destroy_string_buffer(string_buffer_t *buffer)
+{
+    if (buffer == NULL)
+        return;
+    F_FREE(buffer->str.data);
+    buffer->str.data = NULL;
+    F_FREE(buffer);
+}
+
+FT_INTERNAL
+string_buffer_t *copy_string_buffer(string_buffer_t *buffer)
+{
+    assert(buffer);
+    string_buffer_t *result = create_string_buffer(buffer->data_sz, buffer->type);
+    if (result == NULL)
+        return NULL;
+    switch (buffer->type) {
+        case CharBuf:
+            if (FT_IS_ERROR(fill_buffer_from_string(result, buffer->str.cstr))) {
+                destroy_string_buffer(buffer);
+                return NULL;
+            }
+            break;
+#ifdef FT_HAVE_WCHAR
+        case WCharBuf:
+            if (FT_IS_ERROR(fill_buffer_from_wstring(result, buffer->str.wstr))) {
+                destroy_string_buffer(buffer);
+                return NULL;
+            }
+            break;
+#endif /* FT_HAVE_WCHAR */
+        default:
+            destroy_string_buffer(result);
+            return NULL;
+    }
+    return result;
+}
+
+FT_INTERNAL
+fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
+{
+    assert(buffer);
+    char *new_str = (char *)F_MALLOC(buffer->data_sz * 2);
+    if (new_str == NULL) {
+        return FT_MEMORY_ERROR;
+    }
+    F_FREE(buffer->str.data);
+    buffer->str.data = new_str;
+    buffer->data_sz *= 2;
+    return FT_SUCCESS;
+}
+
+
+FT_INTERNAL
+fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
+{
+    assert(buffer);
+    assert(str);
+
+//    size_t sz = strlen(str);
+    char *copy = F_STRDUP(str);
+    if (copy == NULL)
+        return FT_MEMORY_ERROR;
+
+//    while (sz >= string_buffer_capacity(buffer)) {
+//        int status = realloc_string_buffer_without_copy(buffer);
+//        if (!FT_IS_SUCCESS(status)) {
+//            return status;
+//        }
+//    }
+    F_FREE(buffer->str.data);
+    buffer->str.cstr = copy;
+    buffer->type = CharBuf;
+
+    return FT_SUCCESS;
+}
+
+
+#ifdef FT_HAVE_WCHAR
+FT_INTERNAL
+fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *str)
+{
+    assert(buffer);
+    assert(str);
+
+//    size_t sz = wcslen(str);
+    wchar_t *copy = F_WCSDUP(str);
+    if (copy == NULL)
+        return FT_MEMORY_ERROR;
+
+//    while (sz >= string_buffer_capacity(buffer)) {
+//        int status = realloc_string_buffer_without_copy(buffer);
+//        if (!FT_IS_SUCCESS(status)) {
+//            return status;
+//        }
+//    }
+    F_FREE(buffer->str.data);
+    buffer->str.wstr = copy;
+    buffer->type = WCharBuf;
+
+    return FT_SUCCESS;
+}
+#endif /* FT_HAVE_WCHAR */
+
+
+FT_INTERNAL
+size_t buffer_text_height(string_buffer_t *buffer)
+{
+    if (buffer == NULL || buffer->str.data == NULL || buf_str_len(buffer) == 0) {
+        return 0;
+    }
+    if (buffer->type == CharBuf)
+        return 1 + strchr_count(buffer->str.cstr, '\n');
+    else
+        return 1 + wstrchr_count(buffer->str.wstr, L'\n');
+}
+
+
+FT_INTERNAL
+size_t buffer_text_width(string_buffer_t *buffer)
+{
+    size_t max_length = 0;
+    int n = 0;
+    if (buffer->type == CharBuf) {
+        while (1) {
+            const char *beg = NULL;
+            const char *end = NULL;
+            str_n_substring(buffer->str.cstr, '\n', n, &beg, &end);
+            if (beg == NULL || end == NULL)
+                return max_length;
+
+            max_length = MAX(max_length, (size_t)(end - beg));
+            ++n;
+        }
+    } else {
+#ifdef FT_HAVE_WCHAR
+        while (1) {
+            const wchar_t *beg = NULL;
+            const wchar_t *end = NULL;
+            wstr_n_substring(buffer->str.wstr, L'\n', n, &beg, &end);
+            if (beg == NULL || end == NULL)
+                return max_length;
+
+            int line_width = mk_wcswidth(beg, end - beg);
+            if (line_width < 0) /* For safety */
+                line_width = 0;
+            max_length = MAX(max_length, (size_t)line_width);
+
+            ++n;
+        }
+#endif /* FT_HAVE_WCHAR */
+    }
+
+    return max_length; /* shouldn't be here */
+}
+
+
+FT_INTERNAL
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t total_buf_len,
+                  const context_t *context, const char *content_style_tag, const char *reset_content_style_tag)
+{
+#define CHAR_TYPE char
+#define NULL_CHAR '\0'
+#define NEWLINE_CHAR '\n'
+#define SPACE_CHAR " "
+#define SNPRINTF_FMT_STR "%*s"
+#define SNPRINTF snprintf
+#define BUFFER_STR str.cstr
+//#define SNPRINT_N_CHARS  snprint_n_chars
+#define SNPRINT_N_STRINGS  snprint_n_strings
+#define STR_N_SUBSTRING str_n_substring
+#define STR_ITER_WIDTH str_iter_width
+
+    size_t buf_len = total_buf_len - strlen(content_style_tag) - strlen(reset_content_style_tag);
+
+    if (buffer == NULL || buffer->str.data == NULL
+        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
+        return -1;
+    }
+
+    size_t content_width = buffer_text_width(buffer);
+    if ((buf_len - 1) < content_width)
+        return -1;
+
+    size_t left = 0;
+    size_t right = 0;
+
+    switch (get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TEXT_ALIGN)) {
+        case FT_ALIGNED_LEFT:
+            left = 0;
+            right = (buf_len - 1) - content_width;
+            break;
+        case FT_ALIGNED_CENTER:
+            left = ((buf_len - 1) - content_width) / 2;
+            right = ((buf_len - 1) - content_width) - left;
+            break;
+        case FT_ALIGNED_RIGHT:
+            left = (buf_len - 1) - content_width;
+            right = 0;
+            break;
+        default:
+            assert(0);
+            break;
+    }
+
+    int  written = 0;
+    int tmp = 0;
+    ptrdiff_t str_it_width = 0;
+    const CHAR_TYPE *beg = NULL;
+    const CHAR_TYPE *end = NULL;
+    CHAR_TYPE old_value;
+
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
+
+    STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
+    if (beg == NULL || end == NULL)
+        return -1;
+    old_value = *end;
+    *(CHAR_TYPE *)end = NULL_CHAR;
+
+    str_it_width = STR_ITER_WIDTH(beg, end);
+    if (str_it_width < 0 || content_width < (size_t)str_it_width)
+        return - 1;
+
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
+
+    *(CHAR_TYPE *)end = old_value;
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
+    return written;
+
+clear:
+    return -1;
+
+#undef CHAR_TYPE
+#undef NULL_CHAR
+#undef NEWLINE_CHAR
+#undef SPACE_CHAR
+#undef SNPRINTF_FMT_STR
+#undef SNPRINTF
+#undef BUFFER_STR
+//#undef SNPRINT_N_CHARS
+#undef SNPRINT_N_STRINGS
+#undef STR_N_SUBSTRING
+#undef STR_ITER_WIDTH
+}
+
+
+#ifdef FT_HAVE_WCHAR
+FT_INTERNAL
+int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t total_buf_len,
+                   const context_t *context, const char *content_style_tag, const char *reset_content_style_tag)
+{
+#define CHAR_TYPE wchar_t
+#define NULL_CHAR L'\0'
+#define NEWLINE_CHAR L'\n'
+#define SPACE_CHAR " "
+#define SNPRINTF_FMT_STR L"%*ls"
+#define SNPRINTF swprintf
+#define BUFFER_STR str.wstr
+//#define SNPRINT_N_CHARS  wsnprint_n_chars
+#define SNPRINT_N_STRINGS  wsnprint_n_string
+#define STR_N_SUBSTRING wstr_n_substring
+#define STR_ITER_WIDTH wcs_iter_width
+
+    size_t buf_len = total_buf_len - strlen(content_style_tag) - strlen(reset_content_style_tag);
+
+    if (buffer == NULL || buffer->str.data == NULL
+        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
+        return -1;
+    }
+
+    size_t content_width = buffer_text_width(buffer);
+    if ((buf_len - 1) < content_width)
+        return -1;
+
+    size_t left = 0;
+    size_t right = 0;
+
+    switch (get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TEXT_ALIGN)) {
+        case FT_ALIGNED_LEFT:
+            left = 0;
+            right = (buf_len - 1) - content_width;
+            break;
+        case FT_ALIGNED_CENTER:
+            left = ((buf_len - 1) - content_width) / 2;
+            right = ((buf_len - 1) - content_width) - left;
+            break;
+        case FT_ALIGNED_RIGHT:
+            left = (buf_len - 1) - content_width;
+            right = 0;
+            break;
+        default:
+            assert(0);
+            break;
+    }
+
+    int  written = 0;
+    int tmp = 0;
+    ptrdiff_t str_it_width = 0;
+    const CHAR_TYPE *beg = NULL;
+    const CHAR_TYPE *end = NULL;
+    CHAR_TYPE old_value;
+
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
+
+    STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
+    if (beg == NULL || end == NULL)
+        return -1;
+    old_value = *end;
+    *(CHAR_TYPE *)end = NULL_CHAR;
+
+    str_it_width = STR_ITER_WIDTH(beg, end);
+    if (str_it_width < 0 || content_width < (size_t)str_it_width)
+        return - 1;
+
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
+
+    *(CHAR_TYPE *)end = old_value;
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
+    return written;
+
+clear:
+    return -1;
+
+#undef CHAR_TYPE
+#undef NULL_CHAR
+#undef NEWLINE_CHAR
+#undef SPACE_CHAR
+#undef SNPRINTF_FMT_STR
+#undef SNPRINTF
+#undef BUFFER_STR
+//#undef SNPRINT_N_CHARS
+#undef SNPRINT_N_STRINGS
+#undef STR_N_SUBSTRING
+#undef STR_ITER_WIDTH
+}
+#endif /* FT_HAVE_WCHAR */
+
+
+FT_INTERNAL
+size_t string_buffer_capacity(const string_buffer_t *buffer)
+{
+    assert(buffer);
+    if (buffer->type == CharBuf)
+        return buffer->data_sz;
+    else
+        return buffer->data_sz / sizeof(wchar_t);
+}
+
+
+FT_INTERNAL
+void *buffer_get_data(string_buffer_t *buffer)
+{
+    assert(buffer);
+    return buffer->str.data;
+}
+
+/********************************************************
+   End of file "string_buffer.c"
+ ********************************************************/
+
+
+/********************************************************
+   Begin of file "table.c"
+ ********************************************************/
+
+/* #include "table.h" */ /* Commented by amalgamation script */
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
+/* #include "cell.h" */ /* Commented by amalgamation script */
+/* #include "vector.h" */ /* Commented by amalgamation script */
+/* #include "row.h" */ /* Commented by amalgamation script */
+
+FT_INTERNAL
+separator_t *create_separator(int enabled)
+{
+    separator_t *res = (separator_t *)F_CALLOC(1, sizeof(separator_t));
+    if (res == NULL)
+        return NULL;
+    res->enabled = enabled;
+    return res;
+}
+
+
+FT_INTERNAL
+void destroy_separator(separator_t *sep)
+{
+    F_FREE(sep);
+}
+
+
+FT_INTERNAL
+separator_t *copy_separator(separator_t *sep)
+{
+    assert(sep);
+    return create_separator(sep->enabled);
+}
+
+
+static
+fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnNull policy)
+{
+    if (table == NULL || table->rows == NULL) {
+        return NULL;
+    }
+
+    switch (policy) {
+        case DoNotCreate:
+            if (row < vector_size(table->rows)) {
+                return *(fort_row_t **)vector_at(table->rows, row);
+            }
+            return NULL;
+            break;
+        case Create:
+            while (row >= vector_size(table->rows)) {
+                fort_row_t *new_row = create_row();
+                if (new_row == NULL)
+                    return NULL;
+                if (FT_IS_ERROR(vector_push(table->rows, &new_row))) {
+                    destroy_row(new_row);
+                    return NULL;
+                }
+            }
+            return *(fort_row_t **)vector_at(table->rows, row);
+            break;
+    }
+    return NULL;
+}
+
+
+FT_INTERNAL
+fort_row_t *get_row(ft_table_t *table, size_t row)
+{
+    return get_row_implementation(table, row, DoNotCreate);
+}
+
+
+FT_INTERNAL
+const fort_row_t *get_row_c(const ft_table_t *table, size_t row)
+{
+    return get_row((ft_table_t *)table, row);
+}
+
+
+FT_INTERNAL
+fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row)
+{
+    return get_row_implementation(table, row, Create);
+}
+
+
+FT_INTERNAL
+string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table)
+{
+    assert(table);
+
+    fort_row_t *row = get_row_and_create_if_not_exists(table, table->cur_row);
+    if (row == NULL)
+        return NULL;
+    fort_cell_t *cell = get_cell_and_create_if_not_exists(row, table->cur_col);
+    if (cell == NULL)
+        return NULL;
+
+    return cell_get_string_buffer(cell);
+}
+
+
+/*
+ * Returns number of cells (rows * cols)
+ */
+FT_INTERNAL
+fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols)
+{
+    *rows = 0;
+    *cols = 0;
+    if (table && table->rows) {
+        *rows = vector_size(table->rows);
+        fort_row_t *row = NULL;
+        FOR_EACH(fort_row_t *, row, table->rows) {
+            size_t cols_in_row = columns_in_row(row);
+            if (cols_in_row > *cols)
+                *cols = cols_in_row;
+        }
+    }
+    return FT_SUCCESS;
+}
+
+
+FT_INTERNAL
+fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
+        size_t **col_width_arr_p, size_t *col_width_arr_sz,
+        size_t **row_height_arr_p, size_t *row_height_arr_sz,
+        enum request_geom_type geom)
+{
+    if (table == NULL) {
+        return FT_ERROR;
+    }
+
+
+
+    size_t cols = 0;
+    size_t rows = 0;
+    int status = get_table_sizes(table, &rows, &cols);
+    if (FT_IS_ERROR(status))
+        return status;
+
+    size_t *col_width_arr = (size_t *)F_CALLOC(sizeof(size_t), cols);
+    size_t *row_height_arr = (size_t *)F_CALLOC(sizeof(size_t), rows);
+    if (col_width_arr == NULL || row_height_arr == NULL) {
+        F_FREE(col_width_arr);
+        F_FREE(row_height_arr);
+        return FT_ERROR;
+    }
+
+    int combined_cells_found = 0;
+    context_t context;
+    context.table_properties = (table->properties ? table->properties : &g_table_properties);
+    size_t col = 0;
+    for (col = 0; col < cols; ++col) {
+        col_width_arr[col] = 0;
+        size_t row = 0;
+        for (row = 0; row < rows; ++row) {
+            const fort_row_t *row_p = get_row_c(table, row);
+            const fort_cell_t *cell = get_cell_c(row_p, col);
+            context.column = col;
+            context.row = row;
+            if (cell) {
+                switch (get_cell_type(cell)) {
+                    case CommonCell:
+                        col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context, geom));
+                        break;
+                    case GroupMasterCell:
+                        combined_cells_found = 1;
+                        break;
+                    case GroupSlaveCell:
+                        ; /* Do nothing */
+                        break;
+                }
+                row_height_arr[row] = MAX(row_height_arr[row], hint_height_cell(cell, &context));
+            }
+        }
+    }
+
+    if (combined_cells_found) {
+        col = 0;
+        for (col = 0; col < cols; ++col) {
+            size_t row = 0;
+            for (row = 0; row < rows; ++row) {
+                const fort_row_t *row_p = get_row_c(table, row);
+                const fort_cell_t *cell = get_cell_c(row_p, col);
+                context.column = col;
+                context.row = row;
+                if (cell) {
+                    if (get_cell_type(cell) == GroupMasterCell) {
+                        size_t hint_width = hint_width_cell(cell, &context, geom);
+                        size_t slave_col = col + group_cell_number(row_p, col);
+                        size_t cur_adj_col = col;
+                        size_t group_width = col_width_arr[col];
+                        size_t i;
+                        for (i = col + 1; i < slave_col; ++i)
+                            group_width += col_width_arr[i] + FORT_COL_SEPARATOR_LENGTH;
+                        /* adjust col. widths */
+                        while (1) {
+                            if (group_width >= hint_width)
+                                break;
+                            col_width_arr[cur_adj_col] += 1;
+                            group_width++;
+                            cur_adj_col++;
+                            if (cur_adj_col == slave_col)
+                                cur_adj_col = col;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /* todo: Maybe it is better to move min width checking to a particular cell width checking.
+     * At the moment min width includes paddings. Maybe it is better that min width weren't include
+     * paddings but be min width of the cell content without padding
+     */
+    /*
+    if (table->properties) {
+        for (size_t i = 0; i < cols; ++i) {
+            col_width_arr[i] = MAX((int)col_width_arr[i], fort_props_column_width(table->properties, i));
+        }
+    }
+    */
+
+    *col_width_arr_p = col_width_arr;
+    *col_width_arr_sz = cols;
+    *row_height_arr_p = row_height_arr;
+    *row_height_arr_sz = rows;
+    return FT_SUCCESS;
+}
+
+
+/*
+ * Returns geometry in characters
+ */
+FT_INTERNAL
+fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width)
+{
+    if (table == NULL)
+        return FT_ERROR;
+
+    *height = 0;
+    *width = 0;
+    size_t cols = 0;
+    size_t rows = 0;
+    size_t *col_width_arr = NULL;
+    size_t *row_height_arr = NULL;
+
+    int status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, INTERN_REPR_GEOMETRY);
+    if (FT_IS_ERROR(status))
+        return status;
+
+    *width = 1 + (cols == 0 ? 1 : cols) + 1; /* for boundaries (that take 1 symbol) + newline   */
+    size_t i = 0;
+    for (i = 0; i < cols; ++i) {
+        *width += col_width_arr[i];
+    }
+
+    /* todo: add check for non printable horizontal row separators */
+    *height = 1 + (rows == 0 ? 1 : rows); /* for boundaries (that take 1 symbol)  */
+    for (i = 0; i < rows; ++i) {
+        *height += row_height_arr[i];
+    }
+    F_FREE(col_width_arr);
+    F_FREE(row_height_arr);
+
+    if (table->properties) {
+        *height += table->properties->entire_table_properties.top_margin;
+        *height += table->properties->entire_table_properties.bottom_margin;
+        *width += table->properties->entire_table_properties.left_margin;
+        *width += table->properties->entire_table_properties.right_margin;
+    }
+
+    /* Take into account that border elements can be more than one byte long */
+    fort_table_properties_t *table_properties = table->properties ? table->properties : &g_table_properties;
+    size_t max_border_elem_len = max_border_elem_strlen(table_properties);
+    *width *= max_border_elem_len;
+
+    return FT_SUCCESS;
+
+}
+
+
+/********************************************************
+   End of file "table.c"
+ ********************************************************/
+
+
+/********************************************************
+   Begin of file "vector.c"
+ ********************************************************/
+
+/* #include "vector.h" */ /* Commented by amalgamation script */
+#include <assert.h>
+#include <string.h>
+
+struct vector {
+    size_t m_size;
+    void  *m_data;
+    size_t m_capacity;
+    size_t m_item_size;
+};
+
+
+static int vector_reallocate_(vector_t *vector, size_t new_capacity)
+{
+    assert(vector);
+    assert(new_capacity > vector->m_capacity);
+
+    size_t new_size = new_capacity * vector->m_item_size;
+    vector->m_data = F_REALLOC(vector->m_data, new_size);
+    if (vector->m_data == NULL)
+        return -1;
+    return 0;
+}
+
+
+FT_INTERNAL
+vector_t *create_vector(size_t item_size, size_t capacity)
+{
+    vector_t *vector = (vector_t *)F_MALLOC(sizeof(vector_t));
+    if (vector == NULL) {
+        SYS_LOG_ERROR("Failed to allocate memory for asock vector");
+        return NULL;
+    }
+
+    size_t init_size = MAX(item_size * capacity, 1);
+    vector->m_data = F_MALLOC(init_size);
+    if (vector->m_data == NULL) {
+        SYS_LOG_ERROR("Failed to allocate memory for asock vector inern. buffer");
+        F_FREE(vector);
+        return NULL;
+    }
+
+    vector->m_size      = 0;
+    vector->m_capacity  = capacity;
+    vector->m_item_size = item_size;
+
+    return vector;
+}
+
+
+FT_INTERNAL
+void destroy_vector(vector_t *vector)
+{
+    assert(vector);
+    F_FREE(vector->m_data);
+    F_FREE(vector);
+}
+
+
+FT_INTERNAL
+size_t vector_size(const vector_t *vector)
+{
+    assert(vector);
+    return vector->m_size;
+}
+
+
+FT_INTERNAL
+size_t vector_capacity(const vector_t *vector)
+{
+    assert(vector);
+    return vector->m_capacity;
+}
+
+
+FT_INTERNAL
+int vector_push(vector_t *vector, const void *item)
+{
+    assert(vector);
+    assert(item);
+
+    if (vector->m_size == vector->m_capacity) {
+        if (vector_reallocate_(vector, vector->m_capacity * 2) == -1)
+            return FT_ERROR;
+        vector->m_capacity = vector->m_capacity * 2;
+    }
+
+    ptrdiff_t deviation = vector->m_size * vector->m_item_size;
+    memcpy((char *)vector->m_data + deviation, item, vector->m_item_size);
+
+    ++(vector->m_size);
+
+    return FT_SUCCESS;
+}
+
+
+FT_INTERNAL
+const void *vector_at_c(const vector_t *vector, size_t index)
+{
+    if (index >= vector->m_size)
+        return NULL;
+
+    return (char *)vector->m_data + index * vector->m_item_size;
+}
+
+
+FT_INTERNAL
+void *vector_at(vector_t *vector, size_t index)
+{
+    if (index >= vector->m_size)
+        return NULL;
+
+    return (char *)vector->m_data + index * vector->m_item_size;
+}
+
+
+FT_INTERNAL
+fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
+{
+    assert(cur_vec);
+    assert(mv_vec);
+    assert(cur_vec != mv_vec);
+    assert(cur_vec->m_item_size == mv_vec->m_item_size);
+
+    size_t cur_sz = vector_size(cur_vec);
+    size_t mv_sz = vector_size(mv_vec);
+    if (mv_sz == 0) {
+        return FT_SUCCESS;
+    }
+
+    size_t min_targ_size = pos + mv_sz;
+    if (vector_capacity(cur_vec) < min_targ_size) {
+        if (vector_reallocate_(cur_vec, min_targ_size) == -1)
+            return FT_ERROR;
+        cur_vec->m_capacity = min_targ_size;
+    }
+
+    ptrdiff_t deviation = pos * cur_vec->m_item_size;
+    void *tmp = NULL;
+    size_t new_mv_sz = 0;
+    if (cur_sz > pos) {
+        new_mv_sz = MIN(cur_sz - pos, mv_sz);
+        tmp = F_MALLOC(cur_vec->m_item_size * new_mv_sz);
+        if (tmp == NULL) {
+            return FT_MEMORY_ERROR;
+        }
+    }
+
+    if (tmp) {
+        memcpy(tmp,
+               (char *)cur_vec->m_data + deviation,
+               cur_vec->m_item_size * new_mv_sz);
+    }
+
+    memcpy((char *)cur_vec->m_data + deviation,
+           mv_vec->m_data,
+           cur_vec->m_item_size * mv_sz);
+
+    if (tmp) {
+        memcpy(mv_vec->m_data,
+               tmp,
+               cur_vec->m_item_size * new_mv_sz);
+    }
+
+    cur_vec->m_size = MAX(cur_vec->m_size, min_targ_size);
+    mv_vec->m_size = new_mv_sz;
+    F_FREE(tmp);
+    return FT_SUCCESS;
+}
+
+
+#ifdef FT_TEST_BUILD
+
+vector_t *copy_vector(vector_t *v)
+{
+    if (v == NULL)
+        return NULL;
+
+    vector_t *new_vector = create_vector(v->m_item_size, v->m_capacity);
+    if (new_vector == NULL)
+        return NULL;
+
+    memcpy(new_vector->m_data, v->m_data, v->m_item_size * v->m_size);
+    new_vector->m_size      = v->m_size ;
+    new_vector->m_item_size = v->m_item_size ;
+    return new_vector;
+}
+
+size_t vector_index_of(const vector_t *vector, const void *item)
+{
+    assert(vector);
+    assert(item);
+
+    size_t i = 0;
+    for (i = 0; i < vector->m_size; ++i) {
+        void *data_pos = (char *)vector->m_data + i * vector->m_item_size;
+        if (memcmp(data_pos, item, vector->m_item_size) == 0) {
+            return i;
+        }
+    }
+    return INVALID_VEC_INDEX;
+}
+
+
+int vector_erase(vector_t *vector, size_t index)
+{
+    assert(vector);
+
+    if (vector->m_size == 0 || index >= vector->m_size)
+        return FT_ERROR;
+
+    memmove((char *)vector->m_data + vector->m_item_size * index,
+            (char *)vector->m_data + vector->m_item_size * (index + 1),
+            (vector->m_size - 1 - index) * vector->m_item_size);
+    vector->m_size--;
+    return FT_SUCCESS;
+}
+
+
+void vector_clear(vector_t *vector)
+{
+    vector->m_size = 0;
+}
+#endif
+
+/********************************************************
+   End of file "vector.c"
+ ********************************************************/
+
+
+/********************************************************
    Begin of file "wcwidth.c"
  ********************************************************/
 
@@ -5593,356 +5944,5 @@ int mk_wcswidth(const wchar_t *pwcs, size_t n)
 
 /********************************************************
    End of file "wcwidth.c"
- ********************************************************/
-
-
-/********************************************************
-   Begin of file "cell.c"
- ********************************************************/
-
-/* #include "cell.h" */ /* Commented by amalgamation script */
-/* #include "properties.h" */ /* Commented by amalgamation script */
-/* #include "string_buffer.h" */ /* Commented by amalgamation script */
-#include <assert.h>
-
-struct fort_cell {
-    string_buffer_t *str_buffer;
-    enum CellType cell_type;
-};
-
-FT_INTERNAL
-fort_cell_t *create_cell(void)
-{
-    fort_cell_t *cell = (fort_cell_t *)F_CALLOC(sizeof(fort_cell_t), 1);
-    if (cell == NULL)
-        return NULL;
-    cell->str_buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CharBuf);
-    if (cell->str_buffer == NULL) {
-        F_FREE(cell);
-        return NULL;
-    }
-    cell->cell_type = CommonCell;
-    return cell;
-}
-
-FT_INTERNAL
-void destroy_cell(fort_cell_t *cell)
-{
-    if (cell == NULL)
-        return;
-    destroy_string_buffer(cell->str_buffer);
-    F_FREE(cell);
-}
-
-FT_INTERNAL
-fort_cell_t *copy_cell(fort_cell_t *cell)
-{
-    assert(cell);
-
-    fort_cell_t *result = create_cell();
-    destroy_string_buffer(result->str_buffer);
-    result->str_buffer = copy_string_buffer(cell->str_buffer);
-    if (result->str_buffer == NULL) {
-        destroy_cell(result);
-        return NULL;
-    }
-    result->cell_type = cell->cell_type;
-    return result;
-}
-
-FT_INTERNAL
-void set_cell_type(fort_cell_t *cell, enum CellType type)
-{
-    assert(cell);
-    cell->cell_type = type;
-}
-
-FT_INTERNAL
-enum CellType get_cell_type(const fort_cell_t *cell)
-{
-    assert(cell);
-    return cell->cell_type;
-}
-
-FT_INTERNAL
-size_t hint_width_cell(const fort_cell_t *cell, const context_t *context, enum request_geom_type geom)
-{
-    /* todo:
-     * At the moment min width includes paddings. Maybe it is better that min width weren't include
-     * paddings but be min width of the cell content without padding
-     */
-
-    assert(cell);
-    assert(context);
-    size_t cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
-    size_t cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
-    size_t result = cell_padding_left + cell_padding_right;
-    if (cell->str_buffer && cell->str_buffer->str.data) {
-        result += buffer_text_width(cell->str_buffer);
-    }
-    result = MAX(result, (size_t)get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_MIN_WIDTH));
-
-    if (geom == INTERN_REPR_GEOMETRY) {
-        char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(cell_style_tag);
-
-        char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(reset_cell_style_tag);
-
-        char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(content_style_tag);
-
-        char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(reset_content_style_tag);
-    }
-
-    return result;
-}
-
-FT_INTERNAL
-size_t hint_height_cell(const fort_cell_t *cell, const context_t *context)
-{
-    assert(cell);
-    assert(context);
-    size_t cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
-    size_t cell_padding_bottom = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_BOTTOM_PADDING);
-    size_t cell_empty_string_height = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_EMPTY_STR_HEIGHT);
-    size_t result = cell_padding_top + cell_padding_bottom;
-    if (cell->str_buffer && cell->str_buffer->str.data) {
-        size_t text_height = buffer_text_height(cell->str_buffer);
-        result += text_height == 0 ? cell_empty_string_height : text_height;
-    }
-    return result;
-}
-
-
-FT_INTERNAL
-int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context)
-{
-    const char *space_char = " ";
-    int (*buffer_printf_)(string_buffer_t *, size_t, char *, size_t, const context_t *, const char *, const char *) = buffer_printf;
-//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
-    int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
-
-    if (cell == NULL || buf_len == 0
-        || (buf_len <= hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
-        return -1;
-    }
-
-    unsigned int cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
-    unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
-    unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
-
-    int written = 0;
-    int invisible_written = 0;
-    int tmp = 0;
-//    int left = cell_padding_left;
-//    int right = cell_padding_right;
-
-    /* todo: Dirty hack with changing buf_len! need refactoring. */
-    /* Also maybe it is better to move all struff with colors to buffers? */
-    char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(cell_style_tag);
-
-    char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(reset_cell_style_tag);
-
-    char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(content_style_tag);
-
-    char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(reset_content_style_tag);
-
-    /*    CELL_STYLE_T   LEFT_PADDING   CONTENT_STYLE_T  CONTENT   RESET_CONTENT_STYLE_T    RIGHT_PADDING   RESET_CELL_STYLE_T
-     *  |              |              |                |         |                       |                |                    |
-     *        L1                                                                                                    R1
-     *                     L2                                                                   R2
-     *                                     L3                               R3
-     */
-
-    size_t L2 = cell_padding_left;
-
-    size_t R2 = cell_padding_right;
-    size_t R3 = strlen(reset_cell_style_tag);
-
-#define TOTAL_WRITTEN (written + invisible_written)
-#define RIGHT (cell_padding_right + extra_right)
-
-#define WRITE_CELL_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, cell_style_tag))
-#define WRITE_RESET_CELL_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_cell_style_tag))
-#define WRITE_CONTENT_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, content_style_tag))
-#define WRITE_RESET_CONTENT_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_content_style_tag))
-
-    if (row >= hint_height_cell(cell, context)
-        || row < cell_padding_top
-        || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
-        WRITE_CELL_STYLE_TAG;
-        WRITE_CONTENT_STYLE_TAG;
-        WRITE_RESET_CONTENT_STYLE_TAG;
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
-        WRITE_RESET_CELL_STYLE_TAG;
-        return TOTAL_WRITTEN;
-    }
-
-    WRITE_CELL_STYLE_TAG;
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, L2, space_char));
-    if (cell->str_buffer) {
-        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, context, content_style_tag, reset_content_style_tag));
-    } else {
-        WRITE_CONTENT_STYLE_TAG;
-        WRITE_RESET_CONTENT_STYLE_TAG;
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, space_char));
-    }
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
-    WRITE_RESET_CELL_STYLE_TAG;
-
-    return TOTAL_WRITTEN;
-
-clear:
-    return -1;
-#undef WRITE_CELL_STYLE_TAG
-#undef WRITE_RESET_CELL_STYLE_TAG
-#undef WRITE_CONTENT_STYLE_TAG
-#undef WRITE_RESET_CONTENT_STYLE_TAG
-#undef TOTAL_WRITTEN
-#undef RIGHT
-}
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context)
-{
-    const char *space_char = " ";
-    int (*buffer_printf_)(string_buffer_t *, size_t, wchar_t *, size_t, const context_t *, const char *, const char *) = buffer_wprintf;
-//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
-    int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
-
-    if (cell == NULL || buf_len == 0
-        || (buf_len <= hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
-        return -1;
-    }
-
-    unsigned int cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
-    unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
-    unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
-
-    int written = 0;
-    int invisible_written = 0;
-    int tmp = 0;
-
-    /* todo: Dirty hack with changing buf_len! need refactoring. */
-    /* Also maybe it is better to move all struff with colors to buffers? */
-    char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(cell_style_tag);
-
-    char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(reset_cell_style_tag);
-
-    char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(content_style_tag);
-
-    char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(reset_content_style_tag);
-
-    /*    CELL_STYLE_T   LEFT_PADDING   CONTENT_STYLE_T  CONTENT   RESET_CONTENT_STYLE_T    RIGHT_PADDING   RESET_CELL_STYLE_T
-     *  |              |              |                |         |                       |                |                    |
-     *        L1                                                                                                    R1
-     *                     L2                                                                   R2
-     *                                     L3                               R3
-     */
-
-    size_t L2 = cell_padding_left;
-
-    size_t R2 = cell_padding_right;
-    size_t R3 = strlen(reset_cell_style_tag);
-
-#define TOTAL_WRITTEN (written + invisible_written)
-#define RIGHT (right + extra_right)
-
-#define WRITE_CELL_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, cell_style_tag))
-#define WRITE_RESET_CELL_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_cell_style_tag))
-#define WRITE_CONTENT_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, content_style_tag))
-#define WRITE_RESET_CONTENT_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_content_style_tag))
-
-    if (row >= hint_height_cell(cell, context)
-        || row < cell_padding_top
-        || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
-        WRITE_CELL_STYLE_TAG;
-        WRITE_CONTENT_STYLE_TAG;
-        WRITE_RESET_CONTENT_STYLE_TAG;
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
-        WRITE_RESET_CELL_STYLE_TAG;
-        return TOTAL_WRITTEN;
-    }
-
-    WRITE_CELL_STYLE_TAG;
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, L2, space_char));
-    if (cell->str_buffer) {
-        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, context, content_style_tag, reset_content_style_tag));
-    } else {
-        WRITE_CONTENT_STYLE_TAG;
-        WRITE_RESET_CONTENT_STYLE_TAG;
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, space_char));
-    }
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
-    WRITE_RESET_CELL_STYLE_TAG;
-
-    return TOTAL_WRITTEN;
-
-clear:
-    return -1;
-#undef WRITE_CELL_STYLE_TAG
-#undef WRITE_RESET_CELL_STYLE_TAG
-#undef WRITE_CONTENT_STYLE_TAG
-#undef WRITE_RESET_CONTENT_STYLE_TAG
-#undef TOTAL_WRITTEN
-#undef RIGHT
-}
-#endif
-
-FT_INTERNAL
-fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str)
-{
-    assert(str);
-    assert(cell);
-
-    return fill_buffer_from_string(cell->str_buffer, str);
-}
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str)
-{
-    assert(str);
-    assert(cell);
-
-    return fill_buffer_from_wstring(cell->str_buffer, str);
-}
-
-#endif
-
-FT_INTERNAL
-string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
-{
-    assert(cell);
-    assert(cell->str_buffer);
-    return cell->str_buffer;
-}
-
-
-/********************************************************
-   End of file "cell.c"
  ********************************************************/
 

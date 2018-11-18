@@ -89,6 +89,8 @@ matrix:
 script:
   # Check library file was generated
   - python amalgamate.py -o dummy.c
+  - wc dummy.c
+  - wc lib/fort.c
   - diff dummy.c lib/fort.c
   - rm dummy.c
 
