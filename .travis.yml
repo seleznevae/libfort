@@ -102,9 +102,9 @@ script:
     fi
 
   # cppcheck run
-  - if [[ "${FORT_C_COMPILER}" = "gcc-8" ]];
-    then
-    cppcheck lib
+  - |
+    if [ "${FORT_C_COMPILER}" = "gcc-8" ]; then
+      cppcheck lib
     fi
 
   # Print all environment variables to aid in CI development
