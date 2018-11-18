@@ -102,7 +102,7 @@ script:
     fi
 
   # cppcheck run
-  - if [[ "${FORT_C_COMPILER}" == "gcc-8" ]];
+  - if [[ "${FORT_C_COMPILER}" = "gcc-8" ]];
     then
     cppcheck lib
     fi
