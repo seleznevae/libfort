@@ -73,12 +73,11 @@ struct interval {
 static int bisearch(wchar_t ucs, const struct interval *table, int max)
 {
     int min = 0;
-    int mid;
 
     if (ucs < table[0].first || ucs > table[max].last)
         return 0;
     while (max >= min) {
-        mid = (min + max) / 2;
+        int mid = (min + max) / 2;
         if (ucs > table[mid].last)
             min = mid + 1;
         else if (ucs < table[mid].first)
@@ -211,13 +210,15 @@ static int mk_wcwidth(wchar_t ucs)
 FT_INTERNAL
 int mk_wcswidth(const wchar_t *pwcs, size_t n)
 {
-    int w, width = 0;
+    int width = 0;
 
-    for (; *pwcs && n-- > 0; pwcs++)
+    for (; *pwcs && n-- > 0; pwcs++) {
+        int w;
         if ((w = mk_wcwidth(*pwcs)) < 0)
             return -1;
         else
             width += w;
+    }
 
     return width;
 }

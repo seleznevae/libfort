@@ -1009,7 +1009,7 @@ fort_table_properties_t *copy_table_properties(const fort_table_properties_t *pr
 
     destroy_vector(new_opt->cell_properties);
     new_opt->cell_properties = copy_cell_properties(properties->cell_properties);
-    if (new_opt == NULL) {
+    if (new_opt->cell_properties == NULL) {
         destroy_table_properties(new_opt);
         return NULL;
     }

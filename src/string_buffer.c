@@ -319,8 +319,8 @@ size_t buffer_text_width(string_buffer_t *buffer)
             max_length = MAX(max_length, (size_t)(end - beg));
             ++n;
         }
-    } else {
 #ifdef FT_HAVE_WCHAR
+    } else {
         while (1) {
             const wchar_t *beg = NULL;
             const wchar_t *end = NULL;

@@ -104,7 +104,7 @@ script:
   # cppcheck run
   - |
     if [ "${FORT_C_COMPILER}" = "gcc-8" ]; then
-      cppcheck lib
+      cppcheck --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
     fi
 
   # Print all environment variables to aid in CI development

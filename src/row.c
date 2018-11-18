@@ -1,9 +1,10 @@
+#include <assert.h>
+#include <ctype.h>
 #include "row.h"
 #include "cell.h"
 #include "string_buffer.h"
-#include "assert.h"
 #include "vector.h"
-#include "ctype.h"
+
 
 struct fort_row {
     vector_t *cells;
@@ -33,13 +34,12 @@ fort_row_t *create_row(void)
 FT_INTERNAL
 void destroy_row(fort_row_t *row)
 {
-    size_t i = 0;
     if (row == NULL)
         return;
 
     if (row->cells) {
         size_t cells_n = vector_size(row->cells);
-        for (i = 0; i < cells_n; ++i) {
+        for (size_t i = 0; i < cells_n; ++i) {
             fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, i);
             destroy_cell(cell);
         }

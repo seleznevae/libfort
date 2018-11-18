@@ -3491,7 +3491,7 @@ fort_table_properties_t *copy_table_properties(const fort_table_properties_t *pr
 
     destroy_vector(new_opt->cell_properties);
     new_opt->cell_properties = copy_cell_properties(properties->cell_properties);
-    if (new_opt == NULL) {
+    if (new_opt->cell_properties == NULL) {
         destroy_table_properties(new_opt);
         return NULL;
     }
@@ -3512,12 +3512,13 @@ fort_table_properties_t *copy_table_properties(const fort_table_properties_t *pr
    Begin of file "row.c"
  ********************************************************/
 
+#include <assert.h>
+#include <ctype.h>
 /* #include "row.h" */ /* Commented by amalgamation script */
 /* #include "cell.h" */ /* Commented by amalgamation script */
 /* #include "string_buffer.h" */ /* Commented by amalgamation script */
-#include "assert.h"
 /* #include "vector.h" */ /* Commented by amalgamation script */
-#include "ctype.h"
+
 
 struct fort_row {
     vector_t *cells;
@@ -3547,13 +3548,12 @@ fort_row_t *create_row(void)
 FT_INTERNAL
 void destroy_row(fort_row_t *row)
 {
-    size_t i = 0;
     if (row == NULL)
         return;
 
     if (row->cells) {
         size_t cells_n = vector_size(row->cells);
-        for (i = 0; i < cells_n; ++i) {
+        for (size_t i = 0; i < cells_n; ++i) {
             fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, i);
             destroy_cell(cell);
         }
@@ -4957,8 +4957,8 @@ size_t buffer_text_width(string_buffer_t *buffer)
             max_length = MAX(max_length, (size_t)(end - beg));
             ++n;
         }
-    } else {
 #ifdef FT_HAVE_WCHAR
+    } else {
         while (1) {
             const wchar_t *beg = NULL;
             const wchar_t *end = NULL;
@@ -5794,12 +5794,11 @@ struct interval {
 static int bisearch(wchar_t ucs, const struct interval *table, int max)
 {
     int min = 0;
-    int mid;
 
     if (ucs < table[0].first || ucs > table[max].last)
         return 0;
     while (max >= min) {
-        mid = (min + max) / 2;
+        int mid = (min + max) / 2;
         if (ucs > table[mid].last)
             min = mid + 1;
         else if (ucs < table[mid].first)
@@ -5932,13 +5931,15 @@ static int mk_wcwidth(wchar_t ucs)
 FT_INTERNAL
 int mk_wcswidth(const wchar_t *pwcs, size_t n)
 {
-    int w, width = 0;
+    int width = 0;
 
-    for (; *pwcs && n-- > 0; pwcs++)
+    for (; *pwcs && n-- > 0; pwcs++) {
+        int w;
         if ((w = mk_wcwidth(*pwcs)) < 0)
             return -1;
         else
             width += w;
+    }
 
     return width;
 }
