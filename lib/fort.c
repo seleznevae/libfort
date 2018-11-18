@@ -2424,6 +2424,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
                 const char *ptr = str;
                 size_t wcs_len;
                 mbstate_t mbst;
+                memset(&mbst, 0, sizeof(mbst));
                 wcs_len = mbsrtowcs(wcs, (const char **)&ptr, WCS_SIZE, &mbst);
                 /* for simplicity */
                 if ((wcs_len == (size_t) - 1) || wcs_len > 1) {
