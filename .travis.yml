@@ -67,7 +67,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-8']
+          packages: ['g++-8', 'cppcheck']
 
     # OSX / Clang
     - os: osx
@@ -99,6 +99,12 @@ script:
     then
     export CC=${FORT_C_COMPILER}; 
     export CXX=${FORT_CXX_COMPILER}; 
+    fi
+
+  # cppcheck run
+  - if [[ "${FORT_C_COMPILER}" == "gcc-8" ]];
+    then
+    cppcheck lib
     fi
 
   # Print all environment variables to aid in CI development
