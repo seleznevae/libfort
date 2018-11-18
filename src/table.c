@@ -110,6 +110,7 @@ fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *col
         *rows = vector_size(table->rows);
         fort_row_t *row = NULL;
         FOR_EACH(fort_row_t *, row, table->rows) {
+            (void)i0;
             size_t cols_in_row = columns_in_row(row);
             if (cols_in_row > *cols)
                 *cols = cols_in_row;

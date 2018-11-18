@@ -4945,8 +4945,8 @@ FT_INTERNAL
 size_t buffer_text_width(string_buffer_t *buffer)
 {
     size_t max_length = 0;
-    int n = 0;
     if (buffer->type == CharBuf) {
+        int n = 0;
         while (1) {
             const char *beg = NULL;
             const char *end = NULL;
@@ -4959,6 +4959,7 @@ size_t buffer_text_width(string_buffer_t *buffer)
         }
 #ifdef FT_HAVE_WCHAR
     } else {
+        int n = 0;
         while (1) {
             const wchar_t *beg = NULL;
             const wchar_t *end = NULL;
@@ -5307,6 +5308,7 @@ fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *col
         *rows = vector_size(table->rows);
         fort_row_t *row = NULL;
         FOR_EACH(fort_row_t *, row, table->rows) {
+            (void)i0;
             size_t cols_in_row = columns_in_row(row);
             if (cols_in_row > *cols)
                 *cols = cols_in_row;
