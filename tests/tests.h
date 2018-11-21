@@ -71,6 +71,14 @@ struct test_case {
 struct ft_table;
 
 #ifdef __cplusplus
+#define assert_string_equal(str1, str2) assert_str_equal(str1.c_str(), str2.c_str())
+namespace fort
+{
+class table;
+}
+bool set_cpp_test_props_for_table(fort::table *table);
+fort::table create_cpp_test_int_table(int set_test_opts);
+
 extern "C" {
 #endif
 

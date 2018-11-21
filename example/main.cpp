@@ -2,9 +2,9 @@
 #include <vector>
 #include "fort.hpp"
 
-fort::Table create_basic_table(void)
+fort::table create_basic_table(void)
 {
-    fort::Table table;
+    fort::table table;
     /* Set table border style */
     table.set_border_style(FT_BASIC_STYLE);
 
@@ -19,8 +19,8 @@ fort::Table create_basic_table(void)
         << "5" << "Blade Runner" << "1982" << "8.1" << fort::endr
         << fort::endr;
 
-    table.set_cell_text_align(FT_ANY_ROW, 0, fort::TextAlign::Center);
-    table.set_cell_text_align(FT_ANY_ROW, 1, fort::TextAlign::Left);
+    table.column(0).set_cell_text_align(fort::text_align::center);
+    table.column(1).set_cell_text_align(fort::text_align::left);
 
     std::cout << table.to_string() << std::endl;
     return table;
@@ -28,7 +28,7 @@ fort::Table create_basic_table(void)
 
 void base_example(void)
 {
-    fort::Table table;
+    fort::table table;
     table << fort::header
         << "N" << "Driver" << "Time" << "Avg Speed" << fort::endr
         << "1" << "Ricciardo" << "1:25.945" << "47.362" << fort::endr
@@ -40,7 +40,7 @@ void base_example(void)
 
 void different_cell_properties_example(void)
 {
-    fort::Table table;
+    fort::table table;
     /* Change border style */
     table.set_border_style(FT_DOUBLE2_STYLE);
 
@@ -51,8 +51,9 @@ void different_cell_properties_example(void)
         << "2001: A Space Odyssey" << "Stanley Kubrick" << "1968" << "8.5" << fort::endr;
 
     /* Set center alignment for the 1st and 3rd columns */
-    table.set_cell_text_align(FT_ANY_ROW, 1, fort::TextAlign::Center);
-    table.set_cell_text_align(FT_ANY_ROW, 3, fort::TextAlign::Center);
+    table.column(1).set_cell_text_align(fort::text_align::center);
+    table.column(3).set_cell_text_align(fort::text_align::center);
+
 
     std::cout << table.to_string() << std::endl;
 }
@@ -60,7 +61,7 @@ void different_cell_properties_example(void)
 
 void fill_table_with_data_example(void)
 {
-    fort::Table table;
+    fort::table table;
     table << fort::header;
     /* Fill each cell with operator[] */
     table [0][0] = "N";
@@ -91,7 +92,7 @@ int main()
     fill_table_with_data_example();
 
     {
-        fort::Table table;
+        fort::table table;
         // Fill table with data
         table << fort::header
             << "Rank" << "Title" << "Year" << "Rating" << fort::endr
@@ -103,18 +104,16 @@ int main()
             << "5" << "Blade Runner" << "1982" << "8.1" << fort::endr
             << fort::endr;
 
-        using fort::CellProperty;
-        using fort::TableProperty;
-        table.set_property<CellProperty::MinWidth>(0, 0, 20);
-        table.set_property<CellProperty::TextAlign>(0, 0, fort::TextAlign::Left);
-        table.set_property<CellProperty::RowType>(2, FT_ANY_COLUMN, fort::RowType::Header);
+        table[0][0].set_cell_min_width(20);
+        table[0][0].set_cell_text_align(fort::text_align::left);
+        table[2].set_cell_row_type(fort::row_type::header);
 
         std::cout << table.to_string() << std::endl;
     }
 
 
     {
-        fort::Table table;
+        fort::table table;
         // Fill table with data
         table << fort::header;
         table.write_ln("Rank", "Title", "Year", "Rating");
@@ -124,14 +123,12 @@ int main()
         table.write_ln("4", "2001: A Space Odyssey", "1968", "8.5");
         table.write_ln("5", "Blade Runner", "1982", "8.1");
 
-        using fort::CellProperty;
-        using fort::TableProperty;
-        table.set_cell_min_width(0, 0, 20);
-        table.set_cell_text_align(0, 0, fort::TextAlign::Left);
-        table.set_cell_row_type(2, FT_ANY_COLUMN, fort::RowType::Header);
 
+        table[0][0].set_cell_min_width(20);
+        table[0][0].set_cell_text_align(fort::text_align::left);
+        table.row(2).set_cell_row_type(fort::row_type::header);
 
-        table.set_property<TableProperty::LeftMargin>(4);
+        table.set_left_margin(4);
 
         table.set_border_style(FT_SOLID_STYLE);
         std::cout << table.to_string();

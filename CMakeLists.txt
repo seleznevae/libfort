@@ -141,7 +141,9 @@ add_executable(${PROJECT_NAME}_test
 set(TEST_SOURCES_CPP
     tests/main_test_cpp.cpp
     tests/bb_tests_cpp/test_table_basic.cpp
-    tests/test_utils.c)
+    tests/bb_tests_cpp/test_table_properties.cpp
+    tests/test_utils.c
+    tests/test_utils.cpp)
 add_executable(${PROJECT_NAME}_test_cpp
     lib/fort.c
     ${TEST_SOURCES_CPP})

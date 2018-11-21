@@ -4,11 +4,18 @@
 
 void test_cpp_table_basic(void);
 void test_cpp_table_write(void);
+void test_cpp_table_tbl_properties(void);
+void test_cpp_table_cell_properties(void);
+void test_cpp_table_text_styles(void);
+
 
 
 struct test_case bb_test_suit [] = {
     {"test_cpp_table_basic", test_cpp_table_basic},
     {"test_cpp_table_write", test_cpp_table_write},
+    {"test_cpp_table_tbl_properties", test_cpp_table_tbl_properties},
+    {"test_cpp_table_cell_properties", test_cpp_table_cell_properties},
+    {"test_cpp_table_text_styles", test_cpp_table_text_styles},
 };
 
 
