@@ -374,7 +374,6 @@ void test_cpp_table_cell_properties(void)
     }
 
     WHEN("Set table width and column alignment as default") {
-        // NOT IMPLEMENTED !!!!!!!!!!!!!!
         set_test_properties_as_default();
         fort::table::default_props().set_cell_min_width(5);
         fort::table::default_props().set_cell_text_align(fort::text_align::center);
