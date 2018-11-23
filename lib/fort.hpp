@@ -43,6 +43,10 @@ SOFTWARE.
 namespace fort
 {
 
+enum class cell_property {
+    pr1,
+    pr2
+};
 
 enum class text_align {
     left   = FT_ALIGNED_LEFT,
@@ -106,8 +110,9 @@ template <typename table>
 class property_setter {
 public:
 
-    property_setter(std::size_t row_idx, std::size_t coll_idx, table &tbl)
-        :ps_row_idx_(row_idx), ps_coll_idx_(coll_idx), ps_table_(tbl) {}
+    property_setter(std::size_t row_idx, std::size_t coll_idx, table *tbl, bool def = false)
+        :ps_row_idx_(row_idx), ps_coll_idx_(coll_idx),
+          ps_table_(tbl), set_default_properties_(def) {}
 
     /**
      * Set min width for the specified cell of the table.
@@ -120,7 +125,7 @@ public:
      */
     bool set_cell_min_width(unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_MIN_WIDTH, value));
+        return set_property(FT_CPROP_MIN_WIDTH, value);
     }
 
     /**
@@ -134,7 +139,7 @@ public:
      */
     bool set_cell_text_align(enum fort::text_align value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_TEXT_ALIGN, static_cast<int>(value)));
+        return set_property(FT_CPROP_TEXT_ALIGN, static_cast<int>(value));
     }
 
     /**
@@ -148,7 +153,7 @@ public:
      */
     bool set_cell_top_padding(unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_TOP_PADDING, value));
+        return set_property(FT_CPROP_TOP_PADDING, value);
     }
 
     /**
@@ -162,7 +167,7 @@ public:
      */
     bool set_cell_bottom_padding(unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_BOTTOM_PADDING, value));
+        return set_property(FT_CPROP_BOTTOM_PADDING, value);
     }
 
     /**
@@ -176,7 +181,7 @@ public:
      */
     bool set_cell_left_padding(unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_LEFT_PADDING, value));
+        return set_property(FT_CPROP_LEFT_PADDING, value);
     }
 
     /**
@@ -190,7 +195,7 @@ public:
      */
     bool set_cell_right_padding(unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_RIGHT_PADDING, value));
+        return set_property(FT_CPROP_RIGHT_PADDING, value);
     }
 
     /**
@@ -204,7 +209,7 @@ public:
      */
     bool set_cell_row_type(enum fort::row_type value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_ROW_TYPE, static_cast<int>(value)));
+        return set_property(FT_CPROP_ROW_TYPE, static_cast<int>(value));
     }
 
     /**
@@ -218,7 +223,7 @@ public:
      */
     bool set_cell_empty_str_height(unsigned value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_EMPTY_STR_HEIGHT, value));
+        return set_property(FT_CPROP_EMPTY_STR_HEIGHT, value);
     }
 
     /**
@@ -232,7 +237,7 @@ public:
      */
     bool set_cell_content_fg_color(enum fort::color value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_CONT_FG_COLOR, static_cast<int>(value)));
+        return set_property(FT_CPROP_CONT_FG_COLOR, static_cast<int>(value));
     }
 
     /**
@@ -246,7 +251,7 @@ public:
      */
     bool set_cell_cell_bg_color(enum fort::color value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_CELL_BG_COLOR, static_cast<int>(value)));
+        return set_property(FT_CPROP_CELL_BG_COLOR, static_cast<int>(value));
     }
 
     /**
@@ -260,7 +265,7 @@ public:
      */
     bool set_cell_content_bg_color(enum fort::color value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_CONT_BG_COLOR, static_cast<int>(value)));
+        return set_property(FT_CPROP_CONT_BG_COLOR, static_cast<int>(value));
     }
 
     /**
@@ -274,7 +279,7 @@ public:
      */
     bool set_cell_cell_text_style(enum fort::text_style value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_CELL_TEXT_STYLE, static_cast<int>(value)));
+        return set_property(FT_CPROP_CELL_TEXT_STYLE, static_cast<int>(value));
     }
 
     /**
@@ -288,7 +293,7 @@ public:
      */
     bool set_cell_content_text_style(enum fort::text_style value)
     {
-        return FT_IS_SUCCESS(ft_set_cell_prop(ps_table_.table_, ps_row_idx_, ps_coll_idx_, FT_CPROP_CONT_TEXT_STYLE, static_cast<int>(value)));
+        return set_property(FT_CPROP_CONT_TEXT_STYLE, static_cast<int>(value));
     }
 
     /**
@@ -302,12 +307,27 @@ public:
      */
     bool set_cell_span(size_t hor_span)
     {
-        return FT_IS_SUCCESS(ft_set_cell_span(ps_table_.table_, ps_row_idx_, ps_coll_idx_, hor_span));
+        if (set_default_properties_)
+            return false;
+
+        return FT_IS_SUCCESS(ft_set_cell_span(ps_table_->table_, ps_row_idx_, ps_coll_idx_, hor_span));
     }
 protected:
     std::size_t ps_row_idx_;
     std::size_t ps_coll_idx_;
-    table &ps_table_;
+    table *ps_table_;
+    bool set_default_properties_;
+
+    bool set_property(uint32_t property, int value)
+    {
+        int status;
+        if (set_default_properties_) {
+            status = ft_set_default_cell_prop(property, value);
+        } else {
+            status = ft_set_cell_prop(ps_table_->table_, ps_row_idx_, ps_coll_idx_, property, value);
+        }
+        return FT_IS_SUCCESS(status);
+    }
 };
 
 /**
@@ -318,7 +338,7 @@ protected:
 class table: public property_setter<table> {
 public:
     table()
-        :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, *this), table_(ft_create_table())
+        :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(ft_create_table())
     {
 
         if (table_ == NULL)
@@ -334,7 +354,7 @@ public:
      * Copy contstructor.
      */
     table(const table& tbl)
-        :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, *this), table_(NULL)
+        :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(NULL)
     {
         if (tbl.table_) {
             ft_table_t *table_copy = ft_copy_table(tbl.table_);
@@ -353,7 +373,7 @@ public:
      * Move contstructor.
      */
     table(table&& tbl)
-        :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, *this), table_(tbl.table_)
+        :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(tbl.table_)
     {
         if (tbl.stream_.tellp() >= 0) {
             stream_ << tbl.stream_.str();
@@ -717,12 +737,12 @@ public:
     {
     public:
         table_cell_iterator(std::size_t row_idx, std::size_t coll_idx, table &tbl)
-            :property_setter(row_idx, coll_idx, tbl) {}
+            :property_setter(row_idx, coll_idx, &tbl) {}
 
         table_cell_iterator& operator=(const char *str)
         {
-            ft_set_cur_cell(ps_table_.table_, ps_row_idx_, ps_coll_idx_);
-            ps_table_.write(str);
+            ft_set_cur_cell(ps_table_->table_, ps_row_idx_, ps_coll_idx_);
+            ps_table_->write(str);
             return *this;
         }
     };
@@ -731,12 +751,12 @@ public:
     {
     public:
         table_row_iterator(std::size_t row_idx, table &tbl)
-            :property_setter(row_idx, FT_ANY_COLUMN, tbl) {}
+            :property_setter(row_idx, FT_ANY_COLUMN, &tbl) {}
 
         class table_cell_iterator
         operator[](std::size_t coll_idx)
         {
-            return table_cell_iterator(ps_row_idx_, coll_idx, ps_table_);
+            return table_cell_iterator(ps_row_idx_, coll_idx, *ps_table_);
         }
     };
 
@@ -744,7 +764,14 @@ public:
     {
     public:
         table_column_iterator(std::size_t col_idx, table &tbl)
-            :property_setter(FT_ANY_ROW, col_idx, tbl) {}
+            :property_setter(FT_ANY_ROW, col_idx, &tbl) {}
+    };
+
+    class default_properties: public property_setter<table>
+    {
+    public:
+        default_properties(table *tbl)
+            :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, tbl, true) {}
     };
 
     class table_row_iterator
@@ -765,6 +792,11 @@ public:
         return table_column_iterator(col_idx, *this);
     }
 
+    static class default_properties
+    default_props()
+    {
+        return default_properties(NULL);
+    }
 };
 
 

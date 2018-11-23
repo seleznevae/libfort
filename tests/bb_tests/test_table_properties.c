@@ -249,36 +249,44 @@ void test_table_cell_properties(void)
         ft_destroy_table(table);
     }
 
-    WHEN("All paddings = 1") {
+    WHEN("Differrent paddings") {
         set_test_properties_as_default();
 
-        ft_set_default_cell_prop(FT_CPROP_BOTTOM_PADDING, 1);
-        ft_set_default_cell_prop(FT_CPROP_TOP_PADDING, 1);
+        ft_set_default_cell_prop(FT_CPROP_BOTTOM_PADDING, 3);
+        ft_set_default_cell_prop(FT_CPROP_TOP_PADDING, 2);
         ft_set_default_cell_prop(FT_CPROP_LEFT_PADDING, 1);
-        ft_set_default_cell_prop(FT_CPROP_RIGHT_PADDING, 1);
+        ft_set_default_cell_prop(FT_CPROP_RIGHT_PADDING, 0);
 
         table = create_test_int_table(0);
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
         const char *table_str_etalon =
-            "+---+---+----+----+\n"
-            "|   |   |    |    |\n"
-            "| 3 | 4 | 55 | 67 |\n"
-            "|   |   |    |    |\n"
-            "+---+---+----+----+\n"
-            "|   |   |    |    |\n"
-            "| 3 | 4 | 55 | 67 |\n"
-            "|   |   |    |    |\n"
-            "+---+---+----+----+\n"
-            "|   |   |    |    |\n"
-            "| 3 | 4 | 55 | 67 |\n"
-            "|   |   |    |    |\n"
-            "+---+---+----+----+\n";
+            "+--+--+---+---+\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "| 3| 4| 55| 67|\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "+--+--+---+---+\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "| 3| 4| 55| 67|\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "+--+--+---+---+\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "| 3| 4| 55| 67|\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "+--+--+---+---+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
-
 
 
     WHEN("Top and bottom padding = 0") {

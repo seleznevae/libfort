@@ -167,23 +167,137 @@ void test_cpp_table_cell_properties(void)
     }
 
     WHEN("All paddings = 1") {
-        // NOT IMPLEMENTED !!!!!!!!!!!!!!
+        set_test_properties_as_default();
+
+        fort::table::default_props().set_cell_top_padding(2);
+        fort::table::default_props().set_cell_bottom_padding(3);
+        fort::table::default_props().set_cell_left_padding(1);
+        fort::table::default_props().set_cell_right_padding(0);
+
+        fort::table table = create_cpp_test_int_table(false);
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+--+--+---+---+\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "| 3| 4| 55| 67|\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "+--+--+---+---+\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "| 3| 4| 55| 67|\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "+--+--+---+---+\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "| 3| 4| 55| 67|\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "|  |  |   |   |\n"
+            "+--+--+---+---+\n";
+        assert_string_equal(table_str, table_str_etalon);
     }
 
     WHEN("Top and bottom padding = 0") {
-        // NOT IMPLEMENTED !!!!!!!!!!!!!!
+        fort::table::default_props().set_cell_top_padding(0);
+        fort::table::default_props().set_cell_bottom_padding(0);
+        fort::table::default_props().set_cell_left_padding(1);
+        fort::table::default_props().set_cell_right_padding(1);
+
+        fort::table table = create_cpp_test_int_table(false);
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+---+---+----+----+\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "+---+---+----+----+\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "+---+---+----+----+\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "+---+---+----+----+\n";
+        assert_string_equal(table_str, table_str_etalon);
     }
 
     WHEN("Left and right padding = 0") {
-        // NOT IMPLEMENTED !!!!!!!!!!!!!!
+        fort::table::default_props().set_cell_top_padding(1);
+        fort::table::default_props().set_cell_bottom_padding(1);
+        fort::table::default_props().set_cell_left_padding(0);
+        fort::table::default_props().set_cell_right_padding(0);
+
+        fort::table table = create_cpp_test_int_table(false);
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+-+-+--+--+\n"
+            "| | |  |  |\n"
+            "|3|4|55|67|\n"
+            "| | |  |  |\n"
+            "+-+-+--+--+\n"
+            "| | |  |  |\n"
+            "|3|4|55|67|\n"
+            "| | |  |  |\n"
+            "+-+-+--+--+\n"
+            "| | |  |  |\n"
+            "|3|4|55|67|\n"
+            "| | |  |  |\n"
+            "+-+-+--+--+\n";
+        assert_string_equal(table_str, table_str_etalon);
     }
 
     WHEN("All paddings = 0") {
-        // NOT IMPLEMENTED !!!!!!!!!!!!!!
+        fort::table::default_props().set_cell_top_padding(0);
+        fort::table::default_props().set_cell_bottom_padding(0);
+        fort::table::default_props().set_cell_left_padding(0);
+        fort::table::default_props().set_cell_right_padding(0);
+
+        fort::table table = create_cpp_test_int_table(false);
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+-+-+--+--+\n"
+            "|3|4|55|67|\n"
+            "+-+-+--+--+\n"
+            "|3|4|55|67|\n"
+            "+-+-+--+--+\n"
+            "|3|4|55|67|\n"
+            "+-+-+--+--+\n";
+        assert_string_equal(table_str, table_str_etalon);
     }
 
     WHEN("Empty string has 0 heigt") {
-        // NOT IMPLEMENTED !!!!!!!!!!!!!!
+        fort::table::default_props().set_cell_top_padding(1);
+        fort::table::default_props().set_cell_bottom_padding(1);
+        fort::table::default_props().set_cell_left_padding(1);
+        fort::table::default_props().set_cell_right_padding(1);
+        fort::table::default_props().set_cell_empty_str_height(0);
+
+        fort::table table = create_cpp_test_int_table(false);
+        table << "";
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n";
+        assert_string_equal(table_str, table_str_etalon);
     }
 
     WHEN("Setting properties for a particular table") {
@@ -261,7 +375,27 @@ void test_cpp_table_cell_properties(void)
 
     WHEN("Set table width and column alignment as default") {
         // NOT IMPLEMENTED !!!!!!!!!!!!!!
+        set_test_properties_as_default();
+        fort::table::default_props().set_cell_min_width(5);
+        fort::table::default_props().set_cell_text_align(fort::text_align::center);
 
+        fort::table table = create_cpp_test_int_table(false);
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+-----+-----+-----+-----+\n"
+            "|     |     |     |     |\n"
+            "|  3  |  4  | 55  | 67  |\n"
+            "|     |     |     |     |\n"
+            "+-----+-----+-----+-----+\n"
+            "|     |     |     |     |\n"
+            "|  3  |  4  | 55  | 67  |\n"
+            "|     |     |     |     |\n"
+            "+-----+-----+-----+-----+\n"
+            "|     |     |     |     |\n"
+            "|  3  |  4  | 55  | 67  |\n"
+            "|     |     |     |     |\n"
+            "+-----+-----+-----+-----+\n";
+        assert_string_equal(table_str, table_str_etalon);
     }
 
     WHEN("Multiline cell") {
