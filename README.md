@@ -92,7 +92,7 @@ int main(void)
 #include "fort.hpp"
 int main(void)
 {
-    fort::Table table;
+    fort::table table;
     table << fort::header
         << "N" << "Driver" << "Time" << "Avg Speed" << fort::endr
         << "1" << "Ricciardo" << "1:25.945" << "47.362" << fort::endr
@@ -149,7 +149,7 @@ int main(void)
 #include "fort.hpp"
 int main(void)
 {
-    fort::Table table;
+    fort::table table;
     /* Change border style */
     table.set_border_style(FT_DOUBLE2_STYLE);
 
@@ -160,8 +160,8 @@ int main(void)
         << "2001: A Space Odyssey" << "Stanley Kubrick" << "1968" << "8.5" << fort::endr;
 
     /* Set center alignment for the 1st and 3rd columns */
-    table.set_cell_text_align(FT_ANY_ROW, 1, fort::TextAlign::Center);
-    table.set_cell_text_align(FT_ANY_ROW, 3, fort::TextAlign::Center);
+    table.column(1).set_cell_text_align(fort::text_align::center);
+    table.column(3).set_cell_text_align(fort::text_align::center);
 
     std::cout << table.to_string() << std::endl;
 }
@@ -214,7 +214,7 @@ int main(void)
 #include "fort.hpp"
 int main(void)
 {
-    fort::Table table;
+    fort::table table;
     table << fort::header;
     /* Fill each cell with operator[] */
     table [0][0] = "N";
