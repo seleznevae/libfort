@@ -18,25 +18,6 @@
 #define FT_HAVE_WCHAR
 #endif
 
-/* Test cases */
-void test_vector_basic(void);
-void test_vector_stress(void);
-void test_string_buffer(void);
-void test_table_sizes(void);
-void test_table_geometry(void);
-void test_table_basic(void);
-void test_table_copy(void);
-#ifdef FT_HAVE_WCHAR
-void test_wcs_table_boundaries(void);
-#endif
-void test_table_write(void);
-void test_table_border_style(void);
-void test_table_builtin_border_styles(void);
-void test_table_cell_properties(void);
-void test_table_text_styles(void);
-void test_table_tbl_properties(void);
-void test_memory_errors(void);
-
 struct test_case {
     char name [128];
     void (*test)(void);
@@ -68,28 +49,17 @@ struct test_case {
         exit(EXIT_FAILURE); \
     }
 
-struct ft_table;
+#define assert_string_equal(str1, str2) assert_str_equal(str1.c_str(), str2.c_str())
+
+
 
 #ifdef __cplusplus
-#define assert_string_equal(str1, str2) assert_str_equal(str1.c_str(), str2.c_str())
-namespace fort
-{
-class table;
-}
-bool set_cpp_test_props_for_table(fort::table *table);
-fort::table create_cpp_test_int_table(int set_test_opts);
-
 extern "C" {
 #endif
-
-int set_test_props_for_table(struct ft_table *table);
-int set_test_properties_as_default(void);
-struct ft_table *create_test_int_table(int set_test_opts);
-struct ft_table *create_test_int_wtable(int set_test_opts);
 void run_test_suit(const char *test_suit_name, int n_tests, struct test_case test_suit[]);
-
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif // TESTS_H

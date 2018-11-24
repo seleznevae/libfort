@@ -1,4 +1,5 @@
 #include "tests.h"
+#include "test_utils.h"
 #include "fort.h"
 
 int set_test_props_for_table(struct ft_table *table)
@@ -132,19 +133,19 @@ struct ft_table *create_test_int_wtable(int set_test_opts)
 #endif
 
 
-void run_test_suit(const char *test_suit_name, int n_tests, struct test_case test_suit[])
-{
-    fprintf(stderr, " ==  RUNNING %s ==\n", test_suit_name);
-    fprintf(stderr, "[==========] Running %d test(s).\n", n_tests);
-    int i;
-    for (i = 0; i < n_tests; ++i) {
-        fprintf(stderr, "[ RUN      ] %s\n", test_suit[i].name);
-        test_suit[i].test();
-        fprintf(stderr, "[       OK ] %s\n", test_suit[i].name);
-    }
-    fprintf(stderr, "[==========] %d test(s) run.\n", n_tests);
-    fprintf(stderr, "[  PASSED  ] %d test(s).\n", n_tests);
-}
+//void run_test_suit(const char *test_suit_name, int n_tests, struct test_case test_suit[])
+//{
+//    fprintf(stderr, " ==  RUNNING %s ==\n", test_suit_name);
+//    fprintf(stderr, "[==========] Running %d test(s).\n", n_tests);
+//    int i;
+//    for (i = 0; i < n_tests; ++i) {
+//        fprintf(stderr, "[ RUN      ] %s\n", test_suit[i].name);
+//        test_suit[i].test();
+//        fprintf(stderr, "[       OK ] %s\n", test_suit[i].name);
+//    }
+//    fprintf(stderr, "[==========] %d test(s) run.\n", n_tests);
+//    fprintf(stderr, "[  PASSED  ] %d test(s).\n", n_tests);
+//}
 
 
 

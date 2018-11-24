@@ -1,4 +1,5 @@
 #include "tests.h"
+#include "test_utils.h"
 #include <wchar.h>
 #include "fort.h"
 

@@ -1,5 +1,6 @@
 #include "tests.h"
 #include "fort.hpp"
+#include "test_utils.hpp"
 
 
 void test_cpp_table_tbl_properties(void)

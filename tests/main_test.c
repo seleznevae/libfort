@@ -2,6 +2,26 @@
 #include <stdio.h>
 #include "fort.h"
 
+/* Test cases */
+void test_vector_basic(void);
+void test_vector_stress(void);
+void test_string_buffer(void);
+void test_table_sizes(void);
+void test_table_geometry(void);
+void test_table_basic(void);
+void test_table_copy(void);
+#ifdef FT_HAVE_WCHAR
+void test_wcs_table_boundaries(void);
+#endif
+void test_table_write(void);
+void test_table_border_style(void);
+void test_table_builtin_border_styles(void);
+void test_table_cell_properties(void);
+void test_table_text_styles(void);
+void test_table_tbl_properties(void);
+void test_memory_errors(void);
+
+
 #ifdef FORT_WB_TESTING_ENABLED
 struct test_case wb_test_suit [] = {
     {"test_vector_basic", test_vector_basic},

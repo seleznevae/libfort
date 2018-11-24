@@ -1,5 +1,6 @@
 #include "tests.h"
 #include "table.h"
+#include "test_utils.h"
 
 void test_table_sizes(void)
 {

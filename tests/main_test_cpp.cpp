@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "fort.h"
 
+/* Test cases */
 void test_cpp_table_basic(void);
 void test_cpp_table_write(void);
 void test_cpp_table_tbl_properties(void);

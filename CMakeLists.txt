@@ -79,7 +79,7 @@ endif("${FORT_COMPILER}" STREQUAL "MSVC")
 # Sources and executables
 # ------------------------------------------------------------------------------
 
-FILE(GLOB_RECURSE FortHeaders "lib/*.h" "lib/*.hpp" "tests/*.h" "src/*.h")
+FILE(GLOB_RECURSE FortHeaders "lib/*.h" "lib/*.hpp" "tests/*.h" "tests/*.hpp" "src/*.h")
 add_custom_target(headers SOURCES ${FortHeaders})
 
 
@@ -118,6 +118,7 @@ set(TEST_SOURCES_DEV
     tests/bb_tests/test_table_border_style.c
     tests/bb_tests/test_table_properties.c
     tests/bb_tests/test_memory_errors.c
+    tests/tests.c
     tests/test_utils.c)
 add_executable(${PROJECT_NAME}_test_dev
     ${FORT_DEV_SOURCES}
@@ -132,6 +133,7 @@ set(TEST_SOURCES
     tests/bb_tests/test_table_border_style.c
     tests/bb_tests/test_table_properties.c
     tests/bb_tests/test_memory_errors.c
+    tests/tests.c
     tests/test_utils.c)
 add_executable(${PROJECT_NAME}_test
     lib/fort.c
@@ -142,7 +144,7 @@ set(TEST_SOURCES_CPP
     tests/main_test_cpp.cpp
     tests/bb_tests_cpp/test_table_basic.cpp
     tests/bb_tests_cpp/test_table_properties.cpp
-    tests/test_utils.c
+    tests/tests.c
     tests/test_utils.cpp)
 add_executable(${PROJECT_NAME}_test_cpp
     lib/fort.c
@@ -188,7 +190,7 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
             target_link_libraries(${PROJECT_NAME}_example_cpp ubsan)
             target_link_libraries(${PROJECT_NAME}_test ubsan)
         endif("${FORT_COMPILER}" STREQUAL "GNU")
-    endif("${FORT_COMPILER}" STREQUAL "ubsan")
+    endif(FORT_BUILD_TYPE STREQUAL "ubsan")
 
     #coveralls case
     if(FORT_BUILD_TYPE STREQUAL "coveralls")
@@ -252,6 +254,7 @@ if(FORT_ENABLE_ASTYLE)
         ${CMAKE_SOURCE_DIR}/src/*.c
         ${CMAKE_SOURCE_DIR}/tests/*.c
         ${CMAKE_SOURCE_DIR}/tests/*.h
+        ${CMAKE_SOURCE_DIR}/tests/*.hpp
         ${CMAKE_SOURCE_DIR}/tests/bb_tests/*.c
         ${CMAKE_SOURCE_DIR}/tests/wb_tests/*.c
         ${CMAKE_SOURCE_DIR}/tests/bb_tests_cpp/*.cpp
