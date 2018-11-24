@@ -244,17 +244,10 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
     assert(buffer);
     assert(str);
 
-//    size_t sz = strlen(str);
     char *copy = F_STRDUP(str);
     if (copy == NULL)
         return FT_MEMORY_ERROR;
 
-//    while (sz >= string_buffer_capacity(buffer)) {
-//        int status = realloc_string_buffer_without_copy(buffer);
-//        if (!FT_IS_SUCCESS(status)) {
-//            return status;
-//        }
-//    }
     F_FREE(buffer->str.data);
     buffer->str.cstr = copy;
     buffer->type = CharBuf;
@@ -270,17 +263,10 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
     assert(buffer);
     assert(str);
 
-//    size_t sz = wcslen(str);
     wchar_t *copy = F_WCSDUP(str);
     if (copy == NULL)
         return FT_MEMORY_ERROR;
 
-//    while (sz >= string_buffer_capacity(buffer)) {
-//        int status = realloc_string_buffer_without_copy(buffer);
-//        if (!FT_IS_SUCCESS(status)) {
-//            return status;
-//        }
-//    }
     F_FREE(buffer->str.data);
     buffer->str.wstr = copy;
     buffer->type = WCharBuf;
@@ -354,7 +340,6 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
 #define SNPRINTF_FMT_STR "%*s"
 #define SNPRINTF snprintf
 #define BUFFER_STR str.cstr
-//#define SNPRINT_N_CHARS  snprint_n_chars
 #define SNPRINT_N_STRINGS  snprint_n_strings
 #define STR_N_SUBSTRING str_n_substring
 #define STR_ITER_WIDTH str_iter_width
@@ -429,7 +414,6 @@ clear:
 #undef SNPRINTF_FMT_STR
 #undef SNPRINTF
 #undef BUFFER_STR
-//#undef SNPRINT_N_CHARS
 #undef SNPRINT_N_STRINGS
 #undef STR_N_SUBSTRING
 #undef STR_ITER_WIDTH
@@ -448,7 +432,6 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 #define SNPRINTF_FMT_STR L"%*ls"
 #define SNPRINTF swprintf
 #define BUFFER_STR str.wstr
-//#define SNPRINT_N_CHARS  wsnprint_n_chars
 #define SNPRINT_N_STRINGS  wsnprint_n_string
 #define STR_N_SUBSTRING wstr_n_substring
 #define STR_ITER_WIDTH wcs_iter_width
@@ -523,7 +506,6 @@ clear:
 #undef SNPRINTF_FMT_STR
 #undef SNPRINTF
 #undef BUFFER_STR
-//#undef SNPRINT_N_CHARS
 #undef SNPRINT_N_STRINGS
 #undef STR_N_SUBSTRING
 #undef STR_ITER_WIDTH

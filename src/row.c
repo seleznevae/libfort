@@ -231,7 +231,6 @@ int print_row_separator(char *buffer, size_t buffer_sz,
                         enum HorSeparatorPos separatorPos,
                         const separator_t *sep, const context_t *context)
 {
-//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
     int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
 
     assert(buffer);
@@ -414,7 +413,6 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
                          enum HorSeparatorPos separatorPos, const separator_t *sep,
                          const context_t *context)
 {
-//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
     int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
 
     assert(buffer);

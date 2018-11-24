@@ -123,7 +123,6 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
 {
     const char *space_char = " ";
     int (*buffer_printf_)(string_buffer_t *, size_t, char *, size_t, const context_t *, const char *, const char *) = buffer_printf;
-//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
     int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
 
     if (cell == NULL || buf_len == 0
@@ -138,8 +137,6 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     int written = 0;
     int invisible_written = 0;
     int tmp = 0;
-//    int left = cell_padding_left;
-//    int right = cell_padding_right;
 
     /* todo: Dirty hack with changing buf_len! need refactoring. */
     /* Also maybe it is better to move all struff with colors to buffers? */
@@ -220,7 +217,6 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
 {
     const char *space_char = " ";
     int (*buffer_printf_)(string_buffer_t *, size_t, wchar_t *, size_t, const context_t *, const char *, const char *) = buffer_wprintf;
-//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
     int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
 
     if (cell == NULL || buf_len == 0

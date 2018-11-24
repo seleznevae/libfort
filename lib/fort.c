@@ -161,19 +161,29 @@ extern void *(*fort_malloc)(size_t size);
 extern void (*fort_free)(void *ptr);
 extern void *(*fort_calloc)(size_t nmemb, size_t size);
 extern void *(*fort_realloc)(void *ptr, size_t size);
+
+FT_INTERNAL
 void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
 
-
+FT_INTERNAL
 char *fort_strdup(const char *str);
+
+FT_INTERNAL
 size_t number_of_columns_in_format_string(const char *fmt);
+
 #if defined(FT_HAVE_WCHAR)
+FT_INTERNAL
 wchar_t *fort_wcsdup(const wchar_t *str);
+
+FT_INTERNAL
 size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
 #endif
-/*int snprint_n_chars(char *buf, size_t length, size_t n, char ch);*/
-/*int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);*/
+
+FT_INTERNAL
 int snprint_n_strings(char *buf, size_t length, size_t n, const char *str);
+
 #if defined(FT_HAVE_WCHAR)
+FT_INTERNAL
 int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
 #endif
 
@@ -921,7 +931,6 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
 {
     const char *space_char = " ";
     int (*buffer_printf_)(string_buffer_t *, size_t, char *, size_t, const context_t *, const char *, const char *) = buffer_printf;
-//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
     int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
 
     if (cell == NULL || buf_len == 0
@@ -936,8 +945,6 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     int written = 0;
     int invisible_written = 0;
     int tmp = 0;
-//    int left = cell_padding_left;
-//    int right = cell_padding_right;
 
     /* todo: Dirty hack with changing buf_len! need refactoring. */
     /* Also maybe it is better to move all struff with colors to buffers? */
@@ -1018,7 +1025,6 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
 {
     const char *space_char = " ";
     int (*buffer_printf_)(string_buffer_t *, size_t, wchar_t *, size_t, const context_t *, const char *, const char *) = buffer_wprintf;
-//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
     int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
 
     if (cell == NULL || buf_len == 0
@@ -2234,6 +2240,8 @@ static void *custom_fort_realloc(void *ptr, size_t size)
     return new_chunk;
 }
 
+
+FT_INTERNAL
 void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
 {
     assert((f_malloc == NULL && f_free == NULL) /* Use std functions */
@@ -2260,7 +2268,7 @@ void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
 
 }
 
-
+FT_INTERNAL
 char *fort_strdup(const char *str)
 {
     if (str == NULL)
@@ -2276,6 +2284,7 @@ char *fort_strdup(const char *str)
 }
 
 #if defined(FT_HAVE_WCHAR)
+FT_INTERNAL
 wchar_t *fort_wcsdup(const wchar_t *str)
 {
     if (str == NULL)
@@ -2292,6 +2301,7 @@ wchar_t *fort_wcsdup(const wchar_t *str)
 #endif
 
 
+FT_INTERNAL
 size_t number_of_columns_in_format_string(const char *fmt)
 {
     int separator_counter = 0;
@@ -2307,7 +2317,9 @@ size_t number_of_columns_in_format_string(const char *fmt)
     return separator_counter + 1;
 }
 
+
 #if defined(FT_HAVE_WCHAR)
+FT_INTERNAL
 size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 {
     int separator_counter = 0;
@@ -2325,31 +2337,7 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 #endif
 
 
-
-//int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
-//{
-//    if (length <= n)
-//        return -1;
-
-//    if (n == 0)
-//        return 0;
-
-//    /* To ensure valid return value it is safely not print such big strings */
-//    if (n > INT_MAX)
-//        return -1;
-
-//    int status = snprintf(buf, length, "%0*d", (int)n, 0);
-//    if (status < 0)
-//        return status;
-
-//    size_t i = 0;
-//    for (i = 0; i < n; ++i) {
-//        *buf = ch;
-//        buf++;
-//    }
-//    return (int)n;
-//}
-
+FT_INTERNAL
 int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);
@@ -2380,33 +2368,11 @@ int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
 }
 
 
-//int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
-//{
-//    if (length <= n)
-//        return -1;
-
-//    if (n == 0)
-//        return 0;
-
-//    /* To ensure valid return value it is safely not print such big strings */
-//    if (n > INT_MAX)
-//        return -1;
-
-//    int status = swprintf(buf, length, L"%0*d", (int)n, 0);
-//    if (status < 0)
-//        return status;
-
-//    size_t i = 0;
-//    for (i = 0; i < n; ++i) {
-//        *buf = ch;
-//        buf++;
-//    }
-//    return (int)n;
-//}
 
 #if defined(FT_HAVE_WCHAR)
 #define WCS_SIZE 64
 
+FT_INTERNAL
 int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);
@@ -3745,7 +3711,6 @@ int print_row_separator(char *buffer, size_t buffer_sz,
                         enum HorSeparatorPos separatorPos,
                         const separator_t *sep, const context_t *context)
 {
-//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
     int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
 
     assert(buffer);
@@ -3928,7 +3893,6 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
                          enum HorSeparatorPos separatorPos, const separator_t *sep,
                          const context_t *context)
 {
-//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
     int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
 
     assert(buffer);
@@ -4882,17 +4846,10 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
     assert(buffer);
     assert(str);
 
-//    size_t sz = strlen(str);
     char *copy = F_STRDUP(str);
     if (copy == NULL)
         return FT_MEMORY_ERROR;
 
-//    while (sz >= string_buffer_capacity(buffer)) {
-//        int status = realloc_string_buffer_without_copy(buffer);
-//        if (!FT_IS_SUCCESS(status)) {
-//            return status;
-//        }
-//    }
     F_FREE(buffer->str.data);
     buffer->str.cstr = copy;
     buffer->type = CharBuf;
@@ -4908,17 +4865,10 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
     assert(buffer);
     assert(str);
 
-//    size_t sz = wcslen(str);
     wchar_t *copy = F_WCSDUP(str);
     if (copy == NULL)
         return FT_MEMORY_ERROR;
 
-//    while (sz >= string_buffer_capacity(buffer)) {
-//        int status = realloc_string_buffer_without_copy(buffer);
-//        if (!FT_IS_SUCCESS(status)) {
-//            return status;
-//        }
-//    }
     F_FREE(buffer->str.data);
     buffer->str.wstr = copy;
     buffer->type = WCharBuf;
@@ -4992,7 +4942,6 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
 #define SNPRINTF_FMT_STR "%*s"
 #define SNPRINTF snprintf
 #define BUFFER_STR str.cstr
-//#define SNPRINT_N_CHARS  snprint_n_chars
 #define SNPRINT_N_STRINGS  snprint_n_strings
 #define STR_N_SUBSTRING str_n_substring
 #define STR_ITER_WIDTH str_iter_width
@@ -5067,7 +5016,6 @@ clear:
 #undef SNPRINTF_FMT_STR
 #undef SNPRINTF
 #undef BUFFER_STR
-//#undef SNPRINT_N_CHARS
 #undef SNPRINT_N_STRINGS
 #undef STR_N_SUBSTRING
 #undef STR_ITER_WIDTH
@@ -5086,7 +5034,6 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 #define SNPRINTF_FMT_STR L"%*ls"
 #define SNPRINTF swprintf
 #define BUFFER_STR str.wstr
-//#define SNPRINT_N_CHARS  wsnprint_n_chars
 #define SNPRINT_N_STRINGS  wsnprint_n_string
 #define STR_N_SUBSTRING wstr_n_substring
 #define STR_ITER_WIDTH wcs_iter_width
@@ -5161,7 +5108,6 @@ clear:
 #undef SNPRINTF_FMT_STR
 #undef SNPRINTF
 #undef BUFFER_STR
-//#undef SNPRINT_N_CHARS
 #undef SNPRINT_N_STRINGS
 #undef STR_N_SUBSTRING
 #undef STR_ITER_WIDTH

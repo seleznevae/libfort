@@ -72,6 +72,8 @@ static void *custom_fort_realloc(void *ptr, size_t size)
     return new_chunk;
 }
 
+
+FT_INTERNAL
 void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
 {
     assert((f_malloc == NULL && f_free == NULL) /* Use std functions */
@@ -98,7 +100,7 @@ void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
 
 }
 
-
+FT_INTERNAL
 char *fort_strdup(const char *str)
 {
     if (str == NULL)
@@ -114,6 +116,7 @@ char *fort_strdup(const char *str)
 }
 
 #if defined(FT_HAVE_WCHAR)
+FT_INTERNAL
 wchar_t *fort_wcsdup(const wchar_t *str)
 {
     if (str == NULL)
@@ -130,6 +133,7 @@ wchar_t *fort_wcsdup(const wchar_t *str)
 #endif
 
 
+FT_INTERNAL
 size_t number_of_columns_in_format_string(const char *fmt)
 {
     int separator_counter = 0;
@@ -145,7 +149,9 @@ size_t number_of_columns_in_format_string(const char *fmt)
     return separator_counter + 1;
 }
 
+
 #if defined(FT_HAVE_WCHAR)
+FT_INTERNAL
 size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 {
     int separator_counter = 0;
@@ -163,31 +169,7 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 #endif
 
 
-
-//int snprint_n_chars(char *buf, size_t length, size_t n, char ch)
-//{
-//    if (length <= n)
-//        return -1;
-
-//    if (n == 0)
-//        return 0;
-
-//    /* To ensure valid return value it is safely not print such big strings */
-//    if (n > INT_MAX)
-//        return -1;
-
-//    int status = snprintf(buf, length, "%0*d", (int)n, 0);
-//    if (status < 0)
-//        return status;
-
-//    size_t i = 0;
-//    for (i = 0; i < n; ++i) {
-//        *buf = ch;
-//        buf++;
-//    }
-//    return (int)n;
-//}
-
+FT_INTERNAL
 int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);
@@ -218,33 +200,11 @@ int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
 }
 
 
-//int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch)
-//{
-//    if (length <= n)
-//        return -1;
-
-//    if (n == 0)
-//        return 0;
-
-//    /* To ensure valid return value it is safely not print such big strings */
-//    if (n > INT_MAX)
-//        return -1;
-
-//    int status = swprintf(buf, length, L"%0*d", (int)n, 0);
-//    if (status < 0)
-//        return status;
-
-//    size_t i = 0;
-//    for (i = 0; i < n; ++i) {
-//        *buf = ch;
-//        buf++;
-//    }
-//    return (int)n;
-//}
 
 #if defined(FT_HAVE_WCHAR)
 #define WCS_SIZE 64
 
+FT_INTERNAL
 int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);

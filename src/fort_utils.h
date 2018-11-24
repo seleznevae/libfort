@@ -124,19 +124,29 @@ extern void *(*fort_malloc)(size_t size);
 extern void (*fort_free)(void *ptr);
 extern void *(*fort_calloc)(size_t nmemb, size_t size);
 extern void *(*fort_realloc)(void *ptr, size_t size);
+
+FT_INTERNAL
 void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
 
-
+FT_INTERNAL
 char *fort_strdup(const char *str);
+
+FT_INTERNAL
 size_t number_of_columns_in_format_string(const char *fmt);
+
 #if defined(FT_HAVE_WCHAR)
+FT_INTERNAL
 wchar_t *fort_wcsdup(const wchar_t *str);
+
+FT_INTERNAL
 size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
 #endif
-/*int snprint_n_chars(char *buf, size_t length, size_t n, char ch);*/
-/*int wsnprint_n_chars(wchar_t *buf, size_t length, size_t n, wchar_t ch);*/
+
+FT_INTERNAL
 int snprint_n_strings(char *buf, size_t length, size_t n, const char *str);
+
 #if defined(FT_HAVE_WCHAR)
+FT_INTERNAL
 int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
 #endif
 
