@@ -13,7 +13,7 @@ fort_status_t str_n_substring(const char *str, char ch_separator, size_t n, cons
 void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end);
 
 
-size_t buffer_text_width(string_buffer_t *buffer);
+//size_t buffer_text_width(string_buffer_t *buffer);
 
 
 void test_strchr_count(void);

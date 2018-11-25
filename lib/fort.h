@@ -542,9 +542,6 @@ int ft_table_write(ft_table_t *table, size_t rows, size_t cols, const char *tabl
 int ft_table_write_ln(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[]);
 
 
-
-
-
 /**
  * Add separator after the current row.
  *
@@ -555,8 +552,6 @@ int ft_table_write_ln(ft_table_t *table, size_t rows, size_t cols, const char *t
  *   - (<0): In case of error
  */
 int ft_add_separator(ft_table_t *table);
-
-
 
 
 /**
@@ -577,12 +572,6 @@ int ft_add_separator(ft_table_t *table);
  *   - NULL on error.
  */
 const char *ft_to_string(const ft_table_t *table);
-
-
-
-
-
-
 
 
 
@@ -696,37 +685,37 @@ int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
  * Colors.
  */
 enum ft_color {
-    FT_COLOR_DEFAULT        = 0,
-    FT_COLOR_BLACK          = 1,
-    FT_COLOR_RED            = 2,
-    FT_COLOR_GREEN          = 3,
-    FT_COLOR_YELLOW         = 4,
-    FT_COLOR_BLUE           = 5,
-    FT_COLOR_MAGENTA        = 6,
-    FT_COLOR_CYAN           = 7,
-    FT_COLOR_LIGHT_GRAY     = 8,
-    FT_COLOR_DARK_GRAY      = 9,
-    FT_COLOR_LIGHT_RED      = 10,
-    FT_COLOR_LIGHT_GREEN    = 11,
-    FT_COLOR_LIGHT_YELLOW   = 12,
-    FT_COLOR_LIGHT_BLUE     = 13,
-    FT_COLOR_LIGHT_MAGENTA  = 15,
-    FT_COLOR_LIGHT_CYAN     = 16,
-    FT_COLOR_LIGHT_WHYTE    = 17
+    FT_COLOR_DEFAULT        = 0,  /**< Default color */
+    FT_COLOR_BLACK          = 1,  /**< Black color*/
+    FT_COLOR_RED            = 2,  /**< Red color */
+    FT_COLOR_GREEN          = 3,  /**< Green color */
+    FT_COLOR_YELLOW         = 4,  /**< Yellow color */
+    FT_COLOR_BLUE           = 5,  /**< Blue color */
+    FT_COLOR_MAGENTA        = 6,  /**< Magenta color */
+    FT_COLOR_CYAN           = 7,  /**< Cyan color */
+    FT_COLOR_LIGHT_GRAY     = 8,  /**< Light gray color */
+    FT_COLOR_DARK_GRAY      = 9,  /**< Dark gray color */
+    FT_COLOR_LIGHT_RED      = 10, /**< Light red color */
+    FT_COLOR_LIGHT_GREEN    = 11, /**< Light green color */
+    FT_COLOR_LIGHT_YELLOW   = 12, /**< Light yellow color */
+    FT_COLOR_LIGHT_BLUE     = 13, /**< Light blue color */
+    FT_COLOR_LIGHT_MAGENTA  = 15, /**< Light magenta color */
+    FT_COLOR_LIGHT_CYAN     = 16, /**< Light cyan color */
+    FT_COLOR_LIGHT_WHYTE    = 17  /**< Light whyte color */
 };
 
 /**
  * Text styles.
  */
 enum ft_text_style {
-    FT_TSTYLE_DEFAULT    = (1U << 0),
-    FT_TSTYLE_BOLD       = (1U << 1),
-    FT_TSTYLE_DIM        = (1U << 2),
-    FT_TSTYLE_ITALIC     = (1U << 3),
-    FT_TSTYLE_UNDERLINED = (1U << 4),
-    FT_TSTYLE_BLINK      = (1U << 5),
-    FT_TSTYLE_INVERTED   = (1U << 6),
-    FT_TSTYLE_HIDDEN     = (1U << 7)
+    FT_TSTYLE_DEFAULT    = (1U << 0), /**< Default style */
+    FT_TSTYLE_BOLD       = (1U << 1), /**< Bold */
+    FT_TSTYLE_DIM        = (1U << 2), /**< Dim */
+    FT_TSTYLE_ITALIC     = (1U << 3), /**< Italic */
+    FT_TSTYLE_UNDERLINED = (1U << 4), /**< Underlined */
+    FT_TSTYLE_BLINK      = (1U << 5), /**< Blink */
+    FT_TSTYLE_INVERTED   = (1U << 6), /**< Reverse (invert the foreground and background colors) */
+    FT_TSTYLE_HIDDEN     = (1U << 7)  /**< Hidden (useful for passwords)  */
 };
 
 

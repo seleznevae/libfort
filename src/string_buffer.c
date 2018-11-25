@@ -290,7 +290,7 @@ size_t buffer_text_height(string_buffer_t *buffer)
 
 
 FT_INTERNAL
-size_t buffer_text_width(string_buffer_t *buffer)
+size_t buffer_text_width(const string_buffer_t *buffer)
 {
     size_t max_length = 0;
     if (buffer->type == CharBuf) {

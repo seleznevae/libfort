@@ -54,7 +54,7 @@ FT_INTERNAL
 void *buffer_get_data(string_buffer_t *buffer);
 
 FT_INTERNAL
-size_t buffer_text_width(string_buffer_t *buffer);
+size_t buffer_text_width(const string_buffer_t *buffer);
 
 FT_INTERNAL
 int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t total_buf_len,

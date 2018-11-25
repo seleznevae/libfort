@@ -3,6 +3,29 @@
 #include <wchar.h>
 #include "fort.h"
 
+#ifdef FT_HAVE_WCHAR
+void test_bug_fixes(void)
+{
+    SCENARIO("Bug 1") {
+        ft_table_t *table = ft_create_table();
+
+        ft_table_t *table_tmp_1 = ft_create_table();
+
+//        ft_set_border_style(table_tmp_1, FT_EMPTY_STYLE);
+        ft_set_cell_prop(table_tmp_1, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        ft_wwrite_ln(table_tmp_1, L"Rank", L"Title", L"Year", L"Rating");
+        ft_wwrite_ln(table_tmp_1, L"1", L"The Shawshank Redemption", L"3");
+
+        const wchar_t *str = ft_to_wstring(table_tmp_1);
+        (void)str;
+        ft_wprintf_ln(table, str);
+
+        ft_destroy_table(table_tmp_1);
+        ft_destroy_table(table);
+    }
+}
+#endif
+
 void test_table_basic(void)
 {
     ft_table_t *table = NULL;

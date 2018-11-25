@@ -22,6 +22,29 @@ static ft_table_t *create_basic_table(void)
     return table;
 }
 
+#if defined(FT_HAVE_WCHAR)
+static ft_table_t *create_basic_wtable(const struct ft_border_style *style)
+{
+    ft_table_t *table = ft_create_table();
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
+
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+    ft_wwrite_ln(table, L"Rank", L"Title", L"Year", L"Rating");
+
+    ft_wwrite_ln(table, L"1", L"The Shawshank Redemption", L"1994", L"9.5");
+    ft_wwrite_ln(table, L"2", L"12 Angry Men", L"1957", L"8.8");
+    ft_wwrite_ln(table, L"3", L"It's a Wonderful Life", L"1946", L"8.6");
+    ft_add_separator(table);
+    ft_wwrite_ln(table, L"4", L"2001: A Space Odyssey", L"1968", L"8.5");
+    ft_wwrite_ln(table, L"5", L"Blade Runner", L"1982", L"8.1");
+
+    ft_set_border_style(table, style);
+
+    return table;
+}
+#endif
+
 void print_char_str(const char *str)
 {
     printf("Char_repr:\n");
@@ -206,6 +229,67 @@ void colorfull_table(void)
         fwprintf(stderr, L"Table conversion failed !!!\n ");
     }
 
+    ft_destroy_table(table);
+#endif
+}
+
+
+void print_different_border_styles()
+{
+#if defined(FT_HAVE_WCHAR)
+
+    ft_table_t *table = ft_create_table();
+    ft_set_border_style(table, FT_EMPTY_STYLE);
+
+    ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_TOP_PADDING, 3);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_LEFT_PADDING, 10);
+
+    struct ft_border_style *styles[] = {
+        FT_BASIC_STYLE,
+        FT_BASIC2_STYLE,
+        FT_SIMPLE_STYLE,
+        FT_PLAIN_STYLE,
+        FT_DOT_STYLE,
+        FT_EMPTY_STYLE,
+        FT_SOLID_STYLE,
+        FT_SOLID_ROUND_STYLE,
+        FT_NICE_STYLE,
+        FT_DOUBLE_STYLE,
+        FT_DOUBLE2_STYLE,
+        FT_BOLD_STYLE,
+        FT_BOLD2_STYLE,
+        FT_FRAME_STYLE
+
+    };
+
+    const wchar_t *style_names[] = {
+        L"FT_BASIC_STYLE",
+        L"FT_BASIC2_STYLE",
+        L"FT_SIMPLE_STYLE",
+        L"FT_PLAIN_STYLE",
+        L"FT_DOT_STYLE",
+        L"FT_EMPTY_STYLE",
+        L"FT_SOLID_STYLE",
+        L"FT_SOLID_ROUND_STYLE",
+        L"FT_NICE_STYLE",
+        L"FT_DOUBLE_STYLE",
+        L"FT_DOUBLE2_STYLE",
+        L"FT_BOLD_STYLE",
+        L"FT_BOLD2_STYLE",
+        L"FT_FRAME_STYLE"
+    };
+
+    for (size_t i = 0; i < sizeof(styles)/sizeof(styles[0]); i += 2) {
+        ft_table_t *table_tmp_1 = create_basic_wtable(styles[i]);
+        ft_table_t *table_tmp_2 = create_basic_wtable(styles[i + 1]);
+
+        ft_wprintf(table,    L"                 %ls    \n\n%ls", style_names[i], ft_to_wstring(table_tmp_1));
+        ft_wprintf_ln(table, L"                 %ls    \n\n%ls", style_names[i + 1], ft_to_wstring(table_tmp_2));
+
+        ft_destroy_table(table_tmp_1);
+        ft_destroy_table(table_tmp_2);
+    }
+    fwprintf(stderr, L"Table:\n%ls\n ", ft_to_wstring(table));
     ft_destroy_table(table);
 #endif
 }
@@ -400,6 +484,9 @@ int main(void)
     }
 
     ft_destroy_table(table);
+
+
+    print_different_border_styles();
 #endif
 
     return result;
