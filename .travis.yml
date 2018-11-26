@@ -9,6 +9,7 @@ matrix:
         - pip install --user cpp-coveralls
       after_success:
         - coveralls --build-root build --include src --include tests  --gcov-options '\-lp'
+
     - name: "Basic linux clang"
       os: linux
       sudo: required # to prevent fail of executables build with clang and sanitizers
@@ -75,6 +76,13 @@ matrix:
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-8', 'cppcheck', 'doxygen']
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        local_dir: $TRAVIS_BUILD_DIR/docs/html
+        github_token: $GITHUB_API_KEY
+        on:
+        branch: deploy-doxy
 
     # OSX / Clang
     - name: "OSX xcode7.3"
@@ -219,13 +227,7 @@ script:
 
 
 
-deploy:
-  provider: pages
-  skip_cleanup: true
-  local_dir: $TRAVIS_BUILD_DIR/docs/html
-  github_token: $GITHUB_API_KEY
-  on:
-    branch: deploy-doxy
+
 
 
 
