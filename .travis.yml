@@ -67,7 +67,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-8', 'cppcheck']
+          packages: ['g++-8', 'cppcheck', 'doxygen']
 
     # OSX / Clang
     - os: osx
@@ -108,6 +108,14 @@ script:
       cppcheck --std=c89 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
       cppcheck --std=c99 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
       cppcheck --std=c++11 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
+    fi
+
+  # doxygen run
+  - |
+    if [ "${FORT_C_COMPILER}" = "gcc-8" ]; then
+      cd docs  
+      make doxygen
+      cd ..
     fi
 
   # Print all environment variables to aid in CI development
@@ -185,12 +193,6 @@ script:
       cmake .. ;
       scan-build make ;
     fi
-
-  # Build docs
-  - cd ..
-  - cd docs
-  - make doxygen
-
 
   # Build for coveralls (should be the last)
   - |
