@@ -128,7 +128,7 @@ script:
       cppcheck --std=c++11 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
     fi
 
-  # doxygen run
+  # doxygen run 
   - |
     if [ "${FORT_C_COMPILER}" = "gcc-8" ]; then
       cd docs  
