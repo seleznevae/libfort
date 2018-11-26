@@ -199,6 +199,11 @@ script:
     fi
   - cd ..
 
+  # Build docs
+  cd docs
+  make doxygen
+
+
 
 
 
