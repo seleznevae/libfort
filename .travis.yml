@@ -186,6 +186,12 @@ script:
       scan-build make ;
     fi
 
+  # Build docs
+  - cd ..
+  - cd docs
+  - make doxygen
+
+
   # Build for coveralls (should be the last)
   - |
     if [ "${CC}" = 'gcc' ]; then
@@ -199,9 +205,6 @@ script:
     fi
   - cd ..
 
-  # Build docs
-  cd docs
-  make doxygen
 
 
 
