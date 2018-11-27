@@ -7,6 +7,19 @@ matrix:
       compiler: gcc
       before_script:
         - pip install --user cpp-coveralls
+      env: 
+        - BASIC_LINUX_GCC=yes
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['cppcheck', 'doxygen', 'graphviz', 'python-sphinx']
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        local_dir: $TRAVIS_BUILD_DIR/docs/html
+        github_token: $GITHUB_API_KEY
+        on:
+          branch: deploy-doxy
       after_success:
         - coveralls --build-root build --include src --include tests  --gcov-options '\-lp'
 
@@ -130,7 +143,7 @@ script:
 
   # doxygen run 
   - |
-    if [ "${FORT_C_COMPILER}" = "gcc-8" ]; then
+    if [ "${BASIC_LINUX_GCC}" = "yes" ]; then
       cd docs  
       make doxygen html
       cd ..
