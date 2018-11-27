@@ -88,7 +88,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-8', 'cppcheck', 'doxygen', 'graphviz', 'python-sphinx']
+          packages: ['g++-8']
       deploy:
         provider: pages
         skip_cleanup: true
@@ -134,7 +134,7 @@ script:
 
   # cppcheck run
   - |
-    if [ "${FORT_C_COMPILER}" = "gcc-8" ]; then
+    if [ "${BASIC_LINUX_GCC}" = "yes" ]; then
       cppcheck --std=posix --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
       cppcheck --std=c89 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
       cppcheck --std=c99 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
