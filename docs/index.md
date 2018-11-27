@@ -57,6 +57,7 @@ These pages contain the API documentation of **libfort** - simple library to cre
 |  5   | Blade Runner             | 1982 | 8.1    |             5     Blade Runner               1982   8.1     
 +------+--------------------------+------+--------+          
 ```
+
 ```text
              FT_PLAIN_STYLE                                                    FT_DOT_STYLE
 
@@ -74,6 +75,6 @@ These pages contain the API documentation of **libfort** - simple library to cre
 
 
         
-
+@copyright Copyright &copy; 2017 - 2018 Seleznev Anton. The code is licensed under the [MIT License](http://opensource.org/licenses/MIT).
 @author Seleznev Anton
 @see https://github.com/seleznevae/libfort to download the source code

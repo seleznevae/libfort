@@ -75,7 +75,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-8', 'cppcheck', 'doxygen']
+          packages: ['g++-8', 'cppcheck', 'doxygen', 'graphviz']
       deploy:
         provider: pages
         skip_cleanup: true
@@ -132,7 +132,7 @@ script:
   - |
     if [ "${FORT_C_COMPILER}" = "gcc-8" ]; then
       cd docs  
-      make doxygen
+      make doxygen html
       cd ..
     fi
 
