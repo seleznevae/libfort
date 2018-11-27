@@ -89,13 +89,7 @@ matrix:
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-8']
-      deploy:
-        provider: pages
-        skip_cleanup: true
-        local_dir: $TRAVIS_BUILD_DIR/docs/html
-        github_token: $GITHUB_API_KEY
-        on:
-          branch: deploy-doxy
+
 
     # OSX / Clang
     - name: "OSX xcode7.3"
