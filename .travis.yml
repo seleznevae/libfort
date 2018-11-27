@@ -19,7 +19,7 @@ matrix:
         local_dir: $TRAVIS_BUILD_DIR/docs/html
         github_token: $GITHUB_API_KEY
         on:
-          branch: deploy-doxy
+          branch: master
       after_success:
         - coveralls --build-root build --include src --include tests  --gcov-options '\-lp'
 
