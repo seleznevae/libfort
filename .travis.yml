@@ -75,7 +75,7 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-8', 'cppcheck', 'doxygen', 'graphviz']
+          packages: ['g++-8', 'cppcheck', 'doxygen', 'graphviz', 'python-sphinx']
       deploy:
         provider: pages
         skip_cleanup: true
