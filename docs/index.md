@@ -42,7 +42,31 @@ These pages contain the API documentation of **libfort** - simple library to cre
 
 
 ~~~~~~~~~~~~~~~~~~~~~
-code block
+          FT_BASIC_STYLE                                                    FT_SIMPLE_STYLE
+
++------+--------------------------+------+--------+                                                             
+| Rank | Title                    | Year | Rating |            Rank   Title                      Year   Rating  
++------+--------------------------+------+--------+           ------ -------------------------- ------ -------- 
+|  1   | The Shawshank Redemption | 1994 | 9.5    |             1     The Shawshank Redemption   1994   9.5     
+|  2   | 12 Angry Men             | 1957 | 8.8    |             2     12 Angry Men               1957   8.8     
+|  3   | It's a Wonderful Life    | 1946 | 8.6    |             3     It's a Wonderful Life      1946   8.6     
++------+--------------------------+------+--------+           ------ -------------------------- ------ -------- 
+|  4   | 2001: A Space Odyssey    | 1968 | 8.5    |             4     2001: A Space Odyssey      1968   8.5     
+|  5   | Blade Runner             | 1982 | 8.1    |             5     Blade Runner               1982   8.1     
++------+--------------------------+------+--------+          
+
+             FT_PLAIN_STYLE                                                    FT_DOT_STYLE
+
+ -------------------------------------------------              
+  Rank   Title                      Year   Rating               
+ -------------------------------------------------              
+   1     The Shawshank Redemption   1994   9.5                  
+   2     12 Angry Men               1957   8.8                  
+   3     It's a Wonderful Life      1946   8.6                  
+ -------------------------------------------------              
+   4     2001: A Space Odyssey      1968   8.5                  
+   5     Blade Runner               1982   8.1                
+
 ~~~~~~~~~~~~~~~~~~~~~
 
 
