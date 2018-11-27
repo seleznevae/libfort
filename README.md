@@ -4,24 +4,11 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/ll1qygb56pho95xw/branch/master?svg=true)](https://ci.appveyor.com/project/seleznevae/libfort/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/seleznevae/libfort/badge.svg?branch=master)](https://coveralls.io/github/seleznevae/libfort?branch=master)
 [![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/F7d2Bqg1moSnRIDt)
+[![Documentation](https://img.shields.io/badge/docs-doxygen-blue.svg)](http://seleznevae.github.io/libfort)
 [![Doc](https://img.shields.io/badge/doc-wiki-blue.svg)](https://github.com/seleznevae/libfort/wiki)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **libfort** is a simple crossplatform library to create formatted text tables.
-
-<!---
-╔════════╤═══════════╤══════════════════════════════════════════════════════════════╗
-║ Sed    │ Aenean    │                             Text                             ║
-╠════════╪═══════════╪══════════════════════════════════════════════════════════════╣
-║ Duis   │ Aliquam   │ Lorem ipsum dolor sit amet, consectetur adipiscing elit.     ║
-║        │           │ In accumsan felis eros, nec malesuada sapien bibendum eget.  ║
-╟────────┼───────────┼──────────────────────────────────────────────────────────────╢
-║ Mauris │ Curabitur │ Proin condimentum eros viverra nunc ultricies, at fringilla  ║
-║        │           │ quam pellentesque.                                           ║
-╟────────┴───────────┼──────────────────────────────────────────────────────────────╢
-║      Summary       │ Sed tempor est eget odio varius dignissim.                   ║
-╚════════════════════╧══════════════════════════════════════════════════════════════╝
--->
 
 ![TableSample](https://github.com/seleznevae/libfort/blob/master/docs/images/color_table.png)
 
@@ -48,8 +35,9 @@ For C++ projects that use compiler with C++11 support (and later) there are also
 ```CPP
 #include "fort.hpp"
 ```
+
 ## Documentation
-See [wiki](https://github.com/seleznevae/libfort/wiki) of the project.
+See guide on [wiki](https://github.com/seleznevae/libfort/wiki) of the project and doxygen [API documentation](http://seleznevae.github.io/libfort).
 
 ## Getting Started
 
