@@ -183,11 +183,33 @@ static ft_table_t *create_basic_table(void)
     return table;
 }
 
+static ft_table_t *create_basic_wtable(void)
+{
+    ft_table_t *table = ft_create_table();
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
+
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+    ft_wwrite_ln(table, L"Rank", L"Title", L"Year", L"Rating");
+
+    ft_wwrite_ln(table, L"1", L"The Shawshank Redemption", L"1994", L"9.5");
+    ft_wwrite_ln(table, L"2", L"12 Angry Men", L"1957", L"8.8");
+    ft_wwrite_ln(table, L"3", L"It's a Wonderful Life", L"1946", L"8.6");
+    ft_add_separator(table);
+    ft_wwrite_ln(table, L"4", L"2001: A Space Odyssey", L"1968", L"8.5");
+    ft_wwrite_ln(table, L"5", L"Blade Runner", L"1982", L"8.1");
+    return table;
+}
+
 void test_table_builtin_border_styles(void)
 {
     ft_table_t *table = NULL;
     const char *table_str = NULL;
     const char *table_str_etalon = NULL;
+#ifdef FT_HAVE_WCHAR
+    const wchar_t *table_wstr = NULL;
+    const wchar_t *table_wstr_etalon = NULL;
+#endif
 
 
     ft_set_default_border_style(FT_BASIC_STYLE);
@@ -403,6 +425,30 @@ void test_table_builtin_border_styles(void)
         "╚══════╧══════════════════════════╧══════╧════════╝\n";
     assert_str_equal(table_str, table_str_etalon);
     ft_destroy_table(table);
+
+#ifdef FT_HAVE_WCHAR
+    ft_set_default_border_style(FT_DOUBLE2_STYLE);
+    table = create_basic_wtable();
+    table_wstr = ft_to_wstring(table);
+    assert_true(table_wstr != NULL);
+
+    table_wstr_etalon =
+        L"╔══════╤══════════════════════════╤══════╤════════╗\n"
+        L"║ Rank │ Title                    │ Year │ Rating ║\n"
+        L"╠══════╪══════════════════════════╪══════╪════════╣\n"
+        L"║  1   │ The Shawshank Redemption │ 1994 │    9.5 ║\n"
+        L"╟──────┼──────────────────────────┼──────┼────────╢\n"
+        L"║  2   │ 12 Angry Men             │ 1957 │    8.8 ║\n"
+        L"╟──────┼──────────────────────────┼──────┼────────╢\n"
+        L"║  3   │ It's a Wonderful Life    │ 1946 │    8.6 ║\n"
+        L"╠══════╪══════════════════════════╪══════╪════════╣\n"
+        L"║  4   │ 2001: A Space Odyssey    │ 1968 │    8.5 ║\n"
+        L"╟──────┼──────────────────────────┼──────┼────────╢\n"
+        L"║  5   │ Blade Runner             │ 1982 │    8.1 ║\n"
+        L"╚══════╧══════════════════════════╧══════╧════════╝\n";
+    assert_wcs_equal(table_wstr, table_wstr_etalon);
+    ft_destroy_table(table);
+#endif
 
     /* *************************************************************** */
 
