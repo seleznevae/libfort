@@ -24,7 +24,7 @@ void test_free(void *ptr)
     }
 }
 
-static int create_simple_table_and_show(void)
+static int create_table_and_show(void)
 {
     ft_table_t *table = NULL;
     int result = 0;
@@ -51,6 +51,7 @@ static int create_simple_table_and_show(void)
         result = 5;
         goto exit;
     }
+    ft_add_separator(table);
     if (ft_write_ln(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
         result = 6;
         goto exit;
@@ -70,7 +71,7 @@ static int create_simple_table_and_show(void)
         "|   |   |     |          |\n"
         "| 3 | c | 234 | 3.140000 |\n"
         "|   |   |     |          |\n"
-        "+---+---+-----+----------+\n"
+        "+===+===+=====+==========+\n"
         "|   |   |     |          |\n"
         "| 3 | c | 234 | 3.140000 |\n"
         "|   |   |     |          |\n"
@@ -95,7 +96,7 @@ void test_memory_errors(void)
     int i;
     for (i = 0; i < ITER_MAX; ++i) {
         aloc_lim = i;
-        int result = create_simple_table_and_show();
+        int result = create_table_and_show();
         if (result == 0)
             break;
         if (aloc_num != 0) {
