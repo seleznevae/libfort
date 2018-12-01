@@ -869,3 +869,47 @@ void test_table_copy(void)
 
 
 
+void test_table_changing_cell(void)
+{
+    ft_table_t *table = NULL;
+
+    WHEN("All columns are equal and not empty") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+        assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+        assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+
+        assert_true(ft_cur_row(table) == 3);
+        assert_true(ft_cur_col(table) == 0);
+
+        ft_set_cur_cell(table, 1, 1);
+        assert_true(ft_cur_row(table) == 1);
+        assert_true(ft_cur_col(table) == 1);
+        assert_true(ft_write(table, "A") == FT_SUCCESS);
+        assert_true(ft_cur_row(table) == 1);
+        assert_true(ft_cur_col(table) == 2);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | A | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+}
