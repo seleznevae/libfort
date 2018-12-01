@@ -183,6 +183,7 @@ static ft_table_t *create_basic_table(void)
     return table;
 }
 
+#ifdef FT_HAVE_WCHAR
 static ft_table_t *create_basic_wtable(void)
 {
     ft_table_t *table = ft_create_table();
@@ -200,6 +201,7 @@ static ft_table_t *create_basic_wtable(void)
     ft_wwrite_ln(table, L"5", L"Blade Runner", L"1982", L"8.1");
     return table;
 }
+#endif
 
 void test_table_builtin_border_styles(void)
 {
