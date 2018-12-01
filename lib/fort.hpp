@@ -43,22 +43,26 @@ SOFTWARE.
 namespace fort
 {
 
-enum class cell_property {
-    pr1,
-    pr2
-};
-
+/**
+ * Alignment of cell content.
+ */
 enum class text_align {
     left   = FT_ALIGNED_LEFT,
     center = FT_ALIGNED_CENTER,
     right  = FT_ALIGNED_RIGHT
 };
 
+/**
+ * Type of table row. Determines appearance of row.
+ */
 enum class row_type {
     common = FT_ROW_COMMON,
     header = FT_ROW_HEADER
 };
 
+/**
+ * Colors.
+ */
 enum class color {
     default_color  = FT_COLOR_DEFAULT,
     black          = FT_COLOR_BLACK,
@@ -79,6 +83,9 @@ enum class color {
     light_whyte    = FT_COLOR_LIGHT_WHYTE
 };
 
+/**
+ * Text styles.
+ */
 enum class text_style {
     default_style = FT_TSTYLE_DEFAULT,
     bold          = FT_TSTYLE_BOLD,
@@ -90,6 +97,12 @@ enum class text_style {
     hidden        = FT_TSTYLE_HIDDEN
 };
 
+/**
+ * Table manipulator.
+ *
+ * Table manipulators can be used to change current cell and change appearance
+ * of cells.
+ */
 class table_manipulator {
 public:
     explicit table_manipulator(int i)
@@ -101,16 +114,32 @@ private:
     int value;
 };
 
+/**
+ * Table manipulator to set current row as a header.
+ */
 const table_manipulator header(0);
+
+/**
+ * Table manipulator to move current cell to the first cell of the next row.
+ */
 const table_manipulator endr(1);
+
+/**
+ * Table manipulator to add separator to the table.
+ */
 const table_manipulator separator(2);
 
-
+/**
+ * Property owner.
+ *
+ * property_owner is a base class for all objects (table, row, column, cell) for
+ * which user can specify properties.
+ */
 template <typename table>
-class property_setter {
+class property_owner {
 public:
 
-    property_setter(std::size_t row_idx, std::size_t coll_idx, table *tbl, bool def = false)
+    property_owner(std::size_t row_idx, std::size_t coll_idx, table *tbl, bool def = false)
         :ps_row_idx_(row_idx), ps_coll_idx_(coll_idx),
           ps_table_(tbl), set_default_properties_(def) {}
 
@@ -331,20 +360,27 @@ protected:
 };
 
 /**
- * Table - formatted table.
+ * Formatted table.
  *
  * Table class is a C++ wrapper around struct ft_table.
  */
-class table: public property_setter<table> {
+class table: public property_owner<table> {
 public:
+
+    /**
+     * Default constructor.
+     */
     table()
-        :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(ft_create_table())
+        :property_owner(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(ft_create_table())
     {
 
         if (table_ == NULL)
-            throw std::runtime_error("Runtime error");
+            throw std::runtime_error("Libfort runtime error");
     }
 
+    /**
+     * Destructor.
+     */
     ~table()
     {
         ft_destroy_table(table_);
@@ -354,12 +390,12 @@ public:
      * Copy contstructor.
      */
     table(const table& tbl)
-        :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(NULL)
+        :property_owner(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(NULL)
     {
         if (tbl.table_) {
             ft_table_t *table_copy = ft_copy_table(tbl.table_);
             if (table_copy == NULL)
-                throw std::runtime_error("Runtime error");
+                throw std::runtime_error("Libfort runtime error");
 
             stream_.str(std::string());
             if (tbl.stream_.tellp() >= 0) {
@@ -373,7 +409,7 @@ public:
      * Move contstructor.
      */
     table(table&& tbl)
-        :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(tbl.table_)
+        :property_owner(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(tbl.table_)
     {
         if (tbl.stream_.tellp() >= 0) {
             stream_ << tbl.stream_.str();
@@ -393,7 +429,7 @@ public:
         if (tbl.table_) {
             ft_table_t *table_copy = ft_copy_table(tbl.table_);
             if (table_copy == NULL)
-                throw std::runtime_error("Runtime error");
+                throw std::runtime_error("Libfort runtime error");
 
             stream_.str(std::string());
             if (tbl.stream_.tellp() >= 0) {
@@ -437,7 +473,7 @@ public:
     {
         const char *str = ft_to_string(table_);
         if (str == NULL)
-            throw std::runtime_error("Runtime error");
+            throw std::runtime_error("Libfort runtime error");
         return str;
     }
 
@@ -494,37 +530,112 @@ public:
         return *this;
     }
 
+    /**
+     * Write string to the the table.
+     *
+     * Write specified string to the current cell.
+     *
+     * @param str
+     *   String to write.
+     * @return
+     *   - 0: Success; data were written
+     *   - (<0): In case of error
+     */
     bool write(const char *str)
     {
         return FT_IS_SUCCESS(ft_write(table_, str));
     }
 
+    /**
+     * Write string to the the table and go to the next line.
+     *
+     * Write specified string to the current cell and move current position to
+     * the first cell of the next line(row).
+     *
+     * @param str
+     *   String to write.
+     * @return
+     *   - 0: Success; data were written
+     *   - (<0): In case of error
+     */
     bool write_ln(const char *str)
     {
         return FT_IS_SUCCESS(ft_write_ln(table_, str));
     }
 
+    /**
+     * Write string to the the table.
+     *
+     * Write specified string to the current cell.
+     *
+     * @param str
+     *   String to write.
+     * @return
+     *   - 0: Success; data were written
+     *   - (<0): In case of error
+     */
     bool write(const std::string &str)
     {
         return write(str.c_str());
     }
 
+    /**
+     * Write string to the the table and go to the next line.
+     *
+     * Write specified string to the current cell and move current position to
+     * the first cell of the next line(row).
+     *
+     * @param str
+     *   String to write.
+     * @return
+     *   - 0: Success; data were written
+     *   - (<0): In case of error
+     */
     bool write_ln(const std::string &str)
     {
         return write_ln(str.c_str());
     }
 
 #ifdef __cpp_variadic_templates
+    /**
+     * Write strings to the table.
+     *
+     * Write specified strings to the same number of consecutive cells in the
+     * current row.
+     *
+     * @param str
+     *   String to write.
+     * @param strings
+     *   Strings to write.
+     * @return
+     *   - 0: Success; data were written
+     *   - (<0): In case of error
+     */
     template <typename T, typename ...Ts>
-    bool write(const T &arg, const Ts &...args)
+    bool write(const T &str, const Ts &...strings)
     {
-        return write(arg) && write(args...);
+        return write(str) && write(strings...);
     }
 
+    /**
+     * Write strings to the table and go to the next line.
+     *
+     * Write specified strings to the same number of consecutive cells in the
+     * current row  and move current position to the first cell of the next
+     * line(row).
+     *
+     * @param str
+     *   String to write.
+     * @param strings
+     *   Strings to write.
+     * @return
+     *   - 0: Success; data were written
+     *   - (<0): In case of error
+     */
     template <typename T, typename ...Ts>
-    bool write_ln(const T &arg, const Ts &...args)
+    bool write_ln(const T &str, const Ts &...strings)
     {
-        return write(arg) && write_ln(args...);
+        return write(str) && write_ln(strings...);
     }
 #else /* __cpp_variadic_templates */
 
@@ -615,9 +726,19 @@ public:
 
 #endif /* __cpp_variadic_templates */
 
-
+    /**
+     * Write elements from range to the table.
+     *
+     * Write objects from range to consecutive cells in the current row.
+     *
+     * @param first, last
+     *   Range of elements.
+     * @return
+     *   - 0: Success; data were written
+     *   - (<0): In case of error
+     */
     template <typename InputIt>
-    bool row_write(InputIt first, InputIt last)
+    bool range_write(InputIt first, InputIt last)
     {
         while (first != last) {
             *this << *first;
@@ -626,8 +747,20 @@ public:
         return true;
     }
 
+    /**
+     * Write elements from range to the table and go to the next line.
+     *
+     * Write objects from range to consecutive cells in the current row and
+     * move current position to the first cell of the next line(row).
+     *
+     * @param first, last
+     *   Range of elements.
+     * @return
+     *   - 0: Success; data were written
+     *   - (<0): In case of error
+     */
     template <typename InputIt>
-    bool row_write_ln(InputIt first, InputIt last)
+    bool range_write_ln(InputIt first, InputIt last)
     {
         while (first != last) {
             *this << *first;
@@ -725,7 +858,7 @@ public:
 private:
     ft_table_t *table_;
     mutable std::stringstream stream_;
-    friend class property_setter<table>;
+    friend class property_owner<table>;
 
 
 public:
@@ -733,11 +866,11 @@ public:
     /* Iterators */
     /* todo: implement chains like table[0][0] = table [0][1] = "somethings" */
 
-    class table_cell_iterator: public property_setter<table>
+    class table_cell_iterator: public property_owner<table>
     {
     public:
         table_cell_iterator(std::size_t row_idx, std::size_t coll_idx, table &tbl)
-            :property_setter(row_idx, coll_idx, &tbl) {}
+            :property_owner(row_idx, coll_idx, &tbl) {}
 
         table_cell_iterator& operator=(const char *str)
         {
@@ -745,13 +878,18 @@ public:
             ps_table_->write(str);
             return *this;
         }
+
+        table_cell_iterator& operator=(const std::string &str)
+        {
+            return operator=(str.c_str());
+        }
     };
 
-    class table_row_iterator: public property_setter<table>
+    class table_row_iterator: public property_owner<table>
     {
     public:
         table_row_iterator(std::size_t row_idx, table &tbl)
-            :property_setter(row_idx, FT_ANY_COLUMN, &tbl) {}
+            :property_owner(row_idx, FT_ANY_COLUMN, &tbl) {}
 
         class table_cell_iterator
         operator[](std::size_t coll_idx)
@@ -760,18 +898,18 @@ public:
         }
     };
 
-    class table_column_iterator: public property_setter<table>
+    class table_column_iterator: public property_owner<table>
     {
     public:
         table_column_iterator(std::size_t col_idx, table &tbl)
-            :property_setter(FT_ANY_ROW, col_idx, &tbl) {}
+            :property_owner(FT_ANY_ROW, col_idx, &tbl) {}
     };
 
-    class default_properties: public property_setter<table>
+    class default_properties: public property_owner<table>
     {
     public:
         default_properties(table *tbl)
-            :property_setter(FT_ANY_ROW, FT_ANY_COLUMN, tbl, true) {}
+            :property_owner(FT_ANY_ROW, FT_ANY_COLUMN, tbl, true) {}
     };
 
     class table_row_iterator

@@ -172,7 +172,7 @@ void test_cpp_table_write(void)
 
         /* Replace old values */
         table[1][1] = "234";
-        assert_true(table.write("3.140000"));
+        table[1][2] = std::string("3.140000");
         assert_true(table.write_ln("3"));
 
         std::string table_str = table.to_string();
@@ -225,7 +225,7 @@ void test_cpp_table_write(void)
         assert_string_equal(table_str, table_str_etalon);
     }
 
-    SCENARIO("Test row_write functions") {
+    SCENARIO("Test range_write functions") {
         fort::table table;
         assert_true(set_cpp_test_props_for_table(&table));
 
@@ -233,15 +233,15 @@ void test_cpp_table_write(void)
         const char *row_0[4] = {"3", "c", "234", "3.140000"};
         const char *row_1[4] = {"c", "235", "3.150000", "5"};
         const char *row_2[4] = {"234", "3.140000", "3", "c"};
-        assert_true(table.row_write_ln(std::begin(row_0), std::end(row_0)));
-        assert_true(table.row_write(std::begin(row_1), std::end(row_1)));
+        assert_true(table.range_write_ln(std::begin(row_0), std::end(row_0)));
+        assert_true(table.range_write(std::begin(row_1), std::end(row_1)));
         table << fort::endr;
-        assert_true(table.row_write_ln(std::begin(row_2), std::end(row_2)));
+        assert_true(table.range_write_ln(std::begin(row_2), std::end(row_2)));
 
         /* Replace old values */
         table[1][1] = "234";
         const char *row_11[3] = {"3.140000", "3"};
-        assert_true(table.row_write_ln(std::begin(row_11), std::end(row_11)));
+        assert_true(table.range_write_ln(std::begin(row_11), std::end(row_11)));
 
 
         std::string table_str = table.to_string();

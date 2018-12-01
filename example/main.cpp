@@ -79,7 +79,7 @@ void fill_table_with_data_example(void)
 
     /* Fill row with data from the container */
     std::vector<std::string> arr = {"3", "Earth", "29.78", "288"};
-    table.row_write_ln(std::begin(arr), std::end(arr));
+    table.range_write_ln(std::begin(arr), std::end(arr));
 
     std::cout << table.to_string() << std::endl;
 }
