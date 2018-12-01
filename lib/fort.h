@@ -375,7 +375,7 @@ int ft_printf_ln_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBU
 
 
 /**
- * Write strings to the the table.
+ * Write strings to the table.
  *
  * Write specified strings to the same number of consecutive cells in the
  * current row.
@@ -392,7 +392,7 @@ int ft_printf_ln_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBU
     (0 ? FT_CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
 
 /**
- * Write strings to the the table and go to the next line.
+ * Write strings to the table and go to the next line.
  *
  * Write specified strings to the same number of consecutive cells in the
  * current row and move current position to the first cell of the next
@@ -410,7 +410,7 @@ int ft_printf_ln_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBU
     (0 ? FT_CHECK_IF_ARGS_ARE_STRINGS(__VA_ARGS__) : ft_nwrite_ln(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
 
 /**
- * Write specified number of strings to the the table.
+ * Write specified number of strings to the table.
  *
  * Write specified number of strings to the same number of consecutive cells in
  * the current row.
@@ -435,7 +435,7 @@ int ft_printf_ln_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBU
 int ft_nwrite(ft_table_t *table, size_t count, const char *cell_content, ...);
 
 /**
- * Write specified number of strings to the the table and go to the next line.
+ * Write specified number of strings to the table and go to the next line.
  *
  * Write specified number of strings to the same number of consecutive cells
  * in the current row and move current position to the first cell of the next
