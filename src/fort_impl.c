@@ -806,20 +806,20 @@ int ft_add_separator(ft_table_t *table)
 
 
 
-struct ft_border_style *FT_BASIC_STYLE = (struct ft_border_style *) &FORT_BASIC_STYLE;
-struct ft_border_style *FT_BASIC2_STYLE = (struct ft_border_style *) &FORT_BASIC2_STYLE;
-struct ft_border_style *FT_SIMPLE_STYLE = (struct ft_border_style *) &FORT_SIMPLE_STYLE;
-struct ft_border_style *FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_STYLE;
-struct ft_border_style *FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
-struct ft_border_style *FT_EMPTY_STYLE  = (struct ft_border_style *) &FORT_EMPTY_STYLE;
-struct ft_border_style *FT_SOLID_STYLE  = (struct ft_border_style *) &FORT_SOLID_STYLE;
-struct ft_border_style *FT_SOLID_ROUND_STYLE  = (struct ft_border_style *) &FORT_SOLID_ROUND_STYLE;
-struct ft_border_style *FT_NICE_STYLE  = (struct ft_border_style *) &FORT_NICE_STYLE;
-struct ft_border_style *FT_DOUBLE_STYLE  = (struct ft_border_style *) &FORT_DOUBLE_STYLE;
-struct ft_border_style *FT_DOUBLE2_STYLE  = (struct ft_border_style *) &FORT_DOUBLE2_STYLE;
-struct ft_border_style *FT_BOLD_STYLE  = (struct ft_border_style *) &FORT_BOLD_STYLE;
-struct ft_border_style *FT_BOLD2_STYLE  = (struct ft_border_style *) &FORT_BOLD2_STYLE;
-struct ft_border_style *FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME_STYLE;
+struct ft_border_style *const FT_BASIC_STYLE = (struct ft_border_style *) &FORT_BASIC_STYLE;
+struct ft_border_style *const FT_BASIC2_STYLE = (struct ft_border_style *) &FORT_BASIC2_STYLE;
+struct ft_border_style *const FT_SIMPLE_STYLE = (struct ft_border_style *) &FORT_SIMPLE_STYLE;
+struct ft_border_style *const FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_STYLE;
+struct ft_border_style *const FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
+struct ft_border_style *const FT_EMPTY_STYLE  = (struct ft_border_style *) &FORT_EMPTY_STYLE;
+struct ft_border_style *const FT_SOLID_STYLE  = (struct ft_border_style *) &FORT_SOLID_STYLE;
+struct ft_border_style *const FT_SOLID_ROUND_STYLE  = (struct ft_border_style *) &FORT_SOLID_ROUND_STYLE;
+struct ft_border_style *const FT_NICE_STYLE  = (struct ft_border_style *) &FORT_NICE_STYLE;
+struct ft_border_style *const FT_DOUBLE_STYLE  = (struct ft_border_style *) &FORT_DOUBLE_STYLE;
+struct ft_border_style *const FT_DOUBLE2_STYLE  = (struct ft_border_style *) &FORT_DOUBLE2_STYLE;
+struct ft_border_style *const FT_BOLD_STYLE  = (struct ft_border_style *) &FORT_BOLD_STYLE;
+struct ft_border_style *const FT_BOLD2_STYLE  = (struct ft_border_style *) &FORT_BOLD2_STYLE;
+struct ft_border_style *const FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME_STYLE;
 
 
 
