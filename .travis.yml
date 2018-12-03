@@ -126,9 +126,9 @@ script:
     export CXX=${FORT_CXX_COMPILER}; 
     fi
 
-  # basic build with old c standard
+  # basic build with old c standard (use gnu89 instead of c89 because some functions are not defines in c89)
   - cd lib 
-  - ${CC} -Wextra -Wall -Werror --std=c89 fort.c -c -o fort.o 
+  - ${CC} -Wall -Wextra -Werror --std=gnu89 -DFT_CONGIG_HAVE_WCHAR fort.c -c -o fort.o 
   - rm fort.o 
   - cd .. 
  

@@ -117,6 +117,7 @@ void get_style_tag_for_cell(const fort_table_properties_t *props,
                             size_t row, size_t col, char *style_tag, size_t sz)
 {
     (void)sz;
+    size_t i = 0;
 
     unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_BG_COLOR);
     unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
@@ -124,7 +125,7 @@ void get_style_tag_for_cell(const fort_table_properties_t *props,
     style_tag[0] = '\0';
 
     if (text_style < (1U << n_styles)) {
-        for (size_t i = 0; i < n_styles; ++i) {
+        for (i = 0; i < n_styles; ++i) {
             if (text_style & (1 << i)) {
                 strcat(style_tag, text_styles[i]);
             }
@@ -142,7 +143,7 @@ void get_style_tag_for_cell(const fort_table_properties_t *props,
     return;
 
 error:
-    // shouldn't be here
+    /* shouldn't be here */
     assert(0);
     style_tag[0] = '\0';
     return;
@@ -152,6 +153,7 @@ void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
                                   size_t row, size_t col, char *reset_style_tag, size_t sz)
 {
     (void)sz;
+    size_t i = 0;
 
     unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_BG_COLOR);
     unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
@@ -159,7 +161,7 @@ void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
     reset_style_tag[0] = '\0';
 
     if (text_style < (1U << n_styles)) {
-        for (size_t i = 0; i < n_styles; ++i) {
+        for (i = 0; i < n_styles; ++i) {
             if (text_style & (1 << i)) {
                 strcat(reset_style_tag, reset_text_styles[i]);
             }
@@ -177,7 +179,7 @@ void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
     return;
 
 error:
-    // shouldn't be here
+    /* shouldn't be here */
     assert(0);
     reset_style_tag[0] = '\0';
     return;
@@ -188,6 +190,7 @@ void get_style_tag_for_content(const fort_table_properties_t *props,
                                size_t row, size_t col, char *style_tag, size_t sz)
 {
     (void)sz;
+    size_t i = 0;
 
     unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
     unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
@@ -196,7 +199,7 @@ void get_style_tag_for_content(const fort_table_properties_t *props,
     style_tag[0] = '\0';
 
     if (text_style < (1U << n_styles)) {
-        for (size_t i = 0; i < n_styles; ++i) {
+        for (i = 0; i < n_styles; ++i) {
             if (text_style & (1 << i)) {
                 strcat(style_tag, text_styles[i]);
             }
@@ -220,7 +223,7 @@ void get_style_tag_for_content(const fort_table_properties_t *props,
     return;
 
 error:
-    // shouldn't be here
+    /* shouldn't be here */
     assert(0);
     style_tag[0] = '\0';
     return;
@@ -230,6 +233,7 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
                                      size_t row, size_t col, char *reset_style_tag, size_t sz)
 {
     (void)sz;
+    size_t i = 0;
 
     unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
     unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
@@ -238,7 +242,7 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
     reset_style_tag[0] = '\0';
 
     if (text_style < (1U << n_styles)) {
-        for (size_t i = 0; i < n_styles; ++i) {
+        for (i = 0; i < n_styles; ++i) {
             if (text_style & (1 << i)) {
                 strcat(reset_style_tag, reset_text_styles[i]);
             }
@@ -262,7 +266,7 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
     return;
 
 error:
-    // shouldn't be here
+    /* shouldn't be here */
     assert(0);
     reset_style_tag[0] = '\0';
     return;
@@ -989,8 +993,9 @@ fort_cell_prop_container_t *copy_cell_properties(fort_cell_prop_container_t *con
     if (result == NULL)
         return NULL;
 
+    size_t i = 0;
     size_t sz = vector_size(cont);
-    for (size_t i = 0; i < sz; ++i) {
+    for (i = 0; i < sz; ++i) {
         fort_cell_props_t *opt = (fort_cell_props_t *)vector_at(cont, i);
         if (FT_IS_ERROR(vector_push(result, opt))) {
             destroy_cell_prop_container(result);

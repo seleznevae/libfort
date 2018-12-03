@@ -2566,6 +2566,7 @@ void get_style_tag_for_cell(const fort_table_properties_t *props,
                             size_t row, size_t col, char *style_tag, size_t sz)
 {
     (void)sz;
+    size_t i = 0;
 
     unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_BG_COLOR);
     unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
@@ -2573,7 +2574,7 @@ void get_style_tag_for_cell(const fort_table_properties_t *props,
     style_tag[0] = '\0';
 
     if (text_style < (1U << n_styles)) {
-        for (size_t i = 0; i < n_styles; ++i) {
+        for (i = 0; i < n_styles; ++i) {
             if (text_style & (1 << i)) {
                 strcat(style_tag, text_styles[i]);
             }
@@ -2591,7 +2592,7 @@ void get_style_tag_for_cell(const fort_table_properties_t *props,
     return;
 
 error:
-    // shouldn't be here
+    /* shouldn't be here */
     assert(0);
     style_tag[0] = '\0';
     return;
@@ -2601,6 +2602,7 @@ void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
                                   size_t row, size_t col, char *reset_style_tag, size_t sz)
 {
     (void)sz;
+    size_t i = 0;
 
     unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_BG_COLOR);
     unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
@@ -2608,7 +2610,7 @@ void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
     reset_style_tag[0] = '\0';
 
     if (text_style < (1U << n_styles)) {
-        for (size_t i = 0; i < n_styles; ++i) {
+        for (i = 0; i < n_styles; ++i) {
             if (text_style & (1 << i)) {
                 strcat(reset_style_tag, reset_text_styles[i]);
             }
@@ -2626,7 +2628,7 @@ void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
     return;
 
 error:
-    // shouldn't be here
+    /* shouldn't be here */
     assert(0);
     reset_style_tag[0] = '\0';
     return;
@@ -2637,6 +2639,7 @@ void get_style_tag_for_content(const fort_table_properties_t *props,
                                size_t row, size_t col, char *style_tag, size_t sz)
 {
     (void)sz;
+    size_t i = 0;
 
     unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
     unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
@@ -2645,7 +2648,7 @@ void get_style_tag_for_content(const fort_table_properties_t *props,
     style_tag[0] = '\0';
 
     if (text_style < (1U << n_styles)) {
-        for (size_t i = 0; i < n_styles; ++i) {
+        for (i = 0; i < n_styles; ++i) {
             if (text_style & (1 << i)) {
                 strcat(style_tag, text_styles[i]);
             }
@@ -2669,7 +2672,7 @@ void get_style_tag_for_content(const fort_table_properties_t *props,
     return;
 
 error:
-    // shouldn't be here
+    /* shouldn't be here */
     assert(0);
     style_tag[0] = '\0';
     return;
@@ -2679,6 +2682,7 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
                                      size_t row, size_t col, char *reset_style_tag, size_t sz)
 {
     (void)sz;
+    size_t i = 0;
 
     unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
     unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
@@ -2687,7 +2691,7 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
     reset_style_tag[0] = '\0';
 
     if (text_style < (1U << n_styles)) {
-        for (size_t i = 0; i < n_styles; ++i) {
+        for (i = 0; i < n_styles; ++i) {
             if (text_style & (1 << i)) {
                 strcat(reset_style_tag, reset_text_styles[i]);
             }
@@ -2711,7 +2715,7 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
     return;
 
 error:
-    // shouldn't be here
+    /* shouldn't be here */
     assert(0);
     reset_style_tag[0] = '\0';
     return;
@@ -3438,8 +3442,9 @@ fort_cell_prop_container_t *copy_cell_properties(fort_cell_prop_container_t *con
     if (result == NULL)
         return NULL;
 
+    size_t i = 0;
     size_t sz = vector_size(cont);
-    for (size_t i = 0; i < sz; ++i) {
+    for (i = 0; i < sz; ++i) {
         fort_cell_props_t *opt = (fort_cell_props_t *)vector_at(cont, i);
         if (FT_IS_ERROR(vector_push(result, opt))) {
             destroy_cell_prop_container(result);
@@ -3518,9 +3523,10 @@ void destroy_row(fort_row_t *row)
     if (row == NULL)
         return;
 
+    size_t i = 0;
     if (row->cells) {
         size_t cells_n = vector_size(row->cells);
-        for (size_t i = 0; i < cells_n; ++i) {
+        for (i = 0; i < cells_n; ++i) {
             fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, i);
             destroy_cell(cell);
         }
@@ -3538,8 +3544,9 @@ fort_row_t *copy_row(fort_row_t *row)
     if (result == NULL)
         return NULL;
 
+    size_t i = 0;
     size_t cols_n = vector_size(row->cells);
-    for (size_t i = 0; i < cols_n; ++i) {
+    for (i = 0; i < cols_n; ++i) {
         fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, i);
         fort_cell_t *new_cell = copy_cell(cell);
         if (new_cell == NULL) {
@@ -3815,8 +3822,10 @@ int print_row_separator(char *buffer, size_t buffer_sz,
                 IV = &(*border_chars)[II_bip];
                 R = &(*border_chars)[RH_bip];
 
-//                IT = &(*border_chars)[TV_bip];
-//                IB = &(*border_chars)[BV_bip];
+                /*
+                IT = &(*border_chars)[TV_bip];
+                IB = &(*border_chars)[BV_bip];
+                */
                 IT = &(*border_chars)[TI_bip];
                 IB = &(*border_chars)[BI_bip];
                 II = &(*border_chars)[IH_bip];
@@ -3838,11 +3847,14 @@ int print_row_separator(char *buffer, size_t buffer_sz,
 
     size_t i = 0;
 
-    /* If all chars are not printable, skip line separator */  /* todo: add processing for wchar_t */
-//    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
-//        status = 0;
-//        goto clear;
-//    }
+    /* If all chars are not printable, skip line separator */
+    /* todo: add processing for wchar_t */
+    /*
+    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
+        status = 0;
+        goto clear;
+    }
+    */
     if ((strlen(*L) == 0 || (strlen(*L) == 1 && !isprint(**L)))
         && (strlen(*I) == 0 || (strlen(*I) == 1 && !isprint(**I)))
         && (strlen(*IV) == 0 || (strlen(*IV) == 1 && !isprint(**IV)))
@@ -3997,8 +4009,10 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
                 IV = &(*border_chars)[II_bip];
                 R = &(*border_chars)[RH_bip];
 
-//                IT = &(*border_chars)[TV_bip];
-//                IB = &(*border_chars)[BV_bip];
+                /*
+                IT = &(*border_chars)[TV_bip];
+                IB = &(*border_chars)[BV_bip];
+                */
                 IT = &(*border_chars)[TI_bip];
                 IB = &(*border_chars)[BI_bip];
                 II = &(*border_chars)[IH_bip];
@@ -4020,11 +4034,14 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
 
     size_t i = 0;
 
-    /* If all chars are not printable, skip line separator */  /* todo: add processing for wchar_t */
-//    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
-//        status = 0;
-//        goto clear;
-//    }
+    /* If all chars are not printable, skip line separator */
+    /* todo: add processing for wchar_t */
+    /*
+    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
+        status = 0;
+        goto clear;
+    }
+    */
     if ((strlen(*L) == 0 || (strlen(*L) == 1 && !isprint(**L)))
         && (strlen(*I) == 0 || (strlen(*I) == 1 && !isprint(**I)))
         && (strlen(*IV) == 0 || (strlen(*IV) == 1 && !isprint(**IV)))

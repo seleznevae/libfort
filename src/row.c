@@ -37,9 +37,10 @@ void destroy_row(fort_row_t *row)
     if (row == NULL)
         return;
 
+    size_t i = 0;
     if (row->cells) {
         size_t cells_n = vector_size(row->cells);
-        for (size_t i = 0; i < cells_n; ++i) {
+        for (i = 0; i < cells_n; ++i) {
             fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, i);
             destroy_cell(cell);
         }
@@ -57,8 +58,9 @@ fort_row_t *copy_row(fort_row_t *row)
     if (result == NULL)
         return NULL;
 
+    size_t i = 0;
     size_t cols_n = vector_size(row->cells);
-    for (size_t i = 0; i < cols_n; ++i) {
+    for (i = 0; i < cols_n; ++i) {
         fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, i);
         fort_cell_t *new_cell = copy_cell(cell);
         if (new_cell == NULL) {
@@ -334,8 +336,10 @@ int print_row_separator(char *buffer, size_t buffer_sz,
                 IV = &(*border_chars)[II_bip];
                 R = &(*border_chars)[RH_bip];
 
-//                IT = &(*border_chars)[TV_bip];
-//                IB = &(*border_chars)[BV_bip];
+                /*
+                IT = &(*border_chars)[TV_bip];
+                IB = &(*border_chars)[BV_bip];
+                */
                 IT = &(*border_chars)[TI_bip];
                 IB = &(*border_chars)[BI_bip];
                 II = &(*border_chars)[IH_bip];
@@ -357,11 +361,14 @@ int print_row_separator(char *buffer, size_t buffer_sz,
 
     size_t i = 0;
 
-    /* If all chars are not printable, skip line separator */  /* todo: add processing for wchar_t */
-//    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
-//        status = 0;
-//        goto clear;
-//    }
+    /* If all chars are not printable, skip line separator */
+    /* todo: add processing for wchar_t */
+    /*
+    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
+        status = 0;
+        goto clear;
+    }
+    */
     if ((strlen(*L) == 0 || (strlen(*L) == 1 && !isprint(**L)))
         && (strlen(*I) == 0 || (strlen(*I) == 1 && !isprint(**I)))
         && (strlen(*IV) == 0 || (strlen(*IV) == 1 && !isprint(**IV)))
@@ -516,8 +523,10 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
                 IV = &(*border_chars)[II_bip];
                 R = &(*border_chars)[RH_bip];
 
-//                IT = &(*border_chars)[TV_bip];
-//                IB = &(*border_chars)[BV_bip];
+                /*
+                IT = &(*border_chars)[TV_bip];
+                IB = &(*border_chars)[BV_bip];
+                */
                 IT = &(*border_chars)[TI_bip];
                 IB = &(*border_chars)[BI_bip];
                 II = &(*border_chars)[IH_bip];
@@ -539,11 +548,14 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
 
     size_t i = 0;
 
-    /* If all chars are not printable, skip line separator */  /* todo: add processing for wchar_t */
-//    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
-//        status = 0;
-//        goto clear;
-//    }
+    /* If all chars are not printable, skip line separator */
+    /* todo: add processing for wchar_t */
+    /*
+    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
+        status = 0;
+        goto clear;
+    }
+    */
     if ((strlen(*L) == 0 || (strlen(*L) == 1 && !isprint(**L)))
         && (strlen(*I) == 0 || (strlen(*I) == 1 && !isprint(**I)))
         && (strlen(*IV) == 0 || (strlen(*IV) == 1 && !isprint(**IV)))
