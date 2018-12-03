@@ -101,8 +101,9 @@ ft_table_t *ft_copy_table(ft_table_t *table)
     if (result == NULL)
         return NULL;
 
+    size_t i = 0;
     size_t rows_n = vector_size(table->rows);
-    for (size_t i = 0; i < rows_n; ++i) {
+    for (i = 0; i < rows_n; ++i) {
         fort_row_t *row = *(fort_row_t **)vector_at(table->rows, i);
         fort_row_t *new_row = copy_row(row);
         if (new_row == NULL) {
@@ -113,7 +114,7 @@ ft_table_t *ft_copy_table(ft_table_t *table)
     }
 
     size_t sep_sz = vector_size(table->separators);
-    for (size_t i = 0; i < sep_sz; ++i) {
+    for (i = 0; i < sep_sz; ++i) {
         separator_t *sep = *(separator_t **)vector_at(table->separators, i);
         separator_t *new_sep = copy_separator(sep);
         if (new_sep == NULL) {
@@ -666,7 +667,6 @@ const char *ft_to_string(const ft_table_t *table)
 clear:
     F_FREE(col_width_arr);
     F_FREE(row_height_arr);
-//    F_FREE(buffer);
     return NULL;
 #undef EMPTY_STRING
 }
@@ -769,7 +769,6 @@ const wchar_t *ft_to_wstring(const ft_table_t *table)
 clear:
     F_FREE(col_width_arr);
     F_FREE(row_height_arr);
-//    F_FREE(buffer);
     return NULL;
 #undef EMPTY_STRING
 }
@@ -872,9 +871,11 @@ static void set_border_props_for_props(fort_table_properties_t *properties, cons
 
     BOR_CHARS[LI_bip] = BOR_CHARS[TI_bip] = BOR_CHARS[RI_bip] = BOR_CHARS[BI_bip] = border_chs->in_intersect_ch;
 
-//    if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
-//        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
-//    }
+    /*
+    if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
+        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
+    }
+    */
     if (strlen(border_chs->separator_ch) == 0 && strlen(border_chs->in_intersect_ch) == 0) {
         BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = "\0";
     }
@@ -892,9 +893,11 @@ static void set_border_props_for_props(fort_table_properties_t *properties, cons
 
     H_BOR_CHARS[LI_bip] = H_BOR_CHARS[TI_bip] = H_BOR_CHARS[RI_bip] = H_BOR_CHARS[BI_bip] = header_border_chs->in_intersect_ch;
 
-//    if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
-//        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
-//    }
+    /*
+    if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
+        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
+    }
+    */
     if (strlen(header_border_chs->separator_ch) == 0 && strlen(header_border_chs->in_intersect_ch) == 0) {
         BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = "\0";
     }
