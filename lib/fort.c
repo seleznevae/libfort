@@ -1741,7 +1741,6 @@ const char *ft_to_string(const ft_table_t *table)
                                 const fort_row_t *, const fort_row_t *,
                                 enum HorSeparatorPos, const separator_t *,
                                 const context_t *) = print_row_separator;
-//    int (*snprint_n_chars_)(char *, size_t, size_t, char) = snprint_n_chars;
     int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
     assert(table);
 
@@ -1843,7 +1842,6 @@ const wchar_t *ft_to_wstring(const ft_table_t *table)
                                 const fort_row_t *, const fort_row_t *,
                                 enum HorSeparatorPos, const separator_t *,
                                 const context_t *) = wprint_row_separator;
-//    int (*snprint_n_chars_)(wchar_t *, size_t, size_t, wchar_t) = wsnprint_n_chars;
     int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
 
 
