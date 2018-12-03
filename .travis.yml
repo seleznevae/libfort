@@ -127,13 +127,11 @@ script:
     fi
 
   # basic build with old c standard
-  - if [ "${BASIC_LINUX_GCC}" = "yes" ]; 
-    then
-    cd lib ;
-    gcc -Wextra -Wall -Werror --std=c89 fort.c -c -o fort.o ;
-    rm fort.o ;
-    cd .. ;
-    fi
+  - cd lib 
+  - ${CC} -Wextra -Wall -Werror --std=c89 fort.c -c -o fort.o 
+  - rm fort.o 
+  - cd .. 
+ 
 
   # cppcheck run
   - |
