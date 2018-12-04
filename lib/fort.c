@@ -3523,8 +3523,8 @@ void destroy_row(fort_row_t *row)
     if (row == NULL)
         return;
 
-    size_t i = 0;
     if (row->cells) {
+        size_t i = 0;
         size_t cells_n = vector_size(row->cells);
         for (i = 0; i < cells_n; ++i) {
             fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, i);
