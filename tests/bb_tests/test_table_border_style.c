@@ -208,7 +208,7 @@ void test_table_builtin_border_styles(void)
     ft_table_t *table = NULL;
     const char *table_str = NULL;
     const char *table_str_etalon = NULL;
-#ifdef FT_HAVE_WCHAR
+#if defined(FT_HAVE_WCHAR) && !defined(FT_MICROSOFT_COMPILER)
     const wchar_t *table_wstr = NULL;
     const wchar_t *table_wstr_etalon = NULL;
 #endif
