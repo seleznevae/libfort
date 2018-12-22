@@ -7,11 +7,13 @@ These pages contain the API documentation of **libfort** - simple library to cre
     - Table lifetime management
         - @link ft_create_table ft_create_table @endlink -- create table
         - @link ft_destroy_table ft_destroy_table @endlink -- destroy table
+
     - Table navigation
         - @link ft_set_cur_cell ft_set_cur_cell @endlink -- set current cell
         - @link ft_ln ft_ln @endlink -- move current position to the first cell of the next row
         - @link ft_cur_row ft_cur_row @endlink -- get current row
         - @link ft_cur_col ft_cur_col @endlink -- get current column
+
     - Fill table with content
         - @link ft_printf ft_printf @endlink -- fill cells according to the format string
         - @link ft_printf_ln ft_printf_ln @endlink -- fill cells according to the format string and move to the next line
@@ -24,6 +26,7 @@ These pages contain the API documentation of **libfort** - simple library to cre
         - @link ft_table_write ft_table_write @endlink -- fill cells with the strings from the 2D array
         - @link ft_table_write_ln ft_table_write_ln @endlink -- fill cells with the strings from the 2D array and move to the next line
         - @link ft_add_separator ft_add_separator @endlink -- add horizontal separator
+
     - Modify appearance of the table
         - @link ft_set_default_border_style ft_set_default_border_style @endlink -- set default border style for all new created tables
         - @link ft_set_border_style ft_set_border_style @endlink -- modify border style of the table
@@ -32,8 +35,10 @@ These pages contain the API documentation of **libfort** - simple library to cre
         - @link ft_set_default_tbl_option ft_set_default_tbl_option @endlink -- set default table option for all new created tables
         - @link ft_set_tbl_option ft_set_tbl_option @endlink -- set table option for the table
         - @link ft_set_cell_span ft_set_cell_span @endlink -- set cell span
+
     - Others
         - @link ft_set_memory_funcs ft_set_memory_funcs @endlink -- set memory allocation functions for the library
+
   - Data structures and types
     - @link ft_table_t ft_table_t @endlink -- table handler
     - @link ft_border_chars ft_border_chars @endlink -- structure describing border appearance
@@ -45,6 +50,13 @@ These pages contain the API documentation of **libfort** - simple library to cre
     - Table navigation
       - @link fort::table::set_cur_cell set_cur_cell @endlink -- set border style
 
+    - Fill table with content
+      - @link fort::table::operator<< operator<< @endlink -- write provided object to the table
+      - @link fort::table::write write @endlink -- write strings to the table
+      - @link fort::table::write_ln write_ln @endlink -- write strings to the table and move to the next line
+      - @link fort::table::range_write range_write @endlink -- write elements from range to the table
+      - @link fort::table::range_write_ln range_write_ln @endlink -- write elements from range to the table and go to the next line
+
     - String conversions
       - @link fort::table::to_string to_string @endlink -- convert table to string representation
       - @link fort::table::c_str c_str @endlink -- convert table to string representation
@@ -55,8 +67,26 @@ These pages contain the API documentation of **libfort** - simple library to cre
       - @link fort::table::set_top_margin set_top_margin @endlink -- set table top margin
       - @link fort::table::set_bottom_margin set_bottom_margin @endlink -- set table bottom margin
       - @link fort::table::set_right_margin set_right_margin @endlink -- set table right margin
+    - Others
+        - @link fort::table::cell cell @endlink -- get cell
+        - @link fort::table::row row @endlink -- get row
+        - @link fort::table::column column @endlink -- get column
 
-
+  - @link fort::property_owner fort::property_owner @endlink -- base class for all objects (table, row, column, cell) for which user can specify properties
+    - Modify appearance
+      - @link fort::table::set_cell_min_width set_cell_min_width @endlink -- set minimun width
+      - @link fort::table::set_cell_text_align set_cell_text_align @endlink -- set text alignment
+      - @link fort::table::set_cell_top_padding set_cell_top_padding @endlink -- set top padding
+      - @link fort::table::set_cell_bottom_padding set_cell_bottom_padding @endlink -- set bottom padding
+      - @link fort::table::set_cell_left_padding set_cell_left_padding @endlink -- set left padding
+      - @link fort::table::set_cell_right_padding set_cell_right_padding @endlink -- set right padding
+      - @link fort::table::set_cell_row_type set_cell_row_type @endlink -- set row type
+      - @link fort::table::set_cell_empty_str_height set_cell_empty_str_height @endlink -- set height for empty cell
+      - @link fort::table::set_cell_content_fg_color set_cell_content_fg_color @endlink -- set content foreground color
+      - @link fort::table::set_cell_cell_bg_color set_cell_cell_bg_color @endlink -- set cell background color
+      - @link fort::table::set_cell_content_bg_color set_cell_content_bg_color @endlink -- set content background color
+      - @link fort::table::set_cell_cell_text_style set_cell_cell_text_style @endlink -- set cell text style
+      - @link fort::table::set_cell_content_text_style set_cell_content_text_style @endlink -- set content text style
 
 List of libfort builtin border styles:
 

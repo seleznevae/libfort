@@ -88,6 +88,31 @@ void test_cpp_table_cell_properties(void)
         assert_string_equal(table_str, table_str_etalon);
     }
 
+    WHEN("Setting property for one cell(2)") {
+        set_test_properties_as_default();
+
+        fort::table table = create_cpp_test_int_table(false);
+        table.cell(1, 1).set_cell_top_padding(2);
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 |   | 55 | 67 |\n"
+            "|   | 4 |    |    |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+
     WHEN("Setting property for the row") {
         set_test_properties_as_default();
 

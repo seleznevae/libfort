@@ -482,7 +482,7 @@ public:
     }
 
     /**
-     * Write provided object to the the table.
+     * Write provided object to the table.
      *
      * To convert object to the string representation conversion for
      * std::ostream is used.
@@ -919,12 +919,45 @@ public:
         return table_row(row_idx, *this);
     }
 
+
+    /**
+     * Get cell.
+     *
+     * @param row_idx
+     *   Row index.
+     * @param col_idx
+     *   Column index.
+     * @return
+     *   table_cell object.
+     */
+    class table_cell
+    cell(std::size_t row_idx, std::size_t col_idx)
+    {
+        return (*this)[row_idx][col_idx];
+    }
+
+    /**
+     * Get row.
+     *
+     * @param row_idx
+     *   Row index.
+     * @return
+     *   table_row object.
+     */
     class table_row
     row(std::size_t row_idx)
     {
         return table_row(row_idx, *this);
     }
 
+    /**
+     * Get column.
+     *
+     * @param col_idx
+     *   Column index.
+     * @return
+     *   table_column object.
+     */
     class table_column
     column(std::size_t col_idx)
     {
