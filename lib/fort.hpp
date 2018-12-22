@@ -850,6 +850,9 @@ public:
     /* Iterators */
     /* todo: implement chains like table[0][0] = table [0][1] = "somethings" */
 
+    /**
+     * Table cell.
+     */
     class table_cell: public property_owner<table>
     {
     public:
@@ -886,6 +889,9 @@ public:
         }
     };
 
+    /**
+     * Table row.
+     */
     class table_row: public property_owner<table>
     {
     public:
@@ -899,6 +905,9 @@ public:
         }
     };
 
+    /**
+     * Table column.
+     */
     class table_column: public property_owner<table>
     {
     public:

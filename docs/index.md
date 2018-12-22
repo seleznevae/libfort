@@ -88,6 +88,18 @@ These pages contain the API documentation of **libfort** - simple library to cre
       - @link fort::table::set_cell_cell_text_style set_cell_cell_text_style @endlink -- set cell text style
       - @link fort::table::set_cell_content_text_style set_cell_content_text_style @endlink -- set content text style
 
+  - @link fort::table::table_cell fort::table::table_cell @endlink -- table cell
+  - @link fort::table::table_row fort::table::table_row @endlink -- table row
+  - @link fort::table::table_column fort::table::table_column @endlink -- table column
+
+  - @link fort::table_manipulator fort::table_manipulator @endlink -- table manipulator
+    - @link fort::header fort::header @endlink -- table manipulator to set current row as a header
+    - @link fort::endr fort::endr @endlink -- table manipulator to move current cell to the first cell of the next row
+    - @link fort::separator fort::separator @endlink -- table manipulator to add separator 
+
+  - Other functions
+    - @link fort::set_default_border_style fort::set_default_border_style @endlink -- set default border style for all new formatted tables
+
 List of libfort builtin border styles:
 
 ~~~~~~~~~~~~~~~~~~~~~
