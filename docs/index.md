@@ -100,6 +100,14 @@ These pages contain the API documentation of **libfort** - simple library to cre
   - Other functions
     - @link fort::set_default_border_style fort::set_default_border_style @endlink -- set default border style for all new formatted tables
 
+  - Other types
+    - @link fort::text_align fort::text_align @endlink -- alignment of cell content
+    - @link fort::row_type fort::row_type @endlink -- type of table row
+    - @link fort::color fort::color @endlink -- color
+    - @link fort::text_style fort::text_style @endlink -- text style
+    
+
+
 List of libfort builtin border styles:
 
 ~~~~~~~~~~~~~~~~~~~~~
