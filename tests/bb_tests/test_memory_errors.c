@@ -57,9 +57,14 @@ static int create_table_and_show(void)
         goto exit;
     }
 
+    if (ft_printf_ln(table, "%d|%c|%d|%f", 3, 'c', 234, 3.140000) != 4) {
+        result = 7;
+        goto exit;
+    }
+
     const char *table_str = ft_to_string(table);
     if (table_str == NULL) {
-        result = 7;
+        result = 8;
         goto exit;
     }
     const char *table_str_etalon =
@@ -75,10 +80,14 @@ static int create_table_and_show(void)
         "|   |   |     |          |\n"
         "| 3 | c | 234 | 3.140000 |\n"
         "|   |   |     |          |\n"
+        "+---+---+-----+----------+\n"
+        "|   |   |     |          |\n"
+        "| 3 | c | 234 | 3.140000 |\n"
+        "|   |   |     |          |\n"
         "+---+---+-----+----------+\n";
     /*assert_str_equal(table_str, table_str_etalon);*/
     if (strcmp(table_str, table_str_etalon) != 0) {
-        result = 8;
+        result = 9;
         goto exit;
     }
 

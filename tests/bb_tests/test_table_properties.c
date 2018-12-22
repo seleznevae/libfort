@@ -614,7 +614,7 @@ void test_table_cell_properties(void)
         ft_destroy_table(table);
     }
 
-    WHEN("Cells with spans and with much text in them") {
+    WHEN("Cells with spans and with a lot of text in them") {
         set_test_properties_as_default();
 
         table = ft_create_table();
