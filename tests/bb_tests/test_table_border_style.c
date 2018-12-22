@@ -130,6 +130,32 @@ void test_table_border_style(void)
         ft_destroy_table(table);
     }
 
+    WHEN("Separator at the top and at the bottom testing") {
+        table = create_test_int_table(1);
+        ft_add_separator(table);
+        ft_set_cur_cell(table, 0, 0);
+        ft_add_separator(table);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+===+===+====+====+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+===+===+====+====+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
     WHEN("Separator complex testing") {
         table = ft_create_table();
         ft_set_border_style(table, FT_DOUBLE2_STYLE);
