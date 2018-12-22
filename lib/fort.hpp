@@ -325,22 +325,6 @@ public:
         return set_property(FT_CPROP_CONT_TEXT_STYLE, static_cast<int>(value));
     }
 
-    /**
-     * Set column span for the specified cell of the table.
-     *
-     * @param hor_span
-     *   Column span.
-     * @return
-     *   - true: Success; cell span was changed.
-     *   - false: In case of error.
-     */
-    bool set_cell_span(size_t hor_span)
-    {
-        if (set_default_properties_)
-            return false;
-
-        return FT_IS_SUCCESS(ft_set_cell_span(ps_table_->table_, ps_row_idx_, ps_coll_idx_, hor_span));
-    }
 protected:
     std::size_t ps_row_idx_;
     std::size_t ps_coll_idx_;
@@ -866,42 +850,59 @@ public:
     /* Iterators */
     /* todo: implement chains like table[0][0] = table [0][1] = "somethings" */
 
-    class table_cell_iterator: public property_owner<table>
+    class table_cell: public property_owner<table>
     {
     public:
-        table_cell_iterator(std::size_t row_idx, std::size_t coll_idx, table &tbl)
+        table_cell(std::size_t row_idx, std::size_t coll_idx, table &tbl)
             :property_owner(row_idx, coll_idx, &tbl) {}
 
-        table_cell_iterator& operator=(const char *str)
+        table_cell& operator=(const char *str)
         {
             ft_set_cur_cell(ps_table_->table_, ps_row_idx_, ps_coll_idx_);
             ps_table_->write(str);
             return *this;
         }
 
-        table_cell_iterator& operator=(const std::string &str)
+        table_cell& operator=(const std::string &str)
         {
             return operator=(str.c_str());
         }
-    };
 
-    class table_row_iterator: public property_owner<table>
-    {
-    public:
-        table_row_iterator(std::size_t row_idx, table &tbl)
-            :property_owner(row_idx, FT_ANY_COLUMN, &tbl) {}
-
-        class table_cell_iterator
-        operator[](std::size_t coll_idx)
+        /**
+         * Set column span for the specified cell of the table.
+         *
+         * @param hor_span
+         *   Column span.
+         * @return
+         *   - true: Success; cell span was changed.
+         *   - false: In case of error.
+         */
+        bool set_cell_span(size_t hor_span)
         {
-            return table_cell_iterator(ps_row_idx_, coll_idx, *ps_table_);
+            if (set_default_properties_)
+                return false;
+
+            return FT_IS_SUCCESS(ft_set_cell_span(ps_table_->table_, ps_row_idx_, ps_coll_idx_, hor_span));
         }
     };
 
-    class table_column_iterator: public property_owner<table>
+    class table_row: public property_owner<table>
     {
     public:
-        table_column_iterator(std::size_t col_idx, table &tbl)
+        table_row(std::size_t row_idx, table &tbl)
+            :property_owner(row_idx, FT_ANY_COLUMN, &tbl) {}
+
+        class table_cell
+        operator[](std::size_t coll_idx)
+        {
+            return table_cell(ps_row_idx_, coll_idx, *ps_table_);
+        }
+    };
+
+    class table_column: public property_owner<table>
+    {
+    public:
+        table_column(std::size_t col_idx, table &tbl)
             :property_owner(FT_ANY_ROW, col_idx, &tbl) {}
     };
 
@@ -912,22 +913,22 @@ public:
             :property_owner(FT_ANY_ROW, FT_ANY_COLUMN, tbl, true) {}
     };
 
-    class table_row_iterator
+    class table_row
     operator[](std::size_t row_idx)
     {
-        return table_row_iterator(row_idx, *this);
+        return table_row(row_idx, *this);
     }
 
-    class table_row_iterator
+    class table_row
     row(std::size_t row_idx)
     {
-        return table_row_iterator(row_idx, *this);
+        return table_row(row_idx, *this);
     }
 
-    class table_column_iterator
+    class table_column
     column(std::size_t col_idx)
     {
-        return table_column_iterator(col_idx, *this);
+        return table_column(col_idx, *this);
     }
 
     static class default_properties

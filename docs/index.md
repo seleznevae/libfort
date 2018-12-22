@@ -40,6 +40,23 @@ These pages contain the API documentation of **libfort** - simple library to cre
     - @link ft_text_alignment ft_text_alignment @endlink -- alignment of cell content
     - @link ft_row_type ft_row_type @endlink -- alignment of cell content
 
+- @link fort.hpp `libfort C++ API` @endlink
+  - @link fort::table @endlink -- basic table class
+    - Table navigation
+      - @link fort::table::set_cur_cell set_cur_cell @endlink -- set border style
+
+    - String conversions
+      - @link fort::table::to_string to_string @endlink -- convert table to string representation
+      - @link fort::table::c_str c_str @endlink -- convert table to string representation
+
+    - Modify appearance of the table
+      - @link fort::table::set_border_style set_border_style @endlink -- set border style
+      - @link fort::table::set_left_margin set_left_margin @endlink -- set table left margin
+      - @link fort::table::set_top_margin set_top_margin @endlink -- set table top margin
+      - @link fort::table::set_bottom_margin set_bottom_margin @endlink -- set table bottom margin
+      - @link fort::table::set_right_margin set_right_margin @endlink -- set table right margin
+
+
 
 List of libfort builtin border styles:
 
