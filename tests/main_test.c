@@ -27,7 +27,7 @@ void test_memory_errors(void);
 
 
 #ifdef FORT_WB_TESTING_ENABLED
-struct test_case wb_test_suit [] = {
+struct test_case wb_test_suite [] = {
     {"test_vector_basic", test_vector_basic},
     {"test_vector_stress", test_vector_stress},
     {"test_string_buffer", test_string_buffer},
@@ -38,7 +38,7 @@ struct test_case wb_test_suit [] = {
 #endif
 
 
-struct test_case bb_test_suit [] = {
+struct test_case bb_test_suite [] = {
 #ifdef FT_HAVE_WCHAR
     {"test_bug_fixes", test_bug_fixes},
 #endif
@@ -57,19 +57,19 @@ struct test_case bb_test_suit [] = {
 };
 
 #ifdef FORT_WB_TESTING_ENABLED
-int run_wb_test_suit(void)
+int run_wb_test_suite(void)
 {
-    int wb_n_tests = sizeof(wb_test_suit) / sizeof(wb_test_suit[0]);
-    run_test_suit("WHITE BOX TEST SUITE", wb_n_tests, wb_test_suit);
+    int wb_n_tests = sizeof(wb_test_suite) / sizeof(wb_test_suite[0]);
+    run_test_suite("WHITE BOX TEST SUITE", wb_n_tests, wb_test_suite);
     return 0;
 }
 #endif
 
 
-int run_bb_test_suit(void)
+int run_bb_test_suite(void)
 {
-    int bb_n_tests = sizeof(bb_test_suit) / sizeof(bb_test_suit[0]);
-    run_test_suit("BLACK BOX TEST SUITE", bb_n_tests, bb_test_suit);
+    int bb_n_tests = sizeof(bb_test_suite) / sizeof(bb_test_suite[0]);
+    run_test_suite("BLACK BOX TEST SUITE", bb_n_tests, bb_test_suite);
     return 0;
 }
 
@@ -86,10 +86,10 @@ int main(void)
 #endif
 
 #ifdef FORT_WB_TESTING_ENABLED
-    status |= run_wb_test_suit();
+    status |= run_wb_test_suite();
     fprintf(stderr, "\n");
 #endif
-    status |= run_bb_test_suit();
+    status |= run_bb_test_suite();
 
 
     return status;

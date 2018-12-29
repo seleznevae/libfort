@@ -56,7 +56,7 @@ struct test_case {
 #ifdef __cplusplus
 extern "C" {
 #endif
-void run_test_suit(const char *test_suit_name, int n_tests, struct test_case test_suit[]);
+void run_test_suite(const char *test_suite_name, int n_tests, struct test_case test_suite[]);
 #ifdef __cplusplus
 }
 #endif
