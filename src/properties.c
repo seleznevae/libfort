@@ -955,12 +955,10 @@ size_t max_border_elem_strlen(struct fort_table_properties *properties)
         result = MAX(result, strlen(properties->border_style.border_chars[i]));
     }
 
-    i = 0;
     for (i = 0; i < BorderItemPosSize; ++i) {
         result = MAX(result, strlen(properties->border_style.header_border_chars[i]));
     }
 
-    i = 0;
     for (i = 0; i < SepratorItemPosSize; ++i) {
         result = MAX(result, strlen(properties->border_style.separator_chars[i]));
     }

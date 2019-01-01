@@ -27,7 +27,13 @@ matrix:
       os: linux
       sudo: required # to prevent fail of executables build with clang and sanitizers
       compiler: clang
-      env: CC=clang
+      env: 
+        - CC=clang
+        - BASIC_LINUX_CLANG=yes
+      addons:
+        apt:
+          sources: ['llvm-toolchain-trusty-4.0']
+          packages: ['clang-tidy-4.0']
       
     # Linux / GCC
     - name: "Linux gcc-4.9"
@@ -141,6 +147,15 @@ script:
       cppcheck --std=c99 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
       cppcheck --std=c++11 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
     fi
+
+  # clang-tidy run
+  - |
+    if [ "${BASIC_LINUX_CLANG}" = "yes" ]; then
+      # don't know how force warnings of clang-tidy to be errors
+      cp .clang-tidy lib
+      clang-tidy -dump-config lib/fort.c 
+    fi
+    
 
   # doxygen run 
   - |

@@ -7,7 +7,7 @@
 
 #define PROP_IS_SET(ft_props, property) ((ft_props) & (property))
 #define PROP_SET(ft_props, property) ((ft_props) |=(property))
-#define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)property))
+#define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)(property)))
 
 #define TEXT_STYLE_TAG_MAX_SIZE 64
 

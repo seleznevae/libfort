@@ -37,8 +37,8 @@
 
 #define F_CREATE(type) ((type *)F_CALLOC(sizeof(type), 1))
 
-#define MAX(a,b) ((a) > (b) ? (a) : b)
-#define MIN(a,b) ((a) < (b) ? (a) : b)
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
 
 
 enum PolicyOnNull {
@@ -171,6 +171,6 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
 
 
 #define CHECK_NOT_NEGATIVE(x) \
-    do { if (x < 0) goto fort_fail; } while (0)
+    do { if ((x) < 0) goto fort_fail; } while (0)
 
 #endif /* FORT_IMPL_H */

@@ -74,8 +74,8 @@ SOFTWARE.
 
 #define F_CREATE(type) ((type *)F_CALLOC(sizeof(type), 1))
 
-#define MAX(a,b) ((a) > (b) ? (a) : b)
-#define MIN(a,b) ((a) < (b) ? (a) : b)
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
 
 
 enum PolicyOnNull {
@@ -208,7 +208,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
 
 
 #define CHECK_NOT_NEGATIVE(x) \
-    do { if (x < 0) goto fort_fail; } while (0)
+    do { if ((x) < 0) goto fort_fail; } while (0)
 
 #endif /* FORT_IMPL_H */
 
@@ -253,13 +253,14 @@ void *vector_at(vector_t *, size_t index);
 FT_INTERNAL
 fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos);
 
-
+/*
 #define FOR_EACH_(type, item, vector, index_name) \
     size_t index_name = 0; \
     for (index_name = 0; (index_name < vector_size(vector)) ? ((item = *(type*)vector_at(vector, index_name)), 1) : 0;  ++index_name)
 
 #define FOR_EACH(type, item, vector) \
     FOR_EACH_(type, item, vector, UNIQUE_NAME(i))
+*/
 
 
 #ifdef FT_TEST_BUILD
@@ -392,7 +393,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 
 #define PROP_IS_SET(ft_props, property) ((ft_props) & (property))
 #define PROP_SET(ft_props, property) ((ft_props) |=(property))
-#define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)property))
+#define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)(property)))
 
 #define TEXT_STYLE_TAG_MAX_SIZE 64
 
@@ -3407,12 +3408,10 @@ size_t max_border_elem_strlen(struct fort_table_properties *properties)
         result = MAX(result, strlen(properties->border_style.border_chars[i]));
     }
 
-    i = 0;
     for (i = 0; i < BorderItemPosSize; ++i) {
         result = MAX(result, strlen(properties->border_style.header_border_chars[i]));
     }
 
-    i = 0;
     for (i = 0; i < SepratorItemPosSize; ++i) {
         result = MAX(result, strlen(properties->border_style.separator_chars[i]));
     }
@@ -5312,9 +5311,17 @@ fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *col
     *cols = 0;
     if (table && table->rows) {
         *rows = vector_size(table->rows);
+        /*
         fort_row_t *row = NULL;
         FOR_EACH(fort_row_t *, row, table->rows) {
             (void)i0;
+            size_t cols_in_row = columns_in_row(row);
+            if (cols_in_row > *cols)
+                *cols = cols_in_row;
+        }
+        */
+        for (size_t row_index = 0; row_index < vector_size(table->rows); ++row_index) {
+            fort_row_t *row = *(fort_row_t**)vector_at(table->rows, row_index);
             size_t cols_in_row = columns_in_row(row);
             if (cols_in_row > *cols)
                 *cols = cols_in_row;
@@ -5380,7 +5387,6 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
     }
 
     if (combined_cells_found) {
-        col = 0;
         for (col = 0; col < cols; ++col) {
             size_t row = 0;
             for (row = 0; row < rows; ++row) {

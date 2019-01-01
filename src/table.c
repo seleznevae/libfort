@@ -108,9 +108,17 @@ fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *col
     *cols = 0;
     if (table && table->rows) {
         *rows = vector_size(table->rows);
+        /*
         fort_row_t *row = NULL;
         FOR_EACH(fort_row_t *, row, table->rows) {
             (void)i0;
+            size_t cols_in_row = columns_in_row(row);
+            if (cols_in_row > *cols)
+                *cols = cols_in_row;
+        }
+        */
+        for (size_t row_index = 0; row_index < vector_size(table->rows); ++row_index) {
+            fort_row_t *row = *(fort_row_t**)vector_at(table->rows, row_index);
             size_t cols_in_row = columns_in_row(row);
             if (cols_in_row > *cols)
                 *cols = cols_in_row;
@@ -176,7 +184,6 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
     }
 
     if (combined_cells_found) {
-        col = 0;
         for (col = 0; col < cols; ++col) {
             size_t row = 0;
             for (row = 0; row < rows; ++row) {

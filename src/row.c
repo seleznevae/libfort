@@ -612,7 +612,7 @@ fort_row_t *create_row_from_string(const char *str)
 
     char_type *pos = NULL;
     char_type *base_pos = NULL;
-    unsigned int number_of_separators = 0;
+    size_t number_of_separators = 0;
 
     fort_row_t *row = create_row();
     if (row == NULL)
@@ -701,7 +701,7 @@ fort_row_t *create_row_from_wstring(const wchar_t *str)
 
     char_type *pos = NULL;
     char_type *base_pos = NULL;
-    unsigned int number_of_separators = 0;
+    size_t number_of_separators = 0;
 
     fort_row_t *row = create_row();
     if (row == NULL)
