@@ -5028,6 +5028,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
             break;
     }
 
+    int set_old_value = 0;
     int  written = 0;
     int tmp = 0;
     ptrdiff_t str_it_width = 0;
@@ -5042,21 +5043,25 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
         return -1;
     old_value = *end;
     *(CHAR_TYPE *)end = NULL_CHAR;
+    set_old_value = 1;
 
     str_it_width = STR_ITER_WIDTH(beg, end);
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
-        return - 1;
+        goto  clear;
 
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
 
     *(CHAR_TYPE *)end = old_value;
+    set_old_value = 0;
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
     return written;
 
 clear:
+    if (set_old_value)
+        *(CHAR_TYPE *)end = old_value;
     return -1;
 
 #undef CHAR_TYPE
@@ -5120,6 +5125,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
             break;
     }
 
+    int set_old_value = 0;
     int  written = 0;
     int tmp = 0;
     ptrdiff_t str_it_width = 0;
@@ -5134,21 +5140,25 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
         return -1;
     old_value = *end;
     *(CHAR_TYPE *)end = NULL_CHAR;
+    set_old_value = 1;
 
     str_it_width = STR_ITER_WIDTH(beg, end);
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
-        return - 1;
+        goto  clear;
 
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
 
     *(CHAR_TYPE *)end = old_value;
+    set_old_value = 0;
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
     return written;
 
 clear:
+    if (set_old_value)
+        *(CHAR_TYPE *)end = old_value;
     return -1;
 
 #undef CHAR_TYPE
