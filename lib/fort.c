@@ -4946,7 +4946,7 @@ size_t buffer_text_width(const string_buffer_t *buffer)
 {
     size_t max_length = 0;
     if (buffer->type == CharBuf) {
-        int n = 0;
+        size_t n = 0;
         while (1) {
             const char *beg = NULL;
             const char *end = NULL;
@@ -4959,7 +4959,7 @@ size_t buffer_text_width(const string_buffer_t *buffer)
         }
 #ifdef FT_HAVE_WCHAR
     } else {
-        int n = 0;
+        size_t n = 0;
         while (1) {
             const wchar_t *beg = NULL;
             const wchar_t *end = NULL;
@@ -4967,7 +4967,7 @@ size_t buffer_text_width(const string_buffer_t *buffer)
             if (beg == NULL || end == NULL)
                 return max_length;
 
-            int line_width = mk_wcswidth(beg, end - beg);
+            int line_width = mk_wcswidth(beg, (size_t)(end - beg));
             if (line_width < 0) /* For safety */
                 line_width = 0;
             max_length = MAX(max_length, (size_t)line_width);
