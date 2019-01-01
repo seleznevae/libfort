@@ -2457,7 +2457,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
 
 #define FT_RESET_COLOR "\033[0m"
 
-const char *fg_colors[] = {
+static const char *fg_colors[] = {
     "",
     "\033[30m",
     "\033[31m",
@@ -2477,7 +2477,7 @@ const char *fg_colors[] = {
     "\033[97m",
 };
 
-const char *reset_fg_colors[] = {
+static const char *reset_fg_colors[] = {
     "",
     "\033[39m",
     "\033[39m",
@@ -2497,7 +2497,7 @@ const char *reset_fg_colors[] = {
     "\033[39m",
 };
 
-const char *bg_colors[] = {
+static const char *bg_colors[] = {
     "",
     "\033[40m",
     "\033[41m",
@@ -2517,7 +2517,7 @@ const char *bg_colors[] = {
     "\033[107m",
 };
 
-const char *reset_bg_colors[] = {
+static const char *reset_bg_colors[] = {
     "",
     "\033[49m",
     "\033[49m",
@@ -2538,7 +2538,7 @@ const char *reset_bg_colors[] = {
 };
 
 
-const char *text_styles[] = {
+static const char *text_styles[] = {
     "",
     "\033[1m",
     "\033[2m",
@@ -2549,7 +2549,7 @@ const char *text_styles[] = {
     "\033[8m",
 };
 
-const char *reset_text_styles[] = {
+static const char *reset_text_styles[] = {
     "",
     "\033[21m",
     "\033[22m",
@@ -5034,7 +5034,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     ptrdiff_t str_it_width = 0;
     const CHAR_TYPE *beg = NULL;
     const CHAR_TYPE *end = NULL;
-    CHAR_TYPE old_value;
+    CHAR_TYPE old_value = (CHAR_TYPE)0;
 
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
 
@@ -5131,7 +5131,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     ptrdiff_t str_it_width = 0;
     const CHAR_TYPE *beg = NULL;
     const CHAR_TYPE *end = NULL;
-    CHAR_TYPE old_value;
+    CHAR_TYPE old_value = (CHAR_TYPE)0;
 
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
 

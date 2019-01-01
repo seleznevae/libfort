@@ -382,7 +382,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     ptrdiff_t str_it_width = 0;
     const CHAR_TYPE *beg = NULL;
     const CHAR_TYPE *end = NULL;
-    CHAR_TYPE old_value;
+    CHAR_TYPE old_value = (CHAR_TYPE)0;
 
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
 
@@ -479,7 +479,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     ptrdiff_t str_it_width = 0;
     const CHAR_TYPE *beg = NULL;
     const CHAR_TYPE *end = NULL;
-    CHAR_TYPE old_value;
+    CHAR_TYPE old_value = (CHAR_TYPE)0;
 
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
 
