@@ -611,6 +611,7 @@ extern struct ft_border_style *const FT_SIMPLE_STYLE;
 extern struct ft_border_style *const FT_PLAIN_STYLE;
 extern struct ft_border_style *const FT_DOT_STYLE;
 extern struct ft_border_style *const FT_EMPTY_STYLE;
+extern struct ft_border_style *const FT_EMPTY2_STYLE;
 extern struct ft_border_style *const FT_SOLID_STYLE;
 extern struct ft_border_style *const FT_SOLID_ROUND_STYLE;
 extern struct ft_border_style *const FT_NICE_STYLE;

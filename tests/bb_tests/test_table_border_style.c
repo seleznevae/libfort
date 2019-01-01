@@ -355,6 +355,24 @@ void test_table_builtin_border_styles(void)
     assert_true(table_str != NULL);
 
     table_str_etalon =
+        " Rank  Title                     Year  Rating \n"
+        "  1    The Shawshank Redemption  1994     9.5 \n"
+        "  2    12 Angry Men              1957     8.8 \n"
+        "  3    It's a Wonderful Life     1946     8.6 \n"
+        "                                              \n"
+        "  4    2001: A Space Odyssey     1968     8.5 \n"
+        "  5    Blade Runner              1982     8.1 \n";
+    assert_str_equal(table_str, table_str_etalon);
+    ft_destroy_table(table);
+
+    /* *************************************************************** */
+
+    ft_set_default_border_style(FT_EMPTY2_STYLE);
+    table = create_basic_table();
+    table_str = ft_to_string(table);
+    assert_true(table_str != NULL);
+
+    table_str_etalon =
         "                                                   \n"
         "  Rank   Title                      Year   Rating  \n"
         "   1     The Shawshank Redemption   1994      9.5  \n"

@@ -545,6 +545,7 @@ extern struct fort_border_style FORT_SIMPLE_STYLE;
 extern struct fort_border_style FORT_PLAIN_STYLE;
 extern struct fort_border_style FORT_DOT_STYLE;
 extern struct fort_border_style FORT_EMPTY_STYLE;
+extern struct fort_border_style FORT_EMPTY2_STYLE;
 extern struct fort_border_style FORT_SOLID_STYLE;
 extern struct fort_border_style FORT_SOLID_ROUND_STYLE;
 extern struct fort_border_style FORT_NICE_STYLE;
@@ -1964,6 +1965,7 @@ struct ft_border_style *const FT_SIMPLE_STYLE = (struct ft_border_style *) &FORT
 struct ft_border_style *const FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_STYLE;
 struct ft_border_style *const FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
 struct ft_border_style *const FT_EMPTY_STYLE  = (struct ft_border_style *) &FORT_EMPTY_STYLE;
+struct ft_border_style *const FT_EMPTY2_STYLE  = (struct ft_border_style *) &FORT_EMPTY2_STYLE;
 struct ft_border_style *const FT_SOLID_STYLE  = (struct ft_border_style *) &FORT_SOLID_STYLE;
 struct ft_border_style *const FT_SOLID_ROUND_STYLE  = (struct ft_border_style *) &FORT_SOLID_ROUND_STYLE;
 struct ft_border_style *const FT_NICE_STYLE  = (struct ft_border_style *) &FORT_NICE_STYLE;
@@ -1983,6 +1985,7 @@ static void set_border_props_for_props(fort_table_properties_t *properties, cons
         || (const struct fort_border_style *)style == &FORT_DOT_STYLE
         || (const struct fort_border_style *)style == &FORT_PLAIN_STYLE
         || (const struct fort_border_style *)style == &FORT_EMPTY_STYLE
+        || (const struct fort_border_style *)style == &FORT_EMPTY2_STYLE
         || (const struct fort_border_style *)style == &FORT_SOLID_STYLE
         || (const struct fort_border_style *)style == &FORT_SOLID_ROUND_STYLE
         || (const struct fort_border_style *)style == &FORT_NICE_STYLE
@@ -3089,6 +3092,31 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
 #define EMPTY_STYLE  {            \
     /* border_chars */            \
     {                             \
+     "\0", "\0", "\0", "\0",      \
+     "\0", "\0", "\0",            \
+     "\0", "\0", "\0", "\0",      \
+     "\0", "\0", "\0", "\0",      \
+     "\0", "\0", "\0", "\0",      \
+    },                            \
+    /* header_border_chars */     \
+    {                             \
+    "\0", "\0", "\0", "\0",       \
+    "\0", "\0", "\0",             \
+    "\0", "\0", "\0", "\0",       \
+    "\0", "\0", "\0", "\0",       \
+    "\0", "\0", "\0", "\0",       \
+    },                            \
+    /* separator_chars */         \
+    {                             \
+    "\0", " ", "\0 ", "\0",       \
+    "\0", "\0",                   \
+    },                            \
+}
+
+
+#define EMPTY2_STYLE  {            \
+    /* border_chars */            \
+    {                             \
      " ", " ", " ", " ",          \
      " ", " ", " ",               \
      "\0", "\0", "\0", "\0",      \
@@ -3109,7 +3137,6 @@ fort_status_t set_default_cell_property(uint32_t property, int value)
     " ", " ",                     \
     },                            \
 }
-
 
 #define SOLID_STYLE  {            \
     /* border_chars */            \
@@ -3314,6 +3341,7 @@ struct fort_border_style FORT_SIMPLE_STYLE = SIMPLE_STYLE;
 struct fort_border_style FORT_PLAIN_STYLE = PLAIN_STYLE;
 struct fort_border_style FORT_DOT_STYLE = DOT_STYLE;
 struct fort_border_style FORT_EMPTY_STYLE = EMPTY_STYLE;
+struct fort_border_style FORT_EMPTY2_STYLE = EMPTY2_STYLE;
 struct fort_border_style FORT_SOLID_STYLE = SOLID_STYLE;
 struct fort_border_style FORT_SOLID_ROUND_STYLE = SOLID_ROUND_STYLE;
 struct fort_border_style FORT_NICE_STYLE = NICE_STYLE;

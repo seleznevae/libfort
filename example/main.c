@@ -251,6 +251,7 @@ void print_different_border_styles()
         FT_PLAIN_STYLE,
         FT_DOT_STYLE,
         FT_EMPTY_STYLE,
+        FT_EMPTY2_STYLE,
         FT_SOLID_STYLE,
         FT_SOLID_ROUND_STYLE,
         FT_NICE_STYLE,
@@ -269,6 +270,7 @@ void print_different_border_styles()
         L"FT_PLAIN_STYLE",
         L"FT_DOT_STYLE",
         L"FT_EMPTY_STYLE",
+        L"FT_EMPTY2_STYLE",
         L"FT_SOLID_STYLE",
         L"FT_SOLID_ROUND_STYLE",
         L"FT_NICE_STYLE",
@@ -281,13 +283,14 @@ void print_different_border_styles()
 
     for (size_t i = 0; i < sizeof(styles)/sizeof(styles[0]); i += 2) {
         ft_table_t *table_tmp_1 = create_basic_wtable(styles[i]);
-        ft_table_t *table_tmp_2 = create_basic_wtable(styles[i + 1]);
-
         ft_wprintf(table,    L"                 %ls    \n\n%ls", style_names[i], ft_to_wstring(table_tmp_1));
-        ft_wprintf_ln(table, L"                 %ls    \n\n%ls", style_names[i + 1], ft_to_wstring(table_tmp_2));
-
         ft_destroy_table(table_tmp_1);
-        ft_destroy_table(table_tmp_2);
+
+        if (i + 1 < sizeof(styles)/sizeof(styles[0])) {
+            ft_table_t *table_tmp_2 = create_basic_wtable(styles[i + 1]);
+            ft_wprintf_ln(table, L"                 %ls    \n\n%ls", style_names[i + 1], ft_to_wstring(table_tmp_2));
+            ft_destroy_table(table_tmp_2);
+        }
     }
     fwprintf(stderr, L"Table:\n%ls\n ", ft_to_wstring(table));
     ft_destroy_table(table);
@@ -399,6 +402,11 @@ int main(void)
     ft_destroy_table(table);
 
     ft_set_default_border_style(FT_EMPTY_STYLE);
+    table = create_basic_table();
+    printf("Table:\n%s\n", ft_to_string(table));
+    ft_destroy_table(table);
+
+    ft_set_default_border_style(FT_EMPTY2_STYLE);
     table = create_basic_table();
     printf("Table:\n%s\n", ft_to_string(table));
     ft_destroy_table(table);

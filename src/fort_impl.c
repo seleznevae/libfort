@@ -809,6 +809,7 @@ struct ft_border_style *const FT_SIMPLE_STYLE = (struct ft_border_style *) &FORT
 struct ft_border_style *const FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_STYLE;
 struct ft_border_style *const FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
 struct ft_border_style *const FT_EMPTY_STYLE  = (struct ft_border_style *) &FORT_EMPTY_STYLE;
+struct ft_border_style *const FT_EMPTY2_STYLE  = (struct ft_border_style *) &FORT_EMPTY2_STYLE;
 struct ft_border_style *const FT_SOLID_STYLE  = (struct ft_border_style *) &FORT_SOLID_STYLE;
 struct ft_border_style *const FT_SOLID_ROUND_STYLE  = (struct ft_border_style *) &FORT_SOLID_ROUND_STYLE;
 struct ft_border_style *const FT_NICE_STYLE  = (struct ft_border_style *) &FORT_NICE_STYLE;
@@ -828,6 +829,7 @@ static void set_border_props_for_props(fort_table_properties_t *properties, cons
         || (const struct fort_border_style *)style == &FORT_DOT_STYLE
         || (const struct fort_border_style *)style == &FORT_PLAIN_STYLE
         || (const struct fort_border_style *)style == &FORT_EMPTY_STYLE
+        || (const struct fort_border_style *)style == &FORT_EMPTY2_STYLE
         || (const struct fort_border_style *)style == &FORT_SOLID_STYLE
         || (const struct fort_border_style *)style == &FORT_SOLID_ROUND_STYLE
         || (const struct fort_border_style *)style == &FORT_NICE_STYLE
