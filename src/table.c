@@ -104,7 +104,6 @@ string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table)
 FT_INTERNAL
 fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols)
 {
-    size_t row_index = 0;
     *rows = 0;
     *cols = 0;
     if (table && table->rows) {
@@ -118,6 +117,7 @@ fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *col
                 *cols = cols_in_row;
         }
         */
+        size_t row_index = 0;
         for (row_index = 0; row_index < vector_size(table->rows); ++row_index) {
             fort_row_t *row = *(fort_row_t **)vector_at(table->rows, row_index);
             size_t cols_in_row = columns_in_row(row);
