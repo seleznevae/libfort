@@ -157,7 +157,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
         if (tmp < 0) {\
             goto clear; \
         } \
-        written += tmp; \
+        written += (size_t)tmp; \
     } while(0)
 
 #define CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(statement) \
@@ -166,7 +166,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
         if (tmp < 0) {\
             goto clear; \
         } \
-        invisible_written += tmp; \
+        invisible_written += (size_t)tmp; \
     } while(0)
 
 

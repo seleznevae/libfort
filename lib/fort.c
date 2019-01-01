@@ -194,7 +194,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
         if (tmp < 0) {\
             goto clear; \
         } \
-        written += tmp; \
+        written += (size_t)tmp; \
     } while(0)
 
 #define CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(statement) \
@@ -203,7 +203,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
         if (tmp < 0) {\
             goto clear; \
         } \
-        invisible_written += tmp; \
+        invisible_written += (size_t)tmp; \
     } while(0)
 
 
@@ -943,8 +943,8 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
     unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
 
-    int written = 0;
-    int invisible_written = 0;
+    size_t written = 0;
+    size_t invisible_written = 0;
     int tmp = 0;
 
     /* todo: Dirty hack with changing buf_len! need refactoring. */
@@ -993,7 +993,7 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
         WRITE_RESET_CONTENT_STYLE_TAG;
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
         WRITE_RESET_CELL_STYLE_TAG;
-        return TOTAL_WRITTEN;
+        return (int)TOTAL_WRITTEN;
     }
 
     WRITE_CELL_STYLE_TAG;
@@ -1008,7 +1008,7 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
     WRITE_RESET_CELL_STYLE_TAG;
 
-    return TOTAL_WRITTEN;
+    return (int)TOTAL_WRITTEN;
 
 clear:
     return -1;
@@ -1037,8 +1037,8 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
     unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
     unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
 
-    int written = 0;
-    int invisible_written = 0;
+    size_t written = 0;
+    size_t invisible_written = 0;
     int tmp = 0;
 
     /* todo: Dirty hack with changing buf_len! need refactoring. */
@@ -1087,7 +1087,7 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
         WRITE_RESET_CONTENT_STYLE_TAG;
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
         WRITE_RESET_CELL_STYLE_TAG;
-        return TOTAL_WRITTEN;
+        return (int)TOTAL_WRITTEN;
     }
 
     WRITE_CELL_STYLE_TAG;
@@ -1102,7 +1102,7 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
     CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
     WRITE_RESET_CELL_STYLE_TAG;
 
-    return TOTAL_WRITTEN;
+    return (int)TOTAL_WRITTEN;
 
 clear:
     return -1;
@@ -1883,7 +1883,7 @@ const wchar_t *ft_to_wstring(const ft_table_t *table)
     if (FT_IS_ERROR(status))
         return NULL;
 
-    int written = 0;
+    size_t written = 0;
     int tmp = 0;
     size_t i = 0;
     context_t context;
@@ -3781,7 +3781,7 @@ int print_row_separator(char *buffer, size_t buffer_sz,
     }
 
 
-    int written = 0;
+    size_t written = 0;
     int tmp = 0;
 
     enum ft_row_type lower_row_type = FT_ROW_COMMON;
@@ -3918,7 +3918,7 @@ int print_row_separator(char *buffer, size_t buffer_sz,
 
     CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, "\n"));
 
-    status = written;
+    status = (int)written;
 
 clear:
     F_FREE(top_row_types);
@@ -3968,7 +3968,7 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
     }
 
 
-    int written = 0;
+    size_t written = 0;
     int tmp = 0;
 
     enum ft_row_type lower_row_type = FT_ROW_COMMON;
@@ -4105,7 +4105,7 @@ int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
 
     CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, "\n"));
 
-    status = written;
+    status = (int)written;
 
 clear:
     F_FREE(top_row_types);
@@ -4496,7 +4496,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
     const char **R = &(*bord_chars)[RR_bip];
 
 
-    int written = 0;
+    size_t written = 0;
     int tmp = 0;
     size_t i = 0;
     for (i = 0; i < row_height; ++i) {
@@ -4543,7 +4543,7 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
         /* Print new line character */
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, 1, new_line_char));
     }
-    return written;
+    return (int)written;
 
 clear:
     return -1;
@@ -4584,7 +4584,7 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
     const char **R = &(*bord_chars)[RR_bip];
 
 
-    int written = 0;
+    size_t written = 0;
     int tmp = 0;
     size_t i = 0;
     for (i = 0; i < row_height; ++i) {
@@ -4631,7 +4631,7 @@ int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t 
         /* Print new line character */
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, 1, new_line_char));
     }
-    return written;
+    return (int)written;
 
 clear:
     return -1;
@@ -5029,7 +5029,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     }
 
     int set_old_value = 0;
-    int  written = 0;
+    size_t  written = 0;
     int tmp = 0;
     ptrdiff_t str_it_width = 0;
     const CHAR_TYPE *beg = NULL;
@@ -5057,7 +5057,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t 
     set_old_value = 0;
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
-    return written;
+    return (int)written;
 
 clear:
     if (set_old_value)
@@ -5126,7 +5126,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     }
 
     int set_old_value = 0;
-    int  written = 0;
+    size_t  written = 0;
     int tmp = 0;
     ptrdiff_t str_it_width = 0;
     const CHAR_TYPE *beg = NULL;
@@ -5154,7 +5154,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
     set_old_value = 0;
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
     CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
-    return written;
+    return (int)written;
 
 clear:
     if (set_old_value)

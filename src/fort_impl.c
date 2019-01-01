@@ -727,7 +727,7 @@ const wchar_t *ft_to_wstring(const ft_table_t *table)
     if (FT_IS_ERROR(status))
         return NULL;
 
-    int written = 0;
+    size_t written = 0;
     int tmp = 0;
     size_t i = 0;
     context_t context;

@@ -134,8 +134,8 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
     unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
 
-    int written = 0;
-    int invisible_written = 0;
+    size_t written = 0;
+    size_t invisible_written = 0;
     int tmp = 0;
 
     /* todo: Dirty hack with changing buf_len! need refactoring. */
@@ -184,7 +184,7 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
         WRITE_RESET_CONTENT_STYLE_TAG;
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
         WRITE_RESET_CELL_STYLE_TAG;
-        return TOTAL_WRITTEN;
+        return (int)TOTAL_WRITTEN;
     }
 
     WRITE_CELL_STYLE_TAG;
@@ -199,7 +199,7 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
     CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
     WRITE_RESET_CELL_STYLE_TAG;
 
-    return TOTAL_WRITTEN;
+    return (int)TOTAL_WRITTEN;
 
 clear:
     return -1;
@@ -228,8 +228,8 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
     unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
     unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
 
-    int written = 0;
-    int invisible_written = 0;
+    size_t written = 0;
+    size_t invisible_written = 0;
     int tmp = 0;
 
     /* todo: Dirty hack with changing buf_len! need refactoring. */
@@ -278,7 +278,7 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
         WRITE_RESET_CONTENT_STYLE_TAG;
         CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
         WRITE_RESET_CELL_STYLE_TAG;
-        return TOTAL_WRITTEN;
+        return (int)TOTAL_WRITTEN;
     }
 
     WRITE_CELL_STYLE_TAG;
@@ -293,7 +293,7 @@ int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, co
     CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
     WRITE_RESET_CELL_STYLE_TAG;
 
-    return TOTAL_WRITTEN;
+    return (int)TOTAL_WRITTEN;
 
 clear:
     return -1;
