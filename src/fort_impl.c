@@ -624,7 +624,7 @@ const char *ft_to_string(const ft_table_t *table)
     if (rows == 0)
         return EMPTY_STRING;
 
-    int written = 0;
+    size_t written = 0;
     int tmp = 0;
     size_t i = 0;
     context_t context;
