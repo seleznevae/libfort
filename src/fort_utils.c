@@ -136,7 +136,7 @@ wchar_t *fort_wcsdup(const wchar_t *str)
 FT_INTERNAL
 size_t number_of_columns_in_format_string(const char *fmt)
 {
-    int separator_counter = 0;
+    size_t separator_counter = 0;
     const char *pos = fmt;
     while (1) {
         pos = strchr(pos, FORT_COL_SEPARATOR);
@@ -154,7 +154,7 @@ size_t number_of_columns_in_format_string(const char *fmt)
 FT_INTERNAL
 size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 {
-    int separator_counter = 0;
+    size_t separator_counter = 0;
     const wchar_t *pos = fmt;
     while (1) {
         pos = wcschr(pos, FORT_COL_SEPARATOR);

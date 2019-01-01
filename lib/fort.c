@@ -1994,7 +1994,7 @@ static void set_border_props_for_props(fort_table_properties_t *properties, cons
         || (const struct fort_border_style *)style == &FORT_BOLD_STYLE
         || (const struct fort_border_style *)style == &FORT_BOLD2_STYLE
         || (const struct fort_border_style *)style == &FORT_FRAME_STYLE) {
-        memcpy(&(properties->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
+        memcpy(&(properties->border_style), (const struct fort_border_style *)style, sizeof(struct fort_border_style));
         return;
     }
 
@@ -2308,7 +2308,7 @@ wchar_t *fort_wcsdup(const wchar_t *str)
 FT_INTERNAL
 size_t number_of_columns_in_format_string(const char *fmt)
 {
-    int separator_counter = 0;
+    size_t separator_counter = 0;
     const char *pos = fmt;
     while (1) {
         pos = strchr(pos, FORT_COL_SEPARATOR);
@@ -2326,7 +2326,7 @@ size_t number_of_columns_in_format_string(const char *fmt)
 FT_INTERNAL
 size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 {
-    int separator_counter = 0;
+    size_t separator_counter = 0;
     const wchar_t *pos = fmt;
     while (1) {
         pos = wcschr(pos, FORT_COL_SEPARATOR);
@@ -3610,7 +3610,6 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
                 return *(fort_cell_t **)vector_at(row->cells, col);
             }
             return NULL;
-            break;
         case Create:
             while (col >= columns_in_row(row)) {
                 fort_cell_t *new_cell = create_cell();
@@ -3622,8 +3621,9 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
                 }
             }
             return *(fort_cell_t **)vector_at(row->cells, col);
-            break;
     }
+
+    assert(0 && "Shouldn't be here!");
     return NULL;
 }
 

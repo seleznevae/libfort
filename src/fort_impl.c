@@ -838,7 +838,7 @@ static void set_border_props_for_props(fort_table_properties_t *properties, cons
         || (const struct fort_border_style *)style == &FORT_BOLD_STYLE
         || (const struct fort_border_style *)style == &FORT_BOLD2_STYLE
         || (const struct fort_border_style *)style == &FORT_FRAME_STYLE) {
-        memcpy(&(properties->border_style), (struct fort_border_style *)style, sizeof(struct fort_border_style));
+        memcpy(&(properties->border_style), (const struct fort_border_style *)style, sizeof(struct fort_border_style));
         return;
     }
 

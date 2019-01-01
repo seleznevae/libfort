@@ -96,7 +96,6 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
                 return *(fort_cell_t **)vector_at(row->cells, col);
             }
             return NULL;
-            break;
         case Create:
             while (col >= columns_in_row(row)) {
                 fort_cell_t *new_cell = create_cell();
@@ -108,8 +107,9 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
                 }
             }
             return *(fort_cell_t **)vector_at(row->cells, col);
-            break;
     }
+
+    assert(0 && "Shouldn't be here!");
     return NULL;
 }
 
