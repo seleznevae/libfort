@@ -5570,8 +5570,8 @@ int vector_push(vector_t *vector, const void *item)
         vector->m_capacity = vector->m_capacity * 2;
     }
 
-    ptrdiff_t deviation = vector->m_size * vector->m_item_size;
-    memcpy((char *)vector->m_data + deviation, item, vector->m_item_size);
+    size_t offset = vector->m_size * vector->m_item_size;
+    memcpy((char *)vector->m_data + offset, item, vector->m_item_size);
 
     ++(vector->m_size);
 
@@ -5620,7 +5620,7 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
         cur_vec->m_capacity = min_targ_size;
     }
 
-    ptrdiff_t deviation = pos * cur_vec->m_item_size;
+    size_t offset = pos * cur_vec->m_item_size;
     void *tmp = NULL;
     size_t new_mv_sz = 0;
     if (cur_sz > pos) {
@@ -5633,11 +5633,11 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
 
     if (tmp) {
         memcpy(tmp,
-               (char *)cur_vec->m_data + deviation,
+               (char *)cur_vec->m_data + offset,
                cur_vec->m_item_size * new_mv_sz);
     }
 
-    memcpy((char *)cur_vec->m_data + deviation,
+    memcpy((char *)cur_vec->m_data + offset,
            mv_vec->m_data,
            cur_vec->m_item_size * mv_sz);
 
