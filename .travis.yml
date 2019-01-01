@@ -153,7 +153,8 @@ script:
     if [ "${BASIC_LINUX_CLANG}" = "yes" ]; then
       # don't know how force warnings of clang-tidy to be errors
       cp .clang-tidy lib
-      clang-tidy -dump-config lib/fort.c 
+      clang-tidy lib/fort.c 
+      echo "Clang-tidy exit code is $?"
     fi
     
 

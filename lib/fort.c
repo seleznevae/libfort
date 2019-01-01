@@ -4125,7 +4125,7 @@ fort_row_t *create_row_from_string(const char *str)
 
     char_type *pos = NULL;
     char_type *base_pos = NULL;
-    unsigned int number_of_separators = 0;
+    size_t number_of_separators = 0;
 
     fort_row_t *row = create_row();
     if (row == NULL)
@@ -4214,7 +4214,7 @@ fort_row_t *create_row_from_wstring(const wchar_t *str)
 
     char_type *pos = NULL;
     char_type *base_pos = NULL;
-    unsigned int number_of_separators = 0;
+    size_t number_of_separators = 0;
 
     fort_row_t *row = create_row();
     if (row == NULL)
@@ -5321,7 +5321,7 @@ fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *col
         }
         */
         for (size_t row_index = 0; row_index < vector_size(table->rows); ++row_index) {
-            fort_row_t *row = *(fort_row_t**)vector_at(table->rows, row_index);
+            fort_row_t *row = *(fort_row_t **)vector_at(table->rows, row_index);
             size_t cols_in_row = columns_in_row(row);
             if (cols_in_row > *cols)
                 *cols = cols_in_row;
