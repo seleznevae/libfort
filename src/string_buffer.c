@@ -17,7 +17,7 @@ static ptrdiff_t str_iter_width(const char *beg, const char *end)
 static ptrdiff_t wcs_iter_width(const wchar_t *beg, const wchar_t *end)
 {
     assert(end >= beg);
-    return mk_wcswidth(beg, (end - beg));
+    return mk_wcswidth(beg, (size_t)(end - beg));
 }
 #endif /* FT_HAVE_WCHAR */
 

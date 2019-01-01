@@ -4669,7 +4669,7 @@ static ptrdiff_t str_iter_width(const char *beg, const char *end)
 static ptrdiff_t wcs_iter_width(const wchar_t *beg, const wchar_t *end)
 {
     assert(end >= beg);
-    return mk_wcswidth(beg, (end - beg));
+    return mk_wcswidth(beg, (size_t)(end - beg));
 }
 #endif /* FT_HAVE_WCHAR */
 
@@ -5237,7 +5237,6 @@ fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnN
                 return *(fort_row_t **)vector_at(table->rows, row);
             }
             return NULL;
-            break;
         case Create:
             while (row >= vector_size(table->rows)) {
                 fort_row_t *new_row = create_row();
@@ -5249,8 +5248,9 @@ fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnN
                 }
             }
             return *(fort_row_t **)vector_at(table->rows, row);
-            break;
     }
+
+    assert(0 && "Shouldn't be here!");
     return NULL;
 }
 

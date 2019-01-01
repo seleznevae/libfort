@@ -43,7 +43,6 @@ fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnN
                 return *(fort_row_t **)vector_at(table->rows, row);
             }
             return NULL;
-            break;
         case Create:
             while (row >= vector_size(table->rows)) {
                 fort_row_t *new_row = create_row();
@@ -55,8 +54,9 @@ fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnN
                 }
             }
             return *(fort_row_t **)vector_at(table->rows, row);
-            break;
     }
+
+    assert(0 && "Shouldn't be here!");
     return NULL;
 }
 
