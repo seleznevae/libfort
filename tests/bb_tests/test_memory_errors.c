@@ -27,6 +27,7 @@ void test_free(void *ptr)
 static int create_table_and_show(void)
 {
     ft_table_t *table = NULL;
+    ft_table_t *table_copy = NULL;
     int result = 0;
 
     table = ft_create_table();
@@ -62,9 +63,15 @@ static int create_table_and_show(void)
         goto exit;
     }
 
-    const char *table_str = ft_to_string(table);
-    if (table_str == NULL) {
+    table_copy = ft_copy_table(table);
+    if (table_copy == NULL) {
         result = 8;
+        goto exit;
+    }
+
+    const char *table_str = ft_to_string(table_copy);
+    if (table_str == NULL) {
+        result = 9;
         goto exit;
     }
     const char *table_str_etalon =
@@ -87,13 +94,14 @@ static int create_table_and_show(void)
         "+---+---+-----+----------+\n";
     /*assert_str_equal(table_str, table_str_etalon);*/
     if (strcmp(table_str, table_str_etalon) != 0) {
-        result = 9;
+        result = 10;
         goto exit;
     }
 
 
 exit:
     ft_destroy_table(table);
+    ft_destroy_table(table_copy);
     return result;
 }
 

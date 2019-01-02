@@ -38,6 +38,8 @@ fort_cell_t *copy_cell(fort_cell_t *cell)
     assert(cell);
 
     fort_cell_t *result = create_cell();
+    if (result == NULL)
+        return NULL;
     destroy_string_buffer(result->str_buffer);
     result->str_buffer = copy_string_buffer(cell->str_buffer);
     if (result->str_buffer == NULL) {
