@@ -417,7 +417,8 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
 struct fort_cell_props {
     size_t cell_row;
     size_t cell_col;
-    uint32_t properties;
+    uint32_t properties_flags;
+
     unsigned int col_min_width;
     enum ft_text_alignment align;
     unsigned int cell_padding_top;
@@ -2728,11 +2729,11 @@ error:
 }
 
 
-struct fort_cell_props g_default_cell_properties = {
+static struct fort_cell_props g_default_cell_properties = {
     FT_ANY_ROW,    /* cell_row */
     FT_ANY_COLUMN, /* cell_col */
 
-    /* properties */
+    /* properties_flags */
     FT_CPROP_MIN_WIDTH  | FT_CPROP_TEXT_ALIGN | FT_CPROP_TOP_PADDING
     | FT_CPROP_BOTTOM_PADDING | FT_CPROP_LEFT_PADDING | FT_CPROP_RIGHT_PADDING
     | FT_CPROP_EMPTY_STR_HEIGHT | FT_CPROP_CONT_FG_COLOR | FT_CPROP_CELL_BG_COLOR
@@ -2756,7 +2757,7 @@ struct fort_cell_props g_default_cell_properties = {
 
 static int get_prop_value_if_exists_otherwise_default(const struct fort_cell_props *cell_opts, uint32_t property)
 {
-    if (cell_opts == NULL || !PROP_IS_SET(cell_opts->properties, property)) {
+    if (cell_opts == NULL || !PROP_IS_SET(cell_opts->properties_flags, property)) {
         cell_opts = &g_default_cell_properties;
     }
 
@@ -2863,7 +2864,7 @@ int get_cell_property_value_hierarcial(const fort_table_properties_t *properties
     if (propertiess->cell_properties != NULL) {
         while (1) {
             opt = cget_cell_prop(propertiess->cell_properties, row, column);
-            if (opt != NULL && PROP_IS_SET(opt->properties, property))
+            if (opt != NULL && PROP_IS_SET(opt->properties_flags, property))
                 break;
 
             if (row != FT_ANY_ROW && column != FT_ANY_COLUMN) {
@@ -2892,7 +2893,7 @@ static fort_status_t set_cell_property_impl(fort_cell_props_t *opt, uint32_t pro
 {
     assert(opt);
 
-    PROP_SET(opt->properties, property);
+    PROP_SET(opt->properties_flags, property);
     if (PROP_IS_SET(property, FT_CPROP_MIN_WIDTH)) {
         CHECK_NOT_NEGATIVE(value);
         opt->col_min_width = value;

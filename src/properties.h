@@ -31,7 +31,8 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
 struct fort_cell_props {
     size_t cell_row;
     size_t cell_col;
-    uint32_t properties;
+    uint32_t properties_flags;
+
     unsigned int col_min_width;
     enum ft_text_alignment align;
     unsigned int cell_padding_top;
