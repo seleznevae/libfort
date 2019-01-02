@@ -44,57 +44,69 @@ static int create_table_and_show(void)
         result = 3;
         goto exit;
     }
-    if (ft_write_ln(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
+    if (ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_LEFT_PADDING, 2) != FT_SUCCESS) {
         result = 4;
         goto exit;
     }
-    if (ft_write_ln(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
+    if (ft_set_cell_prop(table, 2, 1, FT_CPROP_TOP_PADDING, 2) != FT_SUCCESS) {
         result = 5;
+        goto exit;
+    }
+    if (ft_set_cell_prop(table, 2, 1, FT_CPROP_BOTTOM_PADDING, 0) != FT_SUCCESS) {
+        result = 6;
+        goto exit;
+    }
+    if (ft_write_ln(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
+        result = 7;
+        goto exit;
+    }
+    if (ft_write_ln(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
+        result = 8;
         goto exit;
     }
     ft_add_separator(table);
     if (ft_write_ln(table, "3", "c", "234", "3.140000") != FT_SUCCESS) {
-        result = 6;
+        result = 9;
         goto exit;
     }
 
     if (ft_printf_ln(table, "%d|%c|%d|%f", 3, 'c', 234, 3.140000) != 4) {
-        result = 7;
+        result = 10;
         goto exit;
     }
 
     table_copy = ft_copy_table(table);
     if (table_copy == NULL) {
-        result = 8;
+        result = 11;
         goto exit;
     }
 
     const char *table_str = ft_to_string(table_copy);
     if (table_str == NULL) {
-        result = 9;
+        result = 12;
         goto exit;
     }
     const char *table_str_etalon =
-        "+---+---+-----+----------+\n"
-        "|   |   |     |          |\n"
-        "| 3 | c | 234 | 3.140000 |\n"
-        "|   |   |     |          |\n"
-        "+---+---+-----+----------+\n"
-        "|   |   |     |          |\n"
-        "| 3 | c | 234 | 3.140000 |\n"
-        "|   |   |     |          |\n"
-        "+===+===+=====+==========+\n"
-        "|   |   |     |          |\n"
-        "| 3 | c | 234 | 3.140000 |\n"
-        "|   |   |     |          |\n"
-        "+---+---+-----+----------+\n"
-        "|   |   |     |          |\n"
-        "| 3 | c | 234 | 3.140000 |\n"
-        "|   |   |     |          |\n"
-        "+---+---+-----+----------+\n";
+        "+----+---+-----+----------+\n"
+        "|    |   |     |          |\n"
+        "|  3 | c | 234 | 3.140000 |\n"
+        "|    |   |     |          |\n"
+        "+----+---+-----+----------+\n"
+        "|    |   |     |          |\n"
+        "|  3 | c | 234 | 3.140000 |\n"
+        "|    |   |     |          |\n"
+        "+====+===+=====+==========+\n"
+        "|    |   |     |          |\n"
+        "|  3 |   | 234 | 3.140000 |\n"
+        "|    | c |     |          |\n"
+        "+----+---+-----+----------+\n"
+        "|    |   |     |          |\n"
+        "|  3 | c | 234 | 3.140000 |\n"
+        "|    |   |     |          |\n"
+        "+----+---+-----+----------+\n";
     /*assert_str_equal(table_str, table_str_etalon);*/
     if (strcmp(table_str, table_str_etalon) != 0) {
-        result = 10;
+        result = 13;
         goto exit;
     }
 
