@@ -338,7 +338,7 @@ FT_INTERNAL
 void destroy_string_buffer(string_buffer_t *buffer);
 
 FT_INTERNAL
-string_buffer_t *copy_string_buffer(string_buffer_t *buffer);
+string_buffer_t *copy_string_buffer(const string_buffer_t *buffer);
 
 FT_INTERNAL
 fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer);
@@ -352,7 +352,7 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
 #endif /* FT_HAVE_WCHAR */
 
 FT_INTERNAL
-size_t buffer_text_height(string_buffer_t *buffer);
+size_t buffer_text_height(const string_buffer_t *buffer);
 
 FT_INTERNAL
 size_t string_buffer_capacity(const string_buffer_t *buffer);
@@ -4846,7 +4846,7 @@ void destroy_string_buffer(string_buffer_t *buffer)
 }
 
 FT_INTERNAL
-string_buffer_t *copy_string_buffer(string_buffer_t *buffer)
+string_buffer_t *copy_string_buffer(const string_buffer_t *buffer)
 {
     assert(buffer);
     string_buffer_t *result = create_string_buffer(buffer->data_sz, buffer->type);
@@ -4855,14 +4855,14 @@ string_buffer_t *copy_string_buffer(string_buffer_t *buffer)
     switch (buffer->type) {
         case CharBuf:
             if (FT_IS_ERROR(fill_buffer_from_string(result, buffer->str.cstr))) {
-                destroy_string_buffer(buffer);
+                destroy_string_buffer(result);
                 return NULL;
             }
             break;
 #ifdef FT_HAVE_WCHAR
         case WCharBuf:
             if (FT_IS_ERROR(fill_buffer_from_wstring(result, buffer->str.wstr))) {
-                destroy_string_buffer(buffer);
+                destroy_string_buffer(result);
                 return NULL;
             }
             break;
@@ -4928,7 +4928,7 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
 
 
 FT_INTERNAL
-size_t buffer_text_height(string_buffer_t *buffer)
+size_t buffer_text_height(const string_buffer_t *buffer)
 {
     if (buffer == NULL || buffer->str.data == NULL || buf_str_len(buffer) == 0) {
         return 0;
