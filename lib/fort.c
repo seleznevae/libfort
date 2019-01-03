@@ -5386,6 +5386,13 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
                         break;
                 }
                 row_height_arr[row] = MAX(row_height_arr[row], hint_height_cell(cell, &context));
+            } else {
+                size_t cell_empty_string_height = get_cell_property_value_hierarcial(context.table_properties, context.row, context.column, FT_CPROP_EMPTY_STR_HEIGHT);
+                if (cell_empty_string_height) {
+                    size_t cell_top_padding = get_cell_property_value_hierarcial(context.table_properties, context.row, context.column, FT_CPROP_TOP_PADDING);
+                    size_t cell_bottom_padding = get_cell_property_value_hierarcial(context.table_properties, context.row, context.column, FT_CPROP_BOTTOM_PADDING);
+                    row_height_arr[row] = MAX(row_height_arr[row], cell_empty_string_height + cell_top_padding + cell_bottom_padding);
+                }
             }
         }
     }

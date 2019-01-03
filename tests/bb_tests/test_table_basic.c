@@ -23,6 +23,67 @@ void test_bug_fixes(void)
         ft_destroy_table(table_tmp_1);
         ft_destroy_table(table);
     }
+
+    SCENARIO("Bug 2") {
+        ft_table_t *table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_border_style(table, FT_BASIC_STYLE);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_EMPTY_STR_HEIGHT, 1);
+        ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_TOP_PADDING, 0);
+        ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_BOTTOM_PADDING, 0);
+        assert_true(FT_IS_SUCCESS(ft_write(table, "3")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "c")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "234")));
+        assert_true(FT_IS_SUCCESS(ft_write_ln(table, "3.140000")));
+        ft_ln(table);
+        ft_ln(table);
+
+        assert_true(FT_IS_SUCCESS(ft_write(table, "3")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "c")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "234")));
+        assert_true(FT_IS_SUCCESS(ft_write_ln(table, "3.140000")));
+        ft_ln(table);
+        ft_ln(table);
+
+        assert_true(FT_IS_SUCCESS(ft_write(table, "3")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "c")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "234")));
+        assert_true(FT_IS_SUCCESS(ft_write_ln(table, "3.140000")));
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+-----+----------+\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "+---+---+-----+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+
+
+        ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_EMPTY_STR_HEIGHT, 0);
+        table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        table_str_etalon =
+            "+---+---+-----+----------+\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "+---+---+-----+----------+\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "+---+---+-----+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+
+        ft_destroy_table(table);
+    }
 }
 #endif
 
