@@ -83,9 +83,9 @@ These pages contain the API documentation of **libfort** - simple library to cre
       - @link fort::table::set_cell_row_type set_cell_row_type @endlink -- set row type
       - @link fort::table::set_cell_empty_str_height set_cell_empty_str_height @endlink -- set height for empty cell
       - @link fort::table::set_cell_content_fg_color set_cell_content_fg_color @endlink -- set content foreground color
-      - @link fort::table::set_cell_cell_bg_color set_cell_cell_bg_color @endlink -- set cell background color
+      - @link fort::table::set_cell_bg_color set_cell_bg_color @endlink -- set cell background color
       - @link fort::table::set_cell_content_bg_color set_cell_content_bg_color @endlink -- set content background color
-      - @link fort::table::set_cell_cell_text_style set_cell_cell_text_style @endlink -- set cell text style
+      - @link fort::table::set_cell_text_style set_cell_text_style @endlink -- set cell text style
       - @link fort::table::set_cell_content_text_style set_cell_content_text_style @endlink -- set content text style
 
   - @link fort::table::table_cell fort::table::table_cell @endlink -- table cell

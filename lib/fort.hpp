@@ -278,7 +278,7 @@ public:
      *   - true: Success; cell property was changed.
      *   - false: In case of error.
      */
-    bool set_cell_cell_bg_color(enum fort::color value)
+    bool set_cell_bg_color(enum fort::color value)
     {
         return set_property(FT_CPROP_CELL_BG_COLOR, static_cast<int>(value));
     }
@@ -306,7 +306,7 @@ public:
      *   - true: Success; cell property was changed.
      *   - false: In case of error.
      */
-    bool set_cell_cell_text_style(enum fort::text_style value)
+    bool set_cell_text_style(enum fort::text_style value)
     {
         return set_property(FT_CPROP_CELL_TEXT_STYLE, static_cast<int>(value));
     }

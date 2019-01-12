@@ -584,7 +584,7 @@ void test_cpp_table_text_styles(void)
     WHEN("Simple table with one cell and background cell color") {
         fort::table table;
 
-        table[0][0].set_cell_cell_bg_color(fort::color::yellow);
+        table[0][0].set_cell_bg_color(fort::color::yellow);
         table << 42;
 
         std::string table_str = table.to_string();
@@ -633,7 +633,7 @@ void test_cpp_table_text_styles(void)
     WHEN("Simple table with one cell and cell style") {
         fort::table table;
 
-        table[0][0].set_cell_cell_text_style(fort::text_style::underlined);
+        table[0][0].set_cell_text_style(fort::text_style::underlined);
         table << 42;
 
         std::string table_str = table.to_string();
@@ -649,8 +649,8 @@ void test_cpp_table_text_styles(void)
     WHEN("Simple table with one cell and multiple cell style") {
         fort::table table;
 
-        table[0][0].set_cell_cell_text_style(fort::text_style::underlined);
-        table[0][0].set_cell_cell_text_style(fort::text_style::bold);
+        table[0][0].set_cell_text_style(fort::text_style::underlined);
+        table[0][0].set_cell_text_style(fort::text_style::bold);
         table << 42;
 
         std::string table_str = table.to_string();
@@ -667,7 +667,7 @@ void test_cpp_table_text_styles(void)
         fort::table table;
 
         table[0][0].set_cell_content_fg_color(fort::color::yellow);
-        table[0][0].set_cell_cell_bg_color(fort::color::red);
+        table[0][0].set_cell_bg_color(fort::color::red);
         table[0][0].set_cell_content_text_style(fort::text_style::underlined);
         table << 42;
 
