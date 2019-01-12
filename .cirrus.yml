@@ -5,7 +5,7 @@ main_task:
   script:
     - echo "Hello cirrus"
     - ls
-    - pkg install cmake
+    - yes | pkg install cmake
     - which cmake
     - which cc
     - which c++
