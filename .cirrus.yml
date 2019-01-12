@@ -20,4 +20,5 @@ main_task:
     - cp fort.c fort.cpp
     - c++ -Wall -Wextra -Werror -DFT_CONGIG_HAVE_WCHAR fort.cpp -c -o fort.o 
     - rm fort.o 
+    - rm fort.cpp 
     - cd .. 
