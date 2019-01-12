@@ -141,6 +141,7 @@ script:
   # basic build c++ compiler
   - |
     if [ "${BASIC_LINUX_GCC}" = "yes" ]; then
+      cd lib
       g++ -Wall -Wextra -Werror fort.c -c -o fort.o 
       rm fort.o 
       cd .. 
