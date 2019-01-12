@@ -471,14 +471,14 @@ static fort_status_t set_cell_property_impl(fort_cell_props_t *opt, uint32_t pro
         if (v == FT_TSTYLE_DEFAULT) {
             opt->cell_text_style = FT_TSTYLE_DEFAULT;
         } else {
-            opt->cell_text_style |= v;
+            opt->cell_text_style = (enum ft_text_style)(opt->cell_text_style | v);
         }
     } else if (PROP_IS_SET(property, FT_CPROP_CONT_TEXT_STYLE)) {
         enum ft_text_style v = (enum ft_text_style)value;
         if (v == FT_TSTYLE_DEFAULT) {
             opt->content_text_style = v;
         } else {
-            opt->content_text_style |= v;
+            opt->content_text_style = (enum ft_text_style)(opt->content_text_style | v);
         }
     }
 

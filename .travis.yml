@@ -137,6 +137,12 @@ script:
   - ${CC} -Wall -Wextra -Werror --std=gnu89 -DFT_CONGIG_HAVE_WCHAR fort.c -c -o fort.o 
   - rm fort.o 
   - cd .. 
+
+  # basic build c++ compiler
+  - cd lib 
+  - ${CXX} -Wall -Wextra -Werror fort.c -c -o fort.o 
+  - rm fort.o 
+  - cd .. 
  
 
   # cppcheck run
