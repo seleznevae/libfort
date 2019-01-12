@@ -17,6 +17,7 @@ main_task:
 
     # Basic c++ build
     - cd lib 
-    - c++ -Wall -Wextra -Werror fort.c -c -o fort.o 
+    - cp fort.c fort.cpp
+    - c++ -Wall -Wextra -Werror -DFT_CONGIG_HAVE_WCHAR fort.cpp -c -o fort.o 
     - rm fort.o 
     - cd .. 
