@@ -21,7 +21,7 @@
 - Support of wide characters
 
 ## Design goals
-- **Portability**. All main OSes and compilers are supported.
+- **Portability**. All main OSes (Linux, Windows, macOS, FreeBSD) and compilers are supported.
 - **Maintainability and robustness**. **libfort** is written in C because it is much less complicated than C++ and it can be used in both C and C++ projects and even on platforms without C++ compiler.
 - **Trivial integration.** Therefore all source code files are amalgamed in only 2 files.
 - **Heavy testing.** The goal is to cover 100% of the code (it is not reached yet) and to run tests on all major compilers and platforms.
