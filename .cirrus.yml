@@ -1,4 +1,6 @@
-
+freebsd_instance:
+  image: freebsd-11-2-release-amd64
 
 main_task:
-  - echo "Hello cirrus"
+  script:
+    - echo "Hello cirrus"
