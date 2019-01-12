@@ -6,8 +6,17 @@ main_task:
     - echo "Hello cirrus"
     - ls
     - yes | pkg install cmake
-    - which cmake
-    - which cc
-    - which c++
     - cc --version
     - c++ --version
+
+    # Basic c build
+    - cd lib 
+    - cc -Wall -Wextra -Werror --std=gnu89 -DFT_CONGIG_HAVE_WCHAR fort.c -c -o fort.o 
+    - rm fort.o 
+    - cd .. 
+
+    # Basic c++ build
+    - cd lib 
+    - c++ -Wall -Wextra -Werror fort.c -c -o fort.o 
+    - rm fort.o 
+    - cd .. 
