@@ -139,10 +139,12 @@ script:
   - cd .. 
 
   # basic build c++ compiler
-  - cd lib 
-  - ${CXX} -Wall -Wextra -Werror fort.c -c -o fort.o 
-  - rm fort.o 
-  - cd .. 
+  - |
+    if [ "${BASIC_LINUX_GCC}" = "yes" ]; then
+      g++ -Wall -Wextra -Werror fort.c -c -o fort.o 
+      rm fort.o 
+      cd .. 
+    fi
  
 
   # cppcheck run
