@@ -1,6 +1,7 @@
 # libfort (Library to create FORmatted Tables)
 
 [![Build Status](https://travis-ci.org/seleznevae/libfort.svg?branch=master)](https://travis-ci.org/seleznevae/libfort)
+[![Build Status](https://api.cirrus-ci.com/github/seleznevae/libfort.svg)](https://cirrus-ci.com/github/seleznevae/libfort)
 [![Build status](https://ci.appveyor.com/api/projects/status/ll1qygb56pho95xw/branch/master?svg=true)](https://ci.appveyor.com/project/seleznevae/libfort/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/seleznevae/libfort/badge.svg?branch=master)](https://coveralls.io/github/seleznevae/libfort?branch=master)
 [![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/F7d2Bqg1moSnRIDt)
@@ -239,7 +240,7 @@ Output:
 
 ## Supported platforms and compilers
 
-The following compilers are currently used in continuous integration at [Travis](https://travis-ci.org/seleznevae/libfort) and [AppVeyor](https://ci.appveyor.com/project/seleznevae/libfort):
+The following compilers are currently used in continuous integration at [Travis](https://travis-ci.org/seleznevae/libfort), [AppVeyor](https://ci.appveyor.com/project/seleznevae/libfort) and [Cirrus](https://cirrus-ci.com/github/seleznevae/libfort):
 
 | Compiler           | Operating System             |
 |--------------------|------------------------------|
@@ -253,7 +254,9 @@ The following compilers are currently used in continuous integration at [Travis]
 | AppleClang 7.3.0   | Darwin Kernel Version 15.6.0 |
 | AppleClang 8.1.0   | Darwin Kernel Version 16.7.0 |
 | AppleClang 9.1.0   | Darwin Kernel Version 17.4.0 |
+| Clang 6.0.1        | FreeBSD 12.0                 |
 | Visual Studio 2017 | Windows Server 2016          |
+
 
 Please note:
 - In case of clang on OS X before using **libfort** with ```wchar_t``` with real unicode symbols it may be necessary to set ```setlocale(LC_CTYPE, "");``` because otherwise standard function ```swprintf```, that libfort uses internally, may fail and ```ft_to_string``` will return error.
