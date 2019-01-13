@@ -33,3 +33,18 @@ main_task:
     - ./libfort_example
     - ./libfort_test_dev
     - ./libfort_test
+    - cd ..
+    - rm -r build/* 
+
+
+    # Test build without optimizations and with ubsan
+    - mkdir -p build
+    - cd build
+    - cmake .. -DFORT_BUILD_TYPE=ubsan  
+    - cmake --build . --target all 
+    - ls
+    - ./libfort_example
+    - ./libfort_test_dev
+    - ./libfort_test
+    - cd ..
+    - rm -r build/* 
