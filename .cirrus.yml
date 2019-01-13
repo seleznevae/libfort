@@ -36,11 +36,22 @@ main_task:
     - cd ..
     - rm -r build/* 
 
-
     # Test build without optimizations and with ubsan
     - mkdir -p build
     - cd build
     - cmake .. -DFORT_BUILD_TYPE=ubsan  
+    - cmake --build . --target all 
+    - ls
+    - ./libfort_example
+    - ./libfort_test_dev
+    - ./libfort_test
+    - cd ..
+    - rm -r build/* 
+
+    # Test without WCHAR support
+    - mkdir -p build
+    - cd build
+    - cmake .. -DFORT_ENABLE_WCHAR=OFF  
     - cmake --build . --target all 
     - ls
     - ./libfort_example
