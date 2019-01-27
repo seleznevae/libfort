@@ -38,6 +38,7 @@ These pages contain the API documentation of **libfort** - simple library to cre
 
     - Others
         - @link ft_set_memory_funcs ft_set_memory_funcs @endlink -- set memory allocation functions for the library
+        - @link ft_set_default_printf_field_separator ft_set_default_printf_field_separator @endlink -- Set field separator for ft_printf, ft_printf_ln
 
   - Data structures and types
     - @link ft_table_t ft_table_t @endlink -- table handler

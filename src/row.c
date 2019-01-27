@@ -629,7 +629,7 @@ fort_row_t *create_row_from_string(const char *str)
     base_pos = str_copy;
     number_of_separators = 0;
     while (*pos) {
-        pos = STRCHR(pos, FORT_COL_SEPARATOR);
+        pos = STRCHR(pos, g_col_separator);
         if (pos != NULL) {
             *(pos) = zero_char;
             ++pos;
@@ -718,7 +718,7 @@ fort_row_t *create_row_from_wstring(const wchar_t *str)
     base_pos = str_copy;
     number_of_separators = 0;
     while (*pos) {
-        pos = STRCHR(pos, FORT_COL_SEPARATOR);
+        pos = STRCHR(pos, g_col_separator);
         if (pos != NULL) {
             *(pos) = zero_char;
             ++pos;

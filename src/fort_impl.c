@@ -324,6 +324,11 @@ int ft_wprintf_ln(ft_table_t *table, const wchar_t *fmt, ...)
 
 #endif
 
+void ft_set_default_printf_field_separator(char separator)
+{
+    g_col_separator = separator;
+}
+
 
 static int ft_write_impl(ft_table_t *table, const char *cell_content)
 {

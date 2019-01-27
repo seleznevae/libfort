@@ -4,6 +4,7 @@
 #endif
 
 
+char g_col_separator = FORT_DEFAULT_COL_SEPARATOR;
 
 /*****************************************************************************
  *               LIBFORT helpers
@@ -139,7 +140,7 @@ size_t number_of_columns_in_format_string(const char *fmt)
     size_t separator_counter = 0;
     const char *pos = fmt;
     while (1) {
-        pos = strchr(pos, FORT_COL_SEPARATOR);
+        pos = strchr(pos, g_col_separator);
         if (pos == NULL)
             break;
 
@@ -157,7 +158,7 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
     size_t separator_counter = 0;
     const wchar_t *pos = fmt;
     while (1) {
-        pos = wcschr(pos, FORT_COL_SEPARATOR);
+        pos = wcschr(pos, g_col_separator);
         if (pos == NULL)
             break;
 

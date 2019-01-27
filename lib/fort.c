@@ -59,7 +59,8 @@ SOFTWARE.
 #endif /* FT_AMALGAMED_SORCE */
 
 
-#define FORT_COL_SEPARATOR '|'
+#define FORT_DEFAULT_COL_SEPARATOR '|'
+extern char g_col_separator;
 
 #define FORT_COL_SEPARATOR_LENGTH 1
 
@@ -1484,6 +1485,11 @@ int ft_wprintf_ln(ft_table_t *table, const wchar_t *fmt, ...)
 
 #endif
 
+void ft_set_default_printf_field_separator(char separator)
+{
+    g_col_separator = separator;
+}
+
 
 static int ft_write_impl(ft_table_t *table, const char *cell_content)
 {
@@ -2180,6 +2186,7 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
 #endif
 
 
+char g_col_separator = FORT_DEFAULT_COL_SEPARATOR;
 
 /*****************************************************************************
  *               LIBFORT helpers
@@ -2315,7 +2322,7 @@ size_t number_of_columns_in_format_string(const char *fmt)
     size_t separator_counter = 0;
     const char *pos = fmt;
     while (1) {
-        pos = strchr(pos, FORT_COL_SEPARATOR);
+        pos = strchr(pos, g_col_separator);
         if (pos == NULL)
             break;
 
@@ -2333,7 +2340,7 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
     size_t separator_counter = 0;
     const wchar_t *pos = fmt;
     while (1) {
-        pos = wcschr(pos, FORT_COL_SEPARATOR);
+        pos = wcschr(pos, g_col_separator);
         if (pos == NULL)
             break;
 
@@ -4145,7 +4152,7 @@ fort_row_t *create_row_from_string(const char *str)
     base_pos = str_copy;
     number_of_separators = 0;
     while (*pos) {
-        pos = STRCHR(pos, FORT_COL_SEPARATOR);
+        pos = STRCHR(pos, g_col_separator);
         if (pos != NULL) {
             *(pos) = zero_char;
             ++pos;
@@ -4234,7 +4241,7 @@ fort_row_t *create_row_from_wstring(const wchar_t *str)
     base_pos = str_copy;
     number_of_separators = 0;
     while (*pos) {
-        pos = STRCHR(pos, FORT_COL_SEPARATOR);
+        pos = STRCHR(pos, g_col_separator);
         if (pos != NULL) {
             *(pos) = zero_char;
             ++pos;

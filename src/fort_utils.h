@@ -22,7 +22,8 @@
 #endif /* FT_AMALGAMED_SORCE */
 
 
-#define FORT_COL_SEPARATOR '|'
+#define FORT_DEFAULT_COL_SEPARATOR '|'
+extern char g_col_separator;
 
 #define FORT_COL_SEPARATOR_LENGTH 1
 

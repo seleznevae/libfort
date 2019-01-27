@@ -865,6 +865,90 @@ void test_table_write(void)
     }
 #endif
 
+    SCENARIO("Test printf functions with custom separator") {
+        ft_set_default_printf_field_separator('$');
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        int n = ft_printf_ln(table, "%d$%c$%s$%f", 3, 'c', "234", 3.14);
+        assert_true(n == 4);
+        n = ft_printf(table, "%c$%s$%f$%d", 'c', "235", 3.15, 5);
+        assert_true(n == 4);
+        ft_ln(table);
+        n = ft_printf_ln(table, "%s$%f$%d$%c", "234", 3.14,  3, 'c');
+        assert_true(n == 4);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        n = ft_printf(table, "%s$%f$%d", "234", 3.14, 3);
+        assert_true(n == 3);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 3   | c        | 234      | 3.140000 |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| c   | 234      | 3.140000 | 3        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 234 | 3.140000 | 3        | c        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+        ft_set_default_printf_field_separator('|');
+    }
+
+#ifdef FT_HAVE_WCHAR
+    SCENARIO("Test printf functions(wide strings)  with custom separator") {
+        ft_set_default_printf_field_separator('$');
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        int n = ft_wprintf_ln(table, L"%d$%c$%ls$%f", 3, 'c', L"234", 3.14);
+        assert_true(n == 4);
+        n = ft_wprintf(table, L"%c$%ls$%f$%d", 'c', L"235", 3.15, 5);
+        assert_true(n == 4);
+        ft_ln(table);
+        n = ft_wprintf_ln(table, L"%ls$%f$%d$%c", L"234", 3.14,  3, 'c');
+        assert_true(n == 4);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        n = ft_wprintf_ln(table, L"%ls$%f$%d", L"234", 3.14, 3);
+        assert_true(n == 3);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+-----+----------+----------+----------+\n"
+            L"|     |          |          |          |\n"
+            L"| 3   | c        | 234      | 3.140000 |\n"
+            L"|     |          |          |          |\n"
+            L"+-----+----------+----------+----------+\n"
+            L"|     |          |          |          |\n"
+            L"| c   | 234      | 3.140000 | 3        |\n"
+            L"|     |          |          |          |\n"
+            L"+-----+----------+----------+----------+\n"
+            L"|     |          |          |          |\n"
+            L"| 234 | 3.140000 | 3        | c        |\n"
+            L"|     |          |          |          |\n"
+            L"+-----+----------+----------+----------+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+        ft_set_default_printf_field_separator('|');
+    }
+#endif
+
 }
 
 

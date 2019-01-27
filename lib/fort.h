@@ -313,8 +313,9 @@ void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col);
  *   the data. The format string consists of ordinary characters (except % and |),
  *   which are copied unchanged into the output stream, and conversion
  *   specifications. Conversion specifications are the same as for standard
- *   printf function. Character '|' in the format string is treated as a cell
- *   separator.
+ *   printf function. Character '|' (wich can be changed with
+ *   {@link ft_set_default_printf_field_separator}) in the format string is treated as
+ *   a cell separator.
  * @param ...
  *   Arguments specifying data to print. Similarly to standard printf-like
  *   functions if any argument after default conversions is not the type
@@ -339,8 +340,9 @@ int ft_printf(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMA
  *   the data. The format string consists of ordinary characters (except % and |),
  *   which are copied unchanged into the output stream, and conversion
  *   specifications. Conversion specifications are the same as for standard
- *   printf function. Character '|' in the format string is treated as a cell
- *   separator.
+ *   printf function. Character '|' (wich can be changed with
+ *   {@link ft_set_default_printf_field_separator}) in the format string is treated as
+ *   a cell separator.
  * @param ...
  *   Arguments specifying data to print. Similarly to standard printf-like
  *   functions if any argument after default conversions is not the type
@@ -372,6 +374,15 @@ int ft_printf_ln_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBU
  * @endcond
  */
 #endif
+
+/**
+ * Set field separator for {@link ft_printf}, {@link ft_printf_ln}
+ * (default separator is '|').
+ *
+ * @param separator
+ *   New separator.
+ */
+void ft_set_default_printf_field_separator(char separator);
 
 
 /**
