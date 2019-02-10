@@ -16,7 +16,7 @@
 **Features:**
 - Easy to integrate (only 2 files)
 - Customization of appearance (various border styles and row/column/cell properties for indentation, alignment, padding)
-- A number of functions to fill the table (add content by adding separate cells, rows or use _printf_ like functions)
+- A number of functions to fill the table (add content by adding separate cells, rows or use `printf` like functions)
 - Support of multiple lines in cells
 - Support of wide characters
 
@@ -43,7 +43,7 @@ See guide on [wiki](https://github.com/seleznevae/libfort/wiki) of the project a
 
 ## Getting Started
 
-The common libfort usage pattern: 
+The common libfort usage pattern (C API): 
 - create a table (`ft_create_table`);
 - fill it with data (`ft_write_ln`, `fr_ptrintf_ln`, `ft_row_write`, ...);
 - modify basic table appearance (`ft_set_cell_prop`, `ft_set_border_style` ...)
