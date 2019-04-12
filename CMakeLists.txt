@@ -54,9 +54,9 @@ if("${FORT_COMPILER}" STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
 else()
     set(ADDITIONAL_WARNINGS "\
-        -Wall
-        -Wextra
-        -Werror
+        -Wall \
+        -Wextra \
+        -Werror \
         -Wdouble-promotion \
         -Wshadow \
         -Wformat=2 \
@@ -69,7 +69,7 @@ else()
         ")
     if("${FORT_COMPILER}" STREQUAL "GNU")
         set(ADDITIONAL_WARNINGS "${ADDITIONAL_WARNINGS} \
-            -Wtrampolines
+            -Wtrampolines \
             -Wlogical-op")
     endif()
 
