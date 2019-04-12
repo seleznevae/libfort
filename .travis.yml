@@ -7,7 +7,7 @@ matrix:
       compiler: gcc
       before_script:
         - pip install --user cpp-coveralls
-        - pip install cmakelint
+        - pip install --user cmakelint
       env: 
         - BASIC_LINUX_GCC=yes
       addons:
