@@ -8,16 +8,17 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
 option(FORT_ENABLE_ASTYLE "Enable astyle" OFF)
 option(FORT_ENABLE_WCHAR "Enable wchar support" ON)
-set(FORT_BUILD_TYPE "common" CACHE STRING "Build types(common, asan, ubsan, coveralls)")
+set(FORT_BUILD_TYPE "common" CACHE STRING
+    "Build types(common, asan, ubsan, coveralls)")
 
 
 # Determine compiler (pos. values Clang, GNU, Intel, MSVC, AppleClang...
 # (https://cmake.org/cmake/help/v3.0/variable/CMAKE_LANG_COMPILER_ID.html)
 if(FORT_CXX_BUILD)
     set(FORT_COMPILER ${CMAKE_CXX_COMPILER_ID})
-else(FORT_CXX_BUILD)
+else()
     set(FORT_COMPILER ${CMAKE_C_COMPILER_ID})
-endif(FORT_CXX_BUILD)
+endif()
 
 
 
@@ -29,7 +30,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 # ------------------------------------------------------------------------------
 if(FORT_ENABLE_WCHAR)
     add_definitions(-DFT_CONGIG_HAVE_WCHAR)
-endif(FORT_ENABLE_WCHAR)
+endif()
 
 
 # ------------------------------------------------------------------------------
@@ -51,8 +52,11 @@ include_directories(tests)
 if("${FORT_COMPILER}" STREQUAL "MSVC")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
-else("${FORT_COMPILER}" STREQUAL "MSVC")
+else()
     set(ADDITIONAL_WARNINGS "\
+        -Wall
+        -Wextra
+        -Werror
         -Wdouble-promotion \
         -Wshadow \
         -Wformat=2 \
@@ -64,13 +68,18 @@ else("${FORT_COMPILER}" STREQUAL "MSVC")
         -Wwrite-strings \
         ")
     if("${FORT_COMPILER}" STREQUAL "GNU")
-        set(ADDITIONAL_WARNINGS "${ADDITIONAL_WARNINGS} -Wtrampolines -Wlogical-op")
-    endif("${FORT_COMPILER}" STREQUAL "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -Wextra -Werror -std=c99 -Wpedantic ${ADDITIONAL_WARNINGS}")
+        set(ADDITIONAL_WARNINGS "${ADDITIONAL_WARNINGS} \
+            -Wtrampolines
+            -Wlogical-op")
+    endif()
 
-    set(ADDITIONAL_WARNINGS "${ADDITIONAL_WARNINGS} ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -Wextra -Werror -std=c++11 ${ADDITIONAL_WARNINGS}")
-endif("${FORT_COMPILER}" STREQUAL "MSVC")
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ADDITIONAL_WARNINGS} -Wpedantic")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ADDITIONAL_WARNINGS}")
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -std=c99 ")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
+endif()
 
 
 
@@ -79,7 +88,12 @@ endif("${FORT_COMPILER}" STREQUAL "MSVC")
 # Sources and executables
 # ------------------------------------------------------------------------------
 
-file(GLOB_RECURSE FortHeaders "lib/*.h" "lib/*.hpp" "tests/*.h" "tests/*.hpp" "src/*.h")
+file(GLOB_RECURSE FortHeaders
+    "lib/*.h"
+    "lib/*.hpp"
+    "tests/*.h"
+    "tests/*.hpp"
+    "src/*.h")
 add_custom_target(headers SOURCES ${FortHeaders})
 
 
@@ -154,7 +168,7 @@ if(FORT_CXX_BUILD)
     set_source_files_properties(${FORT_DEV_SOURCES} PROPERTIES LANGUAGE CXX)
     set_source_files_properties(${EXAMPLE_SOURCES} PROPERTIES LANGUAGE CXX)
     set_source_files_properties(${TEST_SOURCES} PROPERTIES LANGUAGE CXX)
-endif(FORT_CXX_BUILD)
+endif()
 
 
 # ------------------------------------------------------------------------------
@@ -177,8 +191,8 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
             target_link_libraries(${PROJECT_NAME}_example asan)
             target_link_libraries(${PROJECT_NAME}_test asan)
             target_link_libraries(${PROJECT_NAME}_example_cpp asan)
-        endif("${FORT_COMPILER}" STREQUAL "GNU")
-    endif(FORT_BUILD_TYPE STREQUAL "asan")
+        endif()
+    endif()
 
     #ubsan case
     if(FORT_BUILD_TYPE STREQUAL "ubsan")
@@ -194,24 +208,26 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
         elseif("${FORT_COMPILER}" STREQUAL "Clang")
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover=all")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover=all")
-        endif("${FORT_COMPILER}" STREQUAL "GNU")
-    endif(FORT_BUILD_TYPE STREQUAL "ubsan")
+        endif()
+    endif()
 
     #coveralls case
     if(FORT_BUILD_TYPE STREQUAL "coveralls")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fprofile-arcs -ftest-coverage")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fprofile-arcs -ftest-coverage")
-        #target_link_libraries(${PROJECT_NAME}_example_cpp gcov)
-    endif(FORT_BUILD_TYPE STREQUAL "coveralls")
+        set(COVERAGE_FLAGS "-g -fprofile-arcs -ftest-coverage")
 
-endif("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COVERAGE_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS}")
+        #target_link_libraries(${PROJECT_NAME}_example_cpp gcov)
+    endif()
+
+endif()
 
 
 # Hack for some gcc versions
 if("${FORT_COMPILER}" STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=gold")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
-endif("${FORT_COMPILER}" STREQUAL "GNU")
+endif()
 
 
 
@@ -224,7 +240,7 @@ if(FORT_ENABLE_ASTYLE)
         "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}"
     )
 
-    ExternalProject_Add(
+    externalproject_add(
         astyle
         GIT_REPOSITORY      https://github.com/Bareflank/astyle.git
         GIT_TAG             v1.2
