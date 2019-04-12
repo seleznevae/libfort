@@ -7,6 +7,7 @@ matrix:
       compiler: gcc
       before_script:
         - pip install --user cpp-coveralls
+        - pip install cmakelint
       env: 
         - BASIC_LINUX_GCC=yes
       addons:
@@ -130,6 +131,12 @@ script:
     then
     export CC=${FORT_C_COMPILER}; 
     export CXX=${FORT_CXX_COMPILER}; 
+    fi
+
+  # check CMakeLists.txt
+  - |
+    if [ "${BASIC_LINUX_GCC}" = "yes" ]; then
+      cmakelint CMakeLists.txt
     fi
 
   # basic build with old c standard (use gnu89 instead of c89 because some functions are not defines in c89)

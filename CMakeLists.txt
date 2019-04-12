@@ -79,7 +79,7 @@ endif("${FORT_COMPILER}" STREQUAL "MSVC")
 # Sources and executables
 # ------------------------------------------------------------------------------
 
-FILE(GLOB_RECURSE FortHeaders "lib/*.h" "lib/*.hpp" "tests/*.h" "tests/*.hpp" "src/*.h")
+file(GLOB_RECURSE FortHeaders "lib/*.h" "lib/*.hpp" "tests/*.h" "tests/*.hpp" "src/*.h")
 add_custom_target(headers SOURCES ${FortHeaders})
 
 
@@ -151,9 +151,9 @@ add_executable(${PROJECT_NAME}_test_cpp
     ${TEST_SOURCES_CPP})
 
 if(FORT_CXX_BUILD)
-    SET_SOURCE_FILES_PROPERTIES(${FORT_DEV_SOURCES} PROPERTIES LANGUAGE CXX)
-    SET_SOURCE_FILES_PROPERTIES(${EXAMPLE_SOURCES} PROPERTIES LANGUAGE CXX)
-    SET_SOURCE_FILES_PROPERTIES(${TEST_SOURCES} PROPERTIES LANGUAGE CXX)
+    set_source_files_properties(${FORT_DEV_SOURCES} PROPERTIES LANGUAGE CXX)
+    set_source_files_properties(${EXAMPLE_SOURCES} PROPERTIES LANGUAGE CXX)
+    set_source_files_properties(${TEST_SOURCES} PROPERTIES LANGUAGE CXX)
 endif(FORT_CXX_BUILD)
 
 
