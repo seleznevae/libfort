@@ -21,7 +21,6 @@ else()
 endif()
 
 
-
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 
@@ -40,9 +39,6 @@ endif()
 include_directories(lib)
 include_directories(src)
 include_directories(tests)
-
-
-
 
 
 # ------------------------------------------------------------------------------
@@ -82,8 +78,6 @@ else()
 endif()
 
 
-
-
 # ------------------------------------------------------------------------------
 # Sources and executables
 # ------------------------------------------------------------------------------
@@ -107,8 +101,6 @@ set(FORT_DEV_SOURCES
     src/table.c
     src/fort_utils.c
     src/wcwidth.c)
-
-
 
 
 set(EXAMPLE_SOURCES
@@ -222,13 +214,11 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
 
 endif()
 
-
 # Hack for some gcc versions
 if("${FORT_COMPILER}" STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=gold")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
 endif()
-
 
 
 # ------------------------------------------------------------------------------
@@ -294,5 +284,4 @@ if(FORT_ENABLE_ASTYLE)
             COMMENT "running astyle"
         )
     endif()
-
 endif()
