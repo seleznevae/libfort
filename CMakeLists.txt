@@ -1,7 +1,7 @@
+cmake_minimum_required(VERSION 2.8)
+
 project(libfort)
 
-# Required cmake version
-cmake_minimum_required(VERSION 2.8)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 # Built options
