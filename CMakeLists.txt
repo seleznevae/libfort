@@ -8,8 +8,10 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
 option(FORT_ENABLE_ASTYLE "Enable astyle" OFF)
 option(FORT_ENABLE_WCHAR "Enable wchar support" ON)
-set(FORT_BUILD_TYPE "common" CACHE STRING
-    "Build types(common, asan, ubsan, coveralls)")
+set(FORT_BUILD_TYPE "common" CACHE STRING "Build type")
+
+set_property(CACHE FORT_BUILD_TYPE PROPERTY STRINGS
+    common asan ubsan coveralls)
 
 
 # Determine compiler (pos. values Clang, GNU, Intel, MSVC, AppleClang...
@@ -285,3 +287,15 @@ if(FORT_ENABLE_ASTYLE)
         )
     endif()
 endif()
+
+
+# ------------------------------------------------------------------------------
+# Tests
+# ------------------------------------------------------------------------------
+
+enable_testing()
+add_test(NAME ${PROJECT_NAME}_example COMMAND ${PROJECT_NAME}_example)
+add_test(NAME ${PROJECT_NAME}_example_cpp COMMAND ${PROJECT_NAME}_example_cpp)
+add_test(NAME ${PROJECT_NAME}_test COMMAND ${PROJECT_NAME}_test)
+add_test(NAME ${PROJECT_NAME}_test_cpp COMMAND ${PROJECT_NAME}_test_cpp)
+add_test(NAME ${PROJECT_NAME}_test_dev COMMAND ${PROJECT_NAME}_test_dev)
