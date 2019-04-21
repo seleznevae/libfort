@@ -86,57 +86,6 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 endif()
 
-# ------------------------------------------------------------------------------
-# Sanitizers
-# ------------------------------------------------------------------------------
-
-if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
-    # asan case
-    if(FORT_BUILD_TYPE STREQUAL "asan")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-        if("${FORT_COMPILER}" STREQUAL "GNU")
-            target_link_libraries(${PROJECT_NAME}_example asan)
-            target_link_libraries(${PROJECT_NAME}_test asan)
-            target_link_libraries(${PROJECT_NAME}_example_cpp asan)
-        endif()
-    endif()
-
-    #ubsan case
-    if(FORT_BUILD_TYPE STREQUAL "ubsan")
-        # -fno-sanitize-recover option is used to force faild
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
-        if("${FORT_COMPILER}" STREQUAL "GNU")
-            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover")
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover")
-            target_link_libraries(${PROJECT_NAME}_example ubsan)
-            target_link_libraries(${PROJECT_NAME}_example_cpp ubsan)
-            target_link_libraries(${PROJECT_NAME}_test ubsan)
-        elseif("${FORT_COMPILER}" STREQUAL "Clang")
-            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover=all")
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover=all")
-        endif()
-    endif()
-
-    #coveralls case
-    if(FORT_BUILD_TYPE STREQUAL "coveralls")
-        set(COVERAGE_FLAGS "-g -fprofile-arcs -ftest-coverage")
-
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COVERAGE_FLAGS}")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS}")
-        #target_link_libraries(${PROJECT_NAME}_example_cpp gcov)
-    endif()
-
-endif()
-
-# Hack for some gcc versions
-if("${FORT_COMPILER}" STREQUAL "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=gold")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
-endif()
-
-
 
 # ------------------------------------------------------------------------------
 # Sources and executables
@@ -239,6 +188,56 @@ if(FORT_CXX_BUILD)
     set_source_files_properties(${TEST_SOURCES} PROPERTIES LANGUAGE CXX)
 endif()
 
+
+# ------------------------------------------------------------------------------
+# Sanitizers
+# ------------------------------------------------------------------------------
+
+if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
+    # asan case
+    if(FORT_BUILD_TYPE STREQUAL "asan")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+        if("${FORT_COMPILER}" STREQUAL "GNU")
+            target_link_libraries(${PROJECT_NAME}_example asan)
+            target_link_libraries(${PROJECT_NAME}_test asan)
+            target_link_libraries(${PROJECT_NAME}_example_cpp asan)
+        endif()
+    endif()
+
+    #ubsan case
+    if(FORT_BUILD_TYPE STREQUAL "ubsan")
+        # -fno-sanitize-recover option is used to force faild
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
+        if("${FORT_COMPILER}" STREQUAL "GNU")
+            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover")
+            target_link_libraries(${PROJECT_NAME}_example ubsan)
+            target_link_libraries(${PROJECT_NAME}_example_cpp ubsan)
+            target_link_libraries(${PROJECT_NAME}_test ubsan)
+        elseif("${FORT_COMPILER}" STREQUAL "Clang")
+            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover=all")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover=all")
+        endif()
+    endif()
+
+    #coveralls case
+    if(FORT_BUILD_TYPE STREQUAL "coveralls")
+        set(COVERAGE_FLAGS "-g -fprofile-arcs -ftest-coverage")
+
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COVERAGE_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS}")
+        #target_link_libraries(${PROJECT_NAME}_example_cpp gcov)
+    endif()
+
+endif()
+
+# Hack for some gcc versions
+if("${FORT_COMPILER}" STREQUAL "GNU")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=gold")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
+endif()
 
 # ------------------------------------------------------------------------------
 # Set preprocessor macros for all test builds
