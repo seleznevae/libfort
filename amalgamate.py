@@ -1,5 +1,6 @@
 
 import os
+import shutil
 import sys
 
 def comment_line(line):
@@ -105,6 +106,10 @@ def main():
         "table.h"
     ];
     amalgamate(config)
+
+    # copy header files
+    shutil.copyfile('./src/fort.h', './lib/fort.h')
+    shutil.copyfile('./src/fort.hpp', './lib/fort.hpp')
 
 
 
