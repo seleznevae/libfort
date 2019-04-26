@@ -22,6 +22,9 @@ build:
 
 test_script:
   - dir
+  - cd build
+  - dir
+  - ctest -VV
   - dir '%APPVEYOR_BUILD_FOLDER%'
   - cd build
   - cd Debug
