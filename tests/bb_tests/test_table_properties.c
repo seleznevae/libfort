@@ -3,8 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "properties.h"
-#include "vector.h"
+
 #include "test_utils.h"
 
 

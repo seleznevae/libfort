@@ -5,7 +5,6 @@ project(libfort)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 # Built options
-option(FORT_CXX_BUILD "Compile with c++ compiler instead of c" OFF)
 option(FORT_ENABLE_ASTYLE "Enable astyle" OFF)
 option(FORT_ENABLE_WCHAR "Enable wchar support" ON)
 set(FORT_BUILD_TYPE "common" CACHE STRING "Build type")
@@ -24,31 +23,6 @@ endif()
 
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-
-# ------------------------------------------------------------------------------
-# Add WChar support for the build
-# ------------------------------------------------------------------------------
-if(FORT_ENABLE_WCHAR)
-    add_definitions(-DFT_CONGIG_HAVE_WCHAR)
-endif()
-
-set(FORT_HAVE_WCHAR "${FORT_ENABLE_WCHAR}" CACHE STRING "fort option")
-
-
-
-
-add_subdirectory(lib)
-add_subdirectory(src)
-
-
-# ------------------------------------------------------------------------------
-# Includes
-# ------------------------------------------------------------------------------
-
-include_directories(lib)
-include_directories(src)
-include_directories(tests)
-
 
 # ------------------------------------------------------------------------------
 # Warnings
@@ -86,109 +60,6 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 endif()
 
-
-# ------------------------------------------------------------------------------
-# Sources and executables
-# ------------------------------------------------------------------------------
-
-file(GLOB_RECURSE FortHeaders
-    "lib/*.h"
-    "lib/*.hpp"
-    "tests/*.h"
-    "tests/*.hpp"
-    "src/*.h")
-add_custom_target(headers SOURCES ${FortHeaders})
-
-
-#set(FORT_DEV_SOURCES
-#    src/fort_impl.c
-#    src/vector.c
-#    src/string_buffer.c
-#    src/properties.c
-#    src/cell.c
-#    src/row.c
-#    src/table.c
-#    src/fort_utils.c
-#    src/wcwidth.c)
-
-
-set(EXAMPLE_SOURCES
-    example/main.c)
-#add_executable(${PROJECT_NAME}_example
-#    ${EXAMPLE_SOURCES}
-#    lib/fort.c)
-add_executable(${PROJECT_NAME}_example
-    ${EXAMPLE_SOURCES})
-target_link_libraries(${PROJECT_NAME}_example
-    fort)
-
-set(EXAMPLE_CPP_SOURCES
-    example/main.cpp)
-#add_executable(${PROJECT_NAME}_example_cpp
-#    ${EXAMPLE_CPP_SOURCES}
-#    lib/fort.c)
-add_executable(${PROJECT_NAME}_example_cpp
-    ${EXAMPLE_CPP_SOURCES})
-target_link_libraries(${PROJECT_NAME}_example_cpp
-    fort)
-
-set(TEST_SOURCES_DEV
-    tests/main_test.c
-    tests/wb_tests/test_vector.c
-    tests/wb_tests/test_string_buffer.c
-    tests/wb_tests/test_table_geometry.c
-    tests/bb_tests/test_table_basic.c
-    tests/bb_tests/test_table_border_style.c
-    tests/bb_tests/test_table_properties.c
-    tests/bb_tests/test_memory_errors.c
-    tests/tests.c
-    tests/test_utils.c)
-#add_executable(${PROJECT_NAME}_test_dev
-#    ${FORT_DEV_SOURCES}
-#    ${TEST_SOURCES_DEV})
-add_executable(${PROJECT_NAME}_test_dev
-    ${TEST_SOURCES_DEV})
-target_link_libraries(${PROJECT_NAME}_test_dev
-    fort_dev)
-
-target_compile_definitions(${PROJECT_NAME}_test_dev
-    PUBLIC FORT_WB_TESTING_ENABLED=1)
-
-set(TEST_SOURCES
-    tests/main_test.c
-    tests/bb_tests/test_table_basic.c
-    tests/bb_tests/test_table_border_style.c
-    tests/bb_tests/test_table_properties.c
-    tests/bb_tests/test_memory_errors.c
-    tests/tests.c
-    tests/test_utils.c)
-#add_executable(${PROJECT_NAME}_test
-#    lib/fort.c
-#    ${TEST_SOURCES})
-add_executable(${PROJECT_NAME}_test
-    ${TEST_SOURCES})
-target_link_libraries(${PROJECT_NAME}_test
-    fort)
-
-set(TEST_SOURCES_CPP
-    tests/main_test_cpp.cpp
-    tests/bb_tests_cpp/test_table_basic.cpp
-    tests/bb_tests_cpp/test_table_properties.cpp
-    tests/tests.c
-    tests/test_utils.cpp)
-# hack - explicitly set fort.c
-add_executable(${PROJECT_NAME}_test_cpp
-    lib/fort.c
-    ${TEST_SOURCES_CPP})
-
-
-if(FORT_CXX_BUILD)
-#    set_source_files_properties(${FORT_DEV_SOURCES} PROPERTIES LANGUAGE CXX)
-    set_source_files_properties(${EXAMPLE_SOURCES} PROPERTIES LANGUAGE CXX)
-    set_source_files_properties(${TEST_SOURCES} PROPERTIES LANGUAGE CXX)
-endif()
-
-
 # ------------------------------------------------------------------------------
 # Sanitizers
 # ------------------------------------------------------------------------------
@@ -199,9 +70,7 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
         if("${FORT_COMPILER}" STREQUAL "GNU")
-            target_link_libraries(${PROJECT_NAME}_example asan)
-            target_link_libraries(${PROJECT_NAME}_test asan)
-            target_link_libraries(${PROJECT_NAME}_example_cpp asan)
+            set(FORT_EXTRA_LINK_LIBRARIES asan)
         endif()
     endif()
 
@@ -213,9 +82,8 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
         if("${FORT_COMPILER}" STREQUAL "GNU")
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover")
-            target_link_libraries(${PROJECT_NAME}_example ubsan)
-            target_link_libraries(${PROJECT_NAME}_example_cpp ubsan)
-            target_link_libraries(${PROJECT_NAME}_test ubsan)
+            set(FORT_EXTRA_LINK_LIBRARIES ubsan)
+
         elseif("${FORT_COMPILER}" STREQUAL "Clang")
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover=all")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover=all")
@@ -240,8 +108,68 @@ if("${FORT_COMPILER}" STREQUAL "GNU")
 endif()
 
 # ------------------------------------------------------------------------------
+# Add WChar support for the build
+# ------------------------------------------------------------------------------
+if(FORT_ENABLE_WCHAR)
+    add_definitions(-DFT_CONGIG_HAVE_WCHAR)
+endif()
+
+set(FORT_HAVE_WCHAR "${FORT_ENABLE_WCHAR}" CACHE STRING "fort option")
+
+
+# ------------------------------------------------------------------------------
+# Subdirectories
+# ------------------------------------------------------------------------------
+
+add_subdirectory(lib)
+add_subdirectory(src)
+add_subdirectory(tests)
+
+
+# ------------------------------------------------------------------------------
+# Includes
+# ------------------------------------------------------------------------------
+
+include_directories(lib)
+include_directories(src)
+include_directories(tests)
+
+
+# ------------------------------------------------------------------------------
+# Sources and executables
+# ------------------------------------------------------------------------------
+
+file(GLOB_RECURSE FortHeaders
+    "lib/*.h"
+    "lib/*.hpp"
+    "tests/*.h"
+    "tests/*.hpp"
+    "src/*.h")
+add_custom_target(headers SOURCES ${FortHeaders})
+
+
+add_executable(${PROJECT_NAME}_example
+     example/main.c)
+target_link_libraries(${PROJECT_NAME}_example
+    fort)
+
+
+add_executable(${PROJECT_NAME}_example_cpp
+    example/main.cpp)
+target_link_libraries(${PROJECT_NAME}_example_cpp
+    fort)
+
+if(DEFINED FORT_EXTRA_LINK_LIBRARIES)
+    target_link_libraries(${PROJECT_NAME}_example_cpp "${FORT_EXTRA_LINK_LIBRARIES}")
+    target_link_libraries(${PROJECT_NAME}_example "${FORT_EXTRA_LINK_LIBRARIES}")
+endif()
+
+
+
+# ------------------------------------------------------------------------------
 # Set preprocessor macros for all test builds
 # ------------------------------------------------------------------------------
+
 target_compile_definitions(${PROJECT_NAME}_test_dev PRIVATE FT_TEST_BUILD=1)
 target_compile_definitions(${PROJECT_NAME}_test_cpp PRIVATE FT_TEST_BUILD=1)
 target_compile_definitions(${PROJECT_NAME}_test PRIVATE FT_TEST_BUILD=1)
