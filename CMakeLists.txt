@@ -4,7 +4,10 @@ project(libfort)
 
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
-# Built options
+# ------------------------------------------------------------------------------
+# Build options
+# ------------------------------------------------------------------------------
+
 option(FORT_ENABLE_ASTYLE "Enable astyle" OFF)
 option(FORT_ENABLE_WCHAR "Enable wchar support" ON)
 set(FORT_BUILD_TYPE "common" CACHE STRING "Build type")
