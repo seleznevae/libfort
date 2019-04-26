@@ -22,7 +22,7 @@ build:
 
 test_script:
   - dir
-  - ctest -VV
+  - ctest -VV -C Debug
   - cd Debug
   - dir
   - ctest -VV
