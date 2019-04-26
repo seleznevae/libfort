@@ -25,11 +25,6 @@ test_script:
   - cd Debug
   - dir
   - ctest -VV
-  - dir '%APPVEYOR_BUILD_FOLDER%'
-  - cd build
-  - cd Debug
-  # - cd '%APPVEYOR_BUILD_FOLDER%\build\Debug'
-  - ctest -VV
 # - '%APPVEYOR_BUILD_FOLDER%\build\Debug\libfort_test_dev.exe'
 # - '%APPVEYOR_BUILD_FOLDER%\build\Debug\libfort_test.exe'
 # - '%APPVEYOR_BUILD_FOLDER%\build\Debug\libfort_example.exe'
