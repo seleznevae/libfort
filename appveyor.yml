@@ -22,7 +22,7 @@ build:
 
 test_script:
   - dir
-  - cd build
+  - cd Debug
   - dir
   - ctest -VV
   - dir '%APPVEYOR_BUILD_FOLDER%'
