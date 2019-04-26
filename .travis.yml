@@ -194,9 +194,7 @@ script:
   - cmake .. -DFORT_BUILD_TYPE=asan  
   - cmake --build . --target all 
   - ls
-  - ./libfort_example
-  - ./libfort_test_dev
-  - ./libfort_test
+  - ctest -VV
 
   # Test without WCHAR support
   - cd ..
@@ -206,9 +204,7 @@ script:
   - cmake .. -DFORT_ENABLE_WCHAR=OFF  
   - cmake --build . --target all 
   - ls
-  - ./libfort_example
-  - ./libfort_test_dev
-  - ./libfort_test
+  - ctest -VV
 
   # Test build without optimizations and with ubsan
   - |
@@ -219,9 +215,7 @@ script:
       cmake .. -DFORT_BUILD_TYPE=ubsan  ; 
       cmake --build . --target all ;
       ls ;
-      ./libfort_example ;
-      ./libfort_test_dev ;
-      ./libfort_test ;
+      ctest -VV;
     fi
 
   # Astyle Format
@@ -267,7 +261,7 @@ script:
       cmake .. -DFORT_BUILD_TYPE=coveralls ;
       cmake --build . --target all ;
       ls ;
-      ./libfort_test_dev ;
+      ./tests/libfort_test_dev ;
     fi
   - cd ..
 
