@@ -53,8 +53,8 @@ target_include_directories(${PROJECT_NAME}_test_cpp
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-if(DEFINED FORT_EXTRA_LINK_LIBRARIES)
-    target_link_libraries(${PROJECT_NAME}_test_dev "${FORT_EXTRA_LINK_LIBRARIES}")
-    target_link_libraries(${PROJECT_NAME}_test_cpp "${FORT_EXTRA_LINK_LIBRARIES}")
-    target_link_libraries(${PROJECT_NAME}_test "${FORT_EXTRA_LINK_LIBRARIES}")
+if(DEFINED FORT_LINK_LIBRARIES)
+    target_link_libraries(${PROJECT_NAME}_test_dev "${FORT_LINK_LIBRARIES}")
+    target_link_libraries(${PROJECT_NAME}_test_cpp "${FORT_LINK_LIBRARIES}")
+    target_link_libraries(${PROJECT_NAME}_test "${FORT_LINK_LIBRARIES}")
 endif()

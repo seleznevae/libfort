@@ -70,7 +70,7 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
         if("${FORT_COMPILER}" STREQUAL "GNU")
-            set(FORT_EXTRA_LINK_LIBRARIES asan)
+            set(FORT_LINK_LIBRARIES asan)
         endif()
     endif()
 
@@ -82,7 +82,7 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
         if("${FORT_COMPILER}" STREQUAL "GNU")
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover")
-            set(FORT_EXTRA_LINK_LIBRARIES ubsan)
+            set(FORT_LINK_LIBRARIES ubsan)
 
         elseif("${FORT_COMPILER}" STREQUAL "Clang")
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover=all")
@@ -149,7 +149,7 @@ add_custom_target(headers SOURCES ${FortHeaders})
 
 
 add_executable(${PROJECT_NAME}_example
-     example/main.c)
+    example/main.c)
 target_link_libraries(${PROJECT_NAME}_example
     fort)
 
@@ -159,9 +159,9 @@ add_executable(${PROJECT_NAME}_example_cpp
 target_link_libraries(${PROJECT_NAME}_example_cpp
     fort)
 
-if(DEFINED FORT_EXTRA_LINK_LIBRARIES)
-    target_link_libraries(${PROJECT_NAME}_example_cpp "${FORT_EXTRA_LINK_LIBRARIES}")
-    target_link_libraries(${PROJECT_NAME}_example "${FORT_EXTRA_LINK_LIBRARIES}")
+if(DEFINED FORT_LINK_LIBRARIES)
+    target_link_libraries(${PROJECT_NAME}_example_cpp "${FORT_LINK_LIBRARIES}")
+    target_link_libraries(${PROJECT_NAME}_example "${FORT_LINK_LIBRARIES}")
 endif()
 
 
