@@ -21,7 +21,7 @@ build:
   project: $(APPVEYOR_BUILD_FOLDER)\build\$(APPVEYOR_PROJECT_NAME).sln
 
 test_script:
-  - cd '%APPVEYOR_BUILD_FOLDER%\build\Debug
+  - cd '%APPVEYOR_BUILD_FOLDER%\build\Debug'
   - ctest -VV
 # - '%APPVEYOR_BUILD_FOLDER%\build\Debug\libfort_test_dev.exe'
 # - '%APPVEYOR_BUILD_FOLDER%\build\Debug\libfort_test.exe'
