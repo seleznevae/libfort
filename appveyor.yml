@@ -21,6 +21,8 @@ build:
   project: $(APPVEYOR_BUILD_FOLDER)\build\$(APPVEYOR_PROJECT_NAME).sln
 
 test_script:
+  - dir
+  - dir '%APPVEYOR_BUILD_FOLDER%'
   - cd build
   - cd Debug
   # - cd '%APPVEYOR_BUILD_FOLDER%\build\Debug'
