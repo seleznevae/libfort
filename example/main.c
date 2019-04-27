@@ -244,7 +244,7 @@ void print_different_border_styles()
     ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_TOP_PADDING, 3);
     ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_LEFT_PADDING, 10);
 
-    struct ft_border_style *styles[] = {
+    const struct ft_border_style *styles[] = {
         FT_BASIC_STYLE,
         FT_BASIC2_STYLE,
         FT_SIMPLE_STYLE,

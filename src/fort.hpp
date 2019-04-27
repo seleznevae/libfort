@@ -763,7 +763,7 @@ public:
      *   - True: Success; table border style was changed.
      *   - False: Error
      */
-    bool set_border_style(struct ft_border_style *style)
+    bool set_border_style(const struct ft_border_style *style)
     {
         return FT_IS_SUCCESS(ft_set_border_style(table_, style));
     }

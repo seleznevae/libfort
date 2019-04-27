@@ -1967,44 +1967,49 @@ int ft_add_separator(ft_table_t *table)
     return FT_SUCCESS;
 }
 
+static const struct fort_border_style * built_in_styles[] = {
+    &FORT_BASIC_STYLE,
+    &FORT_BASIC2_STYLE,
+    &FORT_SIMPLE_STYLE,
+    &FORT_PLAIN_STYLE,
+    &FORT_DOT_STYLE,
+    &FORT_EMPTY_STYLE,
+    &FORT_EMPTY2_STYLE,
+    &FORT_SOLID_STYLE,
+    &FORT_SOLID_ROUND_STYLE,
+    &FORT_NICE_STYLE,
+    &FORT_DOUBLE_STYLE,
+    &FORT_DOUBLE2_STYLE,
+    &FORT_BOLD_STYLE,
+    &FORT_BOLD2_STYLE,
+    &FORT_FRAME_STYLE,
+};
+#define BUILT_IN_STYLES_SZ (sizeof(built_in_styles) / sizeof(built_in_styles[0]))
 
+/* todo: remove this stupide and dangerous code */
+static const struct ft_border_style built_in_external_styles[BUILT_IN_STYLES_SZ];
 
-struct ft_border_style *const FT_BASIC_STYLE = (struct ft_border_style *) &FORT_BASIC_STYLE;
-struct ft_border_style *const FT_BASIC2_STYLE = (struct ft_border_style *) &FORT_BASIC2_STYLE;
-struct ft_border_style *const FT_SIMPLE_STYLE = (struct ft_border_style *) &FORT_SIMPLE_STYLE;
-struct ft_border_style *const FT_PLAIN_STYLE = (struct ft_border_style *) &FORT_PLAIN_STYLE;
-struct ft_border_style *const FT_DOT_STYLE = (struct ft_border_style *) &FORT_DOT_STYLE;
-struct ft_border_style *const FT_EMPTY_STYLE  = (struct ft_border_style *) &FORT_EMPTY_STYLE;
-struct ft_border_style *const FT_EMPTY2_STYLE  = (struct ft_border_style *) &FORT_EMPTY2_STYLE;
-struct ft_border_style *const FT_SOLID_STYLE  = (struct ft_border_style *) &FORT_SOLID_STYLE;
-struct ft_border_style *const FT_SOLID_ROUND_STYLE  = (struct ft_border_style *) &FORT_SOLID_ROUND_STYLE;
-struct ft_border_style *const FT_NICE_STYLE  = (struct ft_border_style *) &FORT_NICE_STYLE;
-struct ft_border_style *const FT_DOUBLE_STYLE  = (struct ft_border_style *) &FORT_DOUBLE_STYLE;
-struct ft_border_style *const FT_DOUBLE2_STYLE  = (struct ft_border_style *) &FORT_DOUBLE2_STYLE;
-struct ft_border_style *const FT_BOLD_STYLE  = (struct ft_border_style *) &FORT_BOLD_STYLE;
-struct ft_border_style *const FT_BOLD2_STYLE  = (struct ft_border_style *) &FORT_BOLD2_STYLE;
-struct ft_border_style *const FT_FRAME_STYLE  = (struct ft_border_style *) &FORT_FRAME_STYLE;
-
-
+const struct ft_border_style *const FT_BASIC_STYLE = &built_in_external_styles[0];
+const struct ft_border_style *const FT_BASIC2_STYLE = &built_in_external_styles[1];
+const struct ft_border_style *const FT_SIMPLE_STYLE = &built_in_external_styles[2];
+const struct ft_border_style *const FT_PLAIN_STYLE = &built_in_external_styles[3];
+const struct ft_border_style *const FT_DOT_STYLE = &built_in_external_styles[4];
+const struct ft_border_style *const FT_EMPTY_STYLE  = &built_in_external_styles[5];
+const struct ft_border_style *const FT_EMPTY2_STYLE  = &built_in_external_styles[6];
+const struct ft_border_style *const FT_SOLID_STYLE  = &built_in_external_styles[7];
+const struct ft_border_style *const FT_SOLID_ROUND_STYLE  = &built_in_external_styles[8];
+const struct ft_border_style *const FT_NICE_STYLE  = &built_in_external_styles[9];
+const struct ft_border_style *const FT_DOUBLE_STYLE  = &built_in_external_styles[10];
+const struct ft_border_style *const FT_DOUBLE2_STYLE  = &built_in_external_styles[11];
+const struct ft_border_style *const FT_BOLD_STYLE  = &built_in_external_styles[12];
+const struct ft_border_style *const FT_BOLD2_STYLE  = &built_in_external_styles[13];
+const struct ft_border_style *const FT_FRAME_STYLE  = &built_in_external_styles[14];
 
 static void set_border_props_for_props(fort_table_properties_t *properties, const struct ft_border_style *style)
 {
-    if ((const struct fort_border_style *)style == &FORT_BASIC_STYLE
-        || (const struct fort_border_style *)style == &FORT_BASIC2_STYLE
-        || (const struct fort_border_style *)style == &FORT_SIMPLE_STYLE
-        || (const struct fort_border_style *)style == &FORT_DOT_STYLE
-        || (const struct fort_border_style *)style == &FORT_PLAIN_STYLE
-        || (const struct fort_border_style *)style == &FORT_EMPTY_STYLE
-        || (const struct fort_border_style *)style == &FORT_EMPTY2_STYLE
-        || (const struct fort_border_style *)style == &FORT_SOLID_STYLE
-        || (const struct fort_border_style *)style == &FORT_SOLID_ROUND_STYLE
-        || (const struct fort_border_style *)style == &FORT_NICE_STYLE
-        || (const struct fort_border_style *)style == &FORT_DOUBLE_STYLE
-        || (const struct fort_border_style *)style == &FORT_DOUBLE2_STYLE
-        || (const struct fort_border_style *)style == &FORT_BOLD_STYLE
-        || (const struct fort_border_style *)style == &FORT_BOLD2_STYLE
-        || (const struct fort_border_style *)style == &FORT_FRAME_STYLE) {
-        memcpy(&(properties->border_style), (const struct fort_border_style *)style, sizeof(struct fort_border_style));
+    if (style >= built_in_external_styles && style < (built_in_external_styles + BUILT_IN_STYLES_SZ)) {
+        size_t pos = (size_t)(style - built_in_external_styles);
+        memcpy(&(properties->border_style), built_in_styles[pos], sizeof(struct fort_border_style));
         return;
     }
 

@@ -616,21 +616,21 @@ struct ft_border_style {
  * @name Built-in table border styles.
  * @{
  */
-extern struct ft_border_style *const FT_BASIC_STYLE;
-extern struct ft_border_style *const FT_BASIC2_STYLE;
-extern struct ft_border_style *const FT_SIMPLE_STYLE;
-extern struct ft_border_style *const FT_PLAIN_STYLE;
-extern struct ft_border_style *const FT_DOT_STYLE;
-extern struct ft_border_style *const FT_EMPTY_STYLE;
-extern struct ft_border_style *const FT_EMPTY2_STYLE;
-extern struct ft_border_style *const FT_SOLID_STYLE;
-extern struct ft_border_style *const FT_SOLID_ROUND_STYLE;
-extern struct ft_border_style *const FT_NICE_STYLE;
-extern struct ft_border_style *const FT_DOUBLE_STYLE;
-extern struct ft_border_style *const FT_DOUBLE2_STYLE;
-extern struct ft_border_style *const FT_BOLD_STYLE;
-extern struct ft_border_style *const FT_BOLD2_STYLE;
-extern struct ft_border_style *const FT_FRAME_STYLE;
+extern const struct ft_border_style *const FT_BASIC_STYLE;
+extern const struct ft_border_style *const FT_BASIC2_STYLE;
+extern const struct ft_border_style *const FT_SIMPLE_STYLE;
+extern const struct ft_border_style *const FT_PLAIN_STYLE;
+extern const struct ft_border_style *const FT_DOT_STYLE;
+extern const struct ft_border_style *const FT_EMPTY_STYLE;
+extern const struct ft_border_style *const FT_EMPTY2_STYLE;
+extern const struct ft_border_style *const FT_SOLID_STYLE;
+extern const struct ft_border_style *const FT_SOLID_ROUND_STYLE;
+extern const struct ft_border_style *const FT_NICE_STYLE;
+extern const struct ft_border_style *const FT_DOUBLE_STYLE;
+extern const struct ft_border_style *const FT_DOUBLE2_STYLE;
+extern const struct ft_border_style *const FT_BOLD_STYLE;
+extern const struct ft_border_style *const FT_BOLD2_STYLE;
+extern const struct ft_border_style *const FT_FRAME_STYLE;
 /** @} */
 
 
