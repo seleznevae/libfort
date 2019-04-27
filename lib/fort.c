@@ -1967,7 +1967,7 @@ int ft_add_separator(ft_table_t *table)
     return FT_SUCCESS;
 }
 
-static const struct fort_border_style * built_in_styles[] = {
+static const struct fort_border_style *built_in_styles[] = {
     &FORT_BASIC_STYLE,
     &FORT_BASIC2_STYLE,
     &FORT_SIMPLE_STYLE,

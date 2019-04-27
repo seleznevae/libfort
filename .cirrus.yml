@@ -30,9 +30,10 @@ main_task:
     - cmake .. -DFORT_BUILD_TYPE=asan  
     - cmake --build . --target all 
     - ls
-    - ./libfort_example
-    - ./libfort_test_dev
-    - ./libfort_test
+    - ctest -VV
+    # - ./libfort_example
+    # - ./libfort_test_dev
+    # - ./libfort_test
     - cd ..
     - rm -r build/* 
 
@@ -42,9 +43,10 @@ main_task:
     - cmake .. -DFORT_BUILD_TYPE=ubsan  
     - cmake --build . --target all 
     - ls
-    - ./libfort_example
-    - ./libfort_test_dev
-    - ./libfort_test
+    - ctest -VV
+    # - ./libfort_example
+    # - ./libfort_test_dev
+    # - ./libfort_test
     - cd ..
     - rm -r build/* 
 
@@ -54,8 +56,9 @@ main_task:
     - cmake .. -DFORT_ENABLE_WCHAR=OFF  
     - cmake --build . --target all 
     - ls
-    - ./libfort_example
-    - ./libfort_test_dev
-    - ./libfort_test
+    - ctest -VV
+    # - ./libfort_example
+    # - ./libfort_test_dev
+    # - ./libfort_test
     - cd ..
     - rm -r build/* 
