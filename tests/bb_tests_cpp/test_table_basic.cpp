@@ -240,7 +240,7 @@ void test_cpp_table_write(void)
 
         /* Replace old values */
         table[1][1] = "234";
-        const char *row_11[3] = {"3.140000", "3"};
+        const char *row_11[2] = {"3.140000", "3"};
         assert_true(table.range_write_ln(std::begin(row_11), std::end(row_11)));
 
 

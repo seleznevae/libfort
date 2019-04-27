@@ -121,7 +121,7 @@ foreach(flags_var_to_scrub
         CMAKE_C_FLAGS_RELWITHDEBINFO
         CMAKE_C_FLAGS_MINSIZEREL
         )
-      string (REGEX REPLACE "(^| )[/-]D *NDEBUG($| )" " "
+    string(REGEX REPLACE "(^| )[/-]D *NDEBUG($| )" " "
         "${flags_var_to_scrub}" "${${flags_var_to_scrub}}")
 endforeach()
 
