@@ -1986,8 +1986,14 @@ static const struct fort_border_style *built_in_styles[] = {
 };
 #define BUILT_IN_STYLES_SZ (sizeof(built_in_styles) / sizeof(built_in_styles[0]))
 
-/* todo: remove this stupide and dangerous code */
-static const struct ft_border_style built_in_external_styles[BUILT_IN_STYLES_SZ];
+/* todo: remove this stupid and dangerous code */
+static const struct ft_border_style built_in_external_styles[BUILT_IN_STYLES_SZ] = {
+    {
+        {"", "", "", "", "", ""},
+        {"", "", "", "", "", ""},
+        ""
+    }
+};
 
 const struct ft_border_style *const FT_BASIC_STYLE = &built_in_external_styles[0];
 const struct ft_border_style *const FT_BASIC2_STYLE = &built_in_external_styles[1];
@@ -2020,18 +2026,6 @@ static void set_border_props_for_props(fort_table_properties_t *properties, cons
 #define H_BOR_CHARS properties->border_style.header_border_chars
 #define SEP_CHARS properties->border_style.separator_chars
 
-    /*
-    BOR_CHARS[TL_bip] = BOR_CHARS[TT_bip] = BOR_CHARS[TV_bip] = BOR_CHARS[TR_bip] = border_chs->top_border_ch;
-    BOR_CHARS[LH_bip] = BOR_CHARS[IH_bip] = BOR_CHARS[II_bip] = BOR_CHARS[RH_bip] = border_chs->separator_ch;
-    BOR_CHARS[BL_bip] = BOR_CHARS[BB_bip] = BOR_CHARS[BV_bip] = BOR_CHARS[BR_bip] = border_chs->bottom_border_ch;
-    BOR_CHARS[LL_bip] = BOR_CHARS[IV_bip] = BOR_CHARS[RR_bip] = border_chs->side_border_ch;
-
-    H_BOR_CHARS[TL_bip] = H_BOR_CHARS[TT_bip] = H_BOR_CHARS[TV_bip] = H_BOR_CHARS[TR_bip] = header_border_chs->top_border_ch;
-    H_BOR_CHARS[LH_bip] = H_BOR_CHARS[IH_bip] = H_BOR_CHARS[II_bip] = H_BOR_CHARS[RH_bip] = header_border_chs->separator_ch;
-    H_BOR_CHARS[BL_bip] = H_BOR_CHARS[BB_bip] = H_BOR_CHARS[BV_bip] = H_BOR_CHARS[BR_bip] = header_border_chs->bottom_border_ch;
-    H_BOR_CHARS[LL_bip] = H_BOR_CHARS[IV_bip] = H_BOR_CHARS[RR_bip] = header_border_chs->side_border_ch;
-    */
-
     BOR_CHARS[TT_bip] = border_chs->top_border_ch;
     BOR_CHARS[IH_bip] = border_chs->separator_ch;
     BOR_CHARS[BB_bip] = border_chs->bottom_border_ch;
@@ -2044,15 +2038,9 @@ static void set_border_props_for_props(fort_table_properties_t *properties, cons
 
     BOR_CHARS[LI_bip] = BOR_CHARS[TI_bip] = BOR_CHARS[RI_bip] = BOR_CHARS[BI_bip] = border_chs->in_intersect_ch;
 
-    /*
-    if (border_chs->separator_ch == '\0' && border_chs->in_intersect_ch == '\0') {
-        BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = '\0';
-    }
-    */
     if (strlen(border_chs->separator_ch) == 0 && strlen(border_chs->in_intersect_ch) == 0) {
         BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = "\0";
     }
-
 
     H_BOR_CHARS[TT_bip] = header_border_chs->top_border_ch;
     H_BOR_CHARS[IH_bip] = header_border_chs->separator_ch;
@@ -2066,11 +2054,6 @@ static void set_border_props_for_props(fort_table_properties_t *properties, cons
 
     H_BOR_CHARS[LI_bip] = H_BOR_CHARS[TI_bip] = H_BOR_CHARS[RI_bip] = H_BOR_CHARS[BI_bip] = header_border_chs->in_intersect_ch;
 
-    /*
-    if (header_border_chs->separator_ch == '\0' && header_border_chs->in_intersect_ch == '\0') {
-        H_BOR_CHARS[LH_bip] = H_BOR_CHARS[RH_bip] = '\0';
-    }
-    */
     if (strlen(header_border_chs->separator_ch) == 0 && strlen(header_border_chs->in_intersect_ch) == 0) {
         BOR_CHARS[LH_bip] = BOR_CHARS[RH_bip] = "\0";
     }
