@@ -614,6 +614,11 @@ struct ft_border_style {
 /**
  * @defgroup BasicStyles
  * @name Built-in table border styles.
+ * @note Built-in border styles (FT_BASIC_STYLE, FT_BASIC2_STYLE ...) can be
+ * used as arguments for @ref ft_set_border_style and
+ * @ref ft_set_default_border_style, but their fields shouldn't be accessed
+ * directly because implementation doesn't guarantee that these objects are
+ * properly initialized.
  * @{
  */
 extern const struct ft_border_style *const FT_BASIC_STYLE;

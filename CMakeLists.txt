@@ -31,6 +31,10 @@ message(STATUS "libfort build options: "
     " wchar support = ${FORT_ENABLE_WCHAR}; "
     " build type = ${FORT_BUILD_TYPE}")
 
+# for fort.hpp
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # ------------------------------------------------------------------------------
 # Warnings
 # ------------------------------------------------------------------------------
@@ -59,12 +63,8 @@ else()
             -Wlogical-op")
     endif()
 
-
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ADDITIONAL_WARNINGS} -Wpedantic")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ADDITIONAL_WARNINGS}")
-
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 # ------------------------------------------------------------------------------

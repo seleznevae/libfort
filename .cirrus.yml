@@ -27,7 +27,7 @@ main_task:
     # Test build without optimizations and with asan
     - mkdir -p build
     - cd build
-    - cmake .. -DFORT_BUILD_TYPE=asan -DCMAKE_BUILD_TYPE=Debug 
+    - cmake .. -DFORT_BUILD_TYPE=asan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
     - cmake --build . --target all 
     - ls
     - ctest -VV
@@ -37,7 +37,7 @@ main_task:
     # Test build without optimizations and with ubsan
     - mkdir -p build
     - cd build
-    - cmake .. -DFORT_BUILD_TYPE=ubsan -DCMAKE_BUILD_TYPE=Debug 
+    - cmake .. -DFORT_BUILD_TYPE=ubsan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
     - cmake --build . --target all 
     - ls
     - ctest -VV
@@ -47,7 +47,7 @@ main_task:
     # Test without WCHAR support
     - mkdir -p build
     - cd build
-    - cmake .. -DFORT_ENABLE_WCHAR=OFF -DCMAKE_BUILD_TYPE=Debug
+    - cmake .. -DFORT_ENABLE_WCHAR=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
     - cmake --build . --target all 
     - ls
     - ctest -VV

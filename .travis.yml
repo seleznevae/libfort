@@ -191,7 +191,7 @@ script:
   # Test build without optimizations and with asan
   - mkdir -p build
   - cd build
-  - cmake .. -DFORT_BUILD_TYPE=asan -DCMAKE_BUILD_TYPE=Debug 
+  - cmake .. -DFORT_BUILD_TYPE=asan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
   - cmake --build . --target all 
   - ls
   - ctest -VV
@@ -201,7 +201,7 @@ script:
   - rm -r build/*
   - mkdir -p build
   - cd build
-  - cmake .. -DFORT_ENABLE_WCHAR=OFF -DCMAKE_BUILD_TYPE=Debug 
+  - cmake .. -DFORT_ENABLE_WCHAR=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
   - cmake --build . --target all 
   - ls
   - ctest -VV
@@ -212,7 +212,7 @@ script:
       cd .. ;
       rm -r build/* ;
       cd build ;
-      cmake .. -DFORT_BUILD_TYPE=ubsan -DCMAKE_BUILD_TYPE=Debug ; 
+      cmake .. -DFORT_BUILD_TYPE=ubsan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 ; 
       cmake --build . --target all ;
       ls ;
       ctest -VV;
@@ -258,7 +258,7 @@ script:
       cd ..  ;
       rm -r build/* ;
       cd build ;
-      cmake .. -DFORT_BUILD_TYPE=coveralls -DCMAKE_BUILD_TYPE=Debug ;
+      cmake .. -DFORT_BUILD_TYPE=coveralls -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 ;
       cmake --build . --target all ;
       ls ;
       ./tests/libfort_test_dev ;
