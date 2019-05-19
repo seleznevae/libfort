@@ -1,7 +1,6 @@
 option(FORT_HAVE_WCHAR "Enable wchar support" ON)
 option(FORT_TEST_BUILD "Export some internal symbols for tests" ON)
 
-message("FORT_HAVE_WCHAR in fort_dev = ${FORT_HAVE_WCHAR}")
 add_library(fort_dev
     fort_impl.c
     vector.c

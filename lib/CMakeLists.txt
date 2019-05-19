@@ -1,6 +1,5 @@
 option(FORT_HAVE_WCHAR "Enable wchar support" ON)
 
-message("FORT_HAVE_WCHAR in fort = ${FORT_HAVE_WCHAR}")
 add_library(fort
     fort.c)
 

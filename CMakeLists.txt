@@ -27,6 +27,10 @@ endif()
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+message(STATUS "libfort build options: "
+    " wchar support = ${FORT_ENABLE_WCHAR}; "
+    " build type = ${FORT_BUILD_TYPE}")
+
 # ------------------------------------------------------------------------------
 # Warnings
 # ------------------------------------------------------------------------------
@@ -59,8 +63,8 @@ else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ADDITIONAL_WARNINGS} -Wpedantic")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ADDITIONAL_WARNINGS}")
 
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -std=c99 ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 ")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 # ------------------------------------------------------------------------------

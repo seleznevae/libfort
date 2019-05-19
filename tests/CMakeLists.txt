@@ -1,7 +1,6 @@
 option(FORT_HAVE_WCHAR "Enable wchar support" ON)
 option(FORT_TEST_BUILD "Export some internal symbols for tests" ON)
 
-message("FORT_HAVE_WCHAR in tests = ${FORT_HAVE_WCHAR}")
 
 add_executable(${PROJECT_NAME}_test_dev
     main_test.c
