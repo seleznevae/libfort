@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'libfort'
-copyright = u'2018, Seleznev Anton'
+copyright = u'2017 - 2019, Seleznev Anton'
 author = u'Seleznev Anton'
 
 # The version info for the project you're documenting, acts as replacement for

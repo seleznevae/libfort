@@ -255,6 +255,6 @@ List of libfort builtin border styles:
 
 
        
-@copyright Copyright &copy; 2017 - 2018 Seleznev Anton. The code is licensed under the [MIT License](http://opensource.org/licenses/MIT).
+@copyright Copyright &copy; 2017 - 2019 Seleznev Anton. The code is licensed under the [MIT License](http://opensource.org/licenses/MIT).
 @author Seleznev Anton
 @see https://github.com/seleznevae/libfort to download the source code
