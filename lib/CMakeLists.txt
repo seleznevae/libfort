@@ -8,6 +8,10 @@ target_include_directories(fort
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set_target_properties(fort
+    PROPERTIES VERSION 0.1.1
+    SOVERSION 0.1)
+
 if(FORT_HAVE_WCHAR)
     target_compile_definitions(fort
         PRIVATE
