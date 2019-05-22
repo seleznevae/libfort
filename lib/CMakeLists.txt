@@ -18,3 +18,15 @@ if(FORT_HAVE_WCHAR)
             -DFT_CONGIG_HAVE_WCHAR
     )
 endif()
+
+
+include(GNUInstallDirs)
+install(
+    TARGETS
+      fort
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(FILES fort.h fort.hpp DESTINATION include)
