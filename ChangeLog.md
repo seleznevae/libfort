@@ -1,3 +1,9 @@
+## v0.1.4
+
+### Internal
+
+- Removed redundant build options from cmake files.
+
 ## v0.1.3
 
 ### Internal

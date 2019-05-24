@@ -108,7 +108,7 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
 endif()
 
 # Hack for some gcc versions
-if("${FORT_COMPILER}" STREQUAL "GNU")
+if("${FORT_COMPILER}" STREQUAL "GNU" AND NOT "${FORT_BUILD_TYPE}" STREQUAL "common")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=gold")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
 endif()
