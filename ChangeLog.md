@@ -3,6 +3,7 @@
 ### Internal
 
 - Removed redundant build options from cmake files.
+- Added build for arm platform with drone.ci.
 
 ## v0.1.3
 
