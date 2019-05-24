@@ -10,13 +10,11 @@ steps:
     image: alpine
     commands:
       - apk add gcc g++ cmake make binutils-gold
-      - CMAKE_C_FLAGS="-Werror"
-      - CMAKE_CXX_FLAGS="-Werror"
       - ls
       - uname -a
       - mkdir -p build
       - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
+      - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror"
       - cmake --build . --target all
       - ls
       - ctest -VV
@@ -34,13 +32,11 @@ steps:
     image: alpine
     commands:
       - apk add gcc g++ cmake make binutils-gold
-      - CMAKE_C_FLAGS="-Werror"
-      - CMAKE_CXX_FLAGS="-Werror"
       - ls
       - uname -a
       - mkdir -p build
       - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
+      - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror"
       - cmake --build . --target all
       - ls
       - ctest -VV
@@ -57,13 +53,11 @@ steps:
     image: alpine
     commands:
       - apk add gcc g++ cmake make binutils-gold
-      - CMAKE_C_FLAGS="-Werror"
-      - CMAKE_CXX_FLAGS="-Werror"
       - ls
       - uname -a
       - mkdir -p build
       - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
+      - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror"
       - cmake --build . --target all
       - ls
       - ctest -VV

@@ -1,5 +1,6 @@
 #include "tests.h"
 #include "string_buffer.h"
+#include "wcwidth.h"
 #include <wchar.h>
 
 
@@ -20,6 +21,9 @@ void test_strchr_count(void);
 void test_str_n_substring(void);
 void test_buffer_text_width(void);
 void test_buffer_text_height(void);
+#if defined(FT_HAVE_WCHAR)
+void test_wchar_basics(void);
+#endif
 
 
 void test_string_buffer(void)
@@ -28,6 +32,9 @@ void test_string_buffer(void)
     test_str_n_substring();
     test_buffer_text_width();
     test_buffer_text_height();
+#if defined(FT_HAVE_WCHAR)
+    test_wchar_basics();
+#endif
 }
 
 
@@ -314,3 +321,49 @@ void test_buffer_text_height(void)
     buffer->str.cstr = old_value;
     destroy_string_buffer(buffer);
 }
+
+#if defined(FT_HAVE_WCHAR)
+void test_wchar_basics(void)
+{
+#if !defined(FT_MICROSOFT_COMPILER)
+    assert_true(mk_wcswidth(L"", 0) == 0);
+    assert_true(mk_wcswidth(L"1", 0) == 0);
+
+    assert_true(mk_wcswidth(L"1", 1) == 1);
+    assert_true(mk_wcswidth(L"λ", 1) == 1); // Greek
+    assert_true(mk_wcswidth(L"ऋ", 1) == 1); // Hindi
+    assert_true(mk_wcswidth(L"ź", 1) == 1); // Polish
+    assert_true(mk_wcswidth(L"ü", 1) == 1); // Portuguese
+    assert_true(mk_wcswidth(L"ц", 1) == 1); // Russian
+    assert_true(mk_wcswidth(L"ñ", 1) == 1); // Spanish
+    assert_true(mk_wcswidth(L"ğ", 1) == 1); // Turkish
+
+
+    assert_true(mk_wcswidth(L"ФЦУЙъхЭЯЧьЮЪЁ", 13) == 13);
+    assert_true(mk_wcswidth(L"ФЦУЙъхЭЯЧьЮЪЁ", 14) == 13);
+    assert_true(mk_wcswidth(L"ФЦУЙъхЭЯЧьЮЪЁ", 10) == 10);
+
+    /* panagrams from http://clagnut.com/blog/2380/ */
+    const wchar_t *str = NULL;
+    /*              10        20        30        40        50        60        70        80        90       100       110 */
+    str = L"Numbers  01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+    assert_true(mk_wcswidth(str, 500) == 110);
+    str = L"German    Falsches Üben von Xylophonmusik quält jeden größeren Zwerg";
+    assert_true(mk_wcswidth(str, 500) == 68);
+    str = L"Greek     Ταχίστη αλώπηξ βαφής ψημένη γη, δρασκελίζει υπέρ νωθρού κυνός Takhístè";
+    assert_true(mk_wcswidth(str, 500) == 80);
+    str = L"Irish     D’ḟuascail Íosa Úrṁac na hÓiġe Beannaiṫe pór Éaḃa agus Áḋaiṁ";
+    assert_true(mk_wcswidth(str, 500) == 70);
+    str = L"Polish    Pójdźże, kiń tę chmurność w głąb flaszy";
+    assert_true(mk_wcswidth(str, 500) == 49);
+    str = L"Portuguese Luís argüia à Júlia que «brações, fé, chá, óxido, pôr, zângão» eram palavras do português";
+    assert_true(mk_wcswidth(str, 500) == 100);
+    str = L"Russian   Съешь же ещё этих мягких французских булок, да выпей чаю";
+    assert_true(mk_wcswidth(str, 500) == 66);
+    str = L"Spanish   Benjamín pidió una bebida de kiwi y fresa; Noé, sin vergüenza, la más exquisita champaña del menú";
+    assert_true(mk_wcswidth(str, 500) == 107);
+    str = L"Turkish   Vakfın çoğu bu huysuz genci plajda görmüştü";
+    assert_true(mk_wcswidth(str, 500) == 53);
+#endif
+}
+#endif

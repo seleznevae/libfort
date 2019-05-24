@@ -1,3 +1,9 @@
+## v0.1.5
+
+### Tests
+
+- Add tests for 'mk_wcswidth' function.
+
 ## v0.1.4
 
 ### Internal
