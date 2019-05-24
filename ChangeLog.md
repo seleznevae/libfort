@@ -1,3 +1,9 @@
+## v0.1.3
+
+### Internal
+
+- Fixed error with incorrect types when determine class of 'wchar_t' symbol for platforms with unsigned 'wchar_t'.
+
 ## v0.1.2
 
 ### Internal
