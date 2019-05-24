@@ -119,6 +119,9 @@ matrix:
 
 
 script:
+  - CMAKE_C_FLAGS="-Werror"
+  - CMAKE_CXX_FLAGS="-Werror"
+
   # Check library file was generated
   - python amalgamate.py -o dummy.c
   - wc dummy.c
@@ -191,7 +194,7 @@ script:
   # Test build without optimizations and with asan
   - mkdir -p build
   - cd build
-  - cmake .. -DFORT_BUILD_TYPE=asan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
+  - cmake .. -DFORT_BUILD_TYPE=asan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
   - cmake --build . --target all 
   - ls
   - ctest -VV
@@ -201,7 +204,7 @@ script:
   - rm -r build/*
   - mkdir -p build
   - cd build
-  - cmake .. -DFORT_ENABLE_WCHAR=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
+  - cmake .. -DFORT_ENABLE_WCHAR=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
   - cmake --build . --target all 
   - ls
   - ctest -VV
@@ -212,7 +215,7 @@ script:
       cd .. ;
       rm -r build/* ;
       cd build ;
-      cmake .. -DFORT_BUILD_TYPE=ubsan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 ; 
+      cmake .. -DFORT_BUILD_TYPE=ubsan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}" ; 
       cmake --build . --target all ;
       ls ;
       ctest -VV;
@@ -258,7 +261,7 @@ script:
       cd ..  ;
       rm -r build/* ;
       cd build ;
-      cmake .. -DFORT_BUILD_TYPE=coveralls -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 ;
+      cmake .. -DFORT_BUILD_TYPE=coveralls -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}" ;
       cmake --build . --target all ;
       ls ;
       ./tests/libfort_test_dev ;

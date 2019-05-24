@@ -46,7 +46,6 @@ else()
     set(ADDITIONAL_WARNINGS "\
         -Wall \
         -Wextra \
-        -Werror \
         -Wdouble-promotion \
         -Wshadow \
         -Wformat=2 \

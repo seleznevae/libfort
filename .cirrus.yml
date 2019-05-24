@@ -3,6 +3,9 @@ freebsd_instance:
 
 main_task:
   script:
+    - CMAKE_C_FLAGS="-Werror"
+    - CMAKE_CXX_FLAGS="-Werror"
+
     - uname -a
     - ls
     - yes | pkg install cmake
@@ -27,7 +30,7 @@ main_task:
     # Test build without optimizations and with asan
     - mkdir -p build
     - cd build
-    - cmake .. -DFORT_BUILD_TYPE=asan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
+    - cmake .. -DFORT_BUILD_TYPE=asan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
     - cmake --build . --target all 
     - ls
     - ctest -VV
@@ -37,7 +40,7 @@ main_task:
     # Test build without optimizations and with ubsan
     - mkdir -p build
     - cd build
-    - cmake .. -DFORT_BUILD_TYPE=ubsan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
+    - cmake .. -DFORT_BUILD_TYPE=ubsan -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
     - cmake --build . --target all 
     - ls
     - ctest -VV
@@ -47,7 +50,7 @@ main_task:
     # Test without WCHAR support
     - mkdir -p build
     - cd build
-    - cmake .. -DFORT_ENABLE_WCHAR=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
+    - cmake .. -DFORT_ENABLE_WCHAR=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
     - cmake --build . --target all 
     - ls
     - ctest -VV
