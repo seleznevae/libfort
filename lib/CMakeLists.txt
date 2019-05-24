@@ -9,7 +9,7 @@ target_include_directories(fort
 )
 
 set_target_properties(fort
-    PROPERTIES VERSION 0.1.3
+    PROPERTIES VERSION 0.1.4
     SOVERSION 0.1)
 
 if(FORT_HAVE_WCHAR)
