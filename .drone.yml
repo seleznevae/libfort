@@ -1,0 +1,69 @@
+---
+kind: pipeline
+name: test-on-amd64
+
+platform:
+  arch: amd64
+
+steps:
+  - name: test
+    image: alpine
+    commands:
+      - apk add gcc g++ cmake make binutils-gold
+      - CMAKE_C_FLAGS="-Werror"
+      - CMAKE_CXX_FLAGS="-Werror"
+      - ls
+      - uname -a
+      - mkdir -p build
+      - cd build
+      - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
+      - cmake --build . --target all
+      - ls
+      - ctest -VV
+
+
+---
+kind: pipeline
+name: test-on-arm
+
+platform:
+  arch: arm
+
+steps:
+  - name: test
+    image: alpine
+    commands:
+      - apk add gcc g++ cmake make binutils-gold
+      - CMAKE_C_FLAGS="-Werror"
+      - CMAKE_CXX_FLAGS="-Werror"
+      - ls
+      - uname -a
+      - mkdir -p build
+      - cd build
+      - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
+      - cmake --build . --target all
+      - ls
+      - ctest -VV
+
+---
+kind: pipeline
+name: test-on-arm64
+
+platform:
+  arch: arm64
+
+steps:
+  - name: test
+    image: alpine
+    commands:
+      - apk add gcc g++ cmake make binutils-gold
+      - CMAKE_C_FLAGS="-Werror"
+      - CMAKE_CXX_FLAGS="-Werror"
+      - ls
+      - uname -a
+      - mkdir -p build
+      - cd build
+      - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
+      - cmake --build . --target all
+      - ls
+      - ctest -VV
