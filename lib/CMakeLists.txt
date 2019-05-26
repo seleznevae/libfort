@@ -9,8 +9,8 @@ target_include_directories(fort
 )
 
 set_target_properties(fort
-    PROPERTIES VERSION 0.1.4
-    SOVERSION 0.1)
+    PROPERTIES VERSION ${libfort_VERSION}
+    SOVERSION ${libfort_SOVERSION})
 
 if(FORT_HAVE_WCHAR)
     target_compile_definitions(fort
@@ -30,3 +30,6 @@ install(
 )
 
 install(FILES fort.h fort.hpp DESTINATION include)
+
+configure_file(libfort.pc.in libfort.pc @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libfort.pc DESTINATION lib/pkgconfig)

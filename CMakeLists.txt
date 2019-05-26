@@ -1,6 +1,10 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
-project(libfort)
+project(libfort VERSION 0.1.5)
+
+string(REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)"
+       "\\1.\\2" libfort_SOVERSION
+       ${libfort_VERSION})
 
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
@@ -177,6 +181,7 @@ if(DEFINED FORT_LINK_LIBRARIES)
     target_link_libraries(${PROJECT_NAME}_example_cpp "${FORT_LINK_LIBRARIES}")
     target_link_libraries(${PROJECT_NAME}_example "${FORT_LINK_LIBRARIES}")
 endif()
+
 
 
 
