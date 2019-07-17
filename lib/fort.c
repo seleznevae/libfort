@@ -396,7 +396,7 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
 #define PROP_SET(ft_props, property) ((ft_props) |=(property))
 #define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)(property)))
 
-#define TEXT_STYLE_TAG_MAX_SIZE 64
+#define TEXT_STYLE_TAG_MAX_SIZE (64 * 2)
 
 FT_INTERNAL
 void get_style_tag_for_cell(const fort_table_properties_t *props,
@@ -460,7 +460,7 @@ FT_INTERNAL
 fort_status_t set_default_cell_property(uint32_t property, int value);
 
 
-/*         TABLE BORDER DESRIPTION
+/*         TABLE BORDER DESСRIPTION
  *
  *
  *   TL TT TT TT TV TT TT TT TT TT TT TT TR
@@ -2476,26 +2476,6 @@ static const char *fg_colors[] = {
     "\033[97m",
 };
 
-static const char *reset_fg_colors[] = {
-    "",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-    "\033[39m",
-};
-
 static const char *bg_colors[] = {
     "",
     "\033[40m",
@@ -2516,27 +2496,6 @@ static const char *bg_colors[] = {
     "\033[107m",
 };
 
-static const char *reset_bg_colors[] = {
-    "",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-    "\033[49m",
-};
-
-
 static const char *text_styles[] = {
     "",
     "\033[1m",
@@ -2548,17 +2507,7 @@ static const char *text_styles[] = {
     "\033[8m",
 };
 
-static const char *reset_text_styles[] = {
-    "",
-    "\033[21m",
-    "\033[22m",
-    "\033[23m",
-    "\033[24m",
-    "\033[25m",
-    "\033[27m",
-    "\033[28m",
-};
-
+#define UNIVERSAL_RESET_TAG "\033[0m"
 
 static const size_t n_fg_colors = sizeof(fg_colors) / sizeof(fg_colors[0]);
 static const size_t n_bg_colors = sizeof(bg_colors) / sizeof(bg_colors[0]);
@@ -2614,7 +2563,8 @@ void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
     if (text_style < (1U << n_styles)) {
         for (i = 0; i < n_styles; ++i) {
             if (text_style & (1 << i)) {
-                strcat(reset_style_tag, reset_text_styles[i]);
+                if (i != 0) // FT_TSTYLE_DEFAULT
+                    goto reset_style;
             }
         }
     } else {
@@ -2622,11 +2572,17 @@ void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
     }
 
     if (bg_color_number < n_bg_colors) {
-        strcat(reset_style_tag, reset_bg_colors[bg_color_number]);
+        if (bg_color_number)
+            goto reset_style;
     } else {
         goto error;
     }
 
+    return;
+
+
+reset_style:
+    strcat(reset_style_tag, UNIVERSAL_RESET_TAG);
     return;
 
 error:
@@ -2660,7 +2616,8 @@ void get_style_tag_for_content(const fort_table_properties_t *props,
     }
 
     if (fg_color_number < n_fg_colors) {
-        strcat(style_tag, fg_colors[fg_color_number]);
+        if (fg_color_number)
+            strcat(style_tag, fg_colors[fg_color_number]);
     } else {
         goto error;
     }
@@ -2685,6 +2642,7 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
 {
     (void)sz;
     size_t i = 0;
+    size_t len = 0;
 
     unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
     unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
@@ -2695,7 +2653,8 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
     if (text_style < (1U << n_styles)) {
         for (i = 0; i < n_styles; ++i) {
             if (text_style & (1 << i)) {
-                strcat(reset_style_tag, reset_text_styles[i]);
+                if (i != 0) // FT_TSTYLE_DEFAULT
+                    goto reset_style;
             }
         }
     } else {
@@ -2703,17 +2662,26 @@ void get_reset_style_tag_for_content(const fort_table_properties_t *props,
     }
 
     if (fg_color_number < n_fg_colors) {
-        strcat(reset_style_tag, reset_fg_colors[fg_color_number]);
+        if (fg_color_number)
+            goto reset_style;
     } else {
         goto error;
     }
 
     if (bg_color_number < n_bg_colors) {
-        strcat(reset_style_tag, reset_bg_colors[bg_color_number]);
+        if (bg_color_number)
+            goto reset_style;
     } else {
         goto error;
     }
 
+    return;
+
+
+reset_style:
+    strcat(reset_style_tag, UNIVERSAL_RESET_TAG);
+    len = strlen(reset_style_tag);
+    get_style_tag_for_cell(props, row, col, reset_style_tag + len, sz - len);
     return;
 
 error:

@@ -9,7 +9,7 @@
 #define PROP_SET(ft_props, property) ((ft_props) |=(property))
 #define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)(property)))
 
-#define TEXT_STYLE_TAG_MAX_SIZE 64
+#define TEXT_STYLE_TAG_MAX_SIZE (64 * 2)
 
 FT_INTERNAL
 void get_style_tag_for_cell(const fort_table_properties_t *props,
@@ -73,7 +73,7 @@ FT_INTERNAL
 fort_status_t set_default_cell_property(uint32_t property, int value);
 
 
-/*         TABLE BORDER DESRIPTION
+/*         TABLE BORDER DESСRIPTION
  *
  *
  *   TL TT TT TT TV TT TT TT TT TT TT TT TR
