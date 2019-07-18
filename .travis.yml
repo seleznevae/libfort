@@ -243,17 +243,17 @@ script:
     fi
 
 
-  # Clang static analyzer
-  - |
-    if [ "${CC}" = 'clang' ]; then
-      cd ..  ;
-      pwd ;
-      ls ;
-      rm -rf build/* ;
-      cd build ;
-      cmake .. ;
-      scan-build make ;
-    fi
+  # Clang static analyzer (doesn't work - can't find scan-build)
+  # - |
+  #   if [ "${CC}" = 'clang' ]; then
+  #     cd ..  ;
+  #     pwd ;
+  #     ls ;
+  #     rm -rf build/* ;
+  #     cd build ;
+  #     cmake .. ;
+  #     scan-build make ;
+  #   fi
 
   # Build for coveralls (should be the last)
   - |

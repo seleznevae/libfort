@@ -558,9 +558,9 @@ void test_cpp_table_text_styles(void)
         std::string table_str = table.to_string();
         std::string table_str_etalon =
             "+----+\n"
-            "|\033[33m\033[39m    |\n"
-            "| \033[33m42\033[39m |\n"
-            "|\033[33m\033[39m    |\n"
+            "|\033[33m\033[0m    |\n"
+            "| \033[33m42\033[0m |\n"
+            "|\033[33m\033[0m    |\n"
             "+----+\n";
         assert_string_equal(table_str, table_str_etalon);
     }
@@ -574,9 +574,9 @@ void test_cpp_table_text_styles(void)
         std::string table_str = table.to_string();
         std::string table_str_etalon =
             "+----+\n"
-            "|\033[43m\033[49m    |\n"
-            "| \033[43m42\033[49m |\n"
-            "|\033[43m\033[49m    |\n"
+            "|\033[43m\033[0m    |\n"
+            "| \033[43m42\033[0m |\n"
+            "|\033[43m\033[0m    |\n"
             "+----+\n";
         assert_string_equal(table_str, table_str_etalon);
     }
@@ -590,9 +590,9 @@ void test_cpp_table_text_styles(void)
         std::string table_str = table.to_string();
         std::string table_str_etalon =
             "+----+\n"
-            "|\033[43m    \033[49m|\n"
-            "|\033[43m 42 \033[49m|\n"
-            "|\033[43m    \033[49m|\n"
+            "|\033[43m    \033[0m|\n"
+            "|\033[43m 42 \033[0m|\n"
+            "|\033[43m    \033[0m|\n"
             "+----+\n";
         assert_string_equal(table_str, table_str_etalon);
     }
@@ -606,9 +606,9 @@ void test_cpp_table_text_styles(void)
         std::string table_str = table.to_string();
         std::string table_str_etalon =
             "+----+\n"
-            "|\033[4m\033[24m    |\n"
-            "| \033[4m42\033[24m |\n"
-            "|\033[4m\033[24m    |\n"
+            "|\033[4m\033[0m    |\n"
+            "| \033[4m42\033[0m |\n"
+            "|\033[4m\033[0m    |\n"
             "+----+\n";
         assert_string_equal(table_str, table_str_etalon);
     }
@@ -623,9 +623,9 @@ void test_cpp_table_text_styles(void)
         std::string table_str = table.to_string();
         std::string table_str_etalon =
             "+----+\n"
-            "|\033[1m\033[4m\033[21m\033[24m    |\n"
-            "| \033[1m\033[4m42\033[21m\033[24m |\n"
-            "|\033[1m\033[4m\033[21m\033[24m    |\n"
+            "|\033[1m\033[4m\033[0m    |\n"
+            "| \033[1m\033[4m42\033[0m |\n"
+            "|\033[1m\033[4m\033[0m    |\n"
             "+----+\n";
         assert_string_equal(table_str, table_str_etalon);
     }
@@ -639,9 +639,9 @@ void test_cpp_table_text_styles(void)
         std::string table_str = table.to_string();
         std::string table_str_etalon =
             "+----+\n"
-            "|\033[4m    \033[24m|\n"
-            "|\033[4m 42 \033[24m|\n"
-            "|\033[4m    \033[24m|\n"
+            "|\033[4m    \033[0m|\n"
+            "|\033[4m 42 \033[0m|\n"
+            "|\033[4m    \033[0m|\n"
             "+----+\n";
         assert_string_equal(table_str, table_str_etalon);
     }
@@ -656,9 +656,9 @@ void test_cpp_table_text_styles(void)
         std::string table_str = table.to_string();
         std::string table_str_etalon =
             "+----+\n"
-            "|\033[1m\033[4m    \033[21m\033[24m|\n"
-            "|\033[1m\033[4m 42 \033[21m\033[24m|\n"
-            "|\033[1m\033[4m    \033[21m\033[24m|\n"
+            "|\033[1m\033[4m    \033[0m|\n"
+            "|\033[1m\033[4m 42 \033[0m|\n"
+            "|\033[1m\033[4m    \033[0m|\n"
             "+----+\n";
         assert_string_equal(table_str, table_str_etalon);
     }
@@ -674,9 +674,9 @@ void test_cpp_table_text_styles(void)
         std::string table_str = table.to_string();
         std::string table_str_etalon =
             "+----+\n"
-            "|\033[41m\033[4m\033[33m\033[24m\033[39m    \033[49m|\n"
-            "|\033[41m \033[4m\033[33m42\033[24m\033[39m \033[49m|\n"
-            "|\033[41m\033[4m\033[33m\033[24m\033[39m    \033[49m|\n"
+            "|\033[41m\033[4m\033[33m\033[0m\033[41m    \033[0m|\n"
+            "|\033[41m \033[4m\033[33m42\033[0m\033[41m \033[0m|\n"
+            "|\033[41m\033[4m\033[33m\033[0m\033[41m    \033[0m|\n"
             "+----+\n";
         assert_string_equal(table_str, table_str_etalon);
     }

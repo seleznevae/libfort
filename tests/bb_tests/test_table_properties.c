@@ -748,9 +748,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const char *table_str_etalon =
             "+----+\n"
-            "|\033[33m\033[39m    |\n"
-            "| \033[33m42\033[39m |\n"
-            "|\033[33m\033[39m    |\n"
+            "|\033[33m\033[0m    |\n"
+            "| \033[33m42\033[0m |\n"
+            "|\033[33m\033[0m    |\n"
             "+----+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -767,9 +767,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const wchar_t *table_str_etalon =
             L"+----+\n"
-            L"|\033[33m\033[39m    |\n"
-            L"| \033[33m42\033[39m |\n"
-            L"|\033[33m\033[39m    |\n"
+            L"|\033[33m\033[0m    |\n"
+            L"| \033[33m42\033[0m |\n"
+            L"|\033[33m\033[0m    |\n"
             L"+----+\n";
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -786,9 +786,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const char *table_str_etalon =
             "+----+\n"
-            "|\033[43m\033[49m    |\n"
-            "| \033[43m42\033[49m |\n"
-            "|\033[43m\033[49m    |\n"
+            "|\033[43m\033[0m    |\n"
+            "| \033[43m42\033[0m |\n"
+            "|\033[43m\033[0m    |\n"
             "+----+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -805,9 +805,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const wchar_t *table_str_etalon =
             L"+----+\n"
-            L"|\033[43m\033[49m    |\n"
-            L"| \033[43m42\033[49m |\n"
-            L"|\033[43m\033[49m    |\n"
+            L"|\033[43m\033[0m    |\n"
+            L"| \033[43m42\033[0m |\n"
+            L"|\033[43m\033[0m    |\n"
             L"+----+\n";
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -824,9 +824,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const char *table_str_etalon =
             "+----+\n"
-            "|\033[43m    \033[49m|\n"
-            "|\033[43m 42 \033[49m|\n"
-            "|\033[43m    \033[49m|\n"
+            "|\033[43m    \033[0m|\n"
+            "|\033[43m 42 \033[0m|\n"
+            "|\033[43m    \033[0m|\n"
             "+----+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -843,9 +843,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const wchar_t *table_str_etalon =
             L"+----+\n"
-            L"|\033[43m    \033[49m|\n"
-            L"|\033[43m 42 \033[49m|\n"
-            L"|\033[43m    \033[49m|\n"
+            L"|\033[43m    \033[0m|\n"
+            L"|\033[43m 42 \033[0m|\n"
+            L"|\033[43m    \033[0m|\n"
             L"+----+\n";
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -862,9 +862,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const char *table_str_etalon =
             "+----+\n"
-            "|\033[4m\033[24m    |\n"
-            "| \033[4m42\033[24m |\n"
-            "|\033[4m\033[24m    |\n"
+            "|\033[4m\033[0m    |\n"
+            "| \033[4m42\033[0m |\n"
+            "|\033[4m\033[0m    |\n"
             "+----+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -881,9 +881,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const wchar_t *table_str_etalon =
             L"+----+\n"
-            L"|\033[4m\033[24m    |\n"
-            L"| \033[4m42\033[24m |\n"
-            L"|\033[4m\033[24m    |\n"
+            L"|\033[4m\033[0m    |\n"
+            L"| \033[4m42\033[0m |\n"
+            L"|\033[4m\033[0m    |\n"
             L"+----+\n";
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -901,9 +901,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const char *table_str_etalon =
             "+----+\n"
-            "|\033[1m\033[4m\033[21m\033[24m    |\n"
-            "| \033[1m\033[4m42\033[21m\033[24m |\n"
-            "|\033[1m\033[4m\033[21m\033[24m    |\n"
+            "|\033[1m\033[4m\033[0m    |\n"
+            "| \033[1m\033[4m42\033[0m |\n"
+            "|\033[1m\033[4m\033[0m    |\n"
             "+----+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -921,9 +921,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const wchar_t *table_str_etalon =
             L"+----+\n"
-            L"|\033[1m\033[4m\033[21m\033[24m    |\n"
-            L"| \033[1m\033[4m42\033[21m\033[24m |\n"
-            L"|\033[1m\033[4m\033[21m\033[24m    |\n"
+            L"|\033[1m\033[4m\033[0m    |\n"
+            L"| \033[1m\033[4m42\033[0m |\n"
+            L"|\033[1m\033[4m\033[0m    |\n"
             L"+----+\n";
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -940,9 +940,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const char *table_str_etalon =
             "+----+\n"
-            "|\033[4m    \033[24m|\n"
-            "|\033[4m 42 \033[24m|\n"
-            "|\033[4m    \033[24m|\n"
+            "|\033[4m    \033[0m|\n"
+            "|\033[4m 42 \033[0m|\n"
+            "|\033[4m    \033[0m|\n"
             "+----+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -959,9 +959,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const wchar_t *table_str_etalon =
             L"+----+\n"
-            L"|\033[4m    \033[24m|\n"
-            L"|\033[4m 42 \033[24m|\n"
-            L"|\033[4m    \033[24m|\n"
+            L"|\033[4m    \033[0m|\n"
+            L"|\033[4m 42 \033[0m|\n"
+            L"|\033[4m    \033[0m|\n"
             L"+----+\n";
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -979,9 +979,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const char *table_str_etalon =
             "+----+\n"
-            "|\033[1m\033[4m    \033[21m\033[24m|\n"
-            "|\033[1m\033[4m 42 \033[21m\033[24m|\n"
-            "|\033[1m\033[4m    \033[21m\033[24m|\n"
+            "|\033[1m\033[4m    \033[0m|\n"
+            "|\033[1m\033[4m 42 \033[0m|\n"
+            "|\033[1m\033[4m    \033[0m|\n"
             "+----+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -999,9 +999,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const wchar_t *table_str_etalon =
             L"+----+\n"
-            L"|\033[1m\033[4m    \033[21m\033[24m|\n"
-            L"|\033[1m\033[4m 42 \033[21m\033[24m|\n"
-            L"|\033[1m\033[4m    \033[21m\033[24m|\n"
+            L"|\033[1m\033[4m    \033[0m|\n"
+            L"|\033[1m\033[4m 42 \033[0m|\n"
+            L"|\033[1m\033[4m    \033[0m|\n"
             L"+----+\n";
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -1023,9 +1023,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const char *table_str_etalon =
             "+----+\n"
-            "|\033[41m\033[4m\033[33m\033[24m\033[39m    \033[49m|\n"
-            "|\033[41m \033[4m\033[33m42\033[24m\033[39m \033[49m|\n"
-            "|\033[41m\033[4m\033[33m\033[24m\033[39m    \033[49m|\n"
+            "|\033[41m\033[4m\033[33m\033[0m\033[41m    \033[0m|\n"
+            "|\033[41m \033[4m\033[33m42\033[0m\033[41m \033[0m|\n"
+            "|\033[41m\033[4m\033[33m\033[0m\033[41m    \033[0m|\n"
             "+----+\n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
@@ -1046,9 +1046,9 @@ void test_table_text_styles(void)
         assert_true(table_str != NULL);
         const wchar_t *table_str_etalon =
             L"+----+\n"
-            L"|\033[41m\033[4m\033[33m\033[24m\033[39m    \033[49m|\n"
-            L"|\033[41m \033[4m\033[33m42\033[24m\033[39m \033[49m|\n"
-            L"|\033[41m\033[4m\033[33m\033[24m\033[39m    \033[49m|\n"
+            L"|\033[41m\033[4m\033[33m\033[0m\033[41m    \033[0m|\n"
+            L"|\033[41m \033[4m\033[33m42\033[0m\033[41m \033[0m|\n"
+            L"|\033[41m\033[4m\033[33m\033[0m\033[41m    \033[0m|\n"
             L"+----+\n";
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
