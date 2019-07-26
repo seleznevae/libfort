@@ -1,3 +1,9 @@
+## v0.1.6
+
+### Bug fixes
+
+- Changed specific style reset tags to universal reset style tag.
+
 ## v0.1.5
 
 ### Tests
