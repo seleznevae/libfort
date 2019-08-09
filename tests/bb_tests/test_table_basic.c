@@ -102,6 +102,7 @@ void test_bug_fixes(void)
             "  3   4  \n"
             "         \n";
         assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
     }
 
 #ifdef FT_HAVE_WCHAR
@@ -122,6 +123,7 @@ void test_bug_fixes(void)
             L"  3   4  \n"
             L"         \n";
         assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
     }
 #endif
 }
