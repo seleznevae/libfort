@@ -8,7 +8,7 @@ void test_cpp_table_write(void);
 void test_cpp_table_tbl_properties(void);
 void test_cpp_table_cell_properties(void);
 void test_cpp_table_text_styles(void);
-
+void test_cpp_bug_fixes(void);
 
 
 struct test_case bb_test_suite [] = {
@@ -17,6 +17,7 @@ struct test_case bb_test_suite [] = {
     {"test_cpp_table_tbl_properties", test_cpp_table_tbl_properties},
     {"test_cpp_table_cell_properties", test_cpp_table_cell_properties},
     {"test_cpp_table_text_styles", test_cpp_table_text_styles},
+    {"test_cpp_bug_fixes", test_cpp_bug_fixes},
 };
 
 

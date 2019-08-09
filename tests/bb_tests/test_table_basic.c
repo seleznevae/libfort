@@ -3,12 +3,11 @@
 #include <wchar.h>
 #include "fort.h"
 
-#ifdef FT_HAVE_WCHAR
 void test_bug_fixes(void)
 {
+#ifdef FT_HAVE_WCHAR
     SCENARIO("Bug 1") {
         ft_table_t *table = ft_create_table();
-
         ft_table_t *table_tmp_1 = ft_create_table();
 
 //        ft_set_border_style(table_tmp_1, FT_EMPTY_STYLE);
@@ -23,6 +22,8 @@ void test_bug_fixes(void)
         ft_destroy_table(table_tmp_1);
         ft_destroy_table(table);
     }
+#endif
+
 
     SCENARIO("Bug 2") {
         ft_table_t *table = ft_create_table();
@@ -127,7 +128,6 @@ void test_bug_fixes(void)
     }
 #endif
 }
-#endif
 
 void test_table_basic(void)
 {
