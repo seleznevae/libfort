@@ -190,6 +190,15 @@ void test_table_border_style(void)
     }
 }
 
+static ft_table_t *create_simple_table(void)
+{
+    ft_table_t *table = ft_create_table();
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
+    ft_write_ln(table, "111", "22");
+    ft_write_ln(table, "3", "4444");
+    return table;
+}
 
 static ft_table_t *create_basic_table(void)
 {
@@ -203,6 +212,31 @@ static ft_table_t *create_basic_table(void)
     ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
     ft_write_ln(table, "2", "12 Angry Men", "1957", "8.8");
     ft_write_ln(table, "3", "It's a Wonderful Life", "1946", "8.6");
+    ft_add_separator(table);
+    ft_write_ln(table, "4", "2001: A Space Odyssey", "1968", "8.5");
+    ft_write_ln(table, "5", "Blade Runner", "1982", "8.1");
+    return table;
+}
+
+static ft_table_t *create_complex_table(void)
+{
+    ft_table_t *table = ft_create_table();
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
+
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 1, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 2, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+    ft_write_ln(table, "Rank", "Title", "Year", "Rating");
+    ft_write_ln(table, "Rank", "Title", "Year", "Rating");
+    ft_write_ln(table, "Rank", "Title", "Year", "Rating");
+    ft_set_cell_span(table, 1, 1, 2);
+
+    ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
+    ft_set_cell_span(table, 3, 2, 2);
+    ft_write_ln(table, "2", "12 Angry Men", "1957", "8.8");
+    ft_write_ln(table, "3", "It's a Wonderful Life", "1946", "8.6");
+    ft_set_cell_span(table, 4, 1, 2);
     ft_add_separator(table);
     ft_write_ln(table, "4", "2001: A Space Odyssey", "1968", "8.5");
     ft_write_ln(table, "5", "Blade Runner", "1982", "8.1");
@@ -228,6 +262,20 @@ static ft_table_t *create_basic_wtable(void)
     return table;
 }
 #endif
+
+static void test_table_style(const char *case_description,
+                             ft_table_t *(*constructor)(void),
+                             const struct ft_border_style *style,
+                             const char *str_expected)
+{
+    ft_table_t *table = constructor();
+    assert_true(table);
+    assert(ft_set_border_style(table, style) == 0);
+    const char *table_str = ft_to_string(table);
+    assert_true(table_str != NULL);
+    d_assert_str_equal(case_description, table_str, str_expected);
+    ft_destroy_table(table);
+}
 
 void test_table_builtin_border_styles(void)
 {
@@ -286,45 +334,71 @@ void test_table_builtin_border_styles(void)
 
     /* *************************************************************** */
 
-    ft_set_default_border_style(FT_SIMPLE_STYLE);
-    table = create_basic_table();
-    table_str = ft_to_string(table);
-    assert_true(table_str != NULL);
+    test_table_style("FT_SIMPLE_STYLE (simple layout)",
+                     create_simple_table, FT_SIMPLE_STYLE,
+                     " 111   22   \n"
+                     "  3    4444 \n");
 
-    table_str_etalon =
-        "                                                   \n"
-        "  Rank   Title                      Year   Rating  \n"
-        " ------ -------------------------- ------ -------- \n"
-        "   1     The Shawshank Redemption   1994      9.5  \n"
-        "   2     12 Angry Men               1957      8.8  \n"
-        "   3     It's a Wonderful Life      1946      8.6  \n"
-        " ------ -------------------------- ------ -------- \n"
-        "   4     2001: A Space Odyssey      1968      8.5  \n"
-        "   5     Blade Runner               1982      8.1  \n"
-        "                                                   \n";
-    assert_str_equal(table_str, table_str_etalon);
-    ft_destroy_table(table);
+    test_table_style("FT_SIMPLE_STYLE (ordinary layout)",
+                     create_basic_table, FT_SIMPLE_STYLE,
+                     " Rank   Title                      Year   Rating \n"
+                     "------ -------------------------- ------ --------\n"
+                     "  1     The Shawshank Redemption   1994      9.5 \n"
+                     "  2     12 Angry Men               1957      8.8 \n"
+                     "  3     It's a Wonderful Life      1946      8.6 \n"
+                     "------ -------------------------- ------ --------\n"
+                     "  4     2001: A Space Odyssey      1968      8.5 \n"
+                     "  5     Blade Runner               1982      8.1 \n");
+
+    test_table_style("FT_SIMPLE_STYLE (complex layout)",
+                     create_complex_table, FT_SIMPLE_STYLE,
+                     " Rank   Title                      Year   Rating \n"
+                     "------ --------------------------------- --------\n"
+                     " Rank   Title                             Rating \n"
+                     "------ --------------------------------- --------\n"
+                     " Rank   Title                      Year   Rating \n"
+                     "------ -------------------------- ---------------\n"
+                     "  1     The Shawshank Redemption            1994 \n"
+                     "  2     12 Angry Men                         8.8 \n"
+                     "  3     It's a Wonderful Life      1946      8.6 \n"
+                     "------ -------------------------- ------ --------\n"
+                     "  4     2001: A Space Odyssey      1968      8.5 \n"
+                     "  5     Blade Runner               1982      8.1 \n");
 
     /* *************************************************************** */
 
-    ft_set_default_border_style(FT_PLAIN_STYLE);
-    table = create_basic_table();
-    table_str = ft_to_string(table);
-    assert_true(table_str != NULL);
+    test_table_style("FT_PLAIN_STYLE (simple layout)",
+                     create_simple_table, FT_PLAIN_STYLE,
+                     " 111   22   \n"
+                     "  3    4444 \n");
 
-    table_str_etalon =
-        " ------------------------------------------------- \n"
-        "  Rank   Title                      Year   Rating  \n"
-        " ------------------------------------------------- \n"
-        "   1     The Shawshank Redemption   1994      9.5  \n"
-        "   2     12 Angry Men               1957      8.8  \n"
-        "   3     It's a Wonderful Life      1946      8.6  \n"
-        " ------------------------------------------------- \n"
-        "   4     2001: A Space Odyssey      1968      8.5  \n"
-        "   5     Blade Runner               1982      8.1  \n"
-        "                                                   \n";
-    assert_str_equal(table_str, table_str_etalon);
-    ft_destroy_table(table);
+    test_table_style("FT_PLAIN_STYLE (ordinary layout)",
+                     create_basic_table, FT_PLAIN_STYLE,
+                     "-------------------------------------------------\n"
+                     " Rank   Title                      Year   Rating \n"
+                     "-------------------------------------------------\n"
+                     "  1     The Shawshank Redemption   1994      9.5 \n"
+                     "  2     12 Angry Men               1957      8.8 \n"
+                     "  3     It's a Wonderful Life      1946      8.6 \n"
+                     "-------------------------------------------------\n"
+                     "  4     2001: A Space Odyssey      1968      8.5 \n"
+                     "  5     Blade Runner               1982      8.1 \n");
+
+    test_table_style("FT_PLAIN_STYLE (complex layout)",
+                     create_complex_table, FT_PLAIN_STYLE,
+                     "-------------------------------------------------\n"
+                     " Rank   Title                      Year   Rating \n"
+                     "-------------------------------------------------\n"
+                     " Rank   Title                             Rating \n"
+                     "-------------------------------------------------\n"
+                     " Rank   Title                      Year   Rating \n"
+                     "-------------------------------------------------\n"
+                     "  1     The Shawshank Redemption            1994 \n"
+                     "  2     12 Angry Men                         8.8 \n"
+                     "  3     It's a Wonderful Life      1946      8.6 \n"
+                     "-------------------------------------------------\n"
+                     "  4     2001: A Space Odyssey      1968      8.5 \n"
+                     "  5     Blade Runner               1982      8.1 \n");
 
     /* *************************************************************** */
 
@@ -495,6 +569,34 @@ void test_table_builtin_border_styles(void)
     assert_wcs_equal(table_wstr, table_wstr_etalon);
     ft_destroy_table(table);
 #endif
+
+    WHEN("FT_DOUBLE2_STYLE - complex layout") {
+        ft_set_default_border_style(FT_DOUBLE2_STYLE);
+        table = create_complex_table();
+        table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+
+        table_str_etalon =
+            "╔══════╤══════════════════════════╤══════╤════════╗\n"
+            "║ Rank │ Title                    │ Year │ Rating ║\n"
+            "╠══════╪══════════════════════════╧══════╪════════╣\n"
+            "║ Rank │ Title                           │ Rating ║\n"
+            "╠══════╪══════════════════════════╤══════╪════════╣\n"
+            "║ Rank │ Title                    │ Year │ Rating ║\n"
+            "╠══════╪══════════════════════════╪══════╧════════╣\n"
+            "║  1   │ The Shawshank Redemption │          1994 ║\n"
+            "╟──────┼──────────────────────────┴──────┬────────╢\n"
+            "║  2   │ 12 Angry Men                    │    8.8 ║\n"
+            "╟──────┼──────────────────────────┬──────┼────────╢\n"
+            "║  3   │ It's a Wonderful Life    │ 1946 │    8.6 ║\n"
+            "╠══════╪══════════════════════════╪══════╪════════╣\n"
+            "║  4   │ 2001: A Space Odyssey    │ 1968 │    8.5 ║\n"
+            "╟──────┼──────────────────────────┼──────┼────────╢\n"
+            "║  5   │ Blade Runner             │ 1982 │    8.1 ║\n"
+            "╚══════╧══════════════════════════╧══════╧════════╝\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
 
     /* *************************************************************** */
 

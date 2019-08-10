@@ -29,14 +29,17 @@ struct test_case {
 
 #define assert_true(args) assert(args)
 
-#define assert_str_equal(str1, str2) \
+#define d_assert_str_equal(description, str1, str2) \
     if (strcmp(str1, str2) != 0) \
     { \
-        fprintf(stderr, "%s:%d(%s):Abort! Not equals strings:\n",__FILE__,__LINE__, __func__); \
+        fprintf(stderr, "%s:%d(%s):Abort! %s failed. Not equals strings:\n",__FILE__,__LINE__, __func__, description); \
         fprintf(stderr, "Left string(len = %d):\n%s\n", (int)strlen(str1), str1); \
         fprintf(stderr, "Right string(len = %d):\n%s\n", (int)strlen(str2), str2); \
         exit(EXIT_FAILURE); \
     }
+
+#define assert_str_equal(str1, str2) \
+    d_assert_str_equal("Test", str1, str2)
 
 #define assert_wcs_equal(str1, str2) \
     if (wcscmp(str1, str2) != 0) \

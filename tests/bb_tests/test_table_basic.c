@@ -97,11 +97,10 @@ void test_bug_fixes(void)
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
         const char *table_str_etalon =
-            " ------- \n"
-            "  1   2  \n"
-            " ------- \n"
-            "  3   4  \n"
-            "         \n";
+            "-------\n"
+            " 1   2 \n"
+            "-------\n"
+            " 3   4 \n";
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
@@ -118,11 +117,10 @@ void test_bug_fixes(void)
         const wchar_t *table_str = ft_to_wstring(table);
         assert_true(table_str != NULL);
         const wchar_t *table_str_etalon =
-            L" ------- \n"
-            L"  1   2  \n"
-            L" ------- \n"
-            L"  3   4  \n"
-            L"         \n";
+            L"-------\n"
+            L" 1   2 \n"
+            L"-------\n"
+            L" 3   4 \n";
         assert_wcs_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
