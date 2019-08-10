@@ -2,6 +2,32 @@
 #include "fort.hpp"
 #include "test_utils.hpp"
 
+void test_cpp_bug_fixes(void)
+{
+    SCENARIO("Issue 11 - https://github.com/seleznevae/libfort/issues/11") {
+        fort::table table;
+        table << fort::header
+              << "1" << "2" << fort::endr
+              << "3" << "4" << fort::endr;
+
+        table.set_border_style(FT_PLAIN_STYLE);
+        table.set_cell_bottom_padding(0);
+        table.set_cell_top_padding(0);
+        table.set_cell_left_padding(1);
+        table.set_cell_right_padding(1);
+        table.set_cell_empty_str_height(0);
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            " ------- \n"
+            "  1   2  \n"
+            " ------- \n"
+            "  3   4  \n"
+            "         \n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+}
+
 void test_cpp_table_basic(void)
 {
     WHEN("All columns are equal and not empty.") {

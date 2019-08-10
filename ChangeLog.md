@@ -3,6 +3,7 @@
 ### Bug fixes
 
 - Changed specific style reset tags to universal reset style tag.
+- Fix incorrect border style for the last line in the table.
 
 ## v0.1.5
 

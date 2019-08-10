@@ -1817,6 +1817,7 @@ const char *ft_to_string(const ft_table_t *table)
     }
     cur_row = NULL;
     cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+    context.row = i;
     CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
 
     /* Print bottom margin */
@@ -1920,6 +1921,7 @@ const wchar_t *ft_to_wstring(const ft_table_t *table)
     }
     cur_row = NULL;
     cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+    context.row = i;
     CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
 
     /* Print bottom margin */

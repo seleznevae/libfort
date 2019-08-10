@@ -3,9 +3,7 @@
 #include "fort.h"
 
 /* Test cases */
-#ifdef FT_HAVE_WCHAR
 void test_bug_fixes(void);
-#endif
 void test_vector_basic(void);
 void test_vector_stress(void);
 void test_string_buffer(void);
@@ -39,9 +37,7 @@ struct test_case wb_test_suite [] = {
 
 
 struct test_case bb_test_suite [] = {
-#ifdef FT_HAVE_WCHAR
     {"test_bug_fixes", test_bug_fixes},
-#endif
     {"test_table_basic", test_table_basic},
 #ifdef FT_HAVE_WCHAR
     {"test_wcs_table_boundaries", test_wcs_table_boundaries},

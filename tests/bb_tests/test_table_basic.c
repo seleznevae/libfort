@@ -3,12 +3,11 @@
 #include <wchar.h>
 #include "fort.h"
 
-#ifdef FT_HAVE_WCHAR
 void test_bug_fixes(void)
 {
+#ifdef FT_HAVE_WCHAR
     SCENARIO("Bug 1") {
         ft_table_t *table = ft_create_table();
-
         ft_table_t *table_tmp_1 = ft_create_table();
 
 //        ft_set_border_style(table_tmp_1, FT_EMPTY_STYLE);
@@ -23,6 +22,8 @@ void test_bug_fixes(void)
         ft_destroy_table(table_tmp_1);
         ft_destroy_table(table);
     }
+#endif
+
 
     SCENARIO("Bug 2") {
         ft_table_t *table = ft_create_table();
@@ -84,8 +85,49 @@ void test_bug_fixes(void)
 
         ft_destroy_table(table);
     }
-}
+
+    SCENARIO("Issue 11 - https://github.com/seleznevae/libfort/issues/11") {
+        ft_table_t *table = ft_create_table();
+        ft_set_border_style(table, FT_PLAIN_STYLE);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        ft_write_ln(table, "1", "2");
+        ft_write_ln(table, "3", "4");
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            " ------- \n"
+            "  1   2  \n"
+            " ------- \n"
+            "  3   4  \n"
+            "         \n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    SCENARIO("Issue 11 - https://github.com/seleznevae/libfort/issues/11 (wchar case)") {
+        ft_table_t *table = ft_create_table();
+        ft_set_border_style(table, FT_PLAIN_STYLE);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        ft_wwrite_ln(table, L"1", L"2");
+        ft_wwrite_ln(table, L"3", L"4");
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L" ------- \n"
+            L"  1   2  \n"
+            L" ------- \n"
+            L"  3   4  \n"
+            L"         \n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
 #endif
+}
 
 void test_table_basic(void)
 {
