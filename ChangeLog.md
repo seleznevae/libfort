@@ -9,6 +9,10 @@
 - Changed specific style reset tags to universal reset style tag.
 - Fix incorrect border style for the last line in the table.
 
+### Tests
+
+- Added more tests for border styles.
+
 ## v0.1.5
 
 ### Tests

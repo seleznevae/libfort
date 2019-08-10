@@ -288,49 +288,88 @@ void test_table_builtin_border_styles(void)
 #endif
 
 
-    ft_set_default_border_style(FT_BASIC_STYLE);
-    table = create_basic_table();
-    table_str = ft_to_string(table);
-    assert_true(table_str != NULL);
+    test_table_style("FT_BASIC_STYLE (simple layout)",
+                     create_simple_table, FT_BASIC_STYLE,
+                     "+-----+------+\n"
+                     "| 111 | 22   |\n"
+                     "|  3  | 4444 |\n"
+                     "+-----+------+\n");
 
-    table_str_etalon =
-        "+------+--------------------------+------+--------+\n"
-        "| Rank | Title                    | Year | Rating |\n"
-        "+------+--------------------------+------+--------+\n"
-        "|  1   | The Shawshank Redemption | 1994 |    9.5 |\n"
-        "|  2   | 12 Angry Men             | 1957 |    8.8 |\n"
-        "|  3   | It's a Wonderful Life    | 1946 |    8.6 |\n"
-        "+------+--------------------------+------+--------+\n"
-        "|  4   | 2001: A Space Odyssey    | 1968 |    8.5 |\n"
-        "|  5   | Blade Runner             | 1982 |    8.1 |\n"
-        "+------+--------------------------+------+--------+\n";
-    assert_str_equal(table_str, table_str_etalon);
-    ft_destroy_table(table);
+    test_table_style("FT_BASIC_STYLE (ordinary layout)",
+                     create_basic_table, FT_BASIC_STYLE,
+                     "+------+--------------------------+------+--------+\n"
+                     "| Rank | Title                    | Year | Rating |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  1   | The Shawshank Redemption | 1994 |    9.5 |\n"
+                     "|  2   | 12 Angry Men             | 1957 |    8.8 |\n"
+                     "|  3   | It's a Wonderful Life    | 1946 |    8.6 |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  4   | 2001: A Space Odyssey    | 1968 |    8.5 |\n"
+                     "|  5   | Blade Runner             | 1982 |    8.1 |\n"
+                     "+------+--------------------------+------+--------+\n");
+
+    test_table_style("FT_BASIC_STYLE (complex layout)",
+                     create_complex_table, FT_BASIC_STYLE,
+                     "+------+--------------------------+------+--------+\n"
+                     "| Rank | Title                    | Year | Rating |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "| Rank | Title                           | Rating |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "| Rank | Title                    | Year | Rating |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  1   | The Shawshank Redemption |          1994 |\n"
+                     "|  2   | 12 Angry Men                    |    8.8 |\n"
+                     "|  3   | It's a Wonderful Life    | 1946 |    8.6 |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  4   | 2001: A Space Odyssey    | 1968 |    8.5 |\n"
+                     "|  5   | Blade Runner             | 1982 |    8.1 |\n"
+                     "+------+--------------------------+------+--------+\n");
 
     /* *************************************************************** */
 
-    ft_set_default_border_style(FT_BASIC2_STYLE);
-    table = create_basic_table();
-    table_str = ft_to_string(table);
-    assert_true(table_str != NULL);
+    test_table_style("FT_BASIC2_STYLE (simple layout)",
+                     create_simple_table, FT_BASIC2_STYLE,
+                     "+-----+------+\n"
+                     "| 111 | 22   |\n"
+                     "+-----+------+\n"
+                     "|  3  | 4444 |\n"
+                     "+-----+------+\n");
 
-    table_str_etalon =
-        "+------+--------------------------+------+--------+\n"
-        "| Rank | Title                    | Year | Rating |\n"
-        "+------+--------------------------+------+--------+\n"
-        "|  1   | The Shawshank Redemption | 1994 |    9.5 |\n"
-        "+------+--------------------------+------+--------+\n"
-        "|  2   | 12 Angry Men             | 1957 |    8.8 |\n"
-        "+------+--------------------------+------+--------+\n"
-        "|  3   | It's a Wonderful Life    | 1946 |    8.6 |\n"
-        "+------+--------------------------+------+--------+\n"
-        "|  4   | 2001: A Space Odyssey    | 1968 |    8.5 |\n"
-        "+------+--------------------------+------+--------+\n"
-        "|  5   | Blade Runner             | 1982 |    8.1 |\n"
-        "+------+--------------------------+------+--------+\n";
-    assert_str_equal(table_str, table_str_etalon);
-    ft_destroy_table(table);
+    test_table_style("FT_BASIC2_STYLE (ordinary layout)",
+                     create_basic_table, FT_BASIC2_STYLE,
+                     "+------+--------------------------+------+--------+\n"
+                     "| Rank | Title                    | Year | Rating |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  1   | The Shawshank Redemption | 1994 |    9.5 |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  2   | 12 Angry Men             | 1957 |    8.8 |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  3   | It's a Wonderful Life    | 1946 |    8.6 |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  4   | 2001: A Space Odyssey    | 1968 |    8.5 |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  5   | Blade Runner             | 1982 |    8.1 |\n"
+                     "+------+--------------------------+------+--------+\n");
 
+    test_table_style("FT_BASIC2_STYLE (complex layout)",
+                     create_complex_table, FT_BASIC2_STYLE,
+                     "+------+--------------------------+------+--------+\n"
+                     "| Rank | Title                    | Year | Rating |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "| Rank | Title                           | Rating |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "| Rank | Title                    | Year | Rating |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  1   | The Shawshank Redemption |          1994 |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  2   | 12 Angry Men                    |    8.8 |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  3   | It's a Wonderful Life    | 1946 |    8.6 |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  4   | 2001: A Space Odyssey    | 1968 |    8.5 |\n"
+                     "+------+--------------------------+------+--------+\n"
+                     "|  5   | Blade Runner             | 1982 |    8.1 |\n"
+                     "+------+--------------------------+------+--------+\n");
 
     /* *************************************************************** */
 
@@ -402,62 +441,107 @@ void test_table_builtin_border_styles(void)
 
     /* *************************************************************** */
 
-    ft_set_default_border_style(FT_DOT_STYLE);
-    table = create_basic_table();
-    table_str = ft_to_string(table);
-    assert_true(table_str != NULL);
+    test_table_style("FT_DOT_STYLE (simple layout)",
+                     create_simple_table, FT_DOT_STYLE,
+                     "..............\n"
+                     ": 111 : 22   :\n"
+                     ":  3  : 4444 :\n"
+                     ":.....:......:\n");
 
-    table_str_etalon =
-        "...................................................\n"
-        ": Rank : Title                    : Year : Rating :\n"
-        ":......:..........................:......:........:\n"
-        ":  1   : The Shawshank Redemption : 1994 :    9.5 :\n"
-        ":  2   : 12 Angry Men             : 1957 :    8.8 :\n"
-        ":  3   : It's a Wonderful Life    : 1946 :    8.6 :\n"
-        ":......:..........................:......:........:\n"
-        ":  4   : 2001: A Space Odyssey    : 1968 :    8.5 :\n"
-        ":  5   : Blade Runner             : 1982 :    8.1 :\n"
-        ":......:..........................:......:........:\n";
-    assert_str_equal(table_str, table_str_etalon);
-    ft_destroy_table(table);
+    test_table_style("FT_DOT_STYLE (ordinary layout)",
+                     create_basic_table, FT_DOT_STYLE,
+                     "...................................................\n"
+                     ": Rank : Title                    : Year : Rating :\n"
+                     ":......:..........................:......:........:\n"
+                     ":  1   : The Shawshank Redemption : 1994 :    9.5 :\n"
+                     ":  2   : 12 Angry Men             : 1957 :    8.8 :\n"
+                     ":  3   : It's a Wonderful Life    : 1946 :    8.6 :\n"
+                     ":......:..........................:......:........:\n"
+                     ":  4   : 2001: A Space Odyssey    : 1968 :    8.5 :\n"
+                     ":  5   : Blade Runner             : 1982 :    8.1 :\n"
+                     ":......:..........................:......:........:\n");
+
+    test_table_style("FT_DOT_STYLE (complex layout)",
+                     create_complex_table, FT_DOT_STYLE,
+                     "...................................................\n"
+                     ": Rank : Title                    : Year : Rating :\n"
+                     ":......:.................................:........:\n"
+                     ": Rank : Title                           : Rating :\n"
+                     ":......:.................................:........:\n"
+                     ": Rank : Title                    : Year : Rating :\n"
+                     ":......:..........................:...............:\n"
+                     ":  1   : The Shawshank Redemption :          1994 :\n"
+                     ":  2   : 12 Angry Men                    :    8.8 :\n"
+                     ":  3   : It's a Wonderful Life    : 1946 :    8.6 :\n"
+                     ":......:..........................:......:........:\n"
+                     ":  4   : 2001: A Space Odyssey    : 1968 :    8.5 :\n"
+                     ":  5   : Blade Runner             : 1982 :    8.1 :\n"
+                     ":......:..........................:......:........:\n");
 
     /* *************************************************************** */
 
-    ft_set_default_border_style(FT_EMPTY_STYLE);
-    table = create_basic_table();
-    table_str = ft_to_string(table);
-    assert_true(table_str != NULL);
+    test_table_style("FT_EMPTY_STYLE (simple layout)",
+                     create_simple_table, FT_EMPTY_STYLE,
+                     " 111  22   \n"
+                     "  3   4444 \n");
 
-    table_str_etalon =
-        " Rank  Title                     Year  Rating \n"
-        "  1    The Shawshank Redemption  1994     9.5 \n"
-        "  2    12 Angry Men              1957     8.8 \n"
-        "  3    It's a Wonderful Life     1946     8.6 \n"
-        "                                              \n"
-        "  4    2001: A Space Odyssey     1968     8.5 \n"
-        "  5    Blade Runner              1982     8.1 \n";
-    assert_str_equal(table_str, table_str_etalon);
-    ft_destroy_table(table);
+    test_table_style("FT_EMPTY_STYLE (ordinary layout)",
+                     create_basic_table, FT_EMPTY_STYLE,
+                     " Rank  Title                     Year  Rating \n"
+                     "  1    The Shawshank Redemption  1994     9.5 \n"
+                     "  2    12 Angry Men              1957     8.8 \n"
+                     "  3    It's a Wonderful Life     1946     8.6 \n"
+                     "                                              \n"
+                     "  4    2001: A Space Odyssey     1968     8.5 \n"
+                     "  5    Blade Runner              1982     8.1 \n");
+
+    // TODO: seems to be a bug here
+    test_table_style("FT_EMPTY_STYLE (complex layout)",
+                     create_complex_table, FT_EMPTY_STYLE,
+                     " Rank  Title                     Year  Rating \n"
+                     " Rank  Title                            Rating \n"
+                     " Rank  Title                     Year  Rating \n"
+                     "  1    The Shawshank Redemption           1994 \n"
+                     "  2    12 Angry Men                        8.8 \n"
+                     "  3    It's a Wonderful Life     1946     8.6 \n"
+                     "                                              \n"
+                     "  4    2001: A Space Odyssey     1968     8.5 \n"
+                     "  5    Blade Runner              1982     8.1 \n");
 
     /* *************************************************************** */
 
-    ft_set_default_border_style(FT_EMPTY2_STYLE);
-    table = create_basic_table();
-    table_str = ft_to_string(table);
-    assert_true(table_str != NULL);
+    test_table_style("FT_EMPTY2_STYLE (simple layout)",
+                     create_simple_table, FT_EMPTY2_STYLE,
+                     "              \n"
+                     "  111   22    \n"
+                     "   3    4444  \n"
+                     "              \n");
 
-    table_str_etalon =
-        "                                                   \n"
-        "  Rank   Title                      Year   Rating  \n"
-        "   1     The Shawshank Redemption   1994      9.5  \n"
-        "   2     12 Angry Men               1957      8.8  \n"
-        "   3     It's a Wonderful Life      1946      8.6  \n"
-        "                                                   \n"
-        "   4     2001: A Space Odyssey      1968      8.5  \n"
-        "   5     Blade Runner               1982      8.1  \n"
-        "                                                   \n";
-    assert_str_equal(table_str, table_str_etalon);
-    ft_destroy_table(table);
+    test_table_style("FT_EMPTY2_STYLE (ordinary layout)",
+                     create_basic_table, FT_EMPTY2_STYLE,
+                     "                                                   \n"
+                     "  Rank   Title                      Year   Rating  \n"
+                     "   1     The Shawshank Redemption   1994      9.5  \n"
+                     "   2     12 Angry Men               1957      8.8  \n"
+                     "   3     It's a Wonderful Life      1946      8.6  \n"
+                     "                                                   \n"
+                     "   4     2001: A Space Odyssey      1968      8.5  \n"
+                     "   5     Blade Runner               1982      8.1  \n"
+                     "                                                   \n");
+
+    test_table_style("FT_EMPTY2_STYLE (complex layout)",
+                     create_complex_table, FT_EMPTY2_STYLE,
+                     "                                                   \n"
+                     "  Rank   Title                      Year   Rating  \n"
+                     "  Rank   Title                             Rating  \n"
+                     "  Rank   Title                      Year   Rating  \n"
+                     "   1     The Shawshank Redemption            1994  \n"
+                     "   2     12 Angry Men                         8.8  \n"
+                     "   3     It's a Wonderful Life      1946      8.6  \n"
+                     "                                                   \n"
+                     "   4     2001: A Space Odyssey      1968      8.5  \n"
+                     "   5     Blade Runner               1982      8.1  \n"
+                     "                                                   \n");
 
     /* *************************************************************** */
 
