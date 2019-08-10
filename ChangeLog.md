@@ -1,5 +1,9 @@
 ## v0.1.6
 
+### Internal
+
+- Removed blank lines from `PLAIN_STYLE` and `SIMPLE_STYLE`.
+
 ### Bug fixes
 
 - Changed specific style reset tags to universal reset style tag.

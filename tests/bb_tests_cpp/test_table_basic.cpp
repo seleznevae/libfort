@@ -19,11 +19,10 @@ void test_cpp_bug_fixes(void)
 
         std::string table_str = table.to_string();
         std::string table_str_etalon =
-            " ------- \n"
-            "  1   2  \n"
-            " ------- \n"
-            "  3   4  \n"
-            "         \n";
+            "-------\n"
+            " 1   2 \n"
+            "-------\n"
+            " 3   4 \n";
         assert_string_equal(table_str, table_str_etalon);
     }
 }
