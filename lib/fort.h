@@ -63,6 +63,10 @@ SOFTWARE.
 #define FT_HAVE_WCHAR
 #endif
 
+#define FT_CONGIG_HAVE_UTF8
+#if defined(FT_CONGIG_HAVE_UTF8)
+#define FT_HAVE_UTF8
+#endif
 
 /*****************************************************************************
  *               RETURN CODES
@@ -483,8 +487,6 @@ int ft_nwrite_ln(ft_table_t *table, size_t count, const char *cell_content, ...)
 
 
 
-
-
 /**
  * Write strings from the array to the table.
  *
@@ -897,6 +899,18 @@ int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_
 const wchar_t *ft_to_wstring(const ft_table_t *table);
 #endif
 
+
+
+#ifdef FT_HAVE_UTF8
+#define ft_u8write(table, ...)\
+    (ft_nu8write(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
+#define ft_u8write_ln(table, ...)\
+    (ft_nu8write_ln(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
+int ft_nu8write(ft_table_t *table, size_t n, const void *cell_content, ...);
+int ft_nu8write_ln(ft_table_t *table, size_t n, const void *cell_content, ...);
+const void *ft_to_u8string(const ft_table_t *table);
+
+#endif /* FT_HAVE_UTF8 */
 
 
 FT_END_DECLS

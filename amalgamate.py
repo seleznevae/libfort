@@ -99,6 +99,7 @@ def main():
         "fort_utils.h",
         "vector.h",
         "wcwidth.h",
+        "utf8.h",
         "string_buffer.h",
         "properties.h",
         "cell.h",

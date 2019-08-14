@@ -7,17 +7,16 @@
 /*****************************************************************************
  *               STRING BUFFER
  * ***************************************************************************/
-enum str_buf_type {
-    CharBuf,
-#ifdef FT_HAVE_WCHAR
-    WCharBuf
-#endif /* FT_HAVE_WCHAR */
-};
 
 struct string_buffer {
     union {
         char *cstr;
+#ifdef FT_HAVE_WCHAR
         wchar_t *wstr;
+#endif
+#ifdef FT_HAVE_UTF8
+        void *u8str;
+#endif
         void *data;
     } str;
     size_t data_sz;
@@ -44,26 +43,31 @@ FT_INTERNAL
 fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *str);
 #endif /* FT_HAVE_WCHAR */
 
+#ifdef FT_HAVE_UTF8
 FT_INTERNAL
-size_t buffer_text_height(const string_buffer_t *buffer);
+fort_status_t fill_buffer_from_u8string(string_buffer_t *buffer, const void *str);
+#endif /* FT_HAVE_UTF8 */
 
 FT_INTERNAL
-size_t string_buffer_capacity(const string_buffer_t *buffer);
+size_t buffer_text_visible_width(const string_buffer_t *buffer);
+
+FT_INTERNAL
+size_t buffer_text_visible_height(const string_buffer_t *buffer);
+
+FT_INTERNAL
+size_t string_buffer_cod_width_capacity(const string_buffer_t *buffer);
+
+FT_INTERNAL
+size_t string_buffer_raw_capacity(const string_buffer_t *buffer);
+
+FT_INTERNAL
+size_t string_buffer_width_capacity(const string_buffer_t *buffer);
 
 FT_INTERNAL
 void *buffer_get_data(string_buffer_t *buffer);
 
 FT_INTERNAL
-size_t buffer_text_width(const string_buffer_t *buffer);
-
-FT_INTERNAL
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t total_buf_len,
-                  const context_t *context, const char *content_style_tag, const char *reset_content_style_tag);
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t total_buf_len,
-                   const context_t *context, const char *content_style_tag, const char *reset_content_style_tag);
-#endif /* FT_HAVE_WCHAR */
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, conv_context_t *cntx, size_t cod_width,
+                  const char *content_style_tag, const char *reset_content_style_tag);
 
 #endif /* STRING_BUFFER_H */

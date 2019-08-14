@@ -25,15 +25,12 @@ FT_INTERNAL
 enum CellType get_cell_type(const fort_cell_t *cell);
 
 FT_INTERNAL
-int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context);
+int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t cod_width);
 
 FT_INTERNAL
 fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str);
 
 #ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context);
-
 FT_INTERNAL
 fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str);
 #endif

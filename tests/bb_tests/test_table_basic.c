@@ -125,11 +125,54 @@ void test_bug_fixes(void)
         ft_destroy_table(table);
     }
 #endif
+
+#ifdef FT_HAVE_UTF8
+    SCENARIO("Issue 11 - https://github.com/seleznevae/libfort/issues/11 (utf-8 case)") {
+        ft_table_t *table = ft_create_table();
+        ft_set_border_style(table, FT_PLAIN_STYLE);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        ft_u8write_ln(table, "1", "2");
+        ft_u8write_ln(table, "3", "4");
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "-------\n"
+            " 1   2 \n"
+            "-------\n"
+            " 3   4 \n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* FT_HAVE_UTF8 */
 }
 
 void test_table_basic(void)
 {
     ft_table_t *table = NULL;
+
+    WHEN("Empty table") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon = "";
+        assert_str_equal(table_str, table_str_etalon);
+#ifdef FT_HAVE_WCHAR
+        const wchar_t *table_wstr = ft_to_wstring(table);
+        assert_true(table_wstr != NULL);
+        const wchar_t *table_wstr_etalon = L"";
+        assert_wcs_equal(table_wstr, table_wstr_etalon);
+#endif
+#ifdef FT_HAVE_UTF8
+        table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        assert_str_equal(table_str, table_str_etalon);
+#endif /* FT_HAVE_UTF8 */
+        ft_destroy_table(table);
+    }
 
     WHEN("All columns are equal and not empty") {
         table = ft_create_table();
@@ -193,6 +236,39 @@ void test_table_basic(void)
     }
 #endif
 
+#ifdef FT_HAVE_UTF8
+    WHEN("All columns are equal and not empty (utf8 strings)") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        assert_true(ft_u8write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+        assert_true(ft_u8write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+        assert_true(ft_u8write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+
+        const char *table_str_etalon =
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* FT_HAVE_UTF8 */
+
     WHEN("All columns are not equal and not empty") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -254,6 +330,38 @@ void test_table_basic(void)
         ft_destroy_table(table);
     }
 #endif
+
+#ifdef FT_HAVE_UTF8
+    WHEN("All columns are not equal and not empty") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        assert_true(ft_u8write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+        assert_true(ft_u8write_ln(table, "c", "234", "3.140000", "3") == FT_SUCCESS);
+        assert_true(ft_u8write_ln(table, "234", "3.140000", "3", "c") == FT_SUCCESS);
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 3   | c        | 234      | 3.140000 |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| c   | 234      | 3.140000 | 3        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 234 | 3.140000 | 3        | c        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* FT_HAVE_UTF8 */
 
     WHEN("All columns are not equal and some cells are empty") {
         table = ft_create_table();
@@ -317,6 +425,38 @@ void test_table_basic(void)
     }
 #endif
 
+#ifdef FT_HAVE_UTF8
+    WHEN("All columns are not equal and some cells are empty (utf-8 strings)") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        assert_true(ft_u8write_ln(table, "", "", "234", "3.140000") == FT_SUCCESS);
+        assert_true(ft_u8write_ln(table, "c", "234", "3.140000", "") == FT_SUCCESS);
+        assert_true(ft_u8write_ln(table, "234", "3.140000", "", "") == FT_SUCCESS);
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "|     |          | 234      | 3.140000 |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| c   | 234      | 3.140000 |          |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 234 | 3.140000 |          |          |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* FT_HAVE_UTF8 */
+
     WHEN("All cells are empty") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -378,6 +518,40 @@ void test_table_basic(void)
         ft_destroy_table(table);
     }
 #endif
+
+    WHEN("Multiline conten") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        assert_true(ft_write_ln(table, "3", "c", "234\n2", "3.140000") == FT_SUCCESS);
+        assert_true(ft_write_ln(table, "3", "c", "234", "3.140000\n123") == FT_SUCCESS);
+        assert_true(ft_write_ln(table, "3", "c", "234", "x") == FT_SUCCESS);
+
+        ft_set_cell_prop(table, FT_ANY_ROW, 3, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_RIGHT);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   | 2   |          |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     | 123      |\n"             /* todo: Fix strange alignment for multiline cells */
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 |        x |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
 }
 
 
@@ -419,6 +593,138 @@ void test_wcs_table_boundaries(void)
 }
 #endif
 
+#ifdef FT_HAVE_UTF8
+void test_utf8_table(void)
+{
+    ft_table_t *table = NULL;
+
+#define TEST_UTF8_SIMPLE(content) \
+    { \
+            table = ft_create_table(); \
+            assert_true(table != NULL); \
+            assert(ft_set_border_style(table, FT_EMPTY_STYLE) == 0); \
+            assert_true(ft_u8write_ln(table, content) == FT_SUCCESS); \
+            const char *table_str = ft_to_u8string(table); \
+            assert_true(table_str != NULL); \
+            char table_str_etalon[1024] = {'\0'}; \
+            snprintf(table_str_etalon, 1024," %s \n", content); \
+            assert_str_equal(table_str, table_str_etalon); \
+            ft_destroy_table(table); \
+    }
+    TEST_UTF8_SIMPLE("");
+    TEST_UTF8_SIMPLE("1");
+    TEST_UTF8_SIMPLE("foo");
+    TEST_UTF8_SIMPLE("1234567890");
+    TEST_UTF8_SIMPLE("Xylophmsik");
+    TEST_UTF8_SIMPLE("ψημένηζειθ");
+    TEST_UTF8_SIMPLE("D’ḟuascail");
+    TEST_UTF8_SIMPLE("Pójdźżełąć");
+    TEST_UTF8_SIMPLE("«braçõeshá");
+    TEST_UTF8_SIMPLE("французких");
+    TEST_UTF8_SIMPLE("Benjamínúñ");
+    TEST_UTF8_SIMPLE("görmüştüçğ");
+    TEST_UTF8_SIMPLE("視野無限廣窗外有藍天");
+    TEST_UTF8_SIMPLE("いろはにほへとちりぬ");
+    TEST_UTF8_SIMPLE("𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕𠴕𠵼");
+#undef TEST_UTF8_SIMPLE
+
+#define TEST_UTF8_SIMPLE_STYLE(content) \
+    { \
+            table = ft_create_table(); \
+            assert_true(table != NULL); \
+            assert(ft_set_border_style(table, FT_EMPTY_STYLE) == 0); \
+            assert_true(ft_u8write_ln(table, content) == FT_SUCCESS); \
+            assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_FG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS); \
+            assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_BG_COLOR, FT_COLOR_RED) == FT_SUCCESS); \
+            assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS); \
+            const char *table_str = ft_to_u8string(table); \
+            assert_true(table_str != NULL); \
+            char table_str_etalon[1024] = {'\0'}; \
+            snprintf(table_str_etalon, 1024, \
+                "\033[41m \033[4m\033[33m%s\033[0m\033[41m \033[0m\n", content); \
+            assert_str_equal(table_str, table_str_etalon); \
+            ft_destroy_table(table); \
+    }
+    TEST_UTF8_SIMPLE_STYLE("1234567890");
+    TEST_UTF8_SIMPLE_STYLE("Xylophmsik");
+    TEST_UTF8_SIMPLE_STYLE("ψημένηζειθ");
+    TEST_UTF8_SIMPLE_STYLE("D’ḟuascail");
+    TEST_UTF8_SIMPLE_STYLE("Pójdźżełąć");
+    TEST_UTF8_SIMPLE_STYLE("«braçõeshá");
+    TEST_UTF8_SIMPLE_STYLE("французких");
+    TEST_UTF8_SIMPLE_STYLE("Benjamínúñ");
+    TEST_UTF8_SIMPLE_STYLE("görmüştüçğ");
+    TEST_UTF8_SIMPLE_STYLE("視野無限廣窗外有藍天");
+    TEST_UTF8_SIMPLE_STYLE("いろはにほへとちりぬ");
+    TEST_UTF8_SIMPLE_STYLE("𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕𠴕𠵼");
+#undef TEST_UTF8_SIMPLE_STYLE
+
+#define TEST_UTF8_BORDER(content) \
+    { \
+            table = ft_create_table(); \
+            assert_true(table != NULL); \
+            assert(ft_set_border_style(table, FT_BASIC_STYLE) == 0); \
+            assert_true(ft_u8write_ln(table, content) == FT_SUCCESS); \
+            const char *table_str = ft_to_u8string(table); \
+            assert_true(table_str != NULL); \
+            char table_str_etalon[1024] = {'\0'}; \
+            snprintf(table_str_etalon, 1024, \
+                "+------------+\n"  \
+                "| %s |\n" \
+                "+------------+\n", content); \
+            assert_str_equal(table_str, table_str_etalon); \
+            ft_destroy_table(table); \
+    }
+
+    TEST_UTF8_BORDER("1234567890");
+    TEST_UTF8_BORDER("Xylophmsik");
+    TEST_UTF8_BORDER("ψημένηζειθ");
+    TEST_UTF8_BORDER("D’ḟuascail");
+    TEST_UTF8_BORDER("Pójdźżełąć");
+    TEST_UTF8_BORDER("«braçõeshá");
+    TEST_UTF8_BORDER("французких");
+    TEST_UTF8_BORDER("Benjamínúñ");
+    TEST_UTF8_BORDER("görmüştüçğ");
+    TEST_UTF8_BORDER("視野無限廣窗外有藍天");
+    TEST_UTF8_BORDER("いろはにほへとちりぬ");
+    TEST_UTF8_BORDER("𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕𠴕𠵼");
+#undef TEST_UTF8_BORDER
+
+#define TEST_UTF8_STYLE(content) \
+    { \
+            table = ft_create_table(); \
+            assert_true(table != NULL); \
+            assert(ft_set_border_style(table, FT_BASIC_STYLE) == 0); \
+            assert_true(ft_u8write_ln(table, content) == FT_SUCCESS); \
+            assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_FG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS); \
+            assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_BG_COLOR, FT_COLOR_RED) == FT_SUCCESS); \
+            assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS); \
+            const char *table_str = ft_to_u8string(table); \
+            assert_true(table_str != NULL); \
+            char table_str_etalon[1024] = {'\0'}; \
+            snprintf(table_str_etalon, 1024, \
+                "+------------+\n"  \
+                "|\033[41m \033[4m\033[33m%s\033[0m\033[41m \033[0m|\n" \
+                "+------------+\n", content); \
+            assert_str_equal(table_str, table_str_etalon); \
+            ft_destroy_table(table); \
+    }
+    TEST_UTF8_STYLE("1234567890");
+    TEST_UTF8_STYLE("Xylophmsik");
+    TEST_UTF8_STYLE("ψημένηζειθ");
+    TEST_UTF8_STYLE("D’ḟuascail");
+    TEST_UTF8_STYLE("Pójdźżełąć");
+    TEST_UTF8_STYLE("«braçõeshá");
+    TEST_UTF8_STYLE("французких");
+    TEST_UTF8_STYLE("Benjamínúñ");
+    TEST_UTF8_STYLE("görmüştüçğ");
+    TEST_UTF8_STYLE("視野無限廣窗外有藍天");
+    TEST_UTF8_STYLE("いろはにほへとちりぬ");
+    TEST_UTF8_STYLE("𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕𠴕𠵼");
+#undef TEST_UTF8_STYLE
+
+}
+#endif /* FT_HAVE_UTF8 */
 
 void test_table_write(void)
 {

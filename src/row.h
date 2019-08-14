@@ -50,15 +50,14 @@ FT_INTERNAL
 fort_status_t row_set_cell_span(fort_row_t *row, size_t cell_column, size_t hor_span);
 
 FT_INTERNAL
-int print_row_separator(char *buffer, size_t buffer_sz,
+int print_row_separator(conv_context_t *cntx,
                         const size_t *col_width_arr, size_t cols,
                         const fort_row_t *upper_row, const fort_row_t *lower_row,
-                        enum HorSeparatorPos separatorPos, const separator_t *sep,
-                        const context_t *context);
+                        enum HorSeparatorPos separatorPos, const separator_t *sep);
 
 FT_INTERNAL
-int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
-                 size_t row_height, const context_t *context);
+int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_arr, size_t col_width_arr_sz,
+                 size_t row_height);
 
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
@@ -66,17 +65,6 @@ fort_row_t *create_row_from_wstring(const wchar_t *str);
 
 FT_INTERNAL
 fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args);
-
-FT_INTERNAL
-int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
-                         const size_t *col_width_arr, size_t cols,
-                         const fort_row_t *upper_row, const fort_row_t *lower_row,
-                         enum HorSeparatorPos separatorPos, const separator_t *sep,
-                         const context_t *context);
-
-FT_INTERNAL
-int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
-                  size_t row_height, const context_t *context);
 #endif
 
 

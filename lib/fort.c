@@ -72,12 +72,16 @@ extern char g_col_separator;
 #define F_REALLOC fort_realloc
 #define F_STRDUP fort_strdup
 #define F_WCSDUP fort_wcsdup
+/* @todo: replace with custom impl !!!*/
+#define F_UTF8DUP utf8dup
 
 #define F_CREATE(type) ((type *)F_CALLOC(sizeof(type), 1))
 
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 
+#define FT_NEWLINE "\n"
+#define FT_SPACE " "
 
 enum PolicyOnNull {
     Create,
@@ -89,6 +93,20 @@ enum F_BOOL {
     F_FALSE = 0,
     F_TRUE = 1
 };
+
+enum str_buf_type {
+    CHAR_BUF,
+#ifdef FT_HAVE_WCHAR
+    W_CHAR_BUF,
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+    UTF8_BUF,
+#endif /* FT_HAVE_WCHAR */
+    TYPE_END
+};
+
+
+typedef const char ** str_arr;
 
 
 #define FT_STR_2_CAT_(arg1, arg2) \
@@ -154,6 +172,16 @@ enum request_geom_type {
     INTERN_REPR_GEOMETRY
 };
 
+struct conv_context {
+    char *buf_origin;
+    char *buf;
+    size_t raw_avail;
+    struct fort_context *cntx;
+    enum str_buf_type b_type;
+};
+typedef struct conv_context conv_context_t;
+
+
 /*****************************************************************************
  *               LIBFORT helpers
  *****************************************************************************/
@@ -181,18 +209,38 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
 #endif
 
 FT_INTERNAL
-int snprint_n_strings(char *buf, size_t length, size_t n, const char *str);
+int print_n_strings(conv_context_t *cntx, size_t n, const char *str);
 
-#if defined(FT_HAVE_WCHAR)
+
 FT_INTERNAL
-int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
-#endif
+int ft_nprint(conv_context_t *cntx, const char *str, size_t strlen);
+#ifdef FT_HAVE_WCHAR
+FT_INTERNAL
+int ft_nwprint(conv_context_t *cntx, const wchar_t *str, size_t strlen);
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+FT_INTERNAL
+int ft_nu8print(conv_context_t *cntx, const void *beg, const void *end);
+#endif /* FT_HAVE_UTF8 */
 
+
+/*#define PRINT_DEBUG_INFO fprintf(stderr, "error in %s(%s:%d)\n", __FUNCTION__, __FILE__, __LINE__);*/
+#define PRINT_DEBUG_INFO
+
+#define FT_CHECK(statement) \
+    do { \
+        tmp = statement; \
+        if (tmp < 0) {\
+            PRINT_DEBUG_INFO \
+            goto clear; \
+        } \
+    } while(0)
 
 #define CHCK_RSLT_ADD_TO_WRITTEN(statement) \
     do { \
         tmp = statement; \
         if (tmp < 0) {\
+            PRINT_DEBUG_INFO \
             goto clear; \
         } \
         written += (size_t)tmp; \
@@ -202,6 +250,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
     do { \
         tmp = statement; \
         if (tmp < 0) {\
+            PRINT_DEBUG_INFO \
             goto clear; \
         } \
         invisible_written += (size_t)tmp; \
@@ -303,6 +352,1306 @@ int mk_wcswidth(const wchar_t *pwcs, size_t n);
 
 
 /********************************************************
+   Begin of file "utf8.h"
+ ********************************************************/
+
+// The latest version of this library is available on GitHub;
+// https://github.com/sheredom/utf8.h
+
+// This is free and unencumbered software released into the public domain.
+//
+// Anyone is free to copy, modify, publish, use, compile, sell, or
+// distribute this software, either in source code form or as a compiled
+// binary, for any purpose, commercial or non-commercial, and by any
+// means.
+//
+// In jurisdictions that recognize copyright laws, the author or authors
+// of this software dedicate any and all copyright interest in the
+// software to the public domain. We make this dedication for the benefit
+// of the public at large and to the detriment of our heirs and
+// successors. We intend this dedication to be an overt act of
+// relinquishment in perpetuity of all present and future rights to this
+// software under copyright law.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+//
+// For more information, please refer to <http://unlicense.org/>
+
+#ifndef SHEREDOM_UTF8_H_INCLUDED
+#define SHEREDOM_UTF8_H_INCLUDED
+
+#if defined(_MSC_VER)
+#pragma warning(push)
+
+// disable 'bytes padding added after construct' warning
+#pragma warning(disable : 4820)
+#endif
+
+#include <stddef.h>
+#include <stdlib.h>
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
+
+#if defined(_MSC_VER)
+typedef __int32 utf8_int32_t;
+#else
+#include <stdint.h>
+typedef int32_t utf8_int32_t;
+#endif
+
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#pragma clang diagnostic ignored "-Wcast-qual"
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if defined(__clang__) || defined(__GNUC__)
+#define utf8_nonnull __attribute__((nonnull))
+#define utf8_pure __attribute__((pure))
+#define utf8_restrict __restrict__
+#define utf8_weak __attribute__((weak))
+#elif defined(_MSC_VER)
+#define utf8_nonnull
+#define utf8_pure
+#define utf8_restrict __restrict
+#define utf8_weak __inline
+#else
+#error Non clang, non gcc, non MSVC compiler found!
+#endif
+
+#ifdef __cplusplus
+#define utf8_null NULL
+#else
+#define utf8_null 0
+#endif
+
+// Return less than 0, 0, greater than 0 if src1 < src2, src1 == src2, src1 >
+// src2 respectively, case insensitive.
+utf8_nonnull utf8_pure utf8_weak int utf8casecmp(const void *src1,
+        const void *src2);
+
+// Append the utf8 string src onto the utf8 string dst.
+utf8_nonnull utf8_weak void *utf8cat(void *utf8_restrict dst,
+                                     const void *utf8_restrict src);
+
+// Find the first match of the utf8 codepoint chr in the utf8 string src.
+utf8_nonnull utf8_pure utf8_weak void *utf8chr(const void *src,
+        utf8_int32_t chr);
+
+// Return less than 0, 0, greater than 0 if src1 < src2,
+// src1 == src2, src1 > src2 respectively.
+utf8_nonnull utf8_pure utf8_weak int utf8cmp(const void *src1,
+        const void *src2);
+
+// Copy the utf8 string src onto the memory allocated in dst.
+utf8_nonnull utf8_weak void *utf8cpy(void *utf8_restrict dst,
+                                     const void *utf8_restrict src);
+
+// Number of utf8 codepoints in the utf8 string src that consists entirely
+// of utf8 codepoints not from the utf8 string reject.
+utf8_nonnull utf8_pure utf8_weak size_t utf8cspn(const void *src,
+        const void *reject);
+
+// Duplicate the utf8 string src by getting its size, malloc'ing a new buffer
+// copying over the data, and returning that. Or 0 if malloc failed.
+utf8_nonnull utf8_weak void *utf8dup(const void *src);
+
+// Number of utf8 codepoints in the utf8 string str,
+// excluding the null terminating byte.
+utf8_nonnull utf8_pure utf8_weak size_t utf8len(const void *str);
+
+// Return less than 0, 0, greater than 0 if src1 < src2, src1 == src2, src1 >
+// src2 respectively, case insensitive. Checking at most n bytes of each utf8
+// string.
+utf8_nonnull utf8_pure utf8_weak int utf8ncasecmp(const void *src1,
+        const void *src2, size_t n);
+
+// Append the utf8 string src onto the utf8 string dst,
+// writing at most n+1 bytes. Can produce an invalid utf8
+// string if n falls partway through a utf8 codepoint.
+utf8_nonnull utf8_weak void *utf8ncat(void *utf8_restrict dst,
+                                      const void *utf8_restrict src, size_t n);
+
+// Return less than 0, 0, greater than 0 if src1 < src2,
+// src1 == src2, src1 > src2 respectively. Checking at most n
+// bytes of each utf8 string.
+utf8_nonnull utf8_pure utf8_weak int utf8ncmp(const void *src1,
+        const void *src2, size_t n);
+
+// Copy the utf8 string src onto the memory allocated in dst.
+// Copies at most n bytes. If there is no terminating null byte in
+// the first n bytes of src, the string placed into dst will not be
+// null-terminated. If the size (in bytes) of src is less than n,
+// extra null terminating bytes are appended to dst such that at
+// total of n bytes are written. Can produce an invalid utf8
+// string if n falls partway through a utf8 codepoint.
+utf8_nonnull utf8_weak void *utf8ncpy(void *utf8_restrict dst,
+                                      const void *utf8_restrict src, size_t n);
+
+// Similar to utf8dup, except that at most n bytes of src are copied. If src is
+// longer than n, only n bytes are copied and a null byte is added.
+//
+// Returns a new string if successful, 0 otherwise
+utf8_nonnull utf8_weak void *utf8ndup(const void *src, size_t n);
+
+// Locates the first occurence in the utf8 string str of any byte in the
+// utf8 string accept, or 0 if no match was found.
+utf8_nonnull utf8_pure utf8_weak void *utf8pbrk(const void *str,
+        const void *accept);
+
+// Find the last match of the utf8 codepoint chr in the utf8 string src.
+utf8_nonnull utf8_pure utf8_weak void *utf8rchr(const void *src, int chr);
+
+// Number of bytes in the utf8 string str,
+// including the null terminating byte.
+utf8_nonnull utf8_pure utf8_weak size_t utf8size(const void *str);
+
+// Number of utf8 codepoints in the utf8 string src that consists entirely
+// of utf8 codepoints from the utf8 string accept.
+utf8_nonnull utf8_pure utf8_weak size_t utf8spn(const void *src,
+        const void *accept);
+
+// The position of the utf8 string needle in the utf8 string haystack.
+utf8_nonnull utf8_pure utf8_weak void *utf8str(const void *haystack,
+        const void *needle);
+
+// The position of the utf8 string needle in the utf8 string haystack, case
+// insensitive.
+utf8_nonnull utf8_pure utf8_weak void *utf8casestr(const void *haystack,
+        const void *needle);
+
+// Return 0 on success, or the position of the invalid
+// utf8 codepoint on failure.
+utf8_nonnull utf8_pure utf8_weak void *utf8valid(const void *str);
+
+// Sets out_codepoint to the next utf8 codepoint in str, and returns the address
+// of the utf8 codepoint after the current one in str.
+utf8_nonnull utf8_weak void *
+utf8codepoint(const void *utf8_restrict str,
+              utf8_int32_t *utf8_restrict out_codepoint);
+
+// Returns the size of the given codepoint in bytes.
+utf8_weak size_t utf8codepointsize(utf8_int32_t chr);
+
+// Write a codepoint to the given string, and return the address to the next
+// place after the written codepoint. Pass how many bytes left in the buffer to
+// n. If there is not enough space for the codepoint, this function returns
+// null.
+utf8_nonnull utf8_weak void *utf8catcodepoint(void *utf8_restrict str,
+        utf8_int32_t chr, size_t n);
+
+// Returns 1 if the given character is lowercase, or 0 if it is not.
+utf8_weak int utf8islower(utf8_int32_t chr);
+
+// Returns 1 if the given character is uppercase, or 0 if it is not.
+utf8_weak int utf8isupper(utf8_int32_t chr);
+
+// Transform the given string into all lowercase codepoints.
+utf8_nonnull utf8_weak void utf8lwr(void *utf8_restrict str);
+
+// Transform the given string into all uppercase codepoints.
+utf8_nonnull utf8_weak void utf8upr(void *utf8_restrict str);
+
+// Make a codepoint lower case if possible.
+utf8_weak utf8_int32_t utf8lwrcodepoint(utf8_int32_t cp);
+
+// Make a codepoint upper case if possible.
+utf8_weak utf8_int32_t utf8uprcodepoint(utf8_int32_t cp);
+
+#undef utf8_weak
+#undef utf8_pure
+#undef utf8_nonnull
+
+int utf8casecmp(const void *src1, const void *src2)
+{
+    utf8_int32_t src1_cp, src2_cp, src1_orig_cp, src2_orig_cp;
+
+    for (;;) {
+        src1 = utf8codepoint(src1, &src1_cp);
+        src2 = utf8codepoint(src2, &src2_cp);
+
+        // Take a copy of src1 & src2
+        src1_orig_cp = src1_cp;
+        src2_orig_cp = src2_cp;
+
+        // Lower the srcs if required
+        src1_cp = utf8lwrcodepoint(src1_cp);
+        src2_cp = utf8lwrcodepoint(src2_cp);
+
+        // Check if the lowered codepoints match
+        if ((0 == src1_orig_cp) && (0 == src2_orig_cp)) {
+            return 0;
+        } else if (src1_cp == src2_cp) {
+            continue;
+        }
+
+        // If they don't match, then we return which of the original's are less
+        if (src1_orig_cp < src2_orig_cp) {
+            return -1;
+        } else if (src1_orig_cp > src2_orig_cp) {
+            return 1;
+        }
+    }
+}
+
+void *utf8cat(void *utf8_restrict dst, const void *utf8_restrict src)
+{
+    char *d = (char *)dst;
+    const char *s = (const char *)src;
+
+    // find the null terminating byte in dst
+    while ('\0' != *d) {
+        d++;
+    }
+
+    // overwriting the null terminating byte in dst, append src byte-by-byte
+    while ('\0' != *s) {
+        *d++ = *s++;
+    }
+
+    // write out a new null terminating byte into dst
+    *d = '\0';
+
+    return dst;
+}
+
+void *utf8chr(const void *src, utf8_int32_t chr)
+{
+    char c[5] = {'\0', '\0', '\0', '\0', '\0'};
+
+    if (0 == chr) {
+        // being asked to return position of null terminating byte, so
+        // just run s to the end, and return!
+        const char *s = (const char *)src;
+        while ('\0' != *s) {
+            s++;
+        }
+        return (void *)s;
+    } else if (0 == ((utf8_int32_t)0xffffff80 & chr)) {
+        // 1-byte/7-bit ascii
+        // (0b0xxxxxxx)
+        c[0] = (char)chr;
+    } else if (0 == ((utf8_int32_t)0xfffff800 & chr)) {
+        // 2-byte/11-bit utf8 code point
+        // (0b110xxxxx 0b10xxxxxx)
+        c[0] = 0xc0 | (char)(chr >> 6);
+        c[1] = 0x80 | (char)(chr & 0x3f);
+    } else if (0 == ((utf8_int32_t)0xffff0000 & chr)) {
+        // 3-byte/16-bit utf8 code point
+        // (0b1110xxxx 0b10xxxxxx 0b10xxxxxx)
+        c[0] = 0xe0 | (char)(chr >> 12);
+        c[1] = 0x80 | (char)((chr >> 6) & 0x3f);
+        c[2] = 0x80 | (char)(chr & 0x3f);
+    } else { // if (0 == ((int)0xffe00000 & chr)) {
+        // 4-byte/21-bit utf8 code point
+        // (0b11110xxx 0b10xxxxxx 0b10xxxxxx 0b10xxxxxx)
+        c[0] = 0xf0 | (char)(chr >> 18);
+        c[1] = 0x80 | (char)((chr >> 12) & 0x3f);
+        c[2] = 0x80 | (char)((chr >> 6) & 0x3f);
+        c[3] = 0x80 | (char)(chr & 0x3f);
+    }
+
+    // we've made c into a 2 utf8 codepoint string, one for the chr we are
+    // seeking, another for the null terminating byte. Now use utf8str to
+    // search
+    return utf8str(src, c);
+}
+
+int utf8cmp(const void *src1, const void *src2)
+{
+    const unsigned char *s1 = (const unsigned char *)src1;
+    const unsigned char *s2 = (const unsigned char *)src2;
+
+    while (('\0' != *s1) || ('\0' != *s2)) {
+        if (*s1 < *s2) {
+            return -1;
+        } else if (*s1 > *s2) {
+            return 1;
+        }
+
+        s1++;
+        s2++;
+    }
+
+    // both utf8 strings matched
+    return 0;
+}
+
+int utf8coll(const void *src1, const void *src2);
+
+void *utf8cpy(void *utf8_restrict dst, const void *utf8_restrict src)
+{
+    char *d = (char *)dst;
+    const char *s = (const char *)src;
+
+    // overwriting anything previously in dst, write byte-by-byte
+    // from src
+    while ('\0' != *s) {
+        *d++ = *s++;
+    }
+
+    // append null terminating byte
+    *d = '\0';
+
+    return dst;
+}
+
+size_t utf8cspn(const void *src, const void *reject)
+{
+    const char *s = (const char *)src;
+    size_t chars = 0;
+
+    while ('\0' != *s) {
+        const char *r = (const char *)reject;
+        size_t offset = 0;
+
+        while ('\0' != *r) {
+            // checking that if *r is the start of a utf8 codepoint
+            // (it is not 0b10xxxxxx) and we have successfully matched
+            // a previous character (0 < offset) - we found a match
+            if ((0x80 != (0xc0 & *r)) && (0 < offset)) {
+                return chars;
+            } else {
+                if (*r == s[offset]) {
+                    // part of a utf8 codepoint matched, so move our checking
+                    // onwards to the next byte
+                    offset++;
+                    r++;
+                } else {
+                    // r could be in the middle of an unmatching utf8 code point,
+                    // so we need to march it on to the next character beginning,
+
+                    do {
+                        r++;
+                    } while (0x80 == (0xc0 & *r));
+
+                    // reset offset too as we found a mismatch
+                    offset = 0;
+                }
+            }
+        }
+
+        // the current utf8 codepoint in src did not match reject, but src
+        // could have been partway through a utf8 codepoint, so we need to
+        // march it onto the next utf8 codepoint starting byte
+        do {
+            s++;
+        } while ((0x80 == (0xc0 & *s)));
+        chars++;
+    }
+
+    return chars;
+}
+
+size_t utf8size(const void *str);
+
+void *utf8dup(const void *src)
+{
+    const char *s = (const char *)src;
+    char *n = utf8_null;
+
+    // figure out how many bytes (including the terminator) we need to copy first
+    size_t bytes = utf8size(src);
+
+    n = (char *)malloc(bytes);
+
+    if (utf8_null == n) {
+        // out of memory so we bail
+        return utf8_null;
+    } else {
+        bytes = 0;
+
+        // copy src byte-by-byte into our new utf8 string
+        while ('\0' != s[bytes]) {
+            n[bytes] = s[bytes];
+            bytes++;
+        }
+
+        // append null terminating byte
+        n[bytes] = '\0';
+        return n;
+    }
+}
+
+void *utf8fry(const void *str);
+
+size_t utf8len(const void *str)
+{
+    const unsigned char *s = (const unsigned char *)str;
+    size_t length = 0;
+
+    while ('\0' != *s) {
+        if (0xf0 == (0xf8 & *s)) {
+            // 4-byte utf8 code point (began with 0b11110xxx)
+            s += 4;
+        } else if (0xe0 == (0xf0 & *s)) {
+            // 3-byte utf8 code point (began with 0b1110xxxx)
+            s += 3;
+        } else if (0xc0 == (0xe0 & *s)) {
+            // 2-byte utf8 code point (began with 0b110xxxxx)
+            s += 2;
+        } else { // if (0x00 == (0x80 & *s)) {
+            // 1-byte ascii (began with 0b0xxxxxxx)
+            s += 1;
+        }
+
+        // no matter the bytes we marched s forward by, it was
+        // only 1 utf8 codepoint
+        length++;
+    }
+
+    return length;
+}
+
+int utf8ncasecmp(const void *src1, const void *src2, size_t n)
+{
+    utf8_int32_t src1_cp, src2_cp, src1_orig_cp, src2_orig_cp;
+
+    do {
+        const unsigned char *const s1 = (const unsigned char *)src1;
+        const unsigned char *const s2 = (const unsigned char *)src2;
+
+        // first check that we have enough bytes left in n to contain an entire
+        // codepoint
+        if (0 == n) {
+            return 0;
+        }
+
+        if ((1 == n) && ((0xc0 == (0xe0 & *s1)) || (0xc0 == (0xe0 & *s2)))) {
+            const utf8_int32_t c1 = (0xe0 & *s1);
+            const utf8_int32_t c2 = (0xe0 & *s2);
+
+            if (c1 < c2) {
+                return -1;
+            } else if (c1 > c2) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+
+        if ((2 >= n) && ((0xe0 == (0xf0 & *s1)) || (0xe0 == (0xf0 & *s2)))) {
+            const utf8_int32_t c1 = (0xf0 & *s1);
+            const utf8_int32_t c2 = (0xf0 & *s2);
+
+            if (c1 < c2) {
+                return -1;
+            } else if (c1 > c2) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+
+        if ((3 >= n) && ((0xf0 == (0xf8 & *s1)) || (0xf0 == (0xf8 & *s2)))) {
+            const utf8_int32_t c1 = (0xf8 & *s1);
+            const utf8_int32_t c2 = (0xf8 & *s2);
+
+            if (c1 < c2) {
+                return -1;
+            } else if (c1 > c2) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+
+        src1 = utf8codepoint(src1, &src1_cp);
+        src2 = utf8codepoint(src2, &src2_cp);
+        n -= utf8codepointsize(src1_cp);
+
+        // Take a copy of src1 & src2
+        src1_orig_cp = src1_cp;
+        src2_orig_cp = src2_cp;
+
+        // Lower srcs if required
+        src1_cp = utf8lwrcodepoint(src1_cp);
+        src2_cp = utf8lwrcodepoint(src2_cp);
+
+        // Check if the lowered codepoints match
+        if ((0 == src1_orig_cp) && (0 == src2_orig_cp)) {
+            return 0;
+        } else if (src1_cp == src2_cp) {
+            continue;
+        }
+
+        // If they don't match, then we return which of the original's are less
+        if (src1_orig_cp < src2_orig_cp) {
+            return -1;
+        } else if (src1_orig_cp > src2_orig_cp) {
+            return 1;
+        }
+    } while (0 < n);
+
+    // both utf8 strings matched
+    return 0;
+}
+
+void *utf8ncat(void *utf8_restrict dst, const void *utf8_restrict src,
+               size_t n)
+{
+    char *d = (char *)dst;
+    const char *s = (const char *)src;
+
+    // find the null terminating byte in dst
+    while ('\0' != *d) {
+        d++;
+    }
+
+    // overwriting the null terminating byte in dst, append src byte-by-byte
+    // stopping if we run out of space
+    do {
+        *d++ = *s++;
+    } while (('\0' != *s) && (0 != --n));
+
+    // write out a new null terminating byte into dst
+    *d = '\0';
+
+    return dst;
+}
+
+int utf8ncmp(const void *src1, const void *src2, size_t n)
+{
+    const unsigned char *s1 = (const unsigned char *)src1;
+    const unsigned char *s2 = (const unsigned char *)src2;
+
+    while ((0 != n--) && (('\0' != *s1) || ('\0' != *s2))) {
+        if (*s1 < *s2) {
+            return -1;
+        } else if (*s1 > *s2) {
+            return 1;
+        }
+
+        s1++;
+        s2++;
+    }
+
+    // both utf8 strings matched
+    return 0;
+}
+
+void *utf8ncpy(void *utf8_restrict dst, const void *utf8_restrict src,
+               size_t n)
+{
+    char *d = (char *)dst;
+    const char *s = (const char *)src;
+    size_t index;
+
+    // overwriting anything previously in dst, write byte-by-byte
+    // from src
+    for (index = 0; index < n; index++) {
+        d[index] = s[index];
+        if ('\0' == s[index]) {
+            break;
+        }
+    }
+
+    // append null terminating byte
+    for (; index < n; index++) {
+        d[index] = 0;
+    }
+
+    return dst;
+}
+
+void *utf8ndup(const void *src, size_t n)
+{
+    const char *s = (const char *)src;
+    char *c = utf8_null;
+    size_t bytes = 0;
+
+    // Find the end of the string or stop when n is reached
+    while ('\0' != s[bytes] && bytes < n) {
+        bytes++;
+    }
+
+    // In case bytes is actually less than n, we need to set it
+    // to be used later in the copy byte by byte.
+    n = bytes;
+
+    c = (char *)malloc(bytes + 1);
+    if (utf8_null == c) {
+        // out of memory so we bail
+        return utf8_null;
+    }
+
+    bytes = 0;
+
+    // copy src byte-by-byte into our new utf8 string
+    while ('\0' != s[bytes] && bytes < n) {
+        c[bytes] = s[bytes];
+        bytes++;
+    }
+
+    // append null terminating byte
+    c[bytes] = '\0';
+    return c;
+}
+
+void *utf8rchr(const void *src, int chr)
+{
+    const char *s = (const char *)src;
+    const char *match = utf8_null;
+    char c[5] = {'\0', '\0', '\0', '\0', '\0'};
+
+    if (0 == chr) {
+        // being asked to return position of null terminating byte, so
+        // just run s to the end, and return!
+        while ('\0' != *s) {
+            s++;
+        }
+        return (void *)s;
+    } else if (0 == ((int)0xffffff80 & chr)) {
+        // 1-byte/7-bit ascii
+        // (0b0xxxxxxx)
+        c[0] = (char)chr;
+    } else if (0 == ((int)0xfffff800 & chr)) {
+        // 2-byte/11-bit utf8 code point
+        // (0b110xxxxx 0b10xxxxxx)
+        c[0] = 0xc0 | (char)(chr >> 6);
+        c[1] = 0x80 | (char)(chr & 0x3f);
+    } else if (0 == ((int)0xffff0000 & chr)) {
+        // 3-byte/16-bit utf8 code point
+        // (0b1110xxxx 0b10xxxxxx 0b10xxxxxx)
+        c[0] = 0xe0 | (char)(chr >> 12);
+        c[1] = 0x80 | (char)((chr >> 6) & 0x3f);
+        c[2] = 0x80 | (char)(chr & 0x3f);
+    } else { // if (0 == ((int)0xffe00000 & chr)) {
+        // 4-byte/21-bit utf8 code point
+        // (0b11110xxx 0b10xxxxxx 0b10xxxxxx 0b10xxxxxx)
+        c[0] = 0xf0 | (char)(chr >> 18);
+        c[1] = 0x80 | (char)((chr >> 12) & 0x3f);
+        c[2] = 0x80 | (char)((chr >> 6) & 0x3f);
+        c[3] = 0x80 | (char)(chr & 0x3f);
+    }
+
+    // we've created a 2 utf8 codepoint string in c that is
+    // the utf8 character asked for by chr, and a null
+    // terminating byte
+
+    while ('\0' != *s) {
+        size_t offset = 0;
+
+        while (s[offset] == c[offset]) {
+            offset++;
+        }
+
+        if ('\0' == c[offset]) {
+            // we found a matching utf8 code point
+            match = s;
+            s += offset;
+        } else {
+            s += offset;
+
+            // need to march s along to next utf8 codepoint start
+            // (the next byte that doesn't match 0b10xxxxxx)
+            if ('\0' != *s) {
+                do {
+                    s++;
+                } while (0x80 == (0xc0 & *s));
+            }
+        }
+    }
+
+    // return the last match we found (or 0 if no match was found)
+    return (void *)match;
+}
+
+void *utf8pbrk(const void *str, const void *accept)
+{
+    const char *s = (const char *)str;
+
+    while ('\0' != *s) {
+        const char *a = (const char *)accept;
+        size_t offset = 0;
+
+        while ('\0' != *a) {
+            // checking that if *a is the start of a utf8 codepoint
+            // (it is not 0b10xxxxxx) and we have successfully matched
+            // a previous character (0 < offset) - we found a match
+            if ((0x80 != (0xc0 & *a)) && (0 < offset)) {
+                return (void *)s;
+            } else {
+                if (*a == s[offset]) {
+                    // part of a utf8 codepoint matched, so move our checking
+                    // onwards to the next byte
+                    offset++;
+                    a++;
+                } else {
+                    // r could be in the middle of an unmatching utf8 code point,
+                    // so we need to march it on to the next character beginning,
+
+                    do {
+                        a++;
+                    } while (0x80 == (0xc0 & *a));
+
+                    // reset offset too as we found a mismatch
+                    offset = 0;
+                }
+            }
+        }
+
+        // we found a match on the last utf8 codepoint
+        if (0 < offset) {
+            return (void *)s;
+        }
+
+        // the current utf8 codepoint in src did not match accept, but src
+        // could have been partway through a utf8 codepoint, so we need to
+        // march it onto the next utf8 codepoint starting byte
+        do {
+            s++;
+        } while ((0x80 == (0xc0 & *s)));
+    }
+
+    return utf8_null;
+}
+
+size_t utf8size(const void *str)
+{
+    const char *s = (const char *)str;
+    size_t size = 0;
+    while ('\0' != s[size]) {
+        size++;
+    }
+
+    // we are including the null terminating byte in the size calculation
+    size++;
+    return size;
+}
+
+size_t utf8spn(const void *src, const void *accept)
+{
+    const char *s = (const char *)src;
+    size_t chars = 0;
+
+    while ('\0' != *s) {
+        const char *a = (const char *)accept;
+        size_t offset = 0;
+
+        while ('\0' != *a) {
+            // checking that if *r is the start of a utf8 codepoint
+            // (it is not 0b10xxxxxx) and we have successfully matched
+            // a previous character (0 < offset) - we found a match
+            if ((0x80 != (0xc0 & *a)) && (0 < offset)) {
+                // found a match, so increment the number of utf8 codepoints
+                // that have matched and stop checking whether any other utf8
+                // codepoints in a match
+                chars++;
+                s += offset;
+                break;
+            } else {
+                if (*a == s[offset]) {
+                    offset++;
+                    a++;
+                } else {
+                    // a could be in the middle of an unmatching utf8 codepoint,
+                    // so we need to march it on to the next character beginning,
+                    do {
+                        a++;
+                    } while (0x80 == (0xc0 & *a));
+
+                    // reset offset too as we found a mismatch
+                    offset = 0;
+                }
+            }
+        }
+
+        // if a got to its terminating null byte, then we didn't find a match.
+        // Return the current number of matched utf8 codepoints
+        if ('\0' == *a) {
+            return chars;
+        }
+    }
+
+    return chars;
+}
+
+void *utf8str(const void *haystack, const void *needle)
+{
+    const char *h = (const char *)haystack;
+    utf8_int32_t throwaway_codepoint;
+
+    // if needle has no utf8 codepoints before the null terminating
+    // byte then return haystack
+    if ('\0' == *((const char *)needle)) {
+        return (void *)haystack;
+    }
+
+    while ('\0' != *h) {
+        const char *maybeMatch = h;
+        const char *n = (const char *)needle;
+
+        while (*h == *n && (*h != '\0' && *n != '\0')) {
+            n++;
+            h++;
+        }
+
+        if ('\0' == *n) {
+            // we found the whole utf8 string for needle in haystack at
+            // maybeMatch, so return it
+            return (void *)maybeMatch;
+        } else {
+            // h could be in the middle of an unmatching utf8 codepoint,
+            // so we need to march it on to the next character beginning
+            // starting from the current character
+            h = (const char *)utf8codepoint(maybeMatch, &throwaway_codepoint);
+        }
+    }
+
+    // no match
+    return utf8_null;
+}
+
+void *utf8casestr(const void *haystack, const void *needle)
+{
+    const void *h = haystack;
+
+    // if needle has no utf8 codepoints before the null terminating
+    // byte then return haystack
+    if ('\0' == *((const char *)needle)) {
+        return (void *)haystack;
+    }
+
+    for (;;) {
+        const void *maybeMatch = h;
+        const void *n = needle;
+        utf8_int32_t h_cp, n_cp;
+
+        // Get the next code point and track it
+        const void *nextH = h = utf8codepoint(h, &h_cp);
+        n = utf8codepoint(n, &n_cp);
+
+        while ((0 != h_cp) && (0 != n_cp)) {
+            h_cp = utf8lwrcodepoint(h_cp);
+            n_cp = utf8lwrcodepoint(n_cp);
+
+            // if we find a mismatch, bail out!
+            if (h_cp != n_cp) {
+                break;
+            }
+
+            h = utf8codepoint(h, &h_cp);
+            n = utf8codepoint(n, &n_cp);
+        }
+
+        if (0 == n_cp) {
+            // we found the whole utf8 string for needle in haystack at
+            // maybeMatch, so return it
+            return (void *)maybeMatch;
+        }
+
+        if (0 == h_cp) {
+            // no match
+            return utf8_null;
+        }
+
+        // Roll back to the next code point in the haystack to test
+        h = nextH;
+    }
+}
+
+void *utf8valid(const void *str)
+{
+    const char *s = (const char *)str;
+
+    while ('\0' != *s) {
+        if (0xf0 == (0xf8 & *s)) {
+            // ensure each of the 3 following bytes in this 4-byte
+            // utf8 codepoint began with 0b10xxxxxx
+            if ((0x80 != (0xc0 & s[1])) || (0x80 != (0xc0 & s[2])) ||
+                (0x80 != (0xc0 & s[3]))) {
+                return (void *)s;
+            }
+
+            // ensure that our utf8 codepoint ended after 4 bytes
+            if (0x80 == (0xc0 & s[4])) {
+                return (void *)s;
+            }
+
+            // ensure that the top 5 bits of this 4-byte utf8
+            // codepoint were not 0, as then we could have used
+            // one of the smaller encodings
+            if ((0 == (0x07 & s[0])) && (0 == (0x30 & s[1]))) {
+                return (void *)s;
+            }
+
+            // 4-byte utf8 code point (began with 0b11110xxx)
+            s += 4;
+        } else if (0xe0 == (0xf0 & *s)) {
+            // ensure each of the 2 following bytes in this 3-byte
+            // utf8 codepoint began with 0b10xxxxxx
+            if ((0x80 != (0xc0 & s[1])) || (0x80 != (0xc0 & s[2]))) {
+                return (void *)s;
+            }
+
+            // ensure that our utf8 codepoint ended after 3 bytes
+            if (0x80 == (0xc0 & s[3])) {
+                return (void *)s;
+            }
+
+            // ensure that the top 5 bits of this 3-byte utf8
+            // codepoint were not 0, as then we could have used
+            // one of the smaller encodings
+            if ((0 == (0x0f & s[0])) && (0 == (0x20 & s[1]))) {
+                return (void *)s;
+            }
+
+            // 3-byte utf8 code point (began with 0b1110xxxx)
+            s += 3;
+        } else if (0xc0 == (0xe0 & *s)) {
+            // ensure the 1 following byte in this 2-byte
+            // utf8 codepoint began with 0b10xxxxxx
+            if (0x80 != (0xc0 & s[1])) {
+                return (void *)s;
+            }
+
+            // ensure that our utf8 codepoint ended after 2 bytes
+            if (0x80 == (0xc0 & s[2])) {
+                return (void *)s;
+            }
+
+            // ensure that the top 4 bits of this 2-byte utf8
+            // codepoint were not 0, as then we could have used
+            // one of the smaller encodings
+            if (0 == (0x1e & s[0])) {
+                return (void *)s;
+            }
+
+            // 2-byte utf8 code point (began with 0b110xxxxx)
+            s += 2;
+        } else if (0x00 == (0x80 & *s)) {
+            // 1-byte ascii (began with 0b0xxxxxxx)
+            s += 1;
+        } else {
+            // we have an invalid 0b1xxxxxxx utf8 code point entry
+            return (void *)s;
+        }
+    }
+
+    return utf8_null;
+}
+
+void *utf8codepoint(const void *utf8_restrict str,
+                    utf8_int32_t *utf8_restrict out_codepoint)
+{
+    const char *s = (const char *)str;
+
+    if (0xf0 == (0xf8 & s[0])) {
+        // 4 byte utf8 codepoint
+        *out_codepoint = ((0x07 & s[0]) << 18) | ((0x3f & s[1]) << 12) |
+                         ((0x3f & s[2]) << 6) | (0x3f & s[3]);
+        s += 4;
+    } else if (0xe0 == (0xf0 & s[0])) {
+        // 3 byte utf8 codepoint
+        *out_codepoint =
+            ((0x0f & s[0]) << 12) | ((0x3f & s[1]) << 6) | (0x3f & s[2]);
+        s += 3;
+    } else if (0xc0 == (0xe0 & s[0])) {
+        // 2 byte utf8 codepoint
+        *out_codepoint = ((0x1f & s[0]) << 6) | (0x3f & s[1]);
+        s += 2;
+    } else {
+        // 1 byte utf8 codepoint otherwise
+        *out_codepoint = s[0];
+        s += 1;
+    }
+
+    return (void *)s;
+}
+
+size_t utf8codepointsize(utf8_int32_t chr)
+{
+    if (0 == ((utf8_int32_t)0xffffff80 & chr)) {
+        return 1;
+    } else if (0 == ((utf8_int32_t)0xfffff800 & chr)) {
+        return 2;
+    } else if (0 == ((utf8_int32_t)0xffff0000 & chr)) {
+        return 3;
+    } else { // if (0 == ((int)0xffe00000 & chr)) {
+        return 4;
+    }
+}
+
+void *utf8catcodepoint(void *utf8_restrict str, utf8_int32_t chr, size_t n)
+{
+    char *s = (char *)str;
+
+    if (0 == ((utf8_int32_t)0xffffff80 & chr)) {
+        // 1-byte/7-bit ascii
+        // (0b0xxxxxxx)
+        if (n < 1) {
+            return utf8_null;
+        }
+        s[0] = (char)chr;
+        s += 1;
+    } else if (0 == ((utf8_int32_t)0xfffff800 & chr)) {
+        // 2-byte/11-bit utf8 code point
+        // (0b110xxxxx 0b10xxxxxx)
+        if (n < 2) {
+            return utf8_null;
+        }
+        s[0] = 0xc0 | (char)(chr >> 6);
+        s[1] = 0x80 | (char)(chr & 0x3f);
+        s += 2;
+    } else if (0 == ((utf8_int32_t)0xffff0000 & chr)) {
+        // 3-byte/16-bit utf8 code point
+        // (0b1110xxxx 0b10xxxxxx 0b10xxxxxx)
+        if (n < 3) {
+            return utf8_null;
+        }
+        s[0] = 0xe0 | (char)(chr >> 12);
+        s[1] = 0x80 | (char)((chr >> 6) & 0x3f);
+        s[2] = 0x80 | (char)(chr & 0x3f);
+        s += 3;
+    } else { // if (0 == ((int)0xffe00000 & chr)) {
+        // 4-byte/21-bit utf8 code point
+        // (0b11110xxx 0b10xxxxxx 0b10xxxxxx 0b10xxxxxx)
+        if (n < 4) {
+            return utf8_null;
+        }
+        s[0] = 0xf0 | (char)(chr >> 18);
+        s[1] = 0x80 | (char)((chr >> 12) & 0x3f);
+        s[2] = 0x80 | (char)((chr >> 6) & 0x3f);
+        s[3] = 0x80 | (char)(chr & 0x3f);
+        s += 4;
+    }
+
+    return s;
+}
+
+int utf8islower(utf8_int32_t chr) { return chr != utf8uprcodepoint(chr); }
+
+int utf8isupper(utf8_int32_t chr) { return chr != utf8lwrcodepoint(chr); }
+
+void utf8lwr(void *utf8_restrict str)
+{
+    void *p, *pn;
+    utf8_int32_t cp;
+
+    p = (char *)str;
+    pn = utf8codepoint(p, &cp);
+
+    while (cp != 0) {
+        const utf8_int32_t lwr_cp = utf8lwrcodepoint(cp);
+        const size_t size = utf8codepointsize(lwr_cp);
+
+        if (lwr_cp != cp) {
+            utf8catcodepoint(p, lwr_cp, size);
+        }
+
+        p = pn;
+        pn = utf8codepoint(p, &cp);
+    }
+}
+
+void utf8upr(void *utf8_restrict str)
+{
+    void *p, *pn;
+    utf8_int32_t cp;
+
+    p = (char *)str;
+    pn = utf8codepoint(p, &cp);
+
+    while (cp != 0) {
+        const utf8_int32_t lwr_cp = utf8uprcodepoint(cp);
+        const size_t size = utf8codepointsize(lwr_cp);
+
+        if (lwr_cp != cp) {
+            utf8catcodepoint(p, lwr_cp, size);
+        }
+
+        p = pn;
+        pn = utf8codepoint(p, &cp);
+    }
+}
+
+utf8_int32_t utf8lwrcodepoint(utf8_int32_t cp)
+{
+    if (((0x0041 <= cp) && (0x005a >= cp)) ||
+        ((0x00c0 <= cp) && (0x00d6 >= cp)) ||
+        ((0x00d8 <= cp) && (0x00de >= cp)) ||
+        ((0x0391 <= cp) && (0x03a1 >= cp)) ||
+        ((0x03a3 <= cp) && (0x03ab >= cp))) {
+        cp += 32;
+    } else if (((0x0100 <= cp) && (0x012f >= cp)) ||
+               ((0x0132 <= cp) && (0x0137 >= cp)) ||
+               ((0x014a <= cp) && (0x0177 >= cp)) ||
+               ((0x0182 <= cp) && (0x0185 >= cp)) ||
+               ((0x01a0 <= cp) && (0x01a5 >= cp)) ||
+               ((0x01de <= cp) && (0x01ef >= cp)) ||
+               ((0x01f8 <= cp) && (0x021f >= cp)) ||
+               ((0x0222 <= cp) && (0x0233 >= cp)) ||
+               ((0x0246 <= cp) && (0x024f >= cp)) ||
+               ((0x03d8 <= cp) && (0x03ef >= cp))) {
+        cp |= 0x1;
+    } else if (((0x0139 <= cp) && (0x0148 >= cp)) ||
+               ((0x0179 <= cp) && (0x017e >= cp)) ||
+               ((0x01af <= cp) && (0x01b0 >= cp)) ||
+               ((0x01b3 <= cp) && (0x01b6 >= cp)) ||
+               ((0x01cd <= cp) && (0x01dc >= cp))) {
+        cp += 1;
+        cp &= ~0x1;
+    } else {
+        switch (cp) {
+            default: break;
+            case 0x0178: cp = 0x00ff; break;
+            case 0x0243: cp = 0x0180; break;
+            case 0x018e: cp = 0x01dd; break;
+            case 0x023d: cp = 0x019a; break;
+            case 0x0220: cp = 0x019e; break;
+            case 0x01b7: cp = 0x0292; break;
+            case 0x01c4: cp = 0x01c6; break;
+            case 0x01c7: cp = 0x01c9; break;
+            case 0x01ca: cp = 0x01cc; break;
+            case 0x01f1: cp = 0x01f3; break;
+            case 0x01f7: cp = 0x01bf; break;
+            case 0x0187: cp = 0x0188; break;
+            case 0x018b: cp = 0x018c; break;
+            case 0x0191: cp = 0x0192; break;
+            case 0x0198: cp = 0x0199; break;
+            case 0x01a7: cp = 0x01a8; break;
+            case 0x01ac: cp = 0x01ad; break;
+            case 0x01af: cp = 0x01b0; break;
+            case 0x01b8: cp = 0x01b9; break;
+            case 0x01bc: cp = 0x01bd; break;
+            case 0x01f4: cp = 0x01f5; break;
+            case 0x023b: cp = 0x023c; break;
+            case 0x0241: cp = 0x0242; break;
+            case 0x03fd: cp = 0x037b; break;
+            case 0x03fe: cp = 0x037c; break;
+            case 0x03ff: cp = 0x037d; break;
+            case 0x037f: cp = 0x03f3; break;
+            case 0x0386: cp = 0x03ac; break;
+            case 0x0388: cp = 0x03ad; break;
+            case 0x0389: cp = 0x03ae; break;
+            case 0x038a: cp = 0x03af; break;
+            case 0x038c: cp = 0x03cc; break;
+            case 0x038e: cp = 0x03cd; break;
+            case 0x038f: cp = 0x03ce; break;
+            case 0x0370: cp = 0x0371; break;
+            case 0x0372: cp = 0x0373; break;
+            case 0x0376: cp = 0x0377; break;
+            case 0x03f4: cp = 0x03d1; break;
+            case 0x03cf: cp = 0x03d7; break;
+            case 0x03f9: cp = 0x03f2; break;
+            case 0x03f7: cp = 0x03f8; break;
+            case 0x03fa: cp = 0x03fb; break;
+        };
+    }
+
+    return cp;
+}
+
+utf8_int32_t utf8uprcodepoint(utf8_int32_t cp)
+{
+    if (((0x0061 <= cp) && (0x007a >= cp)) ||
+        ((0x00e0 <= cp) && (0x00f6 >= cp)) ||
+        ((0x00f8 <= cp) && (0x00fe >= cp)) ||
+        ((0x03b1 <= cp) && (0x03c1 >= cp)) ||
+        ((0x03c3 <= cp) && (0x03cb >= cp))) {
+        cp -= 32;
+    } else if (((0x0100 <= cp) && (0x012f >= cp)) ||
+               ((0x0132 <= cp) && (0x0137 >= cp)) ||
+               ((0x014a <= cp) && (0x0177 >= cp)) ||
+               ((0x0182 <= cp) && (0x0185 >= cp)) ||
+               ((0x01a0 <= cp) && (0x01a5 >= cp)) ||
+               ((0x01de <= cp) && (0x01ef >= cp)) ||
+               ((0x01f8 <= cp) && (0x021f >= cp)) ||
+               ((0x0222 <= cp) && (0x0233 >= cp)) ||
+               ((0x0246 <= cp) && (0x024f >= cp)) ||
+               ((0x03d8 <= cp) && (0x03ef >= cp))) {
+        cp &= ~0x1;
+    } else if (((0x0139 <= cp) && (0x0148 >= cp)) ||
+               ((0x0179 <= cp) && (0x017e >= cp)) ||
+               ((0x01af <= cp) && (0x01b0 >= cp)) ||
+               ((0x01b3 <= cp) && (0x01b6 >= cp)) ||
+               ((0x01cd <= cp) && (0x01dc >= cp))) {
+        cp -= 1;
+        cp |= 0x1;
+    } else {
+        switch (cp) {
+            default: break;
+            case 0x00ff: cp = 0x0178; break;
+            case 0x0180: cp = 0x0243; break;
+            case 0x01dd: cp = 0x018e; break;
+            case 0x019a: cp = 0x023d; break;
+            case 0x019e: cp = 0x0220; break;
+            case 0x0292: cp = 0x01b7; break;
+            case 0x01c6: cp = 0x01c4; break;
+            case 0x01c9: cp = 0x01c7; break;
+            case 0x01cc: cp = 0x01ca; break;
+            case 0x01f3: cp = 0x01f1; break;
+            case 0x01bf: cp = 0x01f7; break;
+            case 0x0188: cp = 0x0187; break;
+            case 0x018c: cp = 0x018b; break;
+            case 0x0192: cp = 0x0191; break;
+            case 0x0199: cp = 0x0198; break;
+            case 0x01a8: cp = 0x01a7; break;
+            case 0x01ad: cp = 0x01ac; break;
+            case 0x01b0: cp = 0x01af; break;
+            case 0x01b9: cp = 0x01b8; break;
+            case 0x01bd: cp = 0x01bc; break;
+            case 0x01f5: cp = 0x01f4; break;
+            case 0x023c: cp = 0x023b; break;
+            case 0x0242: cp = 0x0241; break;
+            case 0x037b: cp = 0x03fd; break;
+            case 0x037c: cp = 0x03fe; break;
+            case 0x037d: cp = 0x03ff; break;
+            case 0x03f3: cp = 0x037f; break;
+            case 0x03ac: cp = 0x0386; break;
+            case 0x03ad: cp = 0x0388; break;
+            case 0x03ae: cp = 0x0389; break;
+            case 0x03af: cp = 0x038a; break;
+            case 0x03cc: cp = 0x038c; break;
+            case 0x03cd: cp = 0x038e; break;
+            case 0x03ce: cp = 0x038f; break;
+            case 0x0371: cp = 0x0370; break;
+            case 0x0373: cp = 0x0372; break;
+            case 0x0377: cp = 0x0376; break;
+            case 0x03d1: cp = 0x03f4; break;
+            case 0x03d7: cp = 0x03cf; break;
+            case 0x03f2: cp = 0x03f9; break;
+            case 0x03f8: cp = 0x03f7; break;
+            case 0x03fb: cp = 0x03fa; break;
+        };
+    }
+
+    return cp;
+}
+
+#undef utf8_restrict
+#undef utf8_null
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+
+#endif // SHEREDOM_UTF8_H_INCLUDED
+
+
+/********************************************************
+   End of file "utf8.h"
+ ********************************************************/
+
+
+/********************************************************
    Begin of file "string_buffer.h"
  ********************************************************/
 
@@ -315,17 +1664,16 @@ int mk_wcswidth(const wchar_t *pwcs, size_t n);
 /*****************************************************************************
  *               STRING BUFFER
  * ***************************************************************************/
-enum str_buf_type {
-    CharBuf,
-#ifdef FT_HAVE_WCHAR
-    WCharBuf
-#endif /* FT_HAVE_WCHAR */
-};
 
 struct string_buffer {
     union {
         char *cstr;
+#ifdef FT_HAVE_WCHAR
         wchar_t *wstr;
+#endif
+#ifdef FT_HAVE_UTF8
+        void *u8str;
+#endif
         void *data;
     } str;
     size_t data_sz;
@@ -352,27 +1700,32 @@ FT_INTERNAL
 fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *str);
 #endif /* FT_HAVE_WCHAR */
 
+#ifdef FT_HAVE_UTF8
 FT_INTERNAL
-size_t buffer_text_height(const string_buffer_t *buffer);
+fort_status_t fill_buffer_from_u8string(string_buffer_t *buffer, const void *str);
+#endif /* FT_HAVE_UTF8 */
 
 FT_INTERNAL
-size_t string_buffer_capacity(const string_buffer_t *buffer);
+size_t buffer_text_visible_width(const string_buffer_t *buffer);
+
+FT_INTERNAL
+size_t buffer_text_visible_height(const string_buffer_t *buffer);
+
+FT_INTERNAL
+size_t string_buffer_cod_width_capacity(const string_buffer_t *buffer);
+
+FT_INTERNAL
+size_t string_buffer_raw_capacity(const string_buffer_t *buffer);
+
+FT_INTERNAL
+size_t string_buffer_width_capacity(const string_buffer_t *buffer);
 
 FT_INTERNAL
 void *buffer_get_data(string_buffer_t *buffer);
 
 FT_INTERNAL
-size_t buffer_text_width(const string_buffer_t *buffer);
-
-FT_INTERNAL
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t total_buf_len,
-                  const context_t *context, const char *content_style_tag, const char *reset_content_style_tag);
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t total_buf_len,
-                   const context_t *context, const char *content_style_tag, const char *reset_content_style_tag);
-#endif /* FT_HAVE_WCHAR */
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, conv_context_t *cntx, size_t cod_width,
+                  const char *content_style_tag, const char *reset_content_style_tag);
 
 #endif /* STRING_BUFFER_H */
 
@@ -631,15 +1984,12 @@ FT_INTERNAL
 enum CellType get_cell_type(const fort_cell_t *cell);
 
 FT_INTERNAL
-int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context);
+int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t cod_width);
 
 FT_INTERNAL
 fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str);
 
 #ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context);
-
 FT_INTERNAL
 fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str);
 #endif
@@ -710,15 +2060,14 @@ FT_INTERNAL
 fort_status_t row_set_cell_span(fort_row_t *row, size_t cell_column, size_t hor_span);
 
 FT_INTERNAL
-int print_row_separator(char *buffer, size_t buffer_sz,
+int print_row_separator(conv_context_t *cntx,
                         const size_t *col_width_arr, size_t cols,
                         const fort_row_t *upper_row, const fort_row_t *lower_row,
-                        enum HorSeparatorPos separatorPos, const separator_t *sep,
-                        const context_t *context);
+                        enum HorSeparatorPos separatorPos, const separator_t *sep);
 
 FT_INTERNAL
-int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
-                 size_t row_height, const context_t *context);
+int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_arr, size_t col_width_arr_sz,
+                 size_t row_height);
 
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
@@ -726,17 +2075,6 @@ fort_row_t *create_row_from_wstring(const wchar_t *str);
 
 FT_INTERNAL
 fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args);
-
-FT_INTERNAL
-int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
-                         const size_t *col_width_arr, size_t cols,
-                         const fort_row_t *upper_row, const fort_row_t *lower_row,
-                         enum HorSeparatorPos separatorPos, const separator_t *sep,
-                         const context_t *context);
-
-FT_INTERNAL
-int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
-                  size_t row_height, const context_t *context);
 #endif
 
 
@@ -799,6 +2137,13 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
 FT_INTERNAL
 fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width);
 
+/*
+ * Returns geometry in codepoints(characters) (include codepoints of invisible
+ * elements: e.g. styles tags).
+ */
+FT_INTERNAL
+fort_status_t table_internal_codepoints_geometry(const ft_table_t *table, size_t *height, size_t *width);
+
 #endif /* TABLE_H */
 
 /********************************************************
@@ -826,7 +2171,7 @@ fort_cell_t *create_cell(void)
     fort_cell_t *cell = (fort_cell_t *)F_CALLOC(sizeof(fort_cell_t), 1);
     if (cell == NULL)
         return NULL;
-    cell->str_buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CharBuf);
+    cell->str_buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CHAR_BUF);
     if (cell->str_buffer == NULL) {
         F_FREE(cell);
         return NULL;
@@ -890,7 +2235,7 @@ size_t hint_width_cell(const fort_cell_t *cell, const context_t *context, enum r
     size_t cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
     size_t result = cell_padding_left + cell_padding_right;
     if (cell->str_buffer && cell->str_buffer->str.data) {
-        result += buffer_text_width(cell->str_buffer);
+        result += buffer_text_visible_width(cell->str_buffer);
     }
     result = MAX(result, (size_t)get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_MIN_WIDTH));
 
@@ -925,7 +2270,7 @@ size_t hint_height_cell(const fort_cell_t *cell, const context_t *context)
     size_t cell_empty_string_height = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_EMPTY_STR_HEIGHT);
     size_t result = cell_padding_top + cell_padding_bottom;
     if (cell->str_buffer && cell->str_buffer->str.data) {
-        size_t text_height = buffer_text_height(cell->str_buffer);
+        size_t text_height = buffer_text_visible_height(cell->str_buffer);
         result += text_height == 0 ? cell_empty_string_height : text_height;
     }
     return result;
@@ -933,14 +2278,12 @@ size_t hint_height_cell(const fort_cell_t *cell, const context_t *context)
 
 
 FT_INTERNAL
-int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const context_t *context)
+int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t vis_width)
 {
-    const char *space_char = " ";
-    int (*buffer_printf_)(string_buffer_t *, size_t, char *, size_t, const context_t *, const char *, const char *) = buffer_printf;
-    int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
+    const context_t *context = cntx->cntx;
+    size_t buf_len = vis_width;
 
-    if (cell == NULL || buf_len == 0
-        || (buf_len <= hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
+    if (cell == NULL || (vis_width < hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
         return -1;
     }
 
@@ -985,32 +2328,35 @@ int cell_printf(fort_cell_t *cell, size_t row, char *buf, size_t buf_len, const 
 #define TOTAL_WRITTEN (written + invisible_written)
 #define RIGHT (cell_padding_right + extra_right)
 
-#define WRITE_CELL_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, cell_style_tag))
-#define WRITE_RESET_CELL_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_cell_style_tag))
-#define WRITE_CONTENT_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, content_style_tag))
-#define WRITE_RESET_CONTENT_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_content_style_tag))
+#define WRITE_CELL_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(print_n_strings(cntx, 1, cell_style_tag))
+#define WRITE_RESET_CELL_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(print_n_strings(cntx, 1, reset_cell_style_tag))
+#define WRITE_CONTENT_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(print_n_strings(cntx, 1, content_style_tag))
+#define WRITE_RESET_CONTENT_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(print_n_strings(cntx, 1, reset_content_style_tag))
 
     if (row >= hint_height_cell(cell, context)
         || row < cell_padding_top
-        || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
+        || row >= (cell_padding_top + buffer_text_visible_height(cell->str_buffer))) {
         WRITE_CELL_STYLE_TAG;
         WRITE_CONTENT_STYLE_TAG;
         WRITE_RESET_CONTENT_STYLE_TAG;
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, buf_len - TOTAL_WRITTEN - R3, FT_SPACE));
         WRITE_RESET_CELL_STYLE_TAG;
+
         return (int)TOTAL_WRITTEN;
     }
 
     WRITE_CELL_STYLE_TAG;
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, L2, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, L2, FT_SPACE));
     if (cell->str_buffer) {
-        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, context, content_style_tag, reset_content_style_tag));
+//        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf2_(cell->str_buffer, row - cell_padding_top, cntx, buf_len - TOTAL_WRITTEN - R2 - R3, content_style_tag, reset_content_style_tag));
+        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf(cell->str_buffer, row - cell_padding_top, cntx, vis_width - L2 - R2 , content_style_tag, reset_content_style_tag));
     } else {
         WRITE_CONTENT_STYLE_TAG;
         WRITE_RESET_CONTENT_STYLE_TAG;
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, space_char));
+//        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings2_(cntx, buf_len - TOTAL_WRITTEN - R2 - R3, FT_SPACE));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, vis_width - L2 - R2, FT_SPACE));
     }
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, R2, FT_SPACE));
     WRITE_RESET_CELL_STYLE_TAG;
 
     return (int)TOTAL_WRITTEN;
@@ -1024,101 +2370,6 @@ clear:
 #undef TOTAL_WRITTEN
 #undef RIGHT
 }
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-int cell_wprintf(fort_cell_t *cell, size_t row, wchar_t *buf, size_t buf_len, const context_t *context)
-{
-    const char *space_char = " ";
-    int (*buffer_printf_)(string_buffer_t *, size_t, wchar_t *, size_t, const context_t *, const char *, const char *) = buffer_wprintf;
-    int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
-
-    if (cell == NULL || buf_len == 0
-        || (buf_len <= hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
-        return -1;
-    }
-
-    unsigned int cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
-    unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
-    unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
-
-    size_t written = 0;
-    size_t invisible_written = 0;
-    int tmp = 0;
-
-    /* todo: Dirty hack with changing buf_len! need refactoring. */
-    /* Also maybe it is better to move all struff with colors to buffers? */
-    char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(cell_style_tag);
-
-    char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(reset_cell_style_tag);
-
-    char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(content_style_tag);
-
-    char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-    buf_len += strlen(reset_content_style_tag);
-
-    /*    CELL_STYLE_T   LEFT_PADDING   CONTENT_STYLE_T  CONTENT   RESET_CONTENT_STYLE_T    RIGHT_PADDING   RESET_CELL_STYLE_T
-     *  |              |              |                |         |                       |                |                    |
-     *        L1                                                                                                    R1
-     *                     L2                                                                   R2
-     *                                     L3                               R3
-     */
-
-    size_t L2 = cell_padding_left;
-
-    size_t R2 = cell_padding_right;
-    size_t R3 = strlen(reset_cell_style_tag);
-
-#define TOTAL_WRITTEN (written + invisible_written)
-#define RIGHT (right + extra_right)
-
-#define WRITE_CELL_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, cell_style_tag))
-#define WRITE_RESET_CELL_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_cell_style_tag))
-#define WRITE_CONTENT_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, content_style_tag))
-#define WRITE_RESET_CONTENT_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, 1, reset_content_style_tag))
-
-    if (row >= hint_height_cell(cell, context)
-        || row < cell_padding_top
-        || row >= (cell_padding_top + buffer_text_height(cell->str_buffer))) {
-        WRITE_CELL_STYLE_TAG;
-        WRITE_CONTENT_STYLE_TAG;
-        WRITE_RESET_CONTENT_STYLE_TAG;
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len, buf_len - 1 - TOTAL_WRITTEN - R3, space_char));
-        WRITE_RESET_CELL_STYLE_TAG;
-        return (int)TOTAL_WRITTEN;
-    }
-
-    WRITE_CELL_STYLE_TAG;
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, L2, space_char));
-    if (cell->str_buffer) {
-        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf_(cell->str_buffer, row - cell_padding_top, buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, context, content_style_tag, reset_content_style_tag));
-    } else {
-        WRITE_CONTENT_STYLE_TAG;
-        WRITE_RESET_CONTENT_STYLE_TAG;
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN - R2 - R3, space_char));
-    }
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buf + TOTAL_WRITTEN, buf_len - TOTAL_WRITTEN, R2, space_char));
-    WRITE_RESET_CELL_STYLE_TAG;
-
-    return (int)TOTAL_WRITTEN;
-
-clear:
-    return -1;
-#undef WRITE_CELL_STYLE_TAG
-#undef WRITE_RESET_CELL_STYLE_TAG
-#undef WRITE_CONTENT_STYLE_TAG
-#undef WRITE_RESET_CONTENT_STYLE_TAG
-#undef TOTAL_WRITTEN
-#undef RIGHT
-}
-#endif
 
 FT_INTERNAL
 fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str)
@@ -1505,6 +2756,23 @@ static int ft_write_impl(ft_table_t *table, const char *cell_content)
     return status;
 }
 
+#ifdef FT_HAVE_UTF8
+static int ft_u8write_impl(ft_table_t *table, const void *cell_content)
+{
+    assert(table);
+    string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
+    if (str_buffer == NULL)
+        return FT_ERROR;
+
+    int status = fill_buffer_from_u8string(str_buffer, cell_content);
+    if (FT_IS_SUCCESS(status)) {
+        table->cur_col++;
+    }
+    return status;
+}
+#endif /* FT_HAVE_UTF8 */
+
+
 
 #ifdef FT_HAVE_WCHAR
 
@@ -1572,6 +2840,9 @@ int ft_nwrite_ln(ft_table_t *table, size_t count, const char *cell_content, ...)
     ft_ln(table);
     return status;
 }
+
+
+
 
 #ifdef FT_HAVE_WCHAR
 
@@ -1738,209 +3009,111 @@ int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_
 }
 #endif
 
+static
+const char * empty_str_arr[] = {"", (const char *)L""};
 
+static
+const char *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
+{
+    assert(table);
+
+    const char *result = NULL;
+
+    /* Determing size of table string representation */
+    size_t cod_height = 0;
+    size_t cod_width = 0;
+    int status = table_internal_codepoints_geometry(table, &cod_height, &cod_width);
+    if (FT_IS_ERROR(status)) {
+        return NULL;
+    }
+    size_t n_codepoints = cod_height * cod_width + 1;
+
+    /* Allocate string buffer for string representation */
+    if (table->conv_buffer == NULL) {
+        ((ft_table_t *)table)->conv_buffer = create_string_buffer(n_codepoints, b_type);
+        if (table->conv_buffer == NULL)
+            return NULL;
+    }
+    while (string_buffer_cod_width_capacity(table->conv_buffer) < n_codepoints) {
+        if (FT_IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
+            return NULL;
+        }
+    }
+    char *buffer = (char *)buffer_get_data(table->conv_buffer);
+
+    size_t cols = 0;
+    size_t rows = 0;
+    size_t *col_vis_width_arr = NULL;
+    size_t *row_vis_height_arr = NULL;
+    status = table_rows_and_cols_geometry(table, &col_vis_width_arr, &cols, &row_vis_height_arr, &rows, VISIBLE_GEOMETRY);
+    if (FT_IS_ERROR(status))
+        return NULL;
+
+    if (rows == 0) {
+        result = empty_str_arr[b_type];
+        goto clear;
+    }
+
+    int tmp = 0;
+    size_t i = 0;
+    context_t context;
+    context.table_properties = (table->properties ? table->properties : &g_table_properties);
+    fort_row_t *prev_row = NULL;
+    fort_row_t *cur_row = NULL;
+    separator_t *cur_sep = NULL;
+    size_t sep_size = vector_size(table->separators);
+
+    conv_context_t cntx;
+    cntx.buf_origin = buffer;
+    cntx.buf = buffer;
+    cntx.raw_avail = string_buffer_raw_capacity(table->conv_buffer);
+    cntx.cntx = &context;
+    cntx.b_type = b_type;
+
+    /* Print top margin */
+    for (i = 0; i < context.table_properties->entire_table_properties.top_margin; ++i) {
+        FT_CHECK(print_n_strings(&cntx, cod_width - 1/* minus new_line*/, FT_SPACE));
+        FT_CHECK(print_n_strings(&cntx, 1, FT_NEWLINE));
+    }
+
+    for (i = 0; i < rows; ++i) {
+        cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+        cur_row = *(fort_row_t **)vector_at(table->rows, i);
+        enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
+        context.row = i;
+        FT_CHECK(print_row_separator(&cntx, col_vis_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep));
+        FT_CHECK(snprintf_row(cur_row, &cntx, col_vis_width_arr, cols, row_vis_height_arr[i]));
+        prev_row = cur_row;
+    }
+    cur_row = NULL;
+    cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+    context.row = i;
+    FT_CHECK(print_row_separator(&cntx, col_vis_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep));
+
+    /* Print bottom margin */
+    for (i = 0; i < context.table_properties->entire_table_properties.bottom_margin; ++i) {
+        FT_CHECK(print_n_strings(&cntx, cod_width - 1/* minus new_line*/, FT_SPACE));
+        FT_CHECK(print_n_strings(&cntx, 1, FT_NEWLINE));
+    }
+
+    result = buffer;
+
+clear:
+    F_FREE(col_vis_width_arr);
+    F_FREE(row_vis_height_arr);
+    return result;
+}
 
 const char *ft_to_string(const ft_table_t *table)
 {
-    typedef char char_type;
-    const enum str_buf_type buf_type = CharBuf;
-    const char *space_char = " ";
-    const char *new_line_char = "\n";
-#define EMPTY_STRING ""
-    int (*snprintf_row_)(const fort_row_t *, char *, size_t, size_t *, size_t, size_t, const context_t *) = snprintf_row;
-    int (*print_row_separator_)(char *, size_t,
-                                const size_t *, size_t,
-                                const fort_row_t *, const fort_row_t *,
-                                enum HorSeparatorPos, const separator_t *,
-                                const context_t *) = print_row_separator;
-    int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
-    assert(table);
-
-    /* Determing size of table string representation */
-    size_t height = 0;
-    size_t width = 0;
-    int status = table_geometry(table, &height, &width);
-    if (FT_IS_ERROR(status)) {
-        return NULL;
-    }
-    size_t sz = height * width + 1;
-
-    /* Allocate string buffer for string representation */
-    if (table->conv_buffer == NULL) {
-        ((ft_table_t *)table)->conv_buffer = create_string_buffer(sz, buf_type);
-        if (table->conv_buffer == NULL)
-            return NULL;
-    }
-    while (string_buffer_capacity(table->conv_buffer) < sz) {
-        if (FT_IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
-            return NULL;
-        }
-    }
-    char_type *buffer = (char_type *)buffer_get_data(table->conv_buffer);
-
-
-    size_t cols = 0;
-    size_t rows = 0;
-    size_t *col_width_arr = NULL;
-    size_t *row_height_arr = NULL;
-    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, VISIBLE_GEOMETRY);
-    if (FT_IS_ERROR(status))
-        return NULL;
-
-    if (rows == 0)
-        return EMPTY_STRING;
-
-    size_t written = 0;
-    int tmp = 0;
-    size_t i = 0;
-    context_t context;
-    context.table_properties = (table->properties ? table->properties : &g_table_properties);
-    fort_row_t *prev_row = NULL;
-    fort_row_t *cur_row = NULL;
-    separator_t *cur_sep = NULL;
-    size_t sep_size = vector_size(table->separators);
-
-    /* Print top margin */
-    for (i = 0; i < context.table_properties->entire_table_properties.top_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
-    }
-
-    for (i = 0; i < rows; ++i) {
-        cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-        cur_row = *(fort_row_t **)vector_at(table->rows, i);
-        enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
-        context.row = i;
-        CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprintf_row_(cur_row, buffer + written, sz - written, col_width_arr, cols, row_height_arr[i], &context));
-        prev_row = cur_row;
-    }
-    cur_row = NULL;
-    cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-    context.row = i;
-    CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
-
-    /* Print bottom margin */
-    for (i = 0; i < context.table_properties->entire_table_properties.bottom_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
-    }
-
-
-    F_FREE(col_width_arr);
-    F_FREE(row_height_arr);
-    return buffer;
-
-clear:
-    F_FREE(col_width_arr);
-    F_FREE(row_height_arr);
-    return NULL;
-#undef EMPTY_STRING
+    return ft_to_string_impl(table, CHAR_BUF);
 }
-
 
 #ifdef FT_HAVE_WCHAR
-
 const wchar_t *ft_to_wstring(const ft_table_t *table)
 {
-    typedef wchar_t char_type;
-    const enum str_buf_type buf_type = WCharBuf;
-    const char *space_char = " ";
-    const char *new_line_char = "\n";
-#define EMPTY_STRING L""
-    int (*snprintf_row_)(const fort_row_t *, wchar_t *, size_t, size_t *, size_t, size_t, const context_t *) = wsnprintf_row;
-    int (*print_row_separator_)(wchar_t *, size_t,
-                                const size_t *, size_t,
-                                const fort_row_t *, const fort_row_t *,
-                                enum HorSeparatorPos, const separator_t *,
-                                const context_t *) = wprint_row_separator;
-    int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
-
-
-    assert(table);
-
-    /* Determing size of table string representation */
-    size_t height = 0;
-    size_t width = 0;
-    int status = table_geometry(table, &height, &width);
-    if (FT_IS_ERROR(status)) {
-        return NULL;
-    }
-    size_t sz = height * width + 1;
-
-    /* Allocate string buffer for string representation */
-    if (table->conv_buffer == NULL) {
-        ((ft_table_t *)table)->conv_buffer = create_string_buffer(sz, buf_type);
-        if (table->conv_buffer == NULL)
-            return NULL;
-    }
-    while (string_buffer_capacity(table->conv_buffer) < sz) {
-        if (FT_IS_ERROR(realloc_string_buffer_without_copy(table->conv_buffer))) {
-            return NULL;
-        }
-    }
-    char_type *buffer = (char_type *)buffer_get_data(table->conv_buffer);
-
-
-    size_t cols = 0;
-    size_t rows = 0;
-    size_t *col_width_arr = NULL;
-    size_t *row_height_arr = NULL;
-    status = table_rows_and_cols_geometry(table, &col_width_arr, &cols, &row_height_arr, &rows, VISIBLE_GEOMETRY);
-
-    if (rows == 0)
-        return EMPTY_STRING;
-
-    if (FT_IS_ERROR(status))
-        return NULL;
-
-    size_t written = 0;
-    int tmp = 0;
-    size_t i = 0;
-    context_t context;
-    context.table_properties = (table->properties ? table->properties : &g_table_properties);
-    fort_row_t *prev_row = NULL;
-    fort_row_t *cur_row = NULL;
-    separator_t *cur_sep = NULL;
-    size_t sep_size = vector_size(table->separators);
-
-    /* Print top margin */
-    for (i = 0; i < context.table_properties->entire_table_properties.top_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
-    }
-
-    for (i = 0; i < rows; ++i) {
-        cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-        cur_row = *(fort_row_t **)vector_at(table->rows, i);
-        enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
-        context.row = i;
-        CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep, &context));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprintf_row_(cur_row, buffer + written, sz - written, col_width_arr, cols, row_height_arr[i], &context));
-        prev_row = cur_row;
-    }
-    cur_row = NULL;
-    cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-    context.row = i;
-    CHCK_RSLT_ADD_TO_WRITTEN(print_row_separator_(buffer + written, sz - written, col_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep, &context));
-
-    /* Print bottom margin */
-    for (i = 0; i < context.table_properties->entire_table_properties.bottom_margin; ++i) {
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, width - 1/* minus new_line*/, space_char));
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, sz - written, 1, new_line_char));
-    }
-
-    F_FREE(col_width_arr);
-    F_FREE(row_height_arr);
-    return buffer;
-
-clear:
-    F_FREE(col_width_arr);
-    F_FREE(row_height_arr);
-    return NULL;
-#undef EMPTY_STRING
+    return (const wchar_t *)ft_to_string_impl(table, W_CHAR_BUF);
 }
-
 #endif
 
 
@@ -2161,6 +3334,64 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
     return row_set_cell_span(row_p, col, hor_span);
 }
 
+#ifdef FT_HAVE_UTF8
+
+int ft_nu8write(ft_table_t *table, size_t n, const void *cell_content, ...)
+{
+    size_t i = 0;
+    assert(table);
+    int status = ft_u8write_impl(table, cell_content);
+    if (FT_IS_ERROR(status))
+        return status;
+
+    va_list va;
+    va_start(va, cell_content);
+    --n;
+    for (i = 0; i < n; ++i) {
+        const void *cell = va_arg(va, const void *);
+        status = ft_u8write_impl(table, cell);
+        if (FT_IS_ERROR(status)) {
+            va_end(va);
+            return status;
+        }
+    }
+    va_end(va);
+
+    ft_ln(table);
+    return status;
+}
+
+int ft_nu8write_ln(ft_table_t *table, size_t n, const void *cell_content, ...)
+{
+    size_t i = 0;
+    assert(table);
+    int status = ft_u8write_impl(table, cell_content);
+    if (FT_IS_ERROR(status))
+        return status;
+
+    va_list va;
+    va_start(va, cell_content);
+    --n;
+    for (i = 0; i < n; ++i) {
+        const void *cell = va_arg(va, const void *);
+        status = ft_u8write_impl(table, cell);
+        if (FT_IS_ERROR(status)) {
+            va_end(va);
+            return status;
+        }
+    }
+    va_end(va);
+
+    ft_ln(table);
+    return status;
+}
+
+const void *ft_to_u8string(const ft_table_t *table)
+{
+    return (const void *)ft_to_string_impl(table, UTF8_BUF);
+}
+#endif /* FT_HAVE_UTF8 */
+
 /********************************************************
    End of file "fort_impl.c"
  ********************************************************/
@@ -2173,6 +3404,9 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
 /* #include "fort_utils.h" */ /* Commented by amalgamation script */
 #ifdef FT_HAVE_WCHAR
 #include <wchar.h>
+#endif
+#if defined(FT_HAVE_UTF8)
+/* #include "utf8.h" */ /* Commented by amalgamation script */
 #endif
 
 
@@ -2341,9 +3575,26 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 }
 #endif
 
-
+#if defined(FT_HAVE_UTF8)
 FT_INTERNAL
-int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
+size_t number_of_columns_in_format_u8string(const void *fmt)
+{
+    size_t separator_counter = 0;
+    const char *pos = fmt;
+    while (1) {
+        pos = utf8chr(pos, g_col_separator);
+        if (pos == NULL)
+            break;
+
+        separator_counter++;
+        ++pos;
+    }
+    return separator_counter + 1;
+}
+#endif
+
+static
+int snprint_n_strings_impl(char *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);
     if (length <= n * str_len)
@@ -2372,17 +3623,123 @@ int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
     return (int)(n * str_len);
 }
 
+static
+int snprint_n_strings(conv_context_t *cntx, size_t n, const char *str)
+{
+    int w = snprint_n_strings_impl(cntx->buf, cntx->raw_avail, n, str);
+    if (w >= 0) {
+        cntx->buf += w;
+        cntx->raw_avail -= w;
+    }
+    return w;
+}
 
+#if defined(FT_HAVE_WCHAR)
+static
+int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
+#endif
+
+#if defined(FT_HAVE_UTF8)
+static
+int u8nprint_n_strings(void *buf, size_t length, size_t n, const void *str);
+#endif
+
+
+FT_INTERNAL
+int print_n_strings(conv_context_t *cntx, size_t n, const char *str)
+{
+    int cod_w;
+    int raw_written;
+
+    switch (cntx->b_type) {
+        case CHAR_BUF:
+            return snprint_n_strings(cntx, n, str);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            cod_w = wsnprint_n_string((wchar_t *)cntx->buf, cntx->raw_avail, n, str);
+            if (cod_w < 0)
+                return cod_w;
+            raw_written = sizeof(wchar_t) * cod_w;
+
+            cntx->buf += raw_written;
+            cntx->raw_avail -= raw_written;
+            return cod_w;
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            /* Everying is very strange and differs with W_CHAR_BUF */
+            raw_written = u8nprint_n_strings(cntx->buf, cntx->raw_avail, n, str);
+            if (raw_written < 0) {
+                fprintf(stderr, " raw_written = %d\n", raw_written);
+                return raw_written;
+            }
+
+            cntx->buf += raw_written;
+            cntx->raw_avail -= raw_written;
+            return utf8len(str) * n;
+#endif /* FT_HAVE_UTF8 */
+        default:
+            assert(0);
+            return -1;
+    }
+}
+
+FT_INTERNAL
+int ft_nprint(conv_context_t *cntx, const char *str, size_t strlen)
+{
+    if (cntx->raw_avail + 1/* for 0 */ < strlen)
+        return -1;
+
+    memcpy(cntx->buf, str, strlen);
+    cntx->buf += strlen;
+    cntx->raw_avail -= strlen;
+    *cntx->buf = '\0'; /* Do we need this ? */
+    return strlen;
+}
+
+#ifdef FT_HAVE_WCHAR
+int ft_nwprint(conv_context_t *cntx, const wchar_t *str, size_t strlen)
+{
+    if (cntx->raw_avail + 1/* for 0 */ < strlen)
+        return -1;
+
+    size_t raw_len = strlen * sizeof(wchar_t);
+
+    memcpy(cntx->buf, str, raw_len);
+    cntx->buf += raw_len;
+    cntx->raw_avail -= raw_len;
+    *(wchar_t *)cntx->buf = L'\0'; /* Do we need this ? */
+    return strlen;
+}
+#endif /* FT_HAVE_WCHAR */
+
+#ifdef FT_HAVE_UTF8
+FT_INTERNAL
+int ft_nu8print(conv_context_t *cntx, const void *beg, const void *end)
+{
+    const char *bc = beg;
+    const char *ec = end;
+    size_t raw_len = ec - bc;
+    if (cntx->raw_avail + 1 < raw_len)
+        return -1;
+
+    memcpy(cntx->buf, beg, raw_len);
+    cntx->buf += raw_len;
+    cntx->raw_avail -= raw_len;
+    *(char *)cntx->buf = '\0'; /* Do we need this ? */
+    return raw_len; /* what return here ? */
+}
+#endif /* FT_HAVE_UTF8 */
 
 #if defined(FT_HAVE_WCHAR)
 #define WCS_SIZE 64
 
-FT_INTERNAL
+static
 int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);
 
-    /* note: baybe it's, better to return -1 in case of multibyte character
+    /* note: maybe it's, better to return -1 in case of multibyte character
      * strings (not sure this case is done correctly).
      */
     if (str_len > 1) {
@@ -2439,6 +3796,36 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
             *(buf++) = (wchar_t) * (str_p++);
     }
     return (int)(n * str_len);
+}
+#endif
+
+
+#if defined(FT_HAVE_UTF8)
+static
+int u8nprint_n_strings(void *buf, size_t length, size_t n, const void *str)
+{
+    size_t str_size = utf8size(str) - 1; /* str_size - raw size in bytes, excluding \0 */
+    if (length <= n * str_size)
+        return -1;
+
+    if (n == 0)
+        return 0;
+
+    /* To ensure valid return value it is safely not print such big strings */
+    if (n * str_size > INT_MAX)
+        return -1;
+
+    if (str_size == 0)
+        return 0;
+
+    size_t i = n;
+    while (i) {
+        memcpy(buf, str, str_size);
+        buf = (char *)buf + str_size;
+        --i;
+    }
+    *(char *)buf = '\0';
+    return (int)(n * str_size);
 }
 #endif
 
@@ -3706,21 +5093,19 @@ fort_status_t row_set_cell_span(fort_row_t *row, size_t cell_column, size_t hor_
     return FT_SUCCESS;
 }
 
-
 FT_INTERNAL
-int print_row_separator(char *buffer, size_t buffer_sz,
+int print_row_separator_impl(conv_context_t *cntx,
                         const size_t *col_width_arr, size_t cols,
                         const fort_row_t *upper_row, const fort_row_t *lower_row,
                         enum HorSeparatorPos separatorPos,
-                        const separator_t *sep, const context_t *context)
+                        const separator_t *sep)
 {
-    int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
-
-    assert(buffer);
-    assert(context);
+    assert(cntx);
 
     const char *space_char = " ";
     int status = -1;
+
+    const context_t *context = cntx->cntx;
 
     /* Get cell types
      *
@@ -3859,31 +5244,31 @@ int print_row_separator(char *buffer, size_t buffer_sz,
     }
 
     /* Print left margin */
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, context->table_properties->entire_table_properties.left_margin, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.left_margin, space_char));
 
     for (i = 0; i < cols; ++i) {
         if (i == 0) {
-            CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *L));
+            CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *L));
         } else {
             if ((top_row_types[i] == CommonCell || top_row_types[i] == GroupMasterCell)
                 && (bottom_row_types[i] == CommonCell || bottom_row_types[i] == GroupMasterCell)) {
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *IV));
+                CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *IV));
             } else if (top_row_types[i] == GroupSlaveCell && bottom_row_types[i] == GroupSlaveCell) {
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *II));
+                CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *II));
             } else if (top_row_types[i] == GroupSlaveCell) {
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *IT));
+                CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *IT));
             } else {
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *IB));
+                CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *IB));
             }
         }
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, col_width_arr[i], *I));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, col_width_arr[i], *I));
     }
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *R));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *R));
 
     /* Print right margin */
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, context->table_properties->entire_table_properties.right_margin, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.right_margin, space_char));
 
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, "\n"));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, "\n"));
 
     status = (int)written;
 
@@ -3892,194 +5277,15 @@ clear:
     return status;
 }
 
-
-#ifdef FT_HAVE_WCHAR
 FT_INTERNAL
-int wprint_row_separator(wchar_t *buffer, size_t buffer_sz,
-                         const size_t *col_width_arr, size_t cols,
-                         const fort_row_t *upper_row, const fort_row_t *lower_row,
-                         enum HorSeparatorPos separatorPos, const separator_t *sep,
-                         const context_t *context)
+int print_row_separator(conv_context_t *cntx,
+                        const size_t *col_width_arr, size_t cols,
+                        const fort_row_t *upper_row, const fort_row_t *lower_row,
+                        enum HorSeparatorPos separatorPos, const separator_t *sep)
 {
-    int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
-
-    assert(buffer);
-    assert(context);
-
-    const char *space_char = " ";
-    int status = -1;
-
-    /* Get cell types
-     *
-     * Regions above top row and below bottom row areconsidered full of virtual
-     * GroupSlaveCell cells
-     */
-    enum CellType *top_row_types = (enum CellType *)F_MALLOC(sizeof(enum CellType) * cols * 2);
-    if (top_row_types == NULL) {
-        return FT_MEMORY_ERROR;
-    }
-    enum CellType *bottom_row_types = top_row_types + cols;
-    if (upper_row) {
-        get_row_cell_types(upper_row, top_row_types, cols);
-    } else {
-        size_t i = 0;
-        for (i = 0; i < cols; ++i)
-            top_row_types[i] = GroupSlaveCell;
-    }
-    if (lower_row) {
-        get_row_cell_types(lower_row, bottom_row_types, cols);
-    } else {
-        size_t i = 0;
-        for (i = 0; i < cols; ++i)
-            bottom_row_types[i] = GroupSlaveCell;
-    }
-
-
-    size_t written = 0;
-    int tmp = 0;
-
-    enum ft_row_type lower_row_type = FT_ROW_COMMON;
-    if (lower_row != NULL) {
-        lower_row_type = (enum ft_row_type)get_cell_property_value_hierarcial(context->table_properties, context->row, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE);
-    }
-    enum ft_row_type upper_row_type = FT_ROW_COMMON;
-    if (upper_row != NULL) {
-        upper_row_type = (enum ft_row_type)get_cell_property_value_hierarcial(context->table_properties, context->row - 1, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE);
-    }
-
-    /* Row separator anatomy
-     *
-     *  |      C11    |   C12         C13      |      C14           C15         |
-     *  L  I  I  I   IV  I   I   IT  I  I  I  IB    I    I     II    I    I     R
-     *  |      C21    |   C22     |   C23             C24           C25         |
-    */
-    const char **L = NULL;
-    const char **I = NULL;
-    const char **IV = NULL;
-    const char **R = NULL;
-    const char **IT = NULL;
-    const char **IB = NULL;
-    const char **II = NULL;
-
-
-    typedef const char *(*border_chars_point_t)[BorderItemPosSize];
-    const char *(*border_chars)[BorderItemPosSize] = NULL;
-    border_chars = (border_chars_point_t)&context->table_properties->border_style.border_chars;
-    if (upper_row_type == FT_ROW_HEADER || lower_row_type == FT_ROW_HEADER) {
-        border_chars = (border_chars_point_t)&context->table_properties->border_style.header_border_chars;
-    }
-
-    if (sep && sep->enabled) {
-        L = &(context->table_properties->border_style.separator_chars[LH_sip]);
-        I = &(context->table_properties->border_style.separator_chars[IH_sip]);
-        IV = &(context->table_properties->border_style.separator_chars[II_sip]);
-        R = &(context->table_properties->border_style.separator_chars[RH_sip]);
-
-        IT = &(context->table_properties->border_style.separator_chars[TI_sip]);
-        IB = &(context->table_properties->border_style.separator_chars[BI_sip]);
-        II = &(context->table_properties->border_style.separator_chars[IH_sip]);
-
-        if (lower_row == NULL) {
-            L = &(*border_chars)[BL_bip];
-            R = &(*border_chars)[BR_bip];
-        } else if (upper_row == NULL) {
-            L = &(*border_chars)[TL_bip];
-            R = &(*border_chars)[TR_bip];
-        }
-    } else {
-        switch (separatorPos) {
-            case TopSeparator:
-                L = &(*border_chars)[TL_bip];
-                I = &(*border_chars)[TT_bip];
-                IV = &(*border_chars)[TV_bip];
-                R = &(*border_chars)[TR_bip];
-
-                IT = &(*border_chars)[TV_bip];
-                IB = &(*border_chars)[TV_bip];
-                II = &(*border_chars)[TT_bip];
-                break;
-            case InsideSeparator:
-                L = &(*border_chars)[LH_bip];
-                I = &(*border_chars)[IH_bip];
-                IV = &(*border_chars)[II_bip];
-                R = &(*border_chars)[RH_bip];
-
-                /*
-                IT = &(*border_chars)[TV_bip];
-                IB = &(*border_chars)[BV_bip];
-                */
-                IT = &(*border_chars)[TI_bip];
-                IB = &(*border_chars)[BI_bip];
-                II = &(*border_chars)[IH_bip];
-                break;
-            case BottomSeparator:
-                L = &(*border_chars)[BL_bip];
-                I = &(*border_chars)[BB_bip];
-                IV = &(*border_chars)[BV_bip];
-                R = &(*border_chars)[BR_bip];
-
-                IT = &(*border_chars)[BV_bip];
-                IB = &(*border_chars)[BV_bip];
-                II = &(*border_chars)[BB_bip];
-                break;
-            default:
-                break;
-        }
-    }
-
-    size_t i = 0;
-
-    /* If all chars are not printable, skip line separator */
-    /* todo: add processing for wchar_t */
-    /*
-    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
-        status = 0;
-        goto clear;
-    }
-    */
-    if ((strlen(*L) == 0 || (strlen(*L) == 1 && !isprint(**L)))
-        && (strlen(*I) == 0 || (strlen(*I) == 1 && !isprint(**I)))
-        && (strlen(*IV) == 0 || (strlen(*IV) == 1 && !isprint(**IV)))
-        && (strlen(*R) == 0 || (strlen(*R) == 1 && !isprint(**R)))) {
-        status = 0;
-        goto clear;
-    }
-
-    /* Print left margin */
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, context->table_properties->entire_table_properties.left_margin, space_char));
-
-    for (i = 0; i < cols; ++i) {
-        if (i == 0) {
-            CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *L));
-        } else {
-            if ((top_row_types[i] == CommonCell || top_row_types[i] == GroupMasterCell)
-                && (bottom_row_types[i] == CommonCell || bottom_row_types[i] == GroupMasterCell)) {
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *IV));
-            } else if (top_row_types[i] == GroupSlaveCell && bottom_row_types[i] == GroupSlaveCell) {
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *II));
-            } else if (top_row_types[i] == GroupSlaveCell) {
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *IT));
-            } else {
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *IB));
-            }
-        }
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, col_width_arr[i], *I));
-    }
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, *R));
-
-    /* Print right margin */
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, context->table_properties->entire_table_properties.right_margin, space_char));
-
-    CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buffer_sz - written, 1, "\n"));
-
-    status = (int)written;
-
-clear:
-    F_FREE(top_row_types);
-    return status;
+    return print_row_separator_impl(cntx, col_width_arr, cols, upper_row, lower_row,
+                                    separatorPos, sep);
 }
-
-#endif
 
 FT_INTERNAL
 fort_row_t *create_row_from_string(const char *str)
@@ -4265,7 +5471,7 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 #define CREATE_ROW_FROM_STRING create_row_from_string
 #define NUMBER_OF_COLUMNS_IN_FORMAT_STRING number_of_columns_in_format_string
 #define FILL_CELL_FROM_STRING fill_cell_from_string
-#define STR_BUF_TYPE CharBuf
+#define STR_BUF_TYPE CHAR_BUF
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
     if (buffer == NULL)
@@ -4277,14 +5483,14 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
     while (1) {
         va_list va;
         va_copy(va, *va_args);
-        int virtual_sz = VSNPRINTF(buffer->str.STR_FILED, string_buffer_capacity(buffer), fmt, va);
+        int virtual_sz = VSNPRINTF(buffer->str.STR_FILED, string_buffer_width_capacity(buffer), fmt, va);
         va_end(va);
         /* If error encountered */
         if (virtual_sz < 0)
             goto clear;
 
         /* Successful write */
-        if ((size_t)virtual_sz < string_buffer_capacity(buffer))
+        if ((size_t)virtual_sz < string_buffer_width_capacity(buffer))
             break;
 
         /* Otherwise buffer was too small, so incr. buffer size ant try again. */
@@ -4351,7 +5557,7 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
 #define CREATE_ROW_FROM_STRING create_row_from_wstring
 #define NUMBER_OF_COLUMNS_IN_FORMAT_STRING number_of_columns_in_format_wstring
 #define FILL_CELL_FROM_STRING fill_cell_from_wstring
-#define STR_BUF_TYPE WCharBuf
+#define STR_BUF_TYPE W_CHAR_BUF
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
     if (buffer == NULL)
@@ -4363,14 +5569,14 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
     while (1) {
         va_list va;
         va_copy(va, *va_args);
-        int virtual_sz = VSNPRINTF(buffer->str.STR_FILED, string_buffer_capacity(buffer), fmt, va);
+        int virtual_sz = VSNPRINTF(buffer->str.STR_FILED, string_buffer_width_capacity(buffer), fmt, va);
         va_end(va);
         /* If error encountered */
         if (virtual_sz < 0)
             goto clear;
 
         /* Successful write */
-        if ((size_t)virtual_sz < string_buffer_capacity(buffer))
+        if ((size_t)virtual_sz < string_buffer_width_capacity(buffer))
             break;
 
         /* Otherwise buffer was too small, so incr. buffer size ant try again. */
@@ -4431,12 +5637,10 @@ clear:
 
 
 FT_INTERNAL
-int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
-                 size_t row_height, const context_t *context)
+int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_arr, size_t col_width_arr_sz,
+                 size_t row_height)
 {
-    int (*snprint_n_strings_)(char *, size_t, size_t, const char *) = snprint_n_strings;
-    int (*cell_printf_)(fort_cell_t *, size_t, char *, size_t, const context_t *) = cell_printf;
-
+    const context_t *context = cntx->cntx;
     assert(context);
     const char *space_char = " ";
     const char *new_line_char = "\n";
@@ -4468,145 +5672,53 @@ int snprintf_row(const fort_row_t *row, char *buffer, size_t buf_sz, size_t *col
     size_t i = 0;
     for (i = 0; i < row_height; ++i) {
         /* Print left margin */
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, context->table_properties->entire_table_properties.left_margin, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.left_margin, space_char));
 
         /* Print left table boundary */
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, 1, *L));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *L));
         size_t j = 0;
         while (j < col_width_arr_sz) {
             if (j < cols_in_row) {
                 ((context_t *)context)->column = j;
                 fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, j);
-                size_t cell_width = 0;
+                size_t cell_vis_width = 0;
 
                 size_t group_slave_sz = group_cell_number(row, j);
-                cell_width = col_width_arr[j];
+                cell_vis_width = col_width_arr[j];
                 size_t slave_j = 0;
                 size_t master_j = j;
                 for (slave_j = master_j + 1; slave_j < (master_j + group_slave_sz); ++slave_j) {
-                    cell_width += col_width_arr[slave_j] + FORT_COL_SEPARATOR_LENGTH;
+                    cell_vis_width += col_width_arr[slave_j] + FORT_COL_SEPARATOR_LENGTH;
                     ++j;
                 }
 
-                CHCK_RSLT_ADD_TO_WRITTEN(cell_printf_(cell, i, buffer + written, cell_width + 1, context));
+                CHCK_RSLT_ADD_TO_WRITTEN(cell_printf(cell, i, cntx, cell_vis_width));
             } else {
                 /* Print empty cell */
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, col_width_arr[j], space_char));
+                CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, col_width_arr[j], space_char));
             }
 
             /* Print boundary between cells */
             if (j < col_width_arr_sz - 1)
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, 1, *IV));
+                CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *IV));
 
             ++j;
         }
 
         /* Print right table boundary */
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, 1, *R));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *R));
 
         /* Print right margin */
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, context->table_properties->entire_table_properties.right_margin, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.right_margin, space_char));
 
         /* Print new line character */
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, 1, new_line_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, new_line_char));
     }
     return (int)written;
 
 clear:
     return -1;
 }
-
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-int wsnprintf_row(const fort_row_t *row, wchar_t *buffer, size_t buf_sz, size_t *col_width_arr, size_t col_width_arr_sz,
-                  size_t row_height, const context_t *context)
-{
-    int (*snprint_n_strings_)(wchar_t *, size_t, size_t, const char *) = wsnprint_n_string;
-    int (*cell_printf_)(fort_cell_t *, size_t, wchar_t *, size_t, const context_t *) = cell_wprintf;
-
-    assert(context);
-    const char *space_char = " ";
-    const char *new_line_char = "\n";
-
-    if (row == NULL)
-        return -1;
-
-    size_t cols_in_row = columns_in_row(row);
-    if (cols_in_row > col_width_arr_sz)
-        return -1;
-
-    /*  Row separator anatomy
-     *
-     *  L    data    IV    data   IV   data    R
-     */
-
-    typedef const char *(*border_chars_point_t)[BorderItemPosSize];
-    enum ft_row_type row_type = (enum ft_row_type)get_cell_property_value_hierarcial(context->table_properties, context->row, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE);
-    const char *(*bord_chars)[BorderItemPosSize] = (row_type == FT_ROW_HEADER)
-            ? (border_chars_point_t)(&context->table_properties->border_style.header_border_chars)
-            : (border_chars_point_t)(&context->table_properties->border_style.border_chars);
-    const char **L = &(*bord_chars)[LL_bip];
-    const char **IV = &(*bord_chars)[IV_bip];
-    const char **R = &(*bord_chars)[RR_bip];
-
-
-    size_t written = 0;
-    int tmp = 0;
-    size_t i = 0;
-    for (i = 0; i < row_height; ++i) {
-        /* Print left margin */
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, context->table_properties->entire_table_properties.left_margin, space_char));
-
-        /* Print left table boundary */
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, 1, *L));
-        size_t j = 0;
-        while (j < col_width_arr_sz) {
-            if (j < cols_in_row) {
-                ((context_t *)context)->column = j;
-                fort_cell_t *cell = *(fort_cell_t **)vector_at(row->cells, j);
-                size_t cell_width = 0;
-
-                size_t group_slave_sz = group_cell_number(row, j);
-                cell_width = col_width_arr[j];
-                size_t slave_j = 0;
-                size_t master_j = j;
-                for (slave_j = master_j + 1; slave_j < (master_j + group_slave_sz); ++slave_j) {
-                    cell_width += col_width_arr[slave_j] + FORT_COL_SEPARATOR_LENGTH;
-                    ++j;
-                }
-
-                CHCK_RSLT_ADD_TO_WRITTEN(cell_printf_(cell, i, buffer + written, cell_width + 1, context));
-            } else {
-                /* Print empty cell */
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, col_width_arr[j], space_char));
-            }
-
-            /* Print boundary between cells */
-            if (j < col_width_arr_sz - 1)
-                CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, 1, *IV));
-
-            ++j;
-        }
-
-        /* Print right table boundary */
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, 1, *R));
-
-        /* Print right margin */
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, context->table_properties->entire_table_properties.right_margin, space_char));
-
-        /* Print new line character */
-        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings_(buffer + written, buf_sz - written, 1, new_line_char));
-    }
-    return (int)written;
-
-clear:
-    return -1;
-}
-
-#endif
-
-
 
 /********************************************************
    End of file "row.c"
@@ -4622,8 +5734,12 @@ clear:
 /* #include "wcwidth.h" */ /* Commented by amalgamation script */
 #include <assert.h>
 #include <stddef.h>
+#ifdef FT_HAVE_WCHAR
 #include <wchar.h>
-
+#endif
+#if defined(FT_HAVE_UTF8)
+/* #include "utf8.h" */ /* Commented by amalgamation script */
+#endif
 
 static ptrdiff_t str_iter_width(const char *beg, const char *end)
 {
@@ -4640,15 +5756,34 @@ static ptrdiff_t wcs_iter_width(const wchar_t *beg, const wchar_t *end)
 }
 #endif /* FT_HAVE_WCHAR */
 
+//#ifdef FT_HAVE_UTF8
+//static ptrdiff_t u8_iter_width(const void *beg, const void *end)
+//{
+//    assert(end >= beg);
+//    return ut8_width(beg, end);
+//}
+//#endif /* FT_HAVE_UTF8 */
+
 
 static size_t buf_str_len(const string_buffer_t *buf)
 {
     assert(buf);
-    if (buf->type == CharBuf) {
-        return strlen(buf->str.cstr);
-    } else {
-        return wcslen(buf->str.wstr);
+
+    switch (buf->type) {
+        case CHAR_BUF:
+            return strlen(buf->str.cstr);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return wcslen(buf->str.wstr);
+#endif
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return utf8len(buf->str.u8str);
+#endif
     }
+
+    assert(0);
+    return 0;
 }
 
 
@@ -4668,7 +5803,7 @@ size_t strchr_count(const char *str, char ch)
     return count;
 }
 
-
+#ifdef FT_HAVE_WCHAR
 FT_INTERNAL
 size_t wstrchr_count(const wchar_t *str, wchar_t ch)
 {
@@ -4684,6 +5819,34 @@ size_t wstrchr_count(const wchar_t *str, wchar_t ch)
     }
     return count;
 }
+#endif
+
+
+#if defined(FT_HAVE_UTF8)
+/* todo: do something with code below!!! */
+FT_INTERNAL
+void *ut8next(const void *str)
+{
+    utf8_int32_t out_codepoint;
+    return utf8codepoint(str, &out_codepoint);
+}
+
+FT_INTERNAL
+size_t utf8chr_count(const void *str, utf8_int32_t ch)
+{
+    if (str == NULL)
+        return 0;
+
+    size_t count = 0;
+    str = utf8chr(str, ch);
+    while (str) {
+        count++;
+        str = ut8next(str);
+        str = utf8chr(str, ch);
+    }
+    return count;
+}
+#endif /* FT_HAVE_UTF8 */
 
 
 FT_INTERNAL
@@ -4731,6 +5894,29 @@ const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, si
 }
 #endif /* FT_HAVE_WCHAR */
 
+#if defined(FT_HAVE_UTF8)
+FT_INTERNAL
+const void *utf8_n_substring_beg(const void *str, utf8_int32_t ch_separator, size_t n)
+{
+    if (str == NULL)
+        return NULL;
+
+    if (n == 0)
+        return str;
+
+    str = utf8chr(str, ch_separator);
+    --n;
+    while (n > 0) {
+        if (str == NULL)
+            return NULL;
+        --n;
+        str = ut8next(str);
+        str = utf8chr(str, ch_separator);
+    }
+    return str ? (ut8next(str)) : NULL;
+}
+#endif
+
 
 FT_INTERNAL
 void str_n_substring(const char *str, char ch_separator, size_t n, const char **begin, const char **end)
@@ -4775,11 +5961,34 @@ void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const 
 }
 #endif /* FT_HAVE_WCHAR */
 
+#if defined(FT_HAVE_UTF8)
+FT_INTERNAL
+void utf8_n_substring(const void *str, utf8_int32_t ch_separator, size_t n, const void **begin, const void **end)
+{
+    const char *beg = utf8_n_substring_beg(str, ch_separator, n);
+    if (beg == NULL) {
+        *begin = NULL;
+        *end = NULL;
+        return;
+    }
+
+    const char *en = utf8chr(beg, ch_separator);
+    if (en == NULL) {
+        en = (const char *)str + strlen(str);
+    }
+
+    *begin = beg;
+    *end = en;
+    return;
+}
+#endif /* FT_HAVE_UTF8 */
+
+
 
 FT_INTERNAL
 string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type type)
 {
-    size_t sz = (number_of_chars) * (type == CharBuf ? sizeof(char) : sizeof(wchar_t));
+    size_t sz = (number_of_chars) * (type == CHAR_BUF ? sizeof(char) : sizeof(wchar_t));
     string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
     if (result == NULL)
         return NULL;
@@ -4791,10 +6000,10 @@ string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type 
     result->data_sz = sz;
     result->type = type;
 
-    if (sz && type == CharBuf) {
+    if (sz && type == CHAR_BUF) {
         result->str.cstr[0] = '\0';
 #ifdef FT_HAVE_WCHAR
-    } else if (sz && type == WCharBuf) {
+    } else if (sz && type == W_CHAR_BUF) {
         result->str.wstr[0] = L'\0';
 #endif /* FT_HAVE_WCHAR */
     }
@@ -4821,14 +6030,14 @@ string_buffer_t *copy_string_buffer(const string_buffer_t *buffer)
     if (result == NULL)
         return NULL;
     switch (buffer->type) {
-        case CharBuf:
+        case CHAR_BUF:
             if (FT_IS_ERROR(fill_buffer_from_string(result, buffer->str.cstr))) {
                 destroy_string_buffer(result);
                 return NULL;
             }
             break;
 #ifdef FT_HAVE_WCHAR
-        case WCharBuf:
+        case W_CHAR_BUF:
             if (FT_IS_ERROR(fill_buffer_from_wstring(result, buffer->str.wstr))) {
                 destroy_string_buffer(result);
                 return NULL;
@@ -4869,7 +6078,7 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
 
     F_FREE(buffer->str.data);
     buffer->str.cstr = copy;
-    buffer->type = CharBuf;
+    buffer->type = CHAR_BUF;
 
     return FT_SUCCESS;
 }
@@ -4888,31 +6097,86 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
 
     F_FREE(buffer->str.data);
     buffer->str.wstr = copy;
-    buffer->type = WCharBuf;
+    buffer->type = W_CHAR_BUF;
 
     return FT_SUCCESS;
 }
 #endif /* FT_HAVE_WCHAR */
 
+#ifdef FT_HAVE_UTF8
+FT_INTERNAL
+fort_status_t fill_buffer_from_u8string(string_buffer_t *buffer, const void *str)
+{
+    assert(buffer);
+    assert(str);
+
+    void *copy = F_UTF8DUP(str);
+    if (copy == NULL)
+        return FT_MEMORY_ERROR;
+
+    F_FREE(buffer->str.u8str);
+    buffer->str.u8str = copy;
+    buffer->type = UTF8_BUF;
+
+    return FT_SUCCESS;
+}
+#endif /* FT_HAVE_UTF8 */
 
 FT_INTERNAL
-size_t buffer_text_height(const string_buffer_t *buffer)
+size_t buffer_text_visible_height(const string_buffer_t *buffer)
 {
     if (buffer == NULL || buffer->str.data == NULL || buf_str_len(buffer) == 0) {
         return 0;
     }
-    if (buffer->type == CharBuf)
+    if (buffer->type == CHAR_BUF)
         return 1 + strchr_count(buffer->str.cstr, '\n');
-    else
+#ifdef FT_HAVE_WCHAR
+    else if (buffer->type == W_CHAR_BUF)
         return 1 + wstrchr_count(buffer->str.wstr, L'\n');
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+    else if (buffer->type == UTF8_BUF)
+        return 1 + utf8chr_count(buffer->str.u8str, '\n');
+#endif /* FT_HAVE_WCHAR */
+
+    assert(0);
+    return 0;
 }
 
+FT_INTERNAL
+size_t string_buffer_cod_width_capacity(const string_buffer_t *buffer)
+{
+    return string_buffer_width_capacity(buffer);
+}
 
 FT_INTERNAL
-size_t buffer_text_width(const string_buffer_t *buffer)
+size_t string_buffer_raw_capacity(const string_buffer_t *buffer)
+{
+    return buffer->data_sz;
+}
+
+#ifdef FT_HAVE_UTF8
+FT_INTERNAL
+size_t ut8_width(const void *beg, const void *end)
+{
+    size_t sz = (size_t)((const char *)end - (const char *)beg);
+    char *tmp = F_MALLOC(sizeof(char) * (sz + 1));
+    // @todo: add check to tmp
+    assert(tmp);
+
+    memcpy(tmp, beg, sz);
+    tmp[sz] = '\0';
+    size_t result = utf8len(tmp);
+    F_FREE(tmp);
+    return result;
+}
+#endif /* FT_HAVE_WCHAR */
+
+FT_INTERNAL
+size_t buffer_text_visible_width(const string_buffer_t *buffer)
 {
     size_t max_length = 0;
-    if (buffer->type == CharBuf) {
+    if (buffer->type == CHAR_BUF) {
         size_t n = 0;
         while (1) {
             const char *beg = NULL;
@@ -4925,7 +6189,7 @@ size_t buffer_text_width(const string_buffer_t *buffer)
             ++n;
         }
 #ifdef FT_HAVE_WCHAR
-    } else {
+    } else if (buffer->type == W_CHAR_BUF) {
         size_t n = 0;
         while (1) {
             const wchar_t *beg = NULL;
@@ -4942,149 +6206,110 @@ size_t buffer_text_width(const string_buffer_t *buffer)
             ++n;
         }
 #endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+    } else if (buffer->type == UTF8_BUF) {
+        size_t n = 0;
+        while (1) {
+            const void *beg = NULL;
+            const void *end = NULL;
+            utf8_n_substring(buffer->str.u8str, '\n', n, &beg, &end);
+            if (beg == NULL || end == NULL)
+                return max_length;
+
+            max_length = MAX(max_length, (size_t)ut8_width(beg, end));
+            ++n;
+        }
+#endif /* FT_HAVE_WCHAR */
     }
 
     return max_length; /* shouldn't be here */
 }
 
 
-FT_INTERNAL
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, char *buf, size_t total_buf_len,
-                  const context_t *context, const char *content_style_tag, const char *reset_content_style_tag)
+static void
+buffer_substring(const string_buffer_t *buffer, size_t buffer_row, void **begin, void **end,  ptrdiff_t *str_it_width)
 {
-#define CHAR_TYPE char
-#define NULL_CHAR '\0'
-#define NEWLINE_CHAR '\n'
-#define SPACE_CHAR " "
-#define SNPRINTF_FMT_STR "%*s"
-#define SNPRINTF snprintf
-#define BUFFER_STR str.cstr
-#define SNPRINT_N_STRINGS  snprint_n_strings
-#define STR_N_SUBSTRING str_n_substring
-#define STR_ITER_WIDTH str_iter_width
-
-    size_t buf_len = total_buf_len - strlen(content_style_tag) - strlen(reset_content_style_tag);
-
-    if (buffer == NULL || buffer->str.data == NULL
-        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
-        return -1;
-    }
-
-    size_t content_width = buffer_text_width(buffer);
-    if ((buf_len - 1) < content_width)
-        return -1;
-
-    size_t left = 0;
-    size_t right = 0;
-
-    switch (get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TEXT_ALIGN)) {
-        case FT_ALIGNED_LEFT:
-            left = 0;
-            right = (buf_len - 1) - content_width;
+    switch (buffer->type) {
+        case CHAR_BUF:
+            str_n_substring(buffer->str.cstr, '\n', buffer_row, (const char **)begin, (const char **)end);
+            if ((*(const char **)begin) && (*(const char **)end))
+                *str_it_width = str_iter_width(*(const char **)begin, *(const char **)end);
             break;
-        case FT_ALIGNED_CENTER:
-            left = ((buf_len - 1) - content_width) / 2;
-            right = ((buf_len - 1) - content_width) - left;
-            break;
-        case FT_ALIGNED_RIGHT:
-            left = (buf_len - 1) - content_width;
-            right = 0;
-            break;
-        default:
-            assert(0);
-            break;
-    }
-
-    int set_old_value = 0;
-    size_t  written = 0;
-    int tmp = 0;
-    ptrdiff_t str_it_width = 0;
-    const CHAR_TYPE *beg = NULL;
-    const CHAR_TYPE *end = NULL;
-    CHAR_TYPE old_value = (CHAR_TYPE)0;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
-
-    STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
-    if (beg == NULL || end == NULL)
-        return -1;
-    old_value = *end;
-    *(CHAR_TYPE *)end = NULL_CHAR;
-    set_old_value = 1;
-
-    str_it_width = STR_ITER_WIDTH(beg, end);
-    if (str_it_width < 0 || content_width < (size_t)str_it_width)
-        goto  clear;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
-
-    *(CHAR_TYPE *)end = old_value;
-    set_old_value = 0;
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
-    return (int)written;
-
-clear:
-    if (set_old_value)
-        *(CHAR_TYPE *)end = old_value;
-    return -1;
-
-#undef CHAR_TYPE
-#undef NULL_CHAR
-#undef NEWLINE_CHAR
-#undef SPACE_CHAR
-#undef SNPRINTF_FMT_STR
-#undef SNPRINTF
-#undef BUFFER_STR
-#undef SNPRINT_N_STRINGS
-#undef STR_N_SUBSTRING
-#undef STR_ITER_WIDTH
-}
-
-
 #ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, size_t total_buf_len,
-                   const context_t *context, const char *content_style_tag, const char *reset_content_style_tag)
-{
-#define CHAR_TYPE wchar_t
-#define NULL_CHAR L'\0'
-#define NEWLINE_CHAR L'\n'
-#define SPACE_CHAR " "
-#define SNPRINTF_FMT_STR L"%*ls"
-#define SNPRINTF swprintf
-#define BUFFER_STR str.wstr
-#define SNPRINT_N_STRINGS  wsnprint_n_string
-#define STR_N_SUBSTRING wstr_n_substring
-#define STR_ITER_WIDTH wcs_iter_width
+        case W_CHAR_BUF:
+            wstr_n_substring(buffer->str.wstr, L'\n', buffer_row, (const wchar_t **)begin, (const wchar_t **)end);
+            if ((*(const wchar_t **)begin) && (*(const wchar_t **)end))
+                *str_it_width = wcs_iter_width(*(const wchar_t **)begin, *(const wchar_t **)end);
+            break;
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            utf8_n_substring(buffer->str.wstr, '\n', buffer_row, begin, end);
+            if ((*(const char **)begin) && (*(const char **)end))
+                *str_it_width = ut8_width(*begin, *end);
+            break;
+#endif /* FT_HAVE_UTF8 */
+        default:
+            assert(0);
+    }
+}
 
-    size_t buf_len = total_buf_len - strlen(content_style_tag) - strlen(reset_content_style_tag);
+
+static int
+buffer_print_range(conv_context_t *cntx, const void *beg, const void *end)
+{
+    size_t len;
+    switch (cntx->b_type) {
+        case CHAR_BUF:
+            len = (size_t)((const char *)end - (const char *)beg);
+            return ft_nprint(cntx, (const char *)beg, len);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            len = (size_t)((const wchar_t *)end - (const wchar_t *)beg);
+            return ft_nwprint(cntx, (const wchar_t *)beg, len);
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return ft_nu8print(cntx, beg, end);
+#endif /* FT_HAVE_UTF8 */
+        default:
+            assert(0);
+            return -1;
+    }
+}
+
+
+FT_INTERNAL
+int buffer_printf(string_buffer_t *buffer, size_t buffer_row, conv_context_t *cntx, size_t vis_width,
+                  const char *content_style_tag, const char *reset_content_style_tag)
+{
+    const context_t *context = cntx->cntx;
+    fort_table_properties_t *props = context->table_properties;
+    size_t row = context->row;
+    size_t column = context->column;
 
     if (buffer == NULL || buffer->str.data == NULL
-        || buffer_row >= buffer_text_height(buffer) || buf_len == 0) {
+        || buffer_row >= buffer_text_visible_height(buffer)) {
         return -1;
     }
 
-    size_t content_width = buffer_text_width(buffer);
-    if ((buf_len - 1) < content_width)
+    size_t content_width = buffer_text_visible_width(buffer);
+    if (vis_width < content_width)
         return -1;
 
     size_t left = 0;
     size_t right = 0;
-
-    switch (get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TEXT_ALIGN)) {
+    switch (get_cell_property_value_hierarcial(props, row, column, FT_CPROP_TEXT_ALIGN)) {
         case FT_ALIGNED_LEFT:
             left = 0;
-            right = (buf_len - 1) - content_width;
+            right = (vis_width) - content_width;
             break;
         case FT_ALIGNED_CENTER:
-            left = ((buf_len - 1) - content_width) / 2;
-            right = ((buf_len - 1) - content_width) - left;
+            left = ((vis_width) - content_width) / 2;
+            right = ((vis_width) - content_width) - left;
             break;
         case FT_ALIGNED_RIGHT:
-            left = (buf_len - 1) - content_width;
+            left = (vis_width) - content_width;
             right = 0;
             break;
         default:
@@ -5092,64 +6317,41 @@ int buffer_wprintf(string_buffer_t *buffer, size_t buffer_row, wchar_t *buf, siz
             break;
     }
 
-    int set_old_value = 0;
     size_t  written = 0;
     int tmp = 0;
     ptrdiff_t str_it_width = 0;
-    const CHAR_TYPE *beg = NULL;
-    const CHAR_TYPE *end = NULL;
-    CHAR_TYPE old_value = (CHAR_TYPE)0;
-
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, left, SPACE_CHAR));
-
-    STR_N_SUBSTRING(buffer->BUFFER_STR, NEWLINE_CHAR, buffer_row, &beg, &end);
+    const void *beg = NULL;
+    const void *end = NULL;
+    buffer_substring(buffer, buffer_row, (void **)&beg, (void **)&end, &str_it_width);
     if (beg == NULL || end == NULL)
         return -1;
-    old_value = *end;
-    *(CHAR_TYPE *)end = NULL_CHAR;
-    set_old_value = 1;
-
-    str_it_width = STR_ITER_WIDTH(beg, end);
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
-        goto  clear;
+        return -1;
 
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, content_style_tag));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINTF(buf + written, total_buf_len - written, SNPRINTF_FMT_STR, (int)(end - beg), beg));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, 1, reset_content_style_tag));
+    size_t padding = content_width - (size_t)str_it_width;
 
-    *(CHAR_TYPE *)end = old_value;
-    set_old_value = 0;
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written,  total_buf_len - written, (content_width - (size_t)str_it_width), SPACE_CHAR));
-    CHCK_RSLT_ADD_TO_WRITTEN(SNPRINT_N_STRINGS(buf + written, total_buf_len - written, right, SPACE_CHAR));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, left, FT_SPACE));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, content_style_tag));
+    CHCK_RSLT_ADD_TO_WRITTEN(buffer_print_range(cntx, beg, end));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, reset_content_style_tag));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, padding, FT_SPACE));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, right, FT_SPACE));
     return (int)written;
 
 clear:
-    if (set_old_value)
-        *(CHAR_TYPE *)end = old_value;
     return -1;
-
-#undef CHAR_TYPE
-#undef NULL_CHAR
-#undef NEWLINE_CHAR
-#undef SPACE_CHAR
-#undef SNPRINTF_FMT_STR
-#undef SNPRINTF
-#undef BUFFER_STR
-#undef SNPRINT_N_STRINGS
-#undef STR_N_SUBSTRING
-#undef STR_ITER_WIDTH
 }
-#endif /* FT_HAVE_WCHAR */
-
 
 FT_INTERNAL
-size_t string_buffer_capacity(const string_buffer_t *buffer)
+size_t string_buffer_width_capacity(const string_buffer_t *buffer)
 {
     assert(buffer);
-    if (buffer->type == CharBuf)
+    if (buffer->type == CHAR_BUF)
         return buffer->data_sz;
-    else
+    else if (buffer->type == W_CHAR_BUF)
         return buffer->data_sz / sizeof(wchar_t);
+    else if (buffer->type == UTF8_BUF)
+        return buffer->data_sz / 4;
 }
 
 
@@ -5465,6 +6667,11 @@ fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *wi
 
 }
 
+FT_INTERNAL
+fort_status_t table_internal_codepoints_geometry(const ft_table_t *table, size_t *height, size_t *width)
+{
+    return table_geometry(table, height, width);
+}
 
 /********************************************************
    End of file "table.c"

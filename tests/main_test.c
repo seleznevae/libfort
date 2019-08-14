@@ -22,6 +22,9 @@ void test_table_cell_properties(void);
 void test_table_text_styles(void);
 void test_table_tbl_properties(void);
 void test_memory_errors(void);
+#ifdef FT_HAVE_UTF8
+void test_utf8_table(void);
+#endif
 
 
 #ifdef FORT_WB_TESTING_ENABLED
@@ -41,6 +44,9 @@ struct test_case bb_test_suite [] = {
     {"test_table_basic", test_table_basic},
 #ifdef FT_HAVE_WCHAR
     {"test_wcs_table_boundaries", test_wcs_table_boundaries},
+#endif
+#ifdef FT_HAVE_UTF8
+    {"test_utf8_table", test_utf8_table},
 #endif
     {"test_table_write", test_table_write},
     {"test_table_changing_cell", test_table_changing_cell},

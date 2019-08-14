@@ -46,4 +46,11 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
 FT_INTERNAL
 fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width);
 
+/*
+ * Returns geometry in codepoints(characters) (include codepoints of invisible
+ * elements: e.g. styles tags).
+ */
+FT_INTERNAL
+fort_status_t table_internal_codepoints_geometry(const ft_table_t *table, size_t *height, size_t *width);
+
 #endif /* TABLE_H */

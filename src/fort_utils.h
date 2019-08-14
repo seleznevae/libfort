@@ -35,12 +35,16 @@ extern char g_col_separator;
 #define F_REALLOC fort_realloc
 #define F_STRDUP fort_strdup
 #define F_WCSDUP fort_wcsdup
+/* @todo: replace with custom impl !!!*/
+#define F_UTF8DUP utf8dup
 
 #define F_CREATE(type) ((type *)F_CALLOC(sizeof(type), 1))
 
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 
+#define FT_NEWLINE "\n"
+#define FT_SPACE " "
 
 enum PolicyOnNull {
     Create,
@@ -52,6 +56,20 @@ enum F_BOOL {
     F_FALSE = 0,
     F_TRUE = 1
 };
+
+enum str_buf_type {
+    CHAR_BUF,
+#ifdef FT_HAVE_WCHAR
+    W_CHAR_BUF,
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+    UTF8_BUF,
+#endif /* FT_HAVE_WCHAR */
+    TYPE_END
+};
+
+
+typedef const char ** str_arr;
 
 
 #define FT_STR_2_CAT_(arg1, arg2) \
@@ -117,6 +135,16 @@ enum request_geom_type {
     INTERN_REPR_GEOMETRY
 };
 
+struct conv_context {
+    char *buf_origin;
+    char *buf;
+    size_t raw_avail;
+    struct fort_context *cntx;
+    enum str_buf_type b_type;
+};
+typedef struct conv_context conv_context_t;
+
+
 /*****************************************************************************
  *               LIBFORT helpers
  *****************************************************************************/
@@ -144,18 +172,38 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
 #endif
 
 FT_INTERNAL
-int snprint_n_strings(char *buf, size_t length, size_t n, const char *str);
+int print_n_strings(conv_context_t *cntx, size_t n, const char *str);
 
-#if defined(FT_HAVE_WCHAR)
+
 FT_INTERNAL
-int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
-#endif
+int ft_nprint(conv_context_t *cntx, const char *str, size_t strlen);
+#ifdef FT_HAVE_WCHAR
+FT_INTERNAL
+int ft_nwprint(conv_context_t *cntx, const wchar_t *str, size_t strlen);
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+FT_INTERNAL
+int ft_nu8print(conv_context_t *cntx, const void *beg, const void *end);
+#endif /* FT_HAVE_UTF8 */
 
+
+/*#define PRINT_DEBUG_INFO fprintf(stderr, "error in %s(%s:%d)\n", __FUNCTION__, __FILE__, __LINE__);*/
+#define PRINT_DEBUG_INFO
+
+#define FT_CHECK(statement) \
+    do { \
+        tmp = statement; \
+        if (tmp < 0) {\
+            PRINT_DEBUG_INFO \
+            goto clear; \
+        } \
+    } while(0)
 
 #define CHCK_RSLT_ADD_TO_WRITTEN(statement) \
     do { \
         tmp = statement; \
         if (tmp < 0) {\
+            PRINT_DEBUG_INFO \
             goto clear; \
         } \
         written += (size_t)tmp; \
@@ -165,6 +213,7 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
     do { \
         tmp = statement; \
         if (tmp < 0) {\
+            PRINT_DEBUG_INFO \
             goto clear; \
         } \
         invisible_written += (size_t)tmp; \

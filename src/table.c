@@ -294,3 +294,8 @@ fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *wi
 
 }
 
+FT_INTERNAL
+fort_status_t table_internal_codepoints_geometry(const ft_table_t *table, size_t *height, size_t *width)
+{
+    return table_geometry(table, height, width);
+}

@@ -2,6 +2,9 @@
 #ifdef FT_HAVE_WCHAR
 #include <wchar.h>
 #endif
+#if defined(FT_HAVE_UTF8)
+#include "utf8.h"
+#endif
 
 
 char g_col_separator = FORT_DEFAULT_COL_SEPARATOR;
@@ -169,9 +172,26 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 }
 #endif
 
-
+#if defined(FT_HAVE_UTF8)
 FT_INTERNAL
-int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
+size_t number_of_columns_in_format_u8string(const void *fmt)
+{
+    size_t separator_counter = 0;
+    const char *pos = fmt;
+    while (1) {
+        pos = utf8chr(pos, g_col_separator);
+        if (pos == NULL)
+            break;
+
+        separator_counter++;
+        ++pos;
+    }
+    return separator_counter + 1;
+}
+#endif
+
+static
+int snprint_n_strings_impl(char *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);
     if (length <= n * str_len)
@@ -200,17 +220,123 @@ int snprint_n_strings(char *buf, size_t length, size_t n, const char *str)
     return (int)(n * str_len);
 }
 
+static
+int snprint_n_strings(conv_context_t *cntx, size_t n, const char *str)
+{
+    int w = snprint_n_strings_impl(cntx->buf, cntx->raw_avail, n, str);
+    if (w >= 0) {
+        cntx->buf += w;
+        cntx->raw_avail -= w;
+    }
+    return w;
+}
 
+#if defined(FT_HAVE_WCHAR)
+static
+int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str);
+#endif
+
+#if defined(FT_HAVE_UTF8)
+static
+int u8nprint_n_strings(void *buf, size_t length, size_t n, const void *str);
+#endif
+
+
+FT_INTERNAL
+int print_n_strings(conv_context_t *cntx, size_t n, const char *str)
+{
+    int cod_w;
+    int raw_written;
+
+    switch (cntx->b_type) {
+        case CHAR_BUF:
+            return snprint_n_strings(cntx, n, str);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            cod_w = wsnprint_n_string((wchar_t *)cntx->buf, cntx->raw_avail, n, str);
+            if (cod_w < 0)
+                return cod_w;
+            raw_written = sizeof(wchar_t) * cod_w;
+
+            cntx->buf += raw_written;
+            cntx->raw_avail -= raw_written;
+            return cod_w;
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            /* Everying is very strange and differs with W_CHAR_BUF */
+            raw_written = u8nprint_n_strings(cntx->buf, cntx->raw_avail, n, str);
+            if (raw_written < 0) {
+                fprintf(stderr, " raw_written = %d\n", raw_written);
+                return raw_written;
+            }
+
+            cntx->buf += raw_written;
+            cntx->raw_avail -= raw_written;
+            return utf8len(str) * n;
+#endif /* FT_HAVE_UTF8 */
+        default:
+            assert(0);
+            return -1;
+    }
+}
+
+FT_INTERNAL
+int ft_nprint(conv_context_t *cntx, const char *str, size_t strlen)
+{
+    if (cntx->raw_avail + 1/* for 0 */ < strlen)
+        return -1;
+
+    memcpy(cntx->buf, str, strlen);
+    cntx->buf += strlen;
+    cntx->raw_avail -= strlen;
+    *cntx->buf = '\0'; /* Do we need this ? */
+    return strlen;
+}
+
+#ifdef FT_HAVE_WCHAR
+int ft_nwprint(conv_context_t *cntx, const wchar_t *str, size_t strlen)
+{
+    if (cntx->raw_avail + 1/* for 0 */ < strlen)
+        return -1;
+
+    size_t raw_len = strlen * sizeof(wchar_t);
+
+    memcpy(cntx->buf, str, raw_len);
+    cntx->buf += raw_len;
+    cntx->raw_avail -= raw_len;
+    *(wchar_t *)cntx->buf = L'\0'; /* Do we need this ? */
+    return strlen;
+}
+#endif /* FT_HAVE_WCHAR */
+
+#ifdef FT_HAVE_UTF8
+FT_INTERNAL
+int ft_nu8print(conv_context_t *cntx, const void *beg, const void *end)
+{
+    const char *bc = beg;
+    const char *ec = end;
+    size_t raw_len = ec - bc;
+    if (cntx->raw_avail + 1 < raw_len)
+        return -1;
+
+    memcpy(cntx->buf, beg, raw_len);
+    cntx->buf += raw_len;
+    cntx->raw_avail -= raw_len;
+    *(char *)cntx->buf = '\0'; /* Do we need this ? */
+    return raw_len; /* what return here ? */
+}
+#endif /* FT_HAVE_UTF8 */
 
 #if defined(FT_HAVE_WCHAR)
 #define WCS_SIZE 64
 
-FT_INTERNAL
+static
 int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
 {
     size_t str_len = strlen(str);
 
-    /* note: baybe it's, better to return -1 in case of multibyte character
+    /* note: maybe it's, better to return -1 in case of multibyte character
      * strings (not sure this case is done correctly).
      */
     if (str_len > 1) {
@@ -267,5 +393,35 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
             *(buf++) = (wchar_t) * (str_p++);
     }
     return (int)(n * str_len);
+}
+#endif
+
+
+#if defined(FT_HAVE_UTF8)
+static
+int u8nprint_n_strings(void *buf, size_t length, size_t n, const void *str)
+{
+    size_t str_size = utf8size(str) - 1; /* str_size - raw size in bytes, excluding \0 */
+    if (length <= n * str_size)
+        return -1;
+
+    if (n == 0)
+        return 0;
+
+    /* To ensure valid return value it is safely not print such big strings */
+    if (n * str_size > INT_MAX)
+        return -1;
+
+    if (str_size == 0)
+        return 0;
+
+    size_t i = n;
+    while (i) {
+        memcpy(buf, str, str_size);
+        buf = (char *)buf + str_size;
+        --i;
+    }
+    *(char *)buf = '\0';
+    return (int)(n * str_size);
 }
 #endif
