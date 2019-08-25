@@ -3057,8 +3057,9 @@ const void *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
         return NULL;
 
     if (rows == 0) {
-        result = empty_str_arr[b_type];
-        goto clear;
+        F_FREE(col_vis_width_arr);
+        F_FREE(row_vis_height_arr);
+        return empty_str_arr[b_type];
     }
 
     int tmp = 0;
