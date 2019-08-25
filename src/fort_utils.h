@@ -139,7 +139,7 @@ struct conv_context {
     union {
         char *buf;
         wchar_t *wbuf;
-    };
+    } u;
     size_t raw_avail;
     struct fort_context *cntx;
     enum str_buf_type b_type;

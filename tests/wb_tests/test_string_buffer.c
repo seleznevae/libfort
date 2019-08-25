@@ -607,24 +607,24 @@ static void test_print_n_strings_(const char *str, size_t n)
     {
         string_buffer_t *buffer = create_string_buffer(200, CHAR_BUF);
         conv_context_t cntx;
-        cntx.buf = (char *)buffer_get_data(buffer);
+        cntx.u.buf = (char *)buffer_get_data(buffer);
         cntx.buf_origin = (char *)buffer_get_data(buffer);
         cntx.raw_avail = 200;
         cntx.b_type = CHAR_BUF;
         assert_true(print_n_strings(&cntx, n, str) == sz);
-        assert_true(cntx.buf - cntx.buf_origin == (ptrdiff_t)sz);
+        assert_true(cntx.u.buf - cntx.buf_origin == (ptrdiff_t)sz);
         destroy_string_buffer(buffer);
     }
 
     {
         string_buffer_t *buffer = create_string_buffer(200, W_CHAR_BUF);
         conv_context_t cntx;
-        cntx.buf = (char *)buffer_get_data(buffer);
+        cntx.u.buf = (char *)buffer_get_data(buffer);
         cntx.buf_origin = (char *)buffer_get_data(buffer);
         cntx.raw_avail = 200;
         cntx.b_type = W_CHAR_BUF;
         assert_true(print_n_strings(&cntx, n, str) == /*sizeof(wchar_t) **/ sz);
-        assert_true(cntx.buf - cntx.buf_origin == (ptrdiff_t)sizeof(wchar_t) * sz);
+        assert_true(cntx.u.buf - cntx.buf_origin == (ptrdiff_t)sizeof(wchar_t) * sz);
         destroy_string_buffer(buffer);
     }
 
@@ -632,12 +632,12 @@ static void test_print_n_strings_(const char *str, size_t n)
     {
         string_buffer_t *buffer = create_string_buffer(200, UTF8_BUF);
         conv_context_t cntx;
-        cntx.buf = (char *)buffer_get_data(buffer);
+        cntx.u.buf = (char *)buffer_get_data(buffer);
         cntx.buf_origin = (char *)buffer_get_data(buffer);
         cntx.raw_avail = 200;
         cntx.b_type = UTF8_BUF;
         assert_true(print_n_strings(&cntx, n, str) ==  sz);
-        assert_true(cntx.buf - cntx.buf_origin == (ptrdiff_t)sz);
+        assert_true(cntx.u.buf - cntx.buf_origin == (ptrdiff_t)sz);
         destroy_string_buffer(buffer);
     }
 }

@@ -655,7 +655,7 @@ const void *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
 
     conv_context_t cntx;
     cntx.buf_origin = buffer;
-    cntx.buf = buffer;
+    cntx.u.buf = buffer;
     cntx.raw_avail = string_buffer_raw_capacity(table->conv_buffer);
     cntx.cntx = &context;
     cntx.b_type = b_type;
