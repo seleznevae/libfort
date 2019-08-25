@@ -252,7 +252,9 @@ int print_n_strings(conv_context_t *cntx, size_t n, const char *str)
 
     switch (cntx->b_type) {
         case CHAR_BUF:
-            return snprint_n_strings(cntx, n, str);
+            raw_written = snprint_n_strings(cntx, n, str);
+            cod_w = raw_written;
+            return cod_w;
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
             cod_w = wsnprint_n_string(cntx->u.wbuf, cntx->raw_avail, n, str);

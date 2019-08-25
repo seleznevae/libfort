@@ -3662,7 +3662,9 @@ int print_n_strings(conv_context_t *cntx, size_t n, const char *str)
 
     switch (cntx->b_type) {
         case CHAR_BUF:
-            return snprint_n_strings(cntx, n, str);
+            raw_written = snprint_n_strings(cntx, n, str);
+            cod_w = raw_written;
+            return cod_w;
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
             cod_w = wsnprint_n_string(cntx->u.wbuf, cntx->raw_avail, n, str);
@@ -6248,7 +6250,7 @@ buffer_substring(const string_buffer_t *buffer, size_t buffer_row, const void **
 #endif /* FT_HAVE_WCHAR */
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
-            utf8_n_substring(buffer->str.wstr, '\n', buffer_row, begin, end);
+            utf8_n_substring(buffer->str.u8str, '\n', buffer_row, begin, end);
             if ((*(const char **)begin) && (*(const char **)end))
                 *str_it_width = ut8_width(*begin, *end);
             break;
@@ -6380,14 +6382,13 @@ int buffer_check_align(string_buffer_t *buffer)
 {
     assert(buffer);
     assert(buffer->str.data);
-    void *p = buffer->str.data;
 
     switch (buffer->type) {
         case CHAR_BUF:
             return 1;
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
-            return (((unsigned long)p) & (sizeof(wchar_t) - 1)) == 0;
+            return (((unsigned long)buffer->str.data) & (sizeof(wchar_t) - 1)) == 0;
 #endif
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
