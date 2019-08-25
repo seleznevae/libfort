@@ -616,6 +616,7 @@ static void test_print_n_strings_(const char *str, size_t n)
         destroy_string_buffer(buffer);
     }
 
+#ifdef FT_HAVE_WCHAR
     {
         string_buffer_t *buffer = create_string_buffer(200, W_CHAR_BUF);
         conv_context_t cntx;
@@ -627,8 +628,9 @@ static void test_print_n_strings_(const char *str, size_t n)
         assert_true(cntx.u.buf - cntx.buf_origin == (ptrdiff_t)sizeof(wchar_t) * sz);
         destroy_string_buffer(buffer);
     }
+#endif /* FT_HAVE_WCHAR */
 
-
+#ifdef FT_HAVE_UTF8
     {
         string_buffer_t *buffer = create_string_buffer(200, UTF8_BUF);
         conv_context_t cntx;
@@ -640,6 +642,7 @@ static void test_print_n_strings_(const char *str, size_t n)
         assert_true(cntx.u.buf - cntx.buf_origin == (ptrdiff_t)sz);
         destroy_string_buffer(buffer);
     }
+#endif /* FT_HAVE_UTF8 */
 }
 void test_print_n_strings(void)
 {
