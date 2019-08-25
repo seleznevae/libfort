@@ -69,7 +69,7 @@ void test_strchr_count(void)
 
     assert_true(strchr_count("1a23123a123123aaa123", 'a') == 5);
 
-
+#ifdef FT_HAVE_WCHAR
     assert_true(wstrchr_count(NULL, L'\n') == 0);
     assert_true(wstrchr_count(L"", L'\n') == 0);
     assert_true(wstrchr_count(L"asbd", L'\n') == 0);
@@ -84,6 +84,7 @@ void test_strchr_count(void)
     assert_true(wstrchr_count(L"\n123123\n123123\n\n\n123", L'\n') == 5);
 
     assert_true(wstrchr_count(L"1\xffffy23123\xffffy123123\xffffy\xffffy\xffffy123", L'\xffff') == 5);
+#endif /* FT_HAVE_WCHAR */
 
 
 #ifdef FT_HAVE_UTF8
