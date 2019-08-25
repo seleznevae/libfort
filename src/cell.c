@@ -192,7 +192,7 @@ int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t vis_
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, L2, FT_SPACE));
     if (cell->str_buffer) {
 //        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf2_(cell->str_buffer, row - cell_padding_top, cntx, buf_len - TOTAL_WRITTEN - R2 - R3, content_style_tag, reset_content_style_tag));
-        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf(cell->str_buffer, row - cell_padding_top, cntx, vis_width - L2 - R2 , content_style_tag, reset_content_style_tag));
+        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf(cell->str_buffer, row - cell_padding_top, cntx, vis_width - L2 - R2, content_style_tag, reset_content_style_tag));
     } else {
         WRITE_CONTENT_STYLE_TAG;
         WRITE_RESET_CONTENT_STYLE_TAG;

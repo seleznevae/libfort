@@ -102,11 +102,10 @@ enum str_buf_type {
 #ifdef FT_HAVE_UTF8
     UTF8_BUF,
 #endif /* FT_HAVE_WCHAR */
-    TYPE_END
 };
 
 
-typedef const char ** str_arr;
+typedef const char **str_arr;
 
 
 #define FT_STR_2_CAT_(arg1, arg2) \
@@ -2349,7 +2348,7 @@ int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t vis_
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, L2, FT_SPACE));
     if (cell->str_buffer) {
 //        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf2_(cell->str_buffer, row - cell_padding_top, cntx, buf_len - TOTAL_WRITTEN - R2 - R3, content_style_tag, reset_content_style_tag));
-        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf(cell->str_buffer, row - cell_padding_top, cntx, vis_width - L2 - R2 , content_style_tag, reset_content_style_tag));
+        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf(cell->str_buffer, row - cell_padding_top, cntx, vis_width - L2 - R2, content_style_tag, reset_content_style_tag));
     } else {
         WRITE_CONTENT_STYLE_TAG;
         WRITE_RESET_CONTENT_STYLE_TAG;
@@ -3010,7 +3009,7 @@ int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_
 #endif
 
 static
-const char * empty_str_arr[] = {"", (const char *)L""};
+const char *empty_str_arr[] = {"", (const char *)L"", ""};
 
 static
 const char *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
@@ -3575,6 +3574,7 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 }
 #endif
 
+/*
 #if defined(FT_HAVE_UTF8)
 FT_INTERNAL
 size_t number_of_columns_in_format_u8string(const void *fmt)
@@ -3592,6 +3592,7 @@ size_t number_of_columns_in_format_u8string(const void *fmt)
     return separator_counter + 1;
 }
 #endif
+*/
 
 static
 int snprint_n_strings_impl(char *buf, size_t length, size_t n, const char *str)
@@ -5095,10 +5096,10 @@ fort_status_t row_set_cell_span(fort_row_t *row, size_t cell_column, size_t hor_
 
 FT_INTERNAL
 int print_row_separator_impl(conv_context_t *cntx,
-                        const size_t *col_width_arr, size_t cols,
-                        const fort_row_t *upper_row, const fort_row_t *lower_row,
-                        enum HorSeparatorPos separatorPos,
-                        const separator_t *sep)
+                             const size_t *col_width_arr, size_t cols,
+                             const fort_row_t *upper_row, const fort_row_t *lower_row,
+                             enum HorSeparatorPos separatorPos,
+                             const separator_t *sep)
 {
     assert(cntx);
 
@@ -5756,14 +5757,6 @@ static ptrdiff_t wcs_iter_width(const wchar_t *beg, const wchar_t *end)
 }
 #endif /* FT_HAVE_WCHAR */
 
-//#ifdef FT_HAVE_UTF8
-//static ptrdiff_t u8_iter_width(const void *beg, const void *end)
-//{
-//    assert(end >= beg);
-//    return ut8_width(beg, end);
-//}
-//#endif /* FT_HAVE_UTF8 */
-
 
 static size_t buf_str_len(const string_buffer_t *buf)
 {
@@ -6227,7 +6220,7 @@ size_t buffer_text_visible_width(const string_buffer_t *buffer)
 
 
 static void
-buffer_substring(const string_buffer_t *buffer, size_t buffer_row, void **begin, void **end,  ptrdiff_t *str_it_width)
+buffer_substring(const string_buffer_t *buffer, size_t buffer_row, const void **begin, const void **end,  ptrdiff_t *str_it_width)
 {
     switch (buffer->type) {
         case CHAR_BUF:
@@ -6322,7 +6315,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, conv_context_t *cn
     ptrdiff_t str_it_width = 0;
     const void *beg = NULL;
     const void *end = NULL;
-    buffer_substring(buffer, buffer_row, (void **)&beg, (void **)&end, &str_it_width);
+    buffer_substring(buffer, buffer_row, &beg, &end, &str_it_width);
     if (beg == NULL || end == NULL)
         return -1;
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
@@ -6346,12 +6339,21 @@ FT_INTERNAL
 size_t string_buffer_width_capacity(const string_buffer_t *buffer)
 {
     assert(buffer);
-    if (buffer->type == CHAR_BUF)
-        return buffer->data_sz;
-    else if (buffer->type == W_CHAR_BUF)
-        return buffer->data_sz / sizeof(wchar_t);
-    else if (buffer->type == UTF8_BUF)
-        return buffer->data_sz / 4;
+    switch (buffer->type) {
+        case CHAR_BUF:
+            return buffer->data_sz;
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return buffer->data_sz / sizeof(wchar_t);
+#endif
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return buffer->data_sz / 4;
+#endif
+        default:
+            assert(0);
+            return 0;
+    }
 }
 
 

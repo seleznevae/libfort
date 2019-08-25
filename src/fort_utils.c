@@ -172,6 +172,7 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 }
 #endif
 
+/*
 #if defined(FT_HAVE_UTF8)
 FT_INTERNAL
 size_t number_of_columns_in_format_u8string(const void *fmt)
@@ -189,6 +190,7 @@ size_t number_of_columns_in_format_u8string(const void *fmt)
     return separator_counter + 1;
 }
 #endif
+*/
 
 static
 int snprint_n_strings_impl(char *buf, size_t length, size_t n, const char *str)

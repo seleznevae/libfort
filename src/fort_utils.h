@@ -65,11 +65,10 @@ enum str_buf_type {
 #ifdef FT_HAVE_UTF8
     UTF8_BUF,
 #endif /* FT_HAVE_WCHAR */
-    TYPE_END
 };
 
 
-typedef const char ** str_arr;
+typedef const char **str_arr;
 
 
 #define FT_STR_2_CAT_(arg1, arg2) \

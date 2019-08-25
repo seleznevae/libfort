@@ -227,10 +227,10 @@ fort_status_t row_set_cell_span(fort_row_t *row, size_t cell_column, size_t hor_
 
 FT_INTERNAL
 int print_row_separator_impl(conv_context_t *cntx,
-                        const size_t *col_width_arr, size_t cols,
-                        const fort_row_t *upper_row, const fort_row_t *lower_row,
-                        enum HorSeparatorPos separatorPos,
-                        const separator_t *sep)
+                             const size_t *col_width_arr, size_t cols,
+                             const fort_row_t *upper_row, const fort_row_t *lower_row,
+                             enum HorSeparatorPos separatorPos,
+                             const separator_t *sep)
 {
     assert(cntx);
 

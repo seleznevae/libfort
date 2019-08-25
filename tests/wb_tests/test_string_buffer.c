@@ -612,7 +612,7 @@ static void test_print_n_strings_(const char *str, size_t n)
         cntx.raw_avail = 200;
         cntx.b_type = CHAR_BUF;
         assert_true(print_n_strings(&cntx, n, str) == sz);
-        assert_true(cntx.buf - cntx.buf_origin == sz);
+        assert_true(cntx.buf - cntx.buf_origin == (ptrdiff_t)sz);
         destroy_string_buffer(buffer);
     }
 
@@ -624,7 +624,7 @@ static void test_print_n_strings_(const char *str, size_t n)
         cntx.raw_avail = 200;
         cntx.b_type = W_CHAR_BUF;
         assert_true(print_n_strings(&cntx, n, str) == /*sizeof(wchar_t) **/ sz);
-        assert_true(cntx.buf - cntx.buf_origin == sizeof(wchar_t) * sz);
+        assert_true(cntx.buf - cntx.buf_origin == (ptrdiff_t)sizeof(wchar_t) * sz);
         destroy_string_buffer(buffer);
     }
 
@@ -637,7 +637,7 @@ static void test_print_n_strings_(const char *str, size_t n)
         cntx.raw_avail = 200;
         cntx.b_type = UTF8_BUF;
         assert_true(print_n_strings(&cntx, n, str) ==  sz);
-        assert_true(cntx.buf - cntx.buf_origin == sz);
+        assert_true(cntx.buf - cntx.buf_origin == (ptrdiff_t)sz);
         destroy_string_buffer(buffer);
     }
 }

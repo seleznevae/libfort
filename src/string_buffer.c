@@ -488,7 +488,7 @@ size_t buffer_text_visible_width(const string_buffer_t *buffer)
 
 
 static void
-buffer_substring(const string_buffer_t *buffer, size_t buffer_row, void **begin, void **end,  ptrdiff_t *str_it_width)
+buffer_substring(const string_buffer_t *buffer, size_t buffer_row, const void **begin, const void **end,  ptrdiff_t *str_it_width)
 {
     switch (buffer->type) {
         case CHAR_BUF:
@@ -583,7 +583,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, conv_context_t *cn
     ptrdiff_t str_it_width = 0;
     const void *beg = NULL;
     const void *end = NULL;
-    buffer_substring(buffer, buffer_row, (void **)&beg, (void **)&end, &str_it_width);
+    buffer_substring(buffer, buffer_row, &beg, &end, &str_it_width);
     if (beg == NULL || end == NULL)
         return -1;
     if (str_it_width < 0 || content_width < (size_t)str_it_width)
@@ -607,12 +607,21 @@ FT_INTERNAL
 size_t string_buffer_width_capacity(const string_buffer_t *buffer)
 {
     assert(buffer);
-    if (buffer->type == CHAR_BUF)
-        return buffer->data_sz;
-    else if (buffer->type == W_CHAR_BUF)
-        return buffer->data_sz / sizeof(wchar_t);
-    else if (buffer->type == UTF8_BUF)
-        return buffer->data_sz / 4;
+    switch (buffer->type) {
+        case CHAR_BUF:
+            return buffer->data_sz;
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return buffer->data_sz / sizeof(wchar_t);
+#endif
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return buffer->data_sz / 4;
+#endif
+        default:
+            assert(0);
+            return 0;
+    }
 }
 
 

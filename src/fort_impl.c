@@ -598,7 +598,7 @@ int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_
 #endif
 
 static
-const char * empty_str_arr[] = {"", (const char *)L"", ""};
+const char *empty_str_arr[] = {"", (const char *)L"", ""};
 
 static
 const char *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
