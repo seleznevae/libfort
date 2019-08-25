@@ -136,7 +136,10 @@ enum request_geom_type {
 
 struct conv_context {
     char *buf_origin;
-    char *buf;
+    union {
+        char *buf;
+        wchar_t *wbuf;
+    };
     size_t raw_avail;
     struct fort_context *cntx;
     enum str_buf_type b_type;

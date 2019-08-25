@@ -173,7 +173,10 @@ enum request_geom_type {
 
 struct conv_context {
     char *buf_origin;
-    char *buf;
+    union {
+        char *buf;
+        wchar_t *wbuf;
+    };
     size_t raw_avail;
     struct fort_context *cntx;
     enum str_buf_type b_type;
@@ -1723,6 +1726,9 @@ FT_INTERNAL
 void *buffer_get_data(string_buffer_t *buffer);
 
 FT_INTERNAL
+int buffer_check_align(string_buffer_t *buffer);
+
+FT_INTERNAL
 int buffer_printf(string_buffer_t *buffer, size_t buffer_row, conv_context_t *cntx, size_t cod_width,
                   const char *content_style_tag, const char *reset_content_style_tag);
 
@@ -3012,7 +3018,7 @@ static
 const char *empty_str_arr[] = {"", (const char *)L"", ""};
 
 static
-const char *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
+const void *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
 {
     assert(table);
 
@@ -3038,6 +3044,8 @@ const char *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
             return NULL;
         }
     }
+    if (!buffer_check_align(table->conv_buffer))
+        return NULL;
     char *buffer = (char *)buffer_get_data(table->conv_buffer);
 
     size_t cols = 0;
@@ -3657,7 +3665,7 @@ int print_n_strings(conv_context_t *cntx, size_t n, const char *str)
             return snprint_n_strings(cntx, n, str);
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
-            cod_w = wsnprint_n_string((wchar_t *)cntx->buf, cntx->raw_avail, n, str);
+            cod_w = wsnprint_n_string(cntx->wbuf, cntx->raw_avail, n, str);
             if (cod_w < 0)
                 return cod_w;
             raw_written = sizeof(wchar_t) * cod_w;
@@ -3709,7 +3717,10 @@ int ft_nwprint(conv_context_t *cntx, const wchar_t *str, size_t strlen)
     memcpy(cntx->buf, str, raw_len);
     cntx->buf += raw_len;
     cntx->raw_avail -= raw_len;
-    *(wchar_t *)cntx->buf = L'\0'; /* Do we need this ? */
+
+    /* Do we need this ? */
+    wchar_t end_of_string = L'\0';
+    memcpy(cntx->buf, &end_of_string, sizeof(wchar_t));
     return strlen;
 }
 #endif /* FT_HAVE_WCHAR */
@@ -6362,6 +6373,30 @@ void *buffer_get_data(string_buffer_t *buffer)
 {
     assert(buffer);
     return buffer->str.data;
+}
+
+FT_INTERNAL
+int buffer_check_align(string_buffer_t *buffer)
+{
+    assert(buffer);
+    assert(buffer->str.data);
+    void *p = buffer->str.data;
+
+    switch (buffer->type) {
+        case CHAR_BUF:
+            return 1;
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return (((unsigned long)p) & (sizeof(wchar_t) - 1)) == 0;
+#endif
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return 1;
+#endif
+        default:
+            assert(0);
+            return 0;
+    }
 }
 
 /********************************************************

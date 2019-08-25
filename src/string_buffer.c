@@ -631,3 +631,27 @@ void *buffer_get_data(string_buffer_t *buffer)
     assert(buffer);
     return buffer->str.data;
 }
+
+FT_INTERNAL
+int buffer_check_align(string_buffer_t *buffer)
+{
+    assert(buffer);
+    assert(buffer->str.data);
+    void *p = buffer->str.data;
+
+    switch (buffer->type) {
+        case CHAR_BUF:
+            return 1;
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return (((unsigned long)p) & (sizeof(wchar_t) - 1)) == 0;
+#endif
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return 1;
+#endif
+        default:
+            assert(0);
+            return 0;
+    }
+}

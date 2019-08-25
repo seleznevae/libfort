@@ -67,6 +67,9 @@ FT_INTERNAL
 void *buffer_get_data(string_buffer_t *buffer);
 
 FT_INTERNAL
+int buffer_check_align(string_buffer_t *buffer);
+
+FT_INTERNAL
 int buffer_printf(string_buffer_t *buffer, size_t buffer_row, conv_context_t *cntx, size_t cod_width,
                   const char *content_style_tag, const char *reset_content_style_tag);
 

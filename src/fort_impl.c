@@ -601,7 +601,7 @@ static
 const char *empty_str_arr[] = {"", (const char *)L"", ""};
 
 static
-const char *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
+const void *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
 {
     assert(table);
 
@@ -627,6 +627,8 @@ const char *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
             return NULL;
         }
     }
+    if (!buffer_check_align(table->conv_buffer))
+        return NULL;
     char *buffer = (char *)buffer_get_data(table->conv_buffer);
 
     size_t cols = 0;

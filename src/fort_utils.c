@@ -255,7 +255,7 @@ int print_n_strings(conv_context_t *cntx, size_t n, const char *str)
             return snprint_n_strings(cntx, n, str);
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
-            cod_w = wsnprint_n_string((wchar_t *)cntx->buf, cntx->raw_avail, n, str);
+            cod_w = wsnprint_n_string(cntx->wbuf, cntx->raw_avail, n, str);
             if (cod_w < 0)
                 return cod_w;
             raw_written = sizeof(wchar_t) * cod_w;
@@ -307,7 +307,10 @@ int ft_nwprint(conv_context_t *cntx, const wchar_t *str, size_t strlen)
     memcpy(cntx->buf, str, raw_len);
     cntx->buf += raw_len;
     cntx->raw_avail -= raw_len;
-    *(wchar_t *)cntx->buf = L'\0'; /* Do we need this ? */
+
+    /* Do we need this ? */
+    wchar_t end_of_string = L'\0';
+    memcpy(cntx->buf, &end_of_string, sizeof(wchar_t));
     return strlen;
 }
 #endif /* FT_HAVE_WCHAR */
