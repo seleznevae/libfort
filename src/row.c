@@ -615,11 +615,30 @@ fort_row_t *create_row_from_buffer(const string_buffer_t *buffer)
     }
 }
 
+static int
+vsnprintf_buffer(string_buffer_t *buffer, const struct ft_gen_string *fmt,
+                 va_list *va)
+{
+    switch (buffer->type) {
+        case CHAR_BUF:
+            return vsnprintf(buffer->str.cstr, string_buffer_width_capacity(buffer), fmt->u.cstr, *va);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return vswprintf(buffer->str.wstr, string_buffer_width_capacity(buffer), fmt->u.wstr, *va);
+#endif
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return vsnprintf(buffer->str.cstr, string_buffer_width_capacity(buffer), fmt->u.cstr, *va);
+#endif
+        default:
+            assert(0);
+            return 0;
+    }
+}
+
 FT_INTERNAL
 fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 {
-#define VSNPRINTF vsnprintf
-#define STR_FILED cstr
 #define STR_BUF_TYPE CHAR_BUF
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
@@ -628,7 +647,7 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 
     /* tmp: remove after refactoring */
     struct ft_gen_string fmt_str;
-    fmt_str.type = CHAR_BUF;
+    fmt_str.type = STR_BUF_TYPE;
     fmt_str.u.cstr = fmt;
 
     size_t cols_origin = number_of_columns_in_format_string2(&fmt_str);
@@ -637,7 +656,7 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
     while (1) {
         va_list va;
         va_copy(va, *va_args);
-        int virtual_sz = VSNPRINTF(buffer->str.STR_FILED, string_buffer_width_capacity(buffer), fmt, va);
+        int virtual_sz = vsnprintf_buffer(buffer, &fmt_str, &va);
         va_end(va);
         /* If error encountered */
         if (virtual_sz < 0)
@@ -693,8 +712,6 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 clear:
     destroy_string_buffer(buffer);
     return NULL;
-#undef VSNPRINTF
-#undef STR_FILED
 #undef STR_BUF_TYPE
 }
 
@@ -702,8 +719,6 @@ clear:
 FT_INTERNAL
 fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
 {
-#define VSNPRINTF vswprintf
-#define STR_FILED wstr
 #define STR_BUF_TYPE W_CHAR_BUF
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
@@ -712,7 +727,7 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
 
     /* tmp: remove after refactoring */
     struct ft_gen_string fmt_str;
-    fmt_str.type = W_CHAR_BUF;
+    fmt_str.type = STR_BUF_TYPE;
     fmt_str.u.wstr = fmt;
 
     size_t cols_origin = number_of_columns_in_format_string2(&fmt_str);
@@ -721,7 +736,7 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
     while (1) {
         va_list va;
         va_copy(va, *va_args);
-        int virtual_sz = VSNPRINTF(buffer->str.STR_FILED, string_buffer_width_capacity(buffer), fmt, va);
+        int virtual_sz = vsnprintf_buffer(buffer, &fmt_str, &va);
         va_end(va);
         /* If error encountered */
         if (virtual_sz < 0)
@@ -778,8 +793,6 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
 clear:
     destroy_string_buffer(buffer);
     return NULL;
-#undef VSNPRINTF
-#undef STR_FILED
 #undef STR_BUF_TYPE
 }
 #endif
