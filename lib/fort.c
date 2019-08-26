@@ -5576,11 +5576,30 @@ clear:
 #endif
 
 FT_INTERNAL
+fort_row_t *create_row_from_buffer(const string_buffer_t *buffer)
+{
+    switch (buffer->type) {
+        case CHAR_BUF:
+            return create_row_from_string(buffer->str.cstr);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return create_row_from_wstring(buffer->str.wstr);
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return create_row_from_string(buffer->str.u8str);
+#endif /* FT_HAVE_UTF8 */
+        default:
+            assert(0);
+            return NULL;
+    }
+}
+
+FT_INTERNAL
 fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 {
 #define VSNPRINTF vsnprintf
 #define STR_FILED cstr
-#define CREATE_ROW_FROM_STRING create_row_from_string
 #define STR_BUF_TYPE CHAR_BUF
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
@@ -5615,7 +5634,7 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 
     cols = number_of_columns_in_format_buffer(buffer);
     if (cols == cols_origin) {
-        fort_row_t *row = CREATE_ROW_FROM_STRING(buffer->str.STR_FILED);
+        fort_row_t *row = create_row_from_buffer(buffer);
         if (row == NULL) {
             goto clear;
         }
@@ -5656,7 +5675,6 @@ clear:
     return NULL;
 #undef VSNPRINTF
 #undef STR_FILED
-#undef CREATE_ROW_FROM_STRING
 #undef STR_BUF_TYPE
 }
 
@@ -5666,8 +5684,6 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
 {
 #define VSNPRINTF vswprintf
 #define STR_FILED wstr
-#define CREATE_ROW_FROM_STRING create_row_from_wstring
-#define NUMBER_OF_COLUMNS_IN_FORMAT_STRING number_of_columns_in_format_wstring
 #define STR_BUF_TYPE W_CHAR_BUF
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
@@ -5703,7 +5719,7 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
     cols = number_of_columns_in_format_buffer(buffer);
     if (cols == cols_origin) {
 
-        fort_row_t *row = CREATE_ROW_FROM_STRING(buffer->str.STR_FILED);
+        fort_row_t *row = create_row_from_buffer(buffer);
         if (row == NULL) {
             goto clear;
         }
@@ -5744,8 +5760,6 @@ clear:
     return NULL;
 #undef VSNPRINTF
 #undef STR_FILED
-#undef CREATE_ROW_FROM_STRING
-#undef NUMBER_OF_COLUMNS_IN_FORMAT_STRING
 #undef STR_BUF_TYPE
 }
 #endif
