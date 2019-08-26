@@ -637,26 +637,19 @@ vsnprintf_buffer(string_buffer_t *buffer, const struct ft_gen_string *fmt,
 }
 
 FT_INTERNAL
-fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
+fort_row_t *create_row_from_fmt_string(const struct ft_gen_string  *fmt, va_list *va_args)
 {
-#define STR_BUF_TYPE CHAR_BUF
-
-    string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
+    string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, fmt->type);
     if (buffer == NULL)
         return NULL;
 
-    /* tmp: remove after refactoring */
-    struct ft_gen_string fmt_str;
-    fmt_str.type = STR_BUF_TYPE;
-    fmt_str.u.cstr = fmt;
-
-    size_t cols_origin = number_of_columns_in_format_string2(&fmt_str);
+    size_t cols_origin = number_of_columns_in_format_string2(fmt);
     size_t cols = 0;
 
     while (1) {
         va_list va;
         va_copy(va, *va_args);
-        int virtual_sz = vsnprintf_buffer(buffer, &fmt_str, &va);
+        int virtual_sz = vsnprintf_buffer(buffer, fmt, &va);
         va_end(va);
         /* If error encountered */
         if (virtual_sz < 0)
@@ -712,90 +705,7 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 clear:
     destroy_string_buffer(buffer);
     return NULL;
-#undef STR_BUF_TYPE
 }
-
-#ifdef FT_HAVE_WCHAR
-FT_INTERNAL
-fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
-{
-#define STR_BUF_TYPE W_CHAR_BUF
-
-    string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
-    if (buffer == NULL)
-        return NULL;
-
-    /* tmp: remove after refactoring */
-    struct ft_gen_string fmt_str;
-    fmt_str.type = STR_BUF_TYPE;
-    fmt_str.u.wstr = fmt;
-
-    size_t cols_origin = number_of_columns_in_format_string2(&fmt_str);
-    size_t cols = 0;
-
-    while (1) {
-        va_list va;
-        va_copy(va, *va_args);
-        int virtual_sz = vsnprintf_buffer(buffer, &fmt_str, &va);
-        va_end(va);
-        /* If error encountered */
-        if (virtual_sz < 0)
-            goto clear;
-
-        /* Successful write */
-        if ((size_t)virtual_sz < string_buffer_width_capacity(buffer))
-            break;
-
-        /* Otherwise buffer was too small, so incr. buffer size ant try again. */
-        if (!FT_IS_SUCCESS(realloc_string_buffer_without_copy(buffer)))
-            goto clear;
-    }
-
-    cols = number_of_columns_in_format_buffer(buffer);
-    if (cols == cols_origin) {
-
-        fort_row_t *row = create_row_from_buffer(buffer);
-        if (row == NULL) {
-            goto clear;
-        }
-
-        destroy_string_buffer(buffer);
-        return row;
-    }
-
-    if (cols_origin == 1) {
-        fort_row_t *row = create_row();
-        if (row == NULL) {
-            goto clear;
-        }
-
-        fort_cell_t *cell = get_cell_and_create_if_not_exists(row, 0);
-        if (cell == NULL) {
-            destroy_row(row);
-            goto clear;
-        }
-
-        fort_status_t result = fill_cell_from_buffer(cell, buffer);
-        if (FT_IS_ERROR(result)) {
-            destroy_row(row);
-            goto clear;
-        }
-
-        destroy_string_buffer(buffer);
-        return row;
-    }
-
-    /*
-     * todo: add processing of cols != cols_origin in a general way
-     * (when cols_origin != 1).
-     */
-
-clear:
-    destroy_string_buffer(buffer);
-    return NULL;
-#undef STR_BUF_TYPE
-}
-#endif
 
 
 FT_INTERNAL

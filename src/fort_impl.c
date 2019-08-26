@@ -165,17 +165,15 @@ void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col)
     table->cur_col = col;
 }
 
-FT_PRINTF_ATTRIBUTE_FORMAT(3, 0)
-static int ft_row_printf_impl(ft_table_t *table, size_t row, const char *fmt, va_list *va)
+static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct ft_gen_string *fmt, va_list *va)
 {
-#define CREATE_ROW_FROM_FMT_STRING create_row_from_fmt_string
     size_t i = 0;
     size_t new_cols = 0;
 
     if (table == NULL)
         return -1;
 
-    fort_row_t *new_row = CREATE_ROW_FROM_FMT_STRING(fmt, va);
+    fort_row_t *new_row = create_row_from_fmt_string(fmt, va);
 
     if (new_row == NULL) {
         return -1;
@@ -209,56 +207,7 @@ static int ft_row_printf_impl(ft_table_t *table, size_t row, const char *fmt, va
 clear:
     destroy_row(new_row);
     return -1;
-#undef CREATE_ROW_FROM_FMT_STRING
 }
-
-#ifdef FT_HAVE_WCHAR
-static int ft_row_wprintf_impl(ft_table_t *table, size_t row, const wchar_t *fmt, va_list *va)
-{
-#define CREATE_ROW_FROM_FMT_STRING create_row_from_fmt_wstring
-    size_t i = 0;
-    size_t new_cols = 0;
-
-    if (table == NULL)
-        return -1;
-
-    fort_row_t *new_row = CREATE_ROW_FROM_FMT_STRING(fmt, va);
-
-    if (new_row == NULL) {
-        return -1;
-    }
-
-    fort_row_t **cur_row_p = NULL;
-    size_t sz = vector_size(table->rows);
-    if (row >= sz) {
-        size_t push_n = row - sz + 1;
-        for (i = 0; i < push_n; ++i) {
-            fort_row_t *padding_row = create_row();
-            if (padding_row == NULL)
-                goto clear;
-
-            if (FT_IS_ERROR(vector_push(table->rows, &padding_row))) {
-                destroy_row(padding_row);
-                goto clear;
-            }
-        }
-    }
-    /* todo: clearing pushed items in case of error ?? */
-
-    new_cols = columns_in_row(new_row);
-    cur_row_p = (fort_row_t **)vector_at(table->rows, row);
-    swap_row(*cur_row_p, new_row, table->cur_col);
-
-    table->cur_col += new_cols;
-    destroy_row(new_row);
-    return (int)new_cols;
-
-clear:
-    destroy_row(new_row);
-    return -1;
-#undef CREATE_ROW_FROM_FMT_STRING
-}
-#endif
 
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
 #define FT_PRINTF ft_printf
@@ -275,7 +224,11 @@ int FT_PRINTF(ft_table_t *table, const char *fmt, ...)
     assert(table);
     va_list va;
     va_start(va, fmt);
-    int result = ft_row_printf_impl(table, table->cur_row, fmt, &va);
+
+    struct ft_gen_string fmt_str;
+    fmt_str.type = CHAR_BUF;
+    fmt_str.u.cstr = fmt;
+    int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
     va_end(va);
     return result;
 }
@@ -285,7 +238,11 @@ int FT_PRINTF_LN(ft_table_t *table, const char *fmt, ...)
     assert(table);
     va_list va;
     va_start(va, fmt);
-    int result = ft_row_printf_impl(table, table->cur_row, fmt, &va);
+
+    struct ft_gen_string fmt_str;
+    fmt_str.type = CHAR_BUF;
+    fmt_str.u.cstr = fmt;
+    int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
     if (result >= 0) {
         ft_ln(table);
     }
@@ -304,7 +261,11 @@ int ft_wprintf(ft_table_t *table, const wchar_t *fmt, ...)
     assert(table);
     va_list va;
     va_start(va, fmt);
-    int result = ft_row_wprintf_impl(table, table->cur_row, fmt, &va);
+
+    struct ft_gen_string fmt_str;
+    fmt_str.type = W_CHAR_BUF;
+    fmt_str.u.wstr = fmt;
+    int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
     va_end(va);
     return result;
 }
@@ -314,7 +275,11 @@ int ft_wprintf_ln(ft_table_t *table, const wchar_t *fmt, ...)
     assert(table);
     va_list va;
     va_start(va, fmt);
-    int result = ft_row_wprintf_impl(table, table->cur_row, fmt, &va);
+
+    struct ft_gen_string fmt_str;
+    fmt_str.type = W_CHAR_BUF;
+    fmt_str.u.wstr = fmt;
+    int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
     if (result >= 0) {
         ft_ln(table);
     }

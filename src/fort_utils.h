@@ -69,14 +69,14 @@ enum str_buf_type {
 
 struct ft_gen_string {
     union {
-        char *cstr;
+        const char *cstr;
 #ifdef FT_HAVE_WCHAR
-        wchar_t *wstr;
+        const wchar_t *wstr;
 #endif
 #ifdef FT_HAVE_UTF8
-        void *u8str;
+        const void *u8str;
 #endif
-        void *data;
+        const void *data;
     } u;
     enum str_buf_type type;
 
