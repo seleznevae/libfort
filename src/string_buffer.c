@@ -226,16 +226,16 @@ void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const 
 FT_INTERNAL
 void utf8_n_substring(const void *str, utf8_int32_t ch_separator, size_t n, const void **begin, const void **end)
 {
-    const char *beg = utf8_n_substring_beg(str, ch_separator, n);
+    const char *beg = (const char *)utf8_n_substring_beg(str, ch_separator, n);
     if (beg == NULL) {
         *begin = NULL;
         *end = NULL;
         return;
     }
 
-    const char *en = utf8chr(beg, ch_separator);
+    const char *en = (const char *)utf8chr(beg, ch_separator);
     if (en == NULL) {
-        en = (const char *)str + strlen(str);
+        en = (const char *)str + strlen((const char *)str);
     }
 
     *begin = beg;
@@ -421,7 +421,7 @@ FT_INTERNAL
 size_t ut8_width(const void *beg, const void *end)
 {
     size_t sz = (size_t)((const char *)end - (const char *)beg);
-    char *tmp = F_MALLOC(sizeof(char) * (sz + 1));
+    char *tmp = (char *)F_MALLOC(sizeof(char) * (sz + 1));
     // @todo: add check to tmp
     assert(tmp);
 

@@ -179,9 +179,9 @@ FT_INTERNAL
 size_t number_of_columns_in_format_u8string(const void *fmt)
 {
     size_t separator_counter = 0;
-    const char *pos = fmt;
+    const char *pos = (const char *)fmt;
     while (1) {
-        pos = utf8chr(pos, g_col_separator);
+        pos = (const char *)utf8chr(pos, g_col_separator);
         if (pos == NULL)
             break;
 
@@ -341,8 +341,8 @@ int ft_nwprint(conv_context_t *cntx, const wchar_t *str, size_t strlen)
 FT_INTERNAL
 int ft_nu8print(conv_context_t *cntx, const void *beg, const void *end)
 {
-    const char *bc = beg;
-    const char *ec = end;
+    const char *bc = (const char *)beg;
+    const char *ec = (const char *)end;
     size_t raw_len = ec - bc;
     if (cntx->raw_avail + 1 < raw_len)
         return -1;

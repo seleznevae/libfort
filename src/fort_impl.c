@@ -697,7 +697,7 @@ clear:
 
 const char *ft_to_string(const ft_table_t *table)
 {
-    return ft_to_string_impl(table, CHAR_BUF);
+    return (const char *)ft_to_string_impl(table, CHAR_BUF);
 }
 
 #ifdef FT_HAVE_WCHAR
