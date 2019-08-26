@@ -67,6 +67,21 @@ enum str_buf_type {
 #endif /* FT_HAVE_WCHAR */
 };
 
+struct ft_gen_string {
+    union {
+        char *cstr;
+#ifdef FT_HAVE_WCHAR
+        wchar_t *wstr;
+#endif
+#ifdef FT_HAVE_UTF8
+        void *u8str;
+#endif
+        void *data;
+    } u;
+    enum str_buf_type type;
+
+};
+
 
 typedef const char **str_arr;
 
@@ -138,7 +153,9 @@ struct conv_context {
     char *buf_origin;
     union {
         char *buf;
+#ifdef FT_HAVE_WCHAR
         wchar_t *wbuf;
+#endif
     } u;
     size_t raw_avail;
     struct fort_context *cntx;
@@ -164,6 +181,9 @@ char *fort_strdup(const char *str);
 
 FT_INTERNAL
 size_t number_of_columns_in_format_string(const char *fmt);
+
+FT_INTERNAL
+size_t number_of_columns_in_format_string2(const struct ft_gen_string *fmt);
 
 #if defined(FT_HAVE_WCHAR)
 FT_INTERNAL

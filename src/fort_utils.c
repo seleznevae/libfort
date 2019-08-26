@@ -193,6 +193,26 @@ size_t number_of_columns_in_format_u8string(const void *fmt)
 #endif
 
 FT_INTERNAL
+size_t number_of_columns_in_format_string2(const struct ft_gen_string *fmt)
+{
+    switch (fmt->type) {
+        case CHAR_BUF:
+            return number_of_columns_in_format_string(fmt->u.cstr);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return number_of_columns_in_format_wstring(fmt->u.wstr);
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return number_of_columns_in_format_u8string(fmt->u.u8str);
+#endif /* FT_HAVE_UTF8 */
+        default:
+            assert(0);
+    }
+    return 0;
+}
+
+FT_INTERNAL
 size_t number_of_columns_in_format_buffer(const string_buffer_t *fmt)
 {
     switch (fmt->type) {

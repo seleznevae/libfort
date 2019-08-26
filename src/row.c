@@ -601,14 +601,18 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 #define VSNPRINTF vsnprintf
 #define STR_FILED cstr
 #define CREATE_ROW_FROM_STRING create_row_from_string
-#define NUMBER_OF_COLUMNS_IN_FORMAT_STRING number_of_columns_in_format_string
 #define STR_BUF_TYPE CHAR_BUF
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
     if (buffer == NULL)
         return NULL;
 
-    size_t cols_origin = NUMBER_OF_COLUMNS_IN_FORMAT_STRING(fmt);
+    /* tmp: remove after refactoring */
+    struct ft_gen_string fmt_str;
+    fmt_str.type = CHAR_BUF;
+    fmt_str.u.cstr = fmt;
+
+    size_t cols_origin = number_of_columns_in_format_string2(&fmt_str);
     size_t cols = 0;
 
     while (1) {
@@ -673,7 +677,6 @@ clear:
 #undef VSNPRINTF
 #undef STR_FILED
 #undef CREATE_ROW_FROM_STRING
-#undef NUMBER_OF_COLUMNS_IN_FORMAT_STRING
 #undef STR_BUF_TYPE
 }
 
@@ -691,7 +694,12 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
     if (buffer == NULL)
         return NULL;
 
-    size_t cols_origin = NUMBER_OF_COLUMNS_IN_FORMAT_STRING(fmt);
+    /* tmp: remove after refactoring */
+    struct ft_gen_string fmt_str;
+    fmt_str.type = W_CHAR_BUF;
+    fmt_str.u.wstr = fmt;
+
+    size_t cols_origin = number_of_columns_in_format_string2(&fmt_str);
     size_t cols = 0;
 
     while (1) {
@@ -712,7 +720,7 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
             goto clear;
     }
 
-    cols = NUMBER_OF_COLUMNS_IN_FORMAT_STRING(buffer->str.STR_FILED);
+    cols = number_of_columns_in_format_buffer(buffer);
     if (cols == cols_origin) {
 
         fort_row_t *row = CREATE_ROW_FROM_STRING(buffer->str.STR_FILED);
