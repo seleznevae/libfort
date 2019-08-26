@@ -252,8 +252,6 @@ int FT_PRINTF_LN(ft_table_t *table, const char *fmt, ...)
 
 #undef FT_PRINTF
 #undef FT_PRINTF_LN
-#undef FT_HDR_PRINTF
-#undef FT_HDR_PRINTF_LN
 
 #ifdef FT_HAVE_WCHAR
 int ft_wprintf(ft_table_t *table, const wchar_t *fmt, ...)
@@ -294,55 +292,63 @@ void ft_set_default_printf_field_separator(char separator)
     g_col_separator = separator;
 }
 
-
-static int ft_write_impl(ft_table_t *table, const char *cell_content)
+static int ft_write_impl_(ft_table_t *table, const struct ft_gen_string *cell_content)
 {
     assert(table);
     string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
     if (str_buffer == NULL)
         return FT_ERROR;
 
-    int status = fill_buffer_from_string(str_buffer, cell_content);
+    int status = FT_SUCCESS;
+    switch (cell_content->type) {
+        case CHAR_BUF:
+            status = fill_buffer_from_string(str_buffer, cell_content->u.cstr);
+            break;
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            status = fill_buffer_from_wstring(str_buffer, cell_content->u.wstr);
+            break;
+#endif
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            status = fill_buffer_from_u8string(str_buffer, cell_content->u.u8str);
+            break;
+#endif
+        default:
+            status = FT_ERROR;
+    }
     if (FT_IS_SUCCESS(status)) {
         table->cur_col++;
     }
     return status;
+}
+
+static int ft_write_impl(ft_table_t *table, const char *cell_content)
+{
+    struct ft_gen_string content;
+    content.type = CHAR_BUF;
+    content.u.cstr = cell_content;
+    return ft_write_impl_(table, &content);
 }
 
 #ifdef FT_HAVE_UTF8
 static int ft_u8write_impl(ft_table_t *table, const void *cell_content)
 {
-    assert(table);
-    string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
-    if (str_buffer == NULL)
-        return FT_ERROR;
-
-    int status = fill_buffer_from_u8string(str_buffer, cell_content);
-    if (FT_IS_SUCCESS(status)) {
-        table->cur_col++;
-    }
-    return status;
+    struct ft_gen_string content;
+    content.type = UTF8_BUF;
+    content.u.u8str = cell_content;
+    return ft_write_impl_(table, &content);
 }
 #endif /* FT_HAVE_UTF8 */
 
-
-
 #ifdef FT_HAVE_WCHAR
-
 static int ft_wwrite_impl(ft_table_t *table, const wchar_t *cell_content)
 {
-    assert(table);
-    string_buffer_t *str_buffer = get_cur_str_buffer_and_create_if_not_exists(table);
-    if (str_buffer == NULL)
-        return FT_ERROR;
-
-    int status = fill_buffer_from_wstring(str_buffer, cell_content);
-    if (FT_IS_SUCCESS(status)) {
-        table->cur_col++;
-    }
-    return status;
+    struct ft_gen_string content;
+    content.type = W_CHAR_BUF;
+    content.u.wstr = cell_content;
+    return ft_write_impl_(table, &content);
 }
-
 #endif
 
 
@@ -892,7 +898,7 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
 
 #ifdef FT_HAVE_UTF8
 
-int ft_nu8write(ft_table_t *table, size_t n, const void *cell_content, ...)
+int ft_u8nwrite(ft_table_t *table, size_t n, const void *cell_content, ...)
 {
     size_t i = 0;
     assert(table);
@@ -917,7 +923,7 @@ int ft_nu8write(ft_table_t *table, size_t n, const void *cell_content, ...)
     return status;
 }
 
-int ft_nu8write_ln(ft_table_t *table, size_t n, const void *cell_content, ...)
+int ft_u8nwrite_ln(ft_table_t *table, size_t n, const void *cell_content, ...)
 {
     size_t i = 0;
     assert(table);
@@ -940,6 +946,39 @@ int ft_nu8write_ln(ft_table_t *table, size_t n, const void *cell_content, ...)
 
     ft_ln(table);
     return status;
+}
+
+FT_PRINTF_ATTRIBUTE_FORMAT(2, 3)
+int ft_u8printf(ft_table_t *table, const char *fmt, ...)
+{
+    assert(table);
+    va_list va;
+    va_start(va, fmt);
+
+    struct ft_gen_string fmt_str;
+    fmt_str.type = UTF8_BUF;
+    fmt_str.u.cstr = fmt;
+    int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
+    va_end(va);
+    return result;
+}
+
+FT_PRINTF_ATTRIBUTE_FORMAT(2, 3)
+int ft_u8printf_ln(ft_table_t *table, const char *fmt, ...)
+{
+    assert(table);
+    va_list va;
+    va_start(va, fmt);
+
+    struct ft_gen_string fmt_str;
+    fmt_str.type = UTF8_BUF;
+    fmt_str.u.cstr = fmt;
+    int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
+    if (result >= 0) {
+        ft_ln(table);
+    }
+    va_end(va);
+    return result;
 }
 
 const void *ft_to_u8string(const ft_table_t *table)

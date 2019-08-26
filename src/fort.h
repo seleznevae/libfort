@@ -903,11 +903,15 @@ const wchar_t *ft_to_wstring(const ft_table_t *table);
 
 #ifdef FT_HAVE_UTF8
 #define ft_u8write(table, ...)\
-    (ft_nu8write(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
+    (ft_u8nwrite(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
 #define ft_u8write_ln(table, ...)\
-    (ft_nu8write_ln(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
-int ft_nu8write(ft_table_t *table, size_t n, const void *cell_content, ...);
-int ft_nu8write_ln(ft_table_t *table, size_t n, const void *cell_content, ...);
+    (ft_u8nwrite_ln(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
+int ft_u8nwrite(ft_table_t *table, size_t n, const void *cell_content, ...);
+int ft_u8nwrite_ln(ft_table_t *table, size_t n, const void *cell_content, ...);
+
+int ft_u8printf(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+int ft_u8printf_ln(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+
 const void *ft_to_u8string(const ft_table_t *table);
 
 #endif /* FT_HAVE_UTF8 */
