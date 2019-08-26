@@ -211,6 +211,9 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
 #endif
 
 FT_INTERNAL
+size_t number_of_columns_in_format_buffer(const string_buffer_t *fmt);
+
+FT_INTERNAL
 int print_n_strings(conv_context_t *cntx, size_t n, const char *str);
 
 
@@ -2000,6 +2003,9 @@ fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str);
 #endif
 
 FT_INTERNAL
+fort_status_t fill_cell_from_buffer(fort_cell_t *cell, const struct string_buffer *buf);
+
+FT_INTERNAL
 string_buffer_t *cell_get_string_buffer(fort_cell_t *cell);
 
 #endif /* CELL_H */
@@ -2394,8 +2400,17 @@ fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str)
 
     return fill_buffer_from_wstring(cell->str_buffer, str);
 }
-
 #endif
+
+#ifdef FT_HAVE_UTF8
+static
+fort_status_t fill_cell_from_u8string(fort_cell_t *cell, const void *str)
+{
+    assert(str);
+    assert(cell);
+    return fill_buffer_from_u8string(cell->str_buffer, str);
+}
+#endif /* FT_HAVE_UTF8 */
 
 FT_INTERNAL
 string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
@@ -2405,6 +2420,28 @@ string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
     return cell->str_buffer;
 }
 
+FT_INTERNAL
+fort_status_t fill_cell_from_buffer(fort_cell_t *cell, const struct string_buffer *buffer)
+{
+    assert(cell);
+    assert(buffer);
+    switch (buffer->type) {
+        case CHAR_BUF:
+            return fill_cell_from_string(cell, buffer->str.cstr);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return fill_cell_from_wstring(cell, buffer->str.wstr);
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return fill_cell_from_u8string(cell, buffer->str.u8str);
+#endif /* FT_HAVE_UTF8 */
+        default:
+            assert(0);
+            return FT_ERROR;
+    }
+
+}
 
 /********************************************************
    End of file "cell.c"
@@ -3416,6 +3453,7 @@ const void *ft_to_u8string(const ft_table_t *table)
 #if defined(FT_HAVE_UTF8)
 /* #include "utf8.h" */ /* Commented by amalgamation script */
 #endif
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
 
 
 char g_col_separator = FORT_DEFAULT_COL_SEPARATOR;
@@ -3583,7 +3621,7 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 }
 #endif
 
-/*
+
 #if defined(FT_HAVE_UTF8)
 FT_INTERNAL
 size_t number_of_columns_in_format_u8string(const void *fmt)
@@ -3601,7 +3639,26 @@ size_t number_of_columns_in_format_u8string(const void *fmt)
     return separator_counter + 1;
 }
 #endif
-*/
+
+FT_INTERNAL
+size_t number_of_columns_in_format_buffer(const string_buffer_t *fmt)
+{
+    switch (fmt->type) {
+        case CHAR_BUF:
+            return number_of_columns_in_format_string(fmt->str.cstr);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return number_of_columns_in_format_wstring(fmt->str.wstr);
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return number_of_columns_in_format_u8string(fmt->str.u8str);
+#endif /* FT_HAVE_UTF8 */
+        default:
+            assert(0);
+    }
+    return 0;
+}
 
 static
 int snprint_n_strings_impl(char *buf, size_t length, size_t n, const char *str)
@@ -5485,7 +5542,6 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
 #define STR_FILED cstr
 #define CREATE_ROW_FROM_STRING create_row_from_string
 #define NUMBER_OF_COLUMNS_IN_FORMAT_STRING number_of_columns_in_format_string
-#define FILL_CELL_FROM_STRING fill_cell_from_string
 #define STR_BUF_TYPE CHAR_BUF
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
@@ -5513,9 +5569,8 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
             goto clear;
     }
 
-    cols = NUMBER_OF_COLUMNS_IN_FORMAT_STRING(buffer->str.STR_FILED);
+    cols = number_of_columns_in_format_buffer(buffer);
     if (cols == cols_origin) {
-
         fort_row_t *row = CREATE_ROW_FROM_STRING(buffer->str.STR_FILED);
         if (row == NULL) {
             goto clear;
@@ -5537,7 +5592,7 @@ fort_row_t *create_row_from_fmt_string(const char  *fmt, va_list *va_args)
             goto clear;
         }
 
-        fort_status_t result = FILL_CELL_FROM_STRING(cell, buffer->str.STR_FILED);
+        fort_status_t result = fill_cell_from_buffer(cell, buffer);
         if (FT_IS_ERROR(result)) {
             destroy_row(row);
             goto clear;
@@ -5559,7 +5614,6 @@ clear:
 #undef STR_FILED
 #undef CREATE_ROW_FROM_STRING
 #undef NUMBER_OF_COLUMNS_IN_FORMAT_STRING
-#undef FILL_CELL_FROM_STRING
 #undef STR_BUF_TYPE
 }
 
@@ -5571,7 +5625,6 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
 #define STR_FILED wstr
 #define CREATE_ROW_FROM_STRING create_row_from_wstring
 #define NUMBER_OF_COLUMNS_IN_FORMAT_STRING number_of_columns_in_format_wstring
-#define FILL_CELL_FROM_STRING fill_cell_from_wstring
 #define STR_BUF_TYPE W_CHAR_BUF
 
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, STR_BUF_TYPE);
@@ -5623,7 +5676,7 @@ fort_row_t *create_row_from_fmt_wstring(const wchar_t  *fmt, va_list *va_args)
             goto clear;
         }
 
-        fort_status_t result = FILL_CELL_FROM_STRING(cell, buffer->str.STR_FILED);
+        fort_status_t result = fill_cell_from_buffer(cell, buffer);
         if (FT_IS_ERROR(result)) {
             destroy_row(row);
             goto clear;
@@ -5645,7 +5698,6 @@ clear:
 #undef STR_FILED
 #undef CREATE_ROW_FROM_STRING
 #undef NUMBER_OF_COLUMNS_IN_FORMAT_STRING
-#undef FILL_CELL_FROM_STRING
 #undef STR_BUF_TYPE
 }
 #endif

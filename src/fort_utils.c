@@ -5,6 +5,7 @@
 #if defined(FT_HAVE_UTF8)
 #include "utf8.h"
 #endif
+#include "string_buffer.h"
 
 
 char g_col_separator = FORT_DEFAULT_COL_SEPARATOR;
@@ -172,7 +173,7 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 }
 #endif
 
-/*
+
 #if defined(FT_HAVE_UTF8)
 FT_INTERNAL
 size_t number_of_columns_in_format_u8string(const void *fmt)
@@ -190,7 +191,26 @@ size_t number_of_columns_in_format_u8string(const void *fmt)
     return separator_counter + 1;
 }
 #endif
-*/
+
+FT_INTERNAL
+size_t number_of_columns_in_format_buffer(const string_buffer_t *fmt)
+{
+    switch (fmt->type) {
+        case CHAR_BUF:
+            return number_of_columns_in_format_string(fmt->str.cstr);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return number_of_columns_in_format_wstring(fmt->str.wstr);
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return number_of_columns_in_format_u8string(fmt->str.u8str);
+#endif /* FT_HAVE_UTF8 */
+        default:
+            assert(0);
+    }
+    return 0;
+}
 
 static
 int snprint_n_strings_impl(char *buf, size_t length, size_t n, const char *str)

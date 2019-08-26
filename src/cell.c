@@ -232,8 +232,17 @@ fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str)
 
     return fill_buffer_from_wstring(cell->str_buffer, str);
 }
-
 #endif
+
+#ifdef FT_HAVE_UTF8
+static
+fort_status_t fill_cell_from_u8string(fort_cell_t *cell, const void *str)
+{
+    assert(str);
+    assert(cell);
+    return fill_buffer_from_u8string(cell->str_buffer, str);
+}
+#endif /* FT_HAVE_UTF8 */
 
 FT_INTERNAL
 string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
@@ -243,3 +252,25 @@ string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
     return cell->str_buffer;
 }
 
+FT_INTERNAL
+fort_status_t fill_cell_from_buffer(fort_cell_t *cell, const struct string_buffer *buffer)
+{
+    assert(cell);
+    assert(buffer);
+    switch (buffer->type) {
+        case CHAR_BUF:
+            return fill_cell_from_string(cell, buffer->str.cstr);
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            return fill_cell_from_wstring(cell, buffer->str.wstr);
+#endif /* FT_HAVE_WCHAR */
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            return fill_cell_from_u8string(cell, buffer->str.u8str);
+#endif /* FT_HAVE_UTF8 */
+        default:
+            assert(0);
+            return FT_ERROR;
+    }
+
+}

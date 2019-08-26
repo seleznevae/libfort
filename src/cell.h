@@ -36,6 +36,9 @@ fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str);
 #endif
 
 FT_INTERNAL
+fort_status_t fill_cell_from_buffer(fort_cell_t *cell, const struct string_buffer *buf);
+
+FT_INTERNAL
 string_buffer_t *cell_get_string_buffer(fort_cell_t *cell);
 
 #endif /* CELL_H */

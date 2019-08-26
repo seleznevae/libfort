@@ -174,6 +174,9 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt);
 #endif
 
 FT_INTERNAL
+size_t number_of_columns_in_format_buffer(const string_buffer_t *fmt);
+
+FT_INTERNAL
 int print_n_strings(conv_context_t *cntx, size_t n, const char *str);
 
 
