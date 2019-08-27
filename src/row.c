@@ -78,19 +78,19 @@ size_t columns_in_row(const fort_row_t *row)
 
 
 static
-fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnNull policy)
+fort_cell_t *get_cell_impl(fort_row_t *row, size_t col, enum get_policy policy)
 {
     if (row == NULL || row->cells == NULL) {
         return NULL;
     }
 
     switch (policy) {
-        case DoNotCreate:
+        case DONT_CREATE_ON_NULL:
             if (col < columns_in_row(row)) {
                 return *(fort_cell_t **)vector_at(row->cells, col);
             }
             return NULL;
-        case Create:
+        case CREATE_ON_NULL:
             while (col >= columns_in_row(row)) {
                 fort_cell_t *new_cell = create_cell();
                 if (new_cell == NULL)
@@ -111,7 +111,7 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
 FT_INTERNAL
 fort_cell_t *get_cell(fort_row_t *row, size_t col)
 {
-    return get_cell_implementation(row, col, DoNotCreate);
+    return get_cell_impl(row, col, DONT_CREATE_ON_NULL);
 }
 
 
@@ -125,7 +125,7 @@ const fort_cell_t *get_cell_c(const fort_row_t *row, size_t col)
 FT_INTERNAL
 fort_cell_t *get_cell_and_create_if_not_exists(fort_row_t *row, size_t col)
 {
-    return get_cell_implementation(row, col, Create);
+    return get_cell_impl(row, col, CREATE_ON_NULL);
 }
 
 
@@ -353,13 +353,6 @@ int print_row_separator_impl(conv_context_t *cntx,
     size_t i = 0;
 
     /* If all chars are not printable, skip line separator */
-    /* todo: add processing for wchar_t */
-    /*
-    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
-        status = 0;
-        goto clear;
-    }
-    */
     if ((strlen(*L) == 0 || (strlen(*L) == 1 && !isprint(**L)))
         && (strlen(*I) == 0 || (strlen(*I) == 1 && !isprint(**I)))
         && (strlen(*IV) == 0 || (strlen(*IV) == 1 && !isprint(**IV)))

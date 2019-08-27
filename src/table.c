@@ -31,19 +31,19 @@ separator_t *copy_separator(separator_t *sep)
 
 
 static
-fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnNull policy)
+fort_row_t *get_row_impl(ft_table_t *table, size_t row, enum get_policy policy)
 {
     if (table == NULL || table->rows == NULL) {
         return NULL;
     }
 
     switch (policy) {
-        case DoNotCreate:
+        case DONT_CREATE_ON_NULL:
             if (row < vector_size(table->rows)) {
                 return *(fort_row_t **)vector_at(table->rows, row);
             }
             return NULL;
-        case Create:
+        case CREATE_ON_NULL:
             while (row >= vector_size(table->rows)) {
                 fort_row_t *new_row = create_row();
                 if (new_row == NULL)
@@ -64,7 +64,7 @@ fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnN
 FT_INTERNAL
 fort_row_t *get_row(ft_table_t *table, size_t row)
 {
-    return get_row_implementation(table, row, DoNotCreate);
+    return get_row_impl(table, row, DONT_CREATE_ON_NULL);
 }
 
 
@@ -78,7 +78,7 @@ const fort_row_t *get_row_c(const ft_table_t *table, size_t row)
 FT_INTERNAL
 fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row)
 {
-    return get_row_implementation(table, row, Create);
+    return get_row_impl(table, row, CREATE_ON_NULL);
 }
 
 

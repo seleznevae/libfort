@@ -578,7 +578,7 @@ const void *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
 
     const char *result = NULL;
 
-    /* Determing size of table string representation */
+    /* Determine size of table string representation */
     size_t cod_height = 0;
     size_t cod_width = 0;
     int status = table_internal_codepoints_geometry(table, &cod_height, &cod_width);

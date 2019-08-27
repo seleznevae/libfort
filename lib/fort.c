@@ -83,13 +83,13 @@ extern char g_col_separator;
 #define FT_NEWLINE "\n"
 #define FT_SPACE " "
 
-enum PolicyOnNull {
-    Create,
-    DoNotCreate
+enum get_policy {
+    CREATE_ON_NULL,
+    DONT_CREATE_ON_NULL
 };
 
 
-enum F_BOOL {
+enum ft_bool {
     F_FALSE = 0,
     F_TRUE = 1
 };
@@ -120,9 +120,6 @@ struct ft_string {
 typedef struct ft_string ft_string_t;
 
 
-typedef const char **str_arr;
-
-
 #define FT_STR_2_CAT_(arg1, arg2) \
     arg1##arg2
 #define FT_STR_2_CAT(arg1, arg2) \
@@ -132,13 +129,6 @@ typedef const char **str_arr;
     FT_STR_2_CAT(prefix,__COUNTER__)
 #define UNIQUE_NAME(prefix) \
     UNIQUE_NAME_(prefix)
-
-
-
-/*****************************************************************************
- *               LOGGER
- *****************************************************************************/
-#define SYS_LOG_ERROR(...)
 
 
 
@@ -3057,7 +3047,7 @@ const void *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
 
     const char *result = NULL;
 
-    /* Determing size of table string representation */
+    /* Determine size of table string representation */
     size_t cod_height = 0;
     size_t cod_width = 0;
     int status = table_internal_codepoints_geometry(table, &cod_height, &cod_width);
@@ -5067,19 +5057,19 @@ size_t columns_in_row(const fort_row_t *row)
 
 
 static
-fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnNull policy)
+fort_cell_t *get_cell_impl(fort_row_t *row, size_t col, enum get_policy policy)
 {
     if (row == NULL || row->cells == NULL) {
         return NULL;
     }
 
     switch (policy) {
-        case DoNotCreate:
+        case DONT_CREATE_ON_NULL:
             if (col < columns_in_row(row)) {
                 return *(fort_cell_t **)vector_at(row->cells, col);
             }
             return NULL;
-        case Create:
+        case CREATE_ON_NULL:
             while (col >= columns_in_row(row)) {
                 fort_cell_t *new_cell = create_cell();
                 if (new_cell == NULL)
@@ -5100,7 +5090,7 @@ fort_cell_t *get_cell_implementation(fort_row_t *row, size_t col, enum PolicyOnN
 FT_INTERNAL
 fort_cell_t *get_cell(fort_row_t *row, size_t col)
 {
-    return get_cell_implementation(row, col, DoNotCreate);
+    return get_cell_impl(row, col, DONT_CREATE_ON_NULL);
 }
 
 
@@ -5114,7 +5104,7 @@ const fort_cell_t *get_cell_c(const fort_row_t *row, size_t col)
 FT_INTERNAL
 fort_cell_t *get_cell_and_create_if_not_exists(fort_row_t *row, size_t col)
 {
-    return get_cell_implementation(row, col, Create);
+    return get_cell_impl(row, col, CREATE_ON_NULL);
 }
 
 
@@ -5342,13 +5332,6 @@ int print_row_separator_impl(conv_context_t *cntx,
     size_t i = 0;
 
     /* If all chars are not printable, skip line separator */
-    /* todo: add processing for wchar_t */
-    /*
-    if (!isprint(*L) && !isprint(*I) && !isprint(*IV) && !isprint(*R)) {
-        status = 0;
-        goto clear;
-    }
-    */
     if ((strlen(*L) == 0 || (strlen(*L) == 1 && !isprint(**L)))
         && (strlen(*I) == 0 || (strlen(*I) == 1 && !isprint(**I)))
         && (strlen(*IV) == 0 || (strlen(*IV) == 1 && !isprint(**IV)))
@@ -6048,9 +6031,26 @@ void utf8_n_substring(const void *str, utf8_int32_t ch_separator, size_t n, cons
 
 
 FT_INTERNAL
-string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type type)
+string_buffer_t *create_string_buffer(size_t n_chars, enum str_buf_type type)
 {
-    size_t sz = (number_of_chars) * (type == CHAR_BUF ? sizeof(char) : sizeof(wchar_t));
+    size_t char_sz = 0;
+    switch (type) {
+        case CHAR_BUF:
+            char_sz = 1;
+            break;
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            char_sz = sizeof(wchar_t);
+            break;
+#endif
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            char_sz = 4;
+            break;
+#endif
+    }
+
+    size_t sz = n_chars * char_sz;
     string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
     if (result == NULL)
         return NULL;
@@ -6062,12 +6062,22 @@ string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type 
     result->data_sz = sz;
     result->type = type;
 
-    if (sz && type == CHAR_BUF) {
-        result->str.cstr[0] = '\0';
+    if (sz) {
+        switch (type) {
+            case CHAR_BUF:
+                result->str.cstr[0] = '\0';
+                break;
 #ifdef FT_HAVE_WCHAR
-    } else if (sz && type == W_CHAR_BUF) {
-        result->str.wstr[0] = L'\0';
-#endif /* FT_HAVE_WCHAR */
+            case W_CHAR_BUF:
+                result->str.wstr[0] = L'\0';
+                break;
+#endif
+#ifdef FT_HAVE_UTF8
+            case UTF8_BUF:
+                result->str.cstr[0] = '\0';
+                break;
+#endif
+        }
     }
 
     return result;
@@ -6498,19 +6508,19 @@ separator_t *copy_separator(separator_t *sep)
 
 
 static
-fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnNull policy)
+fort_row_t *get_row_impl(ft_table_t *table, size_t row, enum get_policy policy)
 {
     if (table == NULL || table->rows == NULL) {
         return NULL;
     }
 
     switch (policy) {
-        case DoNotCreate:
+        case DONT_CREATE_ON_NULL:
             if (row < vector_size(table->rows)) {
                 return *(fort_row_t **)vector_at(table->rows, row);
             }
             return NULL;
-        case Create:
+        case CREATE_ON_NULL:
             while (row >= vector_size(table->rows)) {
                 fort_row_t *new_row = create_row();
                 if (new_row == NULL)
@@ -6531,7 +6541,7 @@ fort_row_t *get_row_implementation(ft_table_t *table, size_t row, enum PolicyOnN
 FT_INTERNAL
 fort_row_t *get_row(ft_table_t *table, size_t row)
 {
-    return get_row_implementation(table, row, DoNotCreate);
+    return get_row_impl(table, row, DONT_CREATE_ON_NULL);
 }
 
 
@@ -6545,7 +6555,7 @@ const fort_row_t *get_row_c(const ft_table_t *table, size_t row)
 FT_INTERNAL
 fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row)
 {
-    return get_row_implementation(table, row, Create);
+    return get_row_impl(table, row, CREATE_ON_NULL);
 }
 
 
@@ -6806,14 +6816,12 @@ vector_t *create_vector(size_t item_size, size_t capacity)
 {
     vector_t *vector = (vector_t *)F_MALLOC(sizeof(vector_t));
     if (vector == NULL) {
-        SYS_LOG_ERROR("Failed to allocate memory for asock vector");
         return NULL;
     }
 
     size_t init_size = MAX(item_size * capacity, 1);
     vector->m_data = F_MALLOC(init_size);
     if (vector->m_data == NULL) {
-        SYS_LOG_ERROR("Failed to allocate memory for asock vector inern. buffer");
         F_FREE(vector);
         return NULL;
     }

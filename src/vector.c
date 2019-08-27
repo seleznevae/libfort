@@ -28,14 +28,12 @@ vector_t *create_vector(size_t item_size, size_t capacity)
 {
     vector_t *vector = (vector_t *)F_MALLOC(sizeof(vector_t));
     if (vector == NULL) {
-        SYS_LOG_ERROR("Failed to allocate memory for asock vector");
         return NULL;
     }
 
     size_t init_size = MAX(item_size * capacity, 1);
     vector->m_data = F_MALLOC(init_size);
     if (vector->m_data == NULL) {
-        SYS_LOG_ERROR("Failed to allocate memory for asock vector inern. buffer");
         F_FREE(vector);
         return NULL;
     }

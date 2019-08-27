@@ -46,13 +46,13 @@ extern char g_col_separator;
 #define FT_NEWLINE "\n"
 #define FT_SPACE " "
 
-enum PolicyOnNull {
-    Create,
-    DoNotCreate
+enum get_policy {
+    CREATE_ON_NULL,
+    DONT_CREATE_ON_NULL
 };
 
 
-enum F_BOOL {
+enum ft_bool {
     F_FALSE = 0,
     F_TRUE = 1
 };
@@ -83,9 +83,6 @@ struct ft_string {
 typedef struct ft_string ft_string_t;
 
 
-typedef const char **str_arr;
-
-
 #define FT_STR_2_CAT_(arg1, arg2) \
     arg1##arg2
 #define FT_STR_2_CAT(arg1, arg2) \
@@ -95,13 +92,6 @@ typedef const char **str_arr;
     FT_STR_2_CAT(prefix,__COUNTER__)
 #define UNIQUE_NAME(prefix) \
     UNIQUE_NAME_(prefix)
-
-
-
-/*****************************************************************************
- *               LOGGER
- *****************************************************************************/
-#define SYS_LOG_ERROR(...)
 
 
 

@@ -247,9 +247,26 @@ void utf8_n_substring(const void *str, utf8_int32_t ch_separator, size_t n, cons
 
 
 FT_INTERNAL
-string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type type)
+string_buffer_t *create_string_buffer(size_t n_chars, enum str_buf_type type)
 {
-    size_t sz = (number_of_chars) * (type == CHAR_BUF ? sizeof(char) : sizeof(wchar_t));
+    size_t char_sz = 0;
+    switch (type) {
+        case CHAR_BUF:
+            char_sz = 1;
+            break;
+#ifdef FT_HAVE_WCHAR
+        case W_CHAR_BUF:
+            char_sz = sizeof(wchar_t);
+            break;
+#endif
+#ifdef FT_HAVE_UTF8
+        case UTF8_BUF:
+            char_sz = 4;
+            break;
+#endif
+    }
+
+    size_t sz = n_chars * char_sz;
     string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
     if (result == NULL)
         return NULL;
@@ -261,12 +278,22 @@ string_buffer_t *create_string_buffer(size_t number_of_chars, enum str_buf_type 
     result->data_sz = sz;
     result->type = type;
 
-    if (sz && type == CHAR_BUF) {
-        result->str.cstr[0] = '\0';
+    if (sz) {
+        switch (type) {
+            case CHAR_BUF:
+                result->str.cstr[0] = '\0';
+                break;
 #ifdef FT_HAVE_WCHAR
-    } else if (sz && type == W_CHAR_BUF) {
-        result->str.wstr[0] = L'\0';
-#endif /* FT_HAVE_WCHAR */
+            case W_CHAR_BUF:
+                result->str.wstr[0] = L'\0';
+                break;
+#endif
+#ifdef FT_HAVE_UTF8
+            case UTF8_BUF:
+                result->str.cstr[0] = '\0';
+                break;
+#endif
+        }
     }
 
     return result;
