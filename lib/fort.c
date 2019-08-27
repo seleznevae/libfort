@@ -2258,29 +2258,34 @@ size_t hint_width_cell(const fort_cell_t *cell, const context_t *context, enum r
 
     assert(cell);
     assert(context);
-    size_t cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
-    size_t cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
-    size_t result = cell_padding_left + cell_padding_right;
+
+    fort_table_properties_t *properties = context->table_properties;
+    size_t row = context->row;
+    size_t column = context->column;
+
+    size_t padding_left = get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_LEFT_PADDING);
+    size_t padding_right = get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_RIGHT_PADDING);
+    size_t result = padding_left + padding_right;
     if (cell->str_buffer && cell->str_buffer->str.data) {
         result += buffer_text_visible_width(cell->str_buffer);
     }
-    result = MAX(result, (size_t)get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_MIN_WIDTH));
+    result = MAX(result, (size_t)get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_MIN_WIDTH));
 
     if (geom == INTERN_REPR_GEOMETRY) {
         char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        get_style_tag_for_cell(properties, row, column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
         result += strlen(cell_style_tag);
 
         char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        get_reset_style_tag_for_cell(properties, row, column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
         result += strlen(reset_cell_style_tag);
 
         char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        get_style_tag_for_content(properties, row, column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
         result += strlen(content_style_tag);
 
         char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+        get_reset_style_tag_for_content(properties, row, column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
         result += strlen(reset_content_style_tag);
     }
 
@@ -2292,13 +2297,18 @@ size_t hint_height_cell(const fort_cell_t *cell, const context_t *context)
 {
     assert(cell);
     assert(context);
-    size_t cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
-    size_t cell_padding_bottom = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_BOTTOM_PADDING);
-    size_t cell_empty_string_height = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_EMPTY_STR_HEIGHT);
-    size_t result = cell_padding_top + cell_padding_bottom;
+    fort_table_properties_t *properties = context->table_properties;
+    size_t row = context->row;
+    size_t column = context->column;
+
+    size_t padding_top = get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_TOP_PADDING);
+    size_t padding_bottom = get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_BOTTOM_PADDING);
+    size_t empty_string_height = get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_EMPTY_STR_HEIGHT);
+
+    size_t result = padding_top + padding_bottom;
     if (cell->str_buffer && cell->str_buffer->str.data) {
         size_t text_height = buffer_text_visible_height(cell->str_buffer);
-        result += text_height == 0 ? cell_empty_string_height : text_height;
+        result += text_height == 0 ? empty_string_height : text_height;
     }
     return result;
 }
@@ -2314,9 +2324,10 @@ int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t vis_
         return -1;
     }
 
-    unsigned int cell_padding_top = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_TOP_PADDING);
-    unsigned int cell_padding_left = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
-    unsigned int cell_padding_right = get_cell_property_value_hierarcial(context->table_properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
+    fort_table_properties_t *properties = context->table_properties;
+    unsigned int padding_top = get_cell_property_value_hierarcial(properties, context->row, context->column, FT_CPROP_TOP_PADDING);
+    unsigned int padding_left = get_cell_property_value_hierarcial(properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
+    unsigned int padding_right = get_cell_property_value_hierarcial(properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
 
     size_t written = 0;
     size_t invisible_written = 0;
@@ -2325,19 +2336,19 @@ int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t vis_
     /* todo: Dirty hack with changing buf_len! need refactoring. */
     /* Also maybe it is better to move all struff with colors to buffers? */
     char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_style_tag_for_cell(context->table_properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    get_style_tag_for_cell(properties, context->row, context->column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
     buf_len += strlen(cell_style_tag);
 
     char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_reset_style_tag_for_cell(context->table_properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    get_reset_style_tag_for_cell(properties, context->row, context->column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
     buf_len += strlen(reset_cell_style_tag);
 
     char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_style_tag_for_content(context->table_properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    get_style_tag_for_content(properties, context->row, context->column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
     buf_len += strlen(content_style_tag);
 
     char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-    get_reset_style_tag_for_content(context->table_properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    get_reset_style_tag_for_content(properties, context->row, context->column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
     buf_len += strlen(reset_content_style_tag);
 
     /*    CELL_STYLE_T   LEFT_PADDING   CONTENT_STYLE_T  CONTENT   RESET_CONTENT_STYLE_T    RIGHT_PADDING   RESET_CELL_STYLE_T
@@ -2347,13 +2358,13 @@ int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t vis_
      *                                     L3                               R3
      */
 
-    size_t L2 = cell_padding_left;
+    size_t L2 = padding_left;
 
-    size_t R2 = cell_padding_right;
+    size_t R2 = padding_right;
     size_t R3 = strlen(reset_cell_style_tag);
 
 #define TOTAL_WRITTEN (written + invisible_written)
-#define RIGHT (cell_padding_right + extra_right)
+#define RIGHT (padding_right + extra_right)
 
 #define WRITE_CELL_STYLE_TAG        CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(print_n_strings(cntx, 1, cell_style_tag))
 #define WRITE_RESET_CELL_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(print_n_strings(cntx, 1, reset_cell_style_tag))
@@ -2361,8 +2372,8 @@ int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t vis_
 #define WRITE_RESET_CONTENT_STYLE_TAG  CHCK_RSLT_ADD_TO_INVISIBLE_WRITTEN(print_n_strings(cntx, 1, reset_content_style_tag))
 
     if (row >= hint_height_cell(cell, context)
-        || row < cell_padding_top
-        || row >= (cell_padding_top + buffer_text_visible_height(cell->str_buffer))) {
+        || row < padding_top
+        || row >= (padding_top + buffer_text_visible_height(cell->str_buffer))) {
         WRITE_CELL_STYLE_TAG;
         WRITE_CONTENT_STYLE_TAG;
         WRITE_RESET_CONTENT_STYLE_TAG;
@@ -2375,12 +2386,10 @@ int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t vis_
     WRITE_CELL_STYLE_TAG;
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, L2, FT_SPACE));
     if (cell->str_buffer) {
-//        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf2_(cell->str_buffer, row - cell_padding_top, cntx, buf_len - TOTAL_WRITTEN - R2 - R3, content_style_tag, reset_content_style_tag));
-        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf(cell->str_buffer, row - cell_padding_top, cntx, vis_width - L2 - R2, content_style_tag, reset_content_style_tag));
+        CHCK_RSLT_ADD_TO_WRITTEN(buffer_printf(cell->str_buffer, row - padding_top, cntx, vis_width - L2 - R2, content_style_tag, reset_content_style_tag));
     } else {
         WRITE_CONTENT_STYLE_TAG;
         WRITE_RESET_CONTENT_STYLE_TAG;
-//        CHCK_RSLT_ADD_TO_WRITTEN(snprint_n_strings2_(cntx, buf_len - TOTAL_WRITTEN - R2 - R3, FT_SPACE));
         CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, vis_width - L2 - R2, FT_SPACE));
     }
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, R2, FT_SPACE));
@@ -5726,9 +5735,10 @@ int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_
     size_t written = 0;
     int tmp = 0;
     size_t i = 0;
+    fort_entire_table_properties_t *entire_tprops = &context->table_properties->entire_table_properties;
     for (i = 0; i < row_height; ++i) {
         /* Print left margin */
-        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.left_margin, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->left_margin, space_char));
 
         /* Print left table boundary */
         CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *L));
@@ -5765,7 +5775,7 @@ int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_
         CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *R));
 
         /* Print right margin */
-        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.right_margin, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->right_margin, space_char));
 
         /* Print new line character */
         CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, new_line_char));

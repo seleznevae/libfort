@@ -746,9 +746,10 @@ int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_
     size_t written = 0;
     int tmp = 0;
     size_t i = 0;
+    fort_entire_table_properties_t *entire_tprops = &context->table_properties->entire_table_properties;
     for (i = 0; i < row_height; ++i) {
         /* Print left margin */
-        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.left_margin, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->left_margin, space_char));
 
         /* Print left table boundary */
         CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *L));
@@ -785,7 +786,7 @@ int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_
         CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *R));
 
         /* Print right margin */
-        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.right_margin, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->right_margin, space_char));
 
         /* Print new line character */
         CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, new_line_char));
