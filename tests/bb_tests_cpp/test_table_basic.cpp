@@ -308,6 +308,7 @@ void test_cpp_table_changing_cell(void)
         table << "A";
         assert_true(table.cur_row() == 1);
         assert_true(table.cur_col() == 2);
+        table.cur_cell() = "432";
 
         std::string table_str = table.to_string();
         std::string table_str_etalon =
@@ -317,7 +318,7 @@ void test_cpp_table_changing_cell(void)
             "|   |   |     |          |\n"
             "+---+---+-----+----------+\n"
             "|   |   |     |          |\n"
-            "| 3 | A | 234 | 3.140000 |\n"
+            "| 3 | A | 432 | 3.140000 |\n"
             "|   |   |     |          |\n"
             "+---+---+-----+----------+\n"
             "|   |   |     |          |\n"
