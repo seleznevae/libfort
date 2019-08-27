@@ -8,14 +8,13 @@
 
 struct fort_row {
     vector_t *cells;
-    /*enum ft_row_type type;*/
 };
 
 
 FT_INTERNAL
 fort_row_t *create_row(void)
 {
-    fort_row_t *row = (fort_row_t *)F_CALLOC(sizeof(fort_row_t), 1);
+    fort_row_t *row = (fort_row_t *)F_CALLOC(1, sizeof(fort_row_t));
     if (row == NULL)
         return NULL;
     row->cells = create_vector(sizeof(fort_cell_t *), DEFAULT_VECTOR_CAPACITY);
@@ -23,11 +22,6 @@ fort_row_t *create_row(void)
         F_FREE(row);
         return NULL;
     }
-
-    /*
-    row->is_header = F_FALSE;
-    row->type = FT_ROW_COMMON;
-    */
     return row;
 }
 
@@ -225,7 +219,7 @@ fort_status_t row_set_cell_span(fort_row_t *row, size_t cell_column, size_t hor_
     return FT_SUCCESS;
 }
 
-FT_INTERNAL
+static
 int print_row_separator_impl(conv_context_t *cntx,
                              const size_t *col_width_arr, size_t cols,
                              const fort_row_t *upper_row, const fort_row_t *lower_row,
@@ -234,8 +228,7 @@ int print_row_separator_impl(conv_context_t *cntx,
 {
     assert(cntx);
 
-    const char *space_char = " ";
-    int status = -1;
+    int status = FT_ERROR;
 
     const context_t *context = cntx->cntx;
 
@@ -334,10 +327,6 @@ int print_row_separator_impl(conv_context_t *cntx,
                 IV = &(*border_chars)[II_bip];
                 R = &(*border_chars)[RH_bip];
 
-                /*
-                IT = &(*border_chars)[TV_bip];
-                IB = &(*border_chars)[BV_bip];
-                */
                 IT = &(*border_chars)[TI_bip];
                 IB = &(*border_chars)[BI_bip];
                 II = &(*border_chars)[IH_bip];
@@ -376,7 +365,7 @@ int print_row_separator_impl(conv_context_t *cntx,
     }
 
     /* Print left margin */
-    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.left_margin, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.left_margin, FT_SPACE));
 
     for (i = 0; i < cols; ++i) {
         if (i == 0) {
@@ -398,9 +387,9 @@ int print_row_separator_impl(conv_context_t *cntx,
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *R));
 
     /* Print right margin */
-    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.right_margin, space_char));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.right_margin, FT_SPACE));
 
-    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, "\n"));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, FT_NEWLINE));
 
     status = (int)written;
 
