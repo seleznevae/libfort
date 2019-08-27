@@ -5588,6 +5588,15 @@ static int
 vsnprintf_buffer(string_buffer_t *buffer, const struct ft_string *fmt,
                  va_list *va)
 {
+    /* Disable compiler diagnostic (format string is not a string literal) */
+#if defined(FT_CLANG_COMPILER)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-nonliteral"
+#endif
+#if defined(FT_GCC_COMPILER)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
     switch (buffer->type) {
         case CHAR_BUF:
             return vsnprintf(buffer->str.cstr, string_buffer_width_capacity(buffer), fmt->u.cstr, *va);
@@ -5603,6 +5612,12 @@ vsnprintf_buffer(string_buffer_t *buffer, const struct ft_string *fmt,
             assert(0);
             return 0;
     }
+#if defined(FT_CLANG_COMPILER)
+#pragma clang diagnostic pop
+#endif
+#if defined(FT_GCC_COMPILER)
+#pragma GCC diagnostic pop
+#endif
 }
 
 FT_INTERNAL
