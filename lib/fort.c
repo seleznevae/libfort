@@ -5248,6 +5248,8 @@ int print_row_separator_impl(conv_context_t *cntx,
 
 
     fort_table_properties_t *properties = context->table_properties;
+    fort_entire_table_properties_t *entire_tprops = &properties->entire_table_properties;
+
     size_t written = 0;
     int tmp = 0;
 
@@ -5354,8 +5356,6 @@ int print_row_separator_impl(conv_context_t *cntx,
         status = 0;
         goto clear;
     }
-
-    fort_entire_table_properties_t *entire_tprops = &properties->entire_table_properties;
 
     /* Print left margin */
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->left_margin, FT_SPACE));
