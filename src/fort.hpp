@@ -945,18 +945,36 @@ public:
         return (*this)[row_idx][col_idx];
     }
 
+    /**
+     * Get column number of the current cell.
+     *
+     * @return
+     *   Column number of the current cell.
+     */
     size_t
     cur_col()
     {
         return ft_cur_col(table_);
     }
 
+    /**
+     * Get row number of the current cell.
+     *
+     * @return
+     *   Row number of the current cell.
+     */
     size_t
     cur_row()
     {
         return ft_cur_row(table_);
     }
 
+    /**
+     * Get current cell.
+     *
+     * @return
+     *   Current cell.
+     */
     class table_cell
     cur_cell()
     {

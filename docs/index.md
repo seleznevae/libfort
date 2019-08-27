@@ -50,6 +50,8 @@ These pages contain the API documentation of **libfort** - simple library to cre
   - @link fort::table @endlink -- basic table class
     - Table navigation
       - @link fort::table::set_cur_cell set_cur_cell @endlink -- set border style
+      - @link fort::table::cur_row cur_row @endlink -- get row number of the current cell
+      - @link fort::table::cur_col cur_col @endlink -- get column number of the current cell
 
     - Fill table with content
       - @link fort::table::operator<< operator<< @endlink -- write provided object to the table

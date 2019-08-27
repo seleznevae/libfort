@@ -287,3 +287,43 @@ void test_cpp_table_write(void)
         assert_string_equal(table_str, table_str_etalon);
     }
 }
+
+void test_cpp_table_changing_cell(void)
+{
+    WHEN("All columns are equal and not empty") {
+        fort::table table;
+        assert_true(set_cpp_test_props_for_table(&table));
+
+        table << fort::header
+              << "3" << "c" << "234" << "3.140000" << fort::endr
+              << "3" << "c" << "234" << "3.140000" << fort::endr
+              << "3" << "c" << "234" << "3.140000" << fort::endr;
+
+        assert_true(table.cur_row() == 3);
+        assert_true(table.cur_col() == 0);
+
+        table.set_cur_cell(1, 1);
+        assert_true(table.cur_row() == 1);
+        assert_true(table.cur_col() == 1);
+        table << "A";
+        assert_true(table.cur_row() == 1);
+        assert_true(table.cur_col() == 2);
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | A | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n"
+            "|   |   |     |          |\n"
+            "| 3 | c | 234 | 3.140000 |\n"
+            "|   |   |     |          |\n"
+            "+---+---+-----+----------+\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+}
