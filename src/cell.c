@@ -3,15 +3,15 @@
 #include "string_buffer.h"
 #include <assert.h>
 
-struct fort_cell {
-    string_buffer_t *str_buffer;
-    enum CellType cell_type;
+struct f_cell {
+    f_string_buffer_t *str_buffer;
+    enum f_cell_type cell_type;
 };
 
 FT_INTERNAL
-fort_cell_t *create_cell(void)
+f_cell_t *create_cell(void)
 {
-    fort_cell_t *cell = (fort_cell_t *)F_CALLOC(sizeof(fort_cell_t), 1);
+    f_cell_t *cell = (f_cell_t *)F_CALLOC(sizeof(f_cell_t), 1);
     if (cell == NULL)
         return NULL;
     cell->str_buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, CHAR_BUF);
@@ -19,12 +19,12 @@ fort_cell_t *create_cell(void)
         F_FREE(cell);
         return NULL;
     }
-    cell->cell_type = CommonCell;
+    cell->cell_type = COMMON_CELL;
     return cell;
 }
 
 FT_INTERNAL
-void destroy_cell(fort_cell_t *cell)
+void destroy_cell(f_cell_t *cell)
 {
     if (cell == NULL)
         return;
@@ -33,11 +33,11 @@ void destroy_cell(fort_cell_t *cell)
 }
 
 FT_INTERNAL
-fort_cell_t *copy_cell(fort_cell_t *cell)
+f_cell_t *copy_cell(f_cell_t *cell)
 {
     assert(cell);
 
-    fort_cell_t *result = create_cell();
+    f_cell_t *result = create_cell();
     if (result == NULL)
         return NULL;
     destroy_string_buffer(result->str_buffer);
@@ -51,21 +51,21 @@ fort_cell_t *copy_cell(fort_cell_t *cell)
 }
 
 FT_INTERNAL
-void set_cell_type(fort_cell_t *cell, enum CellType type)
+void set_cell_type(f_cell_t *cell, enum f_cell_type type)
 {
     assert(cell);
     cell->cell_type = type;
 }
 
 FT_INTERNAL
-enum CellType get_cell_type(const fort_cell_t *cell)
+enum f_cell_type get_cell_type(const f_cell_t *cell)
 {
     assert(cell);
     return cell->cell_type;
 }
 
 FT_INTERNAL
-size_t hint_width_cell(const fort_cell_t *cell, const context_t *context, enum request_geom_type geom)
+size_t hint_width_cell(const f_cell_t *cell, const f_context_t *context, enum f_geometry_type geom)
 {
     /* todo:
      * At the moment min width includes paddings. Maybe it is better that min width weren't include
@@ -75,17 +75,17 @@ size_t hint_width_cell(const fort_cell_t *cell, const context_t *context, enum r
     assert(cell);
     assert(context);
 
-    fort_table_properties_t *properties = context->table_properties;
+    f_table_properties_t *properties = context->table_properties;
     size_t row = context->row;
     size_t column = context->column;
 
-    size_t padding_left = get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_LEFT_PADDING);
-    size_t padding_right = get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_RIGHT_PADDING);
+    size_t padding_left = get_cell_property_hierarchically(properties, row, column, FT_CPROP_LEFT_PADDING);
+    size_t padding_right = get_cell_property_hierarchically(properties, row, column, FT_CPROP_RIGHT_PADDING);
     size_t result = padding_left + padding_right;
     if (cell->str_buffer && cell->str_buffer->str.data) {
         result += buffer_text_visible_width(cell->str_buffer);
     }
-    result = MAX(result, (size_t)get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_MIN_WIDTH));
+    result = MAX(result, (size_t)get_cell_property_hierarchically(properties, row, column, FT_CPROP_MIN_WIDTH));
 
     if (geom == INTERN_REPR_GEOMETRY) {
         char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
@@ -109,17 +109,17 @@ size_t hint_width_cell(const fort_cell_t *cell, const context_t *context, enum r
 }
 
 FT_INTERNAL
-size_t hint_height_cell(const fort_cell_t *cell, const context_t *context)
+size_t hint_height_cell(const f_cell_t *cell, const f_context_t *context)
 {
     assert(cell);
     assert(context);
-    fort_table_properties_t *properties = context->table_properties;
+    f_table_properties_t *properties = context->table_properties;
     size_t row = context->row;
     size_t column = context->column;
 
-    size_t padding_top = get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_TOP_PADDING);
-    size_t padding_bottom = get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_BOTTOM_PADDING);
-    size_t empty_string_height = get_cell_property_value_hierarcial(properties, row, column, FT_CPROP_EMPTY_STR_HEIGHT);
+    size_t padding_top = get_cell_property_hierarchically(properties, row, column, FT_CPROP_TOP_PADDING);
+    size_t padding_bottom = get_cell_property_hierarchically(properties, row, column, FT_CPROP_BOTTOM_PADDING);
+    size_t empty_string_height = get_cell_property_hierarchically(properties, row, column, FT_CPROP_EMPTY_STR_HEIGHT);
 
     size_t result = padding_top + padding_bottom;
     if (cell->str_buffer && cell->str_buffer->str.data) {
@@ -131,19 +131,19 @@ size_t hint_height_cell(const fort_cell_t *cell, const context_t *context)
 
 
 FT_INTERNAL
-int cell_printf(fort_cell_t *cell, size_t row, conv_context_t *cntx, size_t vis_width)
+int cell_printf(f_cell_t *cell, size_t row, f_conv_context_t *cntx, size_t vis_width)
 {
-    const context_t *context = cntx->cntx;
+    const f_context_t *context = cntx->cntx;
     size_t buf_len = vis_width;
 
     if (cell == NULL || (vis_width < hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
         return -1;
     }
 
-    fort_table_properties_t *properties = context->table_properties;
-    unsigned int padding_top = get_cell_property_value_hierarcial(properties, context->row, context->column, FT_CPROP_TOP_PADDING);
-    unsigned int padding_left = get_cell_property_value_hierarcial(properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
-    unsigned int padding_right = get_cell_property_value_hierarcial(properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
+    f_table_properties_t *properties = context->table_properties;
+    unsigned int padding_top = get_cell_property_hierarchically(properties, context->row, context->column, FT_CPROP_TOP_PADDING);
+    unsigned int padding_left = get_cell_property_hierarchically(properties, context->row, context->column, FT_CPROP_LEFT_PADDING);
+    unsigned int padding_right = get_cell_property_hierarchically(properties, context->row, context->column, FT_CPROP_RIGHT_PADDING);
 
     size_t written = 0;
     size_t invisible_written = 0;
@@ -224,7 +224,7 @@ clear:
 }
 
 FT_INTERNAL
-fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str)
+f_status fill_cell_from_string(f_cell_t *cell, const char *str)
 {
     assert(str);
     assert(cell);
@@ -234,7 +234,7 @@ fort_status_t fill_cell_from_string(fort_cell_t *cell, const char *str)
 
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
-fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str)
+f_status fill_cell_from_wstring(f_cell_t *cell, const wchar_t *str)
 {
     assert(str);
     assert(cell);
@@ -245,7 +245,7 @@ fort_status_t fill_cell_from_wstring(fort_cell_t *cell, const wchar_t *str)
 
 #ifdef FT_HAVE_UTF8
 static
-fort_status_t fill_cell_from_u8string(fort_cell_t *cell, const void *str)
+f_status fill_cell_from_u8string(f_cell_t *cell, const void *str)
 {
     assert(str);
     assert(cell);
@@ -254,7 +254,7 @@ fort_status_t fill_cell_from_u8string(fort_cell_t *cell, const void *str)
 #endif /* FT_HAVE_UTF8 */
 
 FT_INTERNAL
-string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
+f_string_buffer_t *cell_get_string_buffer(f_cell_t *cell)
 {
     assert(cell);
     assert(cell->str_buffer);
@@ -262,7 +262,7 @@ string_buffer_t *cell_get_string_buffer(fort_cell_t *cell)
 }
 
 FT_INTERNAL
-fort_status_t fill_cell_from_buffer(fort_cell_t *cell, const struct string_buffer *buffer)
+f_status fill_cell_from_buffer(f_cell_t *cell, const f_string_buffer_t *buffer)
 {
     assert(cell);
     assert(buffer);

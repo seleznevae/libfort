@@ -47,12 +47,12 @@ ft_table_t *ft_create_table(void)
     if (result == NULL)
         return NULL;
 
-    result->rows = create_vector(sizeof(fort_row_t *), DEFAULT_VECTOR_CAPACITY);
+    result->rows = create_vector(sizeof(f_row_t *), DEFAULT_VECTOR_CAPACITY);
     if (result->rows == NULL) {
         F_FREE(result);
         return NULL;
     }
-    result->separators = create_vector(sizeof(separator_t *), DEFAULT_VECTOR_CAPACITY);
+    result->separators = create_vector(sizeof(f_separator_t *), DEFAULT_VECTOR_CAPACITY);
     if (result->separators == NULL) {
         destroy_vector(result->rows);
         F_FREE(result);
@@ -76,14 +76,14 @@ void ft_destroy_table(ft_table_t *table)
     if (table->rows) {
         size_t row_n = vector_size(table->rows);
         for (i = 0; i < row_n; ++i) {
-            destroy_row(*(fort_row_t **)vector_at(table->rows, i));
+            destroy_row(*(f_row_t **)vector_at(table->rows, i));
         }
         destroy_vector(table->rows);
     }
     if (table->separators) {
         size_t row_n = vector_size(table->separators);
         for (i = 0; i < row_n; ++i) {
-            destroy_separator(*(separator_t **)vector_at(table->separators, i));
+            destroy_separator(*(f_separator_t **)vector_at(table->separators, i));
         }
         destroy_vector(table->separators);
     }
@@ -104,8 +104,8 @@ ft_table_t *ft_copy_table(ft_table_t *table)
     size_t i = 0;
     size_t rows_n = vector_size(table->rows);
     for (i = 0; i < rows_n; ++i) {
-        fort_row_t *row = *(fort_row_t **)vector_at(table->rows, i);
-        fort_row_t *new_row = copy_row(row);
+        f_row_t *row = *(f_row_t **)vector_at(table->rows, i);
+        f_row_t *new_row = copy_row(row);
         if (new_row == NULL) {
             ft_destroy_table(result);
             return NULL;
@@ -115,8 +115,8 @@ ft_table_t *ft_copy_table(ft_table_t *table)
 
     size_t sep_sz = vector_size(table->separators);
     for (i = 0; i < sep_sz; ++i) {
-        separator_t *sep = *(separator_t **)vector_at(table->separators, i);
-        separator_t *new_sep = copy_separator(sep);
+        f_separator_t *sep = *(f_separator_t **)vector_at(table->separators, i);
+        f_separator_t *new_sep = copy_separator(sep);
         if (new_sep == NULL) {
             ft_destroy_table(result);
             return NULL;
@@ -165,7 +165,7 @@ void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col)
     table->cur_col = col;
 }
 
-static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct ft_string *fmt, va_list *va)
+static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct f_string_view *fmt, va_list *va)
 {
     size_t i = 0;
     size_t new_cols = 0;
@@ -173,18 +173,18 @@ static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct ft_st
     if (table == NULL)
         return -1;
 
-    fort_row_t *new_row = create_row_from_fmt_string(fmt, va);
+    f_row_t *new_row = create_row_from_fmt_string(fmt, va);
 
     if (new_row == NULL) {
         return -1;
     }
 
-    fort_row_t **cur_row_p = NULL;
+    f_row_t **cur_row_p = NULL;
     size_t sz = vector_size(table->rows);
     if (row >= sz) {
         size_t push_n = row - sz + 1;
         for (i = 0; i < push_n; ++i) {
-            fort_row_t *padding_row = create_row();
+            f_row_t *padding_row = create_row();
             if (padding_row == NULL)
                 goto clear;
 
@@ -197,7 +197,7 @@ static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct ft_st
     /* todo: clearing pushed items in case of error ?? */
 
     new_cols = columns_in_row(new_row);
-    cur_row_p = (fort_row_t **)vector_at(table->rows, row);
+    cur_row_p = (f_row_t **)vector_at(table->rows, row);
     swap_row(*cur_row_p, new_row, table->cur_col);
 
     table->cur_col += new_cols;
@@ -225,7 +225,7 @@ int FT_PRINTF(ft_table_t *table, const char *fmt, ...)
     va_list va;
     va_start(va, fmt);
 
-    struct ft_string fmt_str;
+    struct f_string_view fmt_str;
     fmt_str.type = CHAR_BUF;
     fmt_str.u.cstr = fmt;
     int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
@@ -239,7 +239,7 @@ int FT_PRINTF_LN(ft_table_t *table, const char *fmt, ...)
     va_list va;
     va_start(va, fmt);
 
-    struct ft_string fmt_str;
+    struct f_string_view fmt_str;
     fmt_str.type = CHAR_BUF;
     fmt_str.u.cstr = fmt;
     int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
@@ -260,7 +260,7 @@ int ft_wprintf(ft_table_t *table, const wchar_t *fmt, ...)
     va_list va;
     va_start(va, fmt);
 
-    struct ft_string fmt_str;
+    struct f_string_view fmt_str;
     fmt_str.type = W_CHAR_BUF;
     fmt_str.u.wstr = fmt;
     int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
@@ -274,7 +274,7 @@ int ft_wprintf_ln(ft_table_t *table, const wchar_t *fmt, ...)
     va_list va;
     va_start(va, fmt);
 
-    struct ft_string fmt_str;
+    struct f_string_view fmt_str;
     fmt_str.type = W_CHAR_BUF;
     fmt_str.u.wstr = fmt;
     int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
@@ -292,10 +292,10 @@ void ft_set_default_printf_field_separator(char separator)
     g_col_separator = separator;
 }
 
-static int ft_write_impl_(ft_table_t *table, const ft_string_t *cell_content)
+static int ft_write_impl_(ft_table_t *table, const f_string_view_t *cell_content)
 {
     assert(table);
-    string_buffer_t *buf = get_cur_str_buffer_and_create_if_not_exists(table);
+    f_string_buffer_t *buf = get_cur_str_buffer_and_create_if_not_exists(table);
     if (buf == NULL)
         return FT_ERROR;
 
@@ -325,7 +325,7 @@ static int ft_write_impl_(ft_table_t *table, const ft_string_t *cell_content)
 
 static int ft_write_impl(ft_table_t *table, const char *cell_content)
 {
-    ft_string_t content;
+    f_string_view_t content;
     content.type = CHAR_BUF;
     content.u.cstr = cell_content;
     return ft_write_impl_(table, &content);
@@ -334,7 +334,7 @@ static int ft_write_impl(ft_table_t *table, const char *cell_content)
 #ifdef FT_HAVE_UTF8
 static int ft_u8write_impl(ft_table_t *table, const void *cell_content)
 {
-    ft_string_t content;
+    f_string_view_t content;
     content.type = UTF8_BUF;
     content.u.u8str = cell_content;
     return ft_write_impl_(table, &content);
@@ -344,7 +344,7 @@ static int ft_u8write_impl(ft_table_t *table, const void *cell_content)
 #ifdef FT_HAVE_WCHAR
 static int ft_wwrite_impl(ft_table_t *table, const wchar_t *cell_content)
 {
-    ft_string_t content;
+    f_string_view_t content;
     content.type = W_CHAR_BUF;
     content.u.wstr = cell_content;
     return ft_write_impl_(table, &content);
@@ -572,7 +572,7 @@ static
 const char *empty_str_arr[] = {"", (const char *)L"", ""};
 
 static
-const void *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
+const void *ft_to_string_impl(const ft_table_t *table, enum f_string_type b_type)
 {
     assert(table);
 
@@ -618,15 +618,14 @@ const void *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
 
     int tmp = 0;
     size_t i = 0;
-    context_t context;
+    f_context_t context;
     context.table_properties = (table->properties ? table->properties : &g_table_properties);
-    fort_row_t *prev_row = NULL;
-    fort_row_t *cur_row = NULL;
-    separator_t *cur_sep = NULL;
+    f_row_t *prev_row = NULL;
+    f_row_t *cur_row = NULL;
+    f_separator_t *cur_sep = NULL;
     size_t sep_size = vector_size(table->separators);
 
-    conv_context_t cntx;
-    cntx.buf_origin = buffer;
+    f_conv_context_t cntx;
     cntx.u.buf = buffer;
     cntx.raw_avail = string_buffer_raw_capacity(table->conv_buffer);
     cntx.cntx = &context;
@@ -639,18 +638,18 @@ const void *ft_to_string_impl(const ft_table_t *table, enum str_buf_type b_type)
     }
 
     for (i = 0; i < rows; ++i) {
-        cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
-        cur_row = *(fort_row_t **)vector_at(table->rows, i);
-        enum HorSeparatorPos separatorPos = (i == 0) ? TopSeparator : InsideSeparator;
+        cur_sep = (i < sep_size) ? (*(f_separator_t **)vector_at(table->separators, i)) : NULL;
+        cur_row = *(f_row_t **)vector_at(table->rows, i);
+        enum f_hor_separator_pos separatorPos = (i == 0) ? TOP_SEPARATOR : INSIDE_SEPARATOR;
         context.row = i;
         FT_CHECK(print_row_separator(&cntx, col_vis_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep));
         FT_CHECK(snprintf_row(cur_row, &cntx, col_vis_width_arr, cols, row_vis_height_arr[i]));
         prev_row = cur_row;
     }
     cur_row = NULL;
-    cur_sep = (i < sep_size) ? (*(separator_t **)vector_at(table->separators, i)) : NULL;
+    cur_sep = (i < sep_size) ? (*(f_separator_t **)vector_at(table->separators, i)) : NULL;
     context.row = i;
-    FT_CHECK(print_row_separator(&cntx, col_vis_width_arr, cols, prev_row, cur_row, BottomSeparator, cur_sep));
+    FT_CHECK(print_row_separator(&cntx, col_vis_width_arr, cols, prev_row, cur_row, BOTTOM_SEPARATOR, cur_sep));
 
     /* Print bottom margin */
     for (i = 0; i < context.table_properties->entire_table_properties.bottom_margin; ++i) {
@@ -685,7 +684,7 @@ int ft_add_separator(ft_table_t *table)
     assert(table->separators);
 
     while (vector_size(table->separators) <= table->cur_row) {
-        separator_t *sep_p = create_separator(F_FALSE);
+        f_separator_t *sep_p = create_separator(F_FALSE);
         if (sep_p == NULL)
             return FT_MEMORY_ERROR;
         int status = vector_push(table->separators, &sep_p);
@@ -693,7 +692,7 @@ int ft_add_separator(ft_table_t *table)
             return status;
     }
 
-    separator_t **sep_p = (separator_t **)vector_at(table->separators, table->cur_row);
+    f_separator_t **sep_p = (f_separator_t **)vector_at(table->separators, table->cur_row);
     if (*sep_p == NULL)
         *sep_p = create_separator(F_TRUE);
     else
@@ -748,7 +747,7 @@ const struct ft_border_style *const FT_BOLD_STYLE  = &built_in_external_styles[1
 const struct ft_border_style *const FT_BOLD2_STYLE  = &built_in_external_styles[13];
 const struct ft_border_style *const FT_FRAME_STYLE  = &built_in_external_styles[14];
 
-static void set_border_props_for_props(fort_table_properties_t *properties, const struct ft_border_style *style)
+static void set_border_props_for_props(f_table_properties_t *properties, const struct ft_border_style *style)
 {
     if (style >= built_in_external_styles && style < (built_in_external_styles + BUILT_IN_STYLES_SZ)) {
         size_t pos = (size_t)(style - built_in_external_styles);
@@ -889,7 +888,7 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
     if (row == FT_CUR_COLUMN)
         col = table->cur_col;
 
-    fort_row_t *row_p = get_row_and_create_if_not_exists(table, row);
+    f_row_t *row_p = get_row_and_create_if_not_exists(table, row);
     if (row_p == NULL)
         return FT_ERROR;
 
@@ -955,7 +954,7 @@ int ft_u8printf(ft_table_t *table, const char *fmt, ...)
     va_list va;
     va_start(va, fmt);
 
-    struct ft_string fmt_str;
+    struct f_string_view fmt_str;
     fmt_str.type = UTF8_BUF;
     fmt_str.u.cstr = fmt;
     int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);
@@ -970,7 +969,7 @@ int ft_u8printf_ln(ft_table_t *table, const char *fmt, ...)
     va_list va;
     va_start(va, fmt);
 
-    struct ft_string fmt_str;
+    struct f_string_view fmt_str;
     fmt_str.type = UTF8_BUF;
     fmt_str.u.cstr = fmt;
     int result = ft_row_printf_impl_(table, table->cur_row, &fmt_str, &va);

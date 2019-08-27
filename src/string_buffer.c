@@ -26,7 +26,7 @@ static ptrdiff_t wcs_iter_width(const wchar_t *beg, const wchar_t *end)
 #endif /* FT_HAVE_WCHAR */
 
 
-static size_t buf_str_len(const string_buffer_t *buf)
+static size_t buf_str_len(const f_string_buffer_t *buf)
 {
     assert(buf);
 
@@ -247,7 +247,7 @@ void utf8_n_substring(const void *str, utf8_int32_t ch_separator, size_t n, cons
 
 
 FT_INTERNAL
-string_buffer_t *create_string_buffer(size_t n_chars, enum str_buf_type type)
+f_string_buffer_t *create_string_buffer(size_t n_chars, enum f_string_type type)
 {
     size_t char_sz = 0;
     switch (type) {
@@ -267,7 +267,7 @@ string_buffer_t *create_string_buffer(size_t n_chars, enum str_buf_type type)
     }
 
     size_t sz = n_chars * char_sz;
-    string_buffer_t *result = (string_buffer_t *)F_MALLOC(sizeof(string_buffer_t));
+    f_string_buffer_t *result = (f_string_buffer_t *)F_MALLOC(sizeof(f_string_buffer_t));
     if (result == NULL)
         return NULL;
     result->str.data = F_MALLOC(sz);
@@ -301,7 +301,7 @@ string_buffer_t *create_string_buffer(size_t n_chars, enum str_buf_type type)
 
 
 FT_INTERNAL
-void destroy_string_buffer(string_buffer_t *buffer)
+void destroy_string_buffer(f_string_buffer_t *buffer)
 {
     if (buffer == NULL)
         return;
@@ -311,10 +311,10 @@ void destroy_string_buffer(string_buffer_t *buffer)
 }
 
 FT_INTERNAL
-string_buffer_t *copy_string_buffer(const string_buffer_t *buffer)
+f_string_buffer_t *copy_string_buffer(const f_string_buffer_t *buffer)
 {
     assert(buffer);
-    string_buffer_t *result = create_string_buffer(buffer->data_sz, buffer->type);
+    f_string_buffer_t *result = create_string_buffer(buffer->data_sz, buffer->type);
     if (result == NULL)
         return NULL;
     switch (buffer->type) {
@@ -340,7 +340,7 @@ string_buffer_t *copy_string_buffer(const string_buffer_t *buffer)
 }
 
 FT_INTERNAL
-fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
+f_status realloc_string_buffer_without_copy(f_string_buffer_t *buffer)
 {
     assert(buffer);
     char *new_str = (char *)F_MALLOC(buffer->data_sz * 2);
@@ -355,7 +355,7 @@ fort_status_t realloc_string_buffer_without_copy(string_buffer_t *buffer)
 
 
 FT_INTERNAL
-fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
+f_status fill_buffer_from_string(f_string_buffer_t *buffer, const char *str)
 {
     assert(buffer);
     assert(str);
@@ -374,7 +374,7 @@ fort_status_t fill_buffer_from_string(string_buffer_t *buffer, const char *str)
 
 #ifdef FT_HAVE_WCHAR
 FT_INTERNAL
-fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *str)
+f_status fill_buffer_from_wstring(f_string_buffer_t *buffer, const wchar_t *str)
 {
     assert(buffer);
     assert(str);
@@ -393,7 +393,7 @@ fort_status_t fill_buffer_from_wstring(string_buffer_t *buffer, const wchar_t *s
 
 #ifdef FT_HAVE_UTF8
 FT_INTERNAL
-fort_status_t fill_buffer_from_u8string(string_buffer_t *buffer, const void *str)
+f_status fill_buffer_from_u8string(f_string_buffer_t *buffer, const void *str)
 {
     assert(buffer);
     assert(str);
@@ -411,7 +411,7 @@ fort_status_t fill_buffer_from_u8string(string_buffer_t *buffer, const void *str
 #endif /* FT_HAVE_UTF8 */
 
 FT_INTERNAL
-size_t buffer_text_visible_height(const string_buffer_t *buffer)
+size_t buffer_text_visible_height(const f_string_buffer_t *buffer)
 {
     if (buffer == NULL || buffer->str.data == NULL || buf_str_len(buffer) == 0) {
         return 0;
@@ -432,13 +432,13 @@ size_t buffer_text_visible_height(const string_buffer_t *buffer)
 }
 
 FT_INTERNAL
-size_t string_buffer_cod_width_capacity(const string_buffer_t *buffer)
+size_t string_buffer_cod_width_capacity(const f_string_buffer_t *buffer)
 {
     return string_buffer_width_capacity(buffer);
 }
 
 FT_INTERNAL
-size_t string_buffer_raw_capacity(const string_buffer_t *buffer)
+size_t string_buffer_raw_capacity(const f_string_buffer_t *buffer)
 {
     return buffer->data_sz;
 }
@@ -461,7 +461,7 @@ size_t ut8_width(const void *beg, const void *end)
 #endif /* FT_HAVE_WCHAR */
 
 FT_INTERNAL
-size_t buffer_text_visible_width(const string_buffer_t *buffer)
+size_t buffer_text_visible_width(const f_string_buffer_t *buffer)
 {
     size_t max_length = 0;
     if (buffer->type == CHAR_BUF) {
@@ -515,7 +515,7 @@ size_t buffer_text_visible_width(const string_buffer_t *buffer)
 
 
 static void
-buffer_substring(const string_buffer_t *buffer, size_t buffer_row, const void **begin, const void **end,  ptrdiff_t *str_it_width)
+buffer_substring(const f_string_buffer_t *buffer, size_t buffer_row, const void **begin, const void **end,  ptrdiff_t *str_it_width)
 {
     switch (buffer->type) {
         case CHAR_BUF:
@@ -544,7 +544,7 @@ buffer_substring(const string_buffer_t *buffer, size_t buffer_row, const void **
 
 
 static int
-buffer_print_range(conv_context_t *cntx, const void *beg, const void *end)
+buffer_print_range(f_conv_context_t *cntx, const void *beg, const void *end)
 {
     size_t len;
     switch (cntx->b_type) {
@@ -568,11 +568,11 @@ buffer_print_range(conv_context_t *cntx, const void *beg, const void *end)
 
 
 FT_INTERNAL
-int buffer_printf(string_buffer_t *buffer, size_t buffer_row, conv_context_t *cntx, size_t vis_width,
+int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t *cntx, size_t vis_width,
                   const char *content_style_tag, const char *reset_content_style_tag)
 {
-    const context_t *context = cntx->cntx;
-    fort_table_properties_t *props = context->table_properties;
+    const f_context_t *context = cntx->cntx;
+    f_table_properties_t *props = context->table_properties;
     size_t row = context->row;
     size_t column = context->column;
 
@@ -587,7 +587,7 @@ int buffer_printf(string_buffer_t *buffer, size_t buffer_row, conv_context_t *cn
 
     size_t left = 0;
     size_t right = 0;
-    switch (get_cell_property_value_hierarcial(props, row, column, FT_CPROP_TEXT_ALIGN)) {
+    switch (get_cell_property_hierarchically(props, row, column, FT_CPROP_TEXT_ALIGN)) {
         case FT_ALIGNED_LEFT:
             left = 0;
             right = (vis_width) - content_width;
@@ -631,7 +631,7 @@ clear:
 }
 
 FT_INTERNAL
-size_t string_buffer_width_capacity(const string_buffer_t *buffer)
+size_t string_buffer_width_capacity(const f_string_buffer_t *buffer)
 {
     assert(buffer);
     switch (buffer->type) {
@@ -653,14 +653,14 @@ size_t string_buffer_width_capacity(const string_buffer_t *buffer)
 
 
 FT_INTERNAL
-void *buffer_get_data(string_buffer_t *buffer)
+void *buffer_get_data(f_string_buffer_t *buffer)
 {
     assert(buffer);
     return buffer->str.data;
 }
 
 FT_INTERNAL
-int buffer_check_align(string_buffer_t *buffer)
+int buffer_check_align(f_string_buffer_t *buffer)
 {
     assert(buffer);
     assert(buffer->str.data);

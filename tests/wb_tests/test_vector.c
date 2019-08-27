@@ -8,7 +8,7 @@ void test_vector_basic(void)
 
     typedef short item_t;
     const size_t init_capacity = 10;
-    vector_t *vector = create_vector(sizeof(item_t), init_capacity);
+    f_vector_t *vector = create_vector(sizeof(item_t), init_capacity);
 
     assert_true(vector != NULL);
     assert_true(vector_size(vector)     == 0);
@@ -94,7 +94,7 @@ void test_vector_basic(void)
             vector_push(vector, &item);
         }
 
-        vector_t *mv_vector = create_vector(sizeof(item_t), 5);
+        f_vector_t *mv_vector = create_vector(sizeof(item_t), 5);
         assert_true(mv_vector != NULL);
         for (i = 0; i < 5; ++i) {
             item_t item = (item_t)i * 2;
@@ -130,7 +130,7 @@ void test_vector_stress(void)
 
     typedef short item_t;
     const size_t init_capacity = 10;
-    vector_t *vector = create_vector(sizeof(item_t), init_capacity);
+    f_vector_t *vector = create_vector(sizeof(item_t), init_capacity);
 
     assert_true(vector != NULL);
     assert_true(vector_size(vector)     == 0);

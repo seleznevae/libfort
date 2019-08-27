@@ -62,14 +62,14 @@ static const size_t n_fg_colors = sizeof(fg_colors) / sizeof(fg_colors[0]);
 static const size_t n_bg_colors = sizeof(bg_colors) / sizeof(bg_colors[0]);
 static const size_t n_styles = sizeof(text_styles) / sizeof(text_styles[0]);
 
-void get_style_tag_for_cell(const fort_table_properties_t *props,
+void get_style_tag_for_cell(const f_table_properties_t *props,
                             size_t row, size_t col, char *style_tag, size_t sz)
 {
     (void)sz;
     size_t i = 0;
 
-    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_BG_COLOR);
-    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
+    unsigned bg_color_number = get_cell_property_hierarchically(props, row, col, FT_CPROP_CELL_BG_COLOR);
+    unsigned text_style = get_cell_property_hierarchically(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
 
     style_tag[0] = '\0';
 
@@ -98,14 +98,14 @@ error:
     return;
 }
 
-void get_reset_style_tag_for_cell(const fort_table_properties_t *props,
+void get_reset_style_tag_for_cell(const f_table_properties_t *props,
                                   size_t row, size_t col, char *reset_style_tag, size_t sz)
 {
     (void)sz;
     size_t i = 0;
 
-    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_BG_COLOR);
-    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
+    unsigned bg_color_number = get_cell_property_hierarchically(props, row, col, FT_CPROP_CELL_BG_COLOR);
+    unsigned text_style = get_cell_property_hierarchically(props, row, col, FT_CPROP_CELL_TEXT_STYLE);
 
     reset_style_tag[0] = '\0';
 
@@ -142,15 +142,15 @@ error:
 }
 
 
-void get_style_tag_for_content(const fort_table_properties_t *props,
+void get_style_tag_for_content(const f_table_properties_t *props,
                                size_t row, size_t col, char *style_tag, size_t sz)
 {
     (void)sz;
     size_t i = 0;
 
-    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
-    unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
-    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_BG_COLOR);
+    unsigned text_style = get_cell_property_hierarchically(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
+    unsigned fg_color_number = get_cell_property_hierarchically(props, row, col, FT_CPROP_CONT_FG_COLOR);
+    unsigned bg_color_number = get_cell_property_hierarchically(props, row, col, FT_CPROP_CONT_BG_COLOR);
 
     style_tag[0] = '\0';
 
@@ -186,16 +186,16 @@ error:
     return;
 }
 
-void get_reset_style_tag_for_content(const fort_table_properties_t *props,
+void get_reset_style_tag_for_content(const f_table_properties_t *props,
                                      size_t row, size_t col, char *reset_style_tag, size_t sz)
 {
     (void)sz;
     size_t i = 0;
     size_t len = 0;
 
-    unsigned text_style = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
-    unsigned fg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_FG_COLOR);
-    unsigned bg_color_number = get_cell_property_value_hierarcial(props, row, col, FT_CPROP_CONT_BG_COLOR);
+    unsigned text_style = get_cell_property_hierarchically(props, row, col, FT_CPROP_CONT_TEXT_STYLE);
+    unsigned fg_color_number = get_cell_property_hierarchically(props, row, col, FT_CPROP_CONT_FG_COLOR);
+    unsigned bg_color_number = get_cell_property_hierarchically(props, row, col, FT_CPROP_CONT_BG_COLOR);
 
     reset_style_tag[0] = '\0';
 
@@ -241,7 +241,7 @@ error:
 }
 
 
-static struct fort_cell_props g_default_cell_properties = {
+static struct f_cell_props g_default_cell_properties = {
     FT_ANY_ROW,    /* cell_row */
     FT_ANY_COLUMN, /* cell_col */
 
@@ -267,7 +267,7 @@ static struct fort_cell_props g_default_cell_properties = {
     FT_TSTYLE_DEFAULT, /* content_text_style */
 };
 
-static int get_prop_value_if_exists_otherwise_default(const struct fort_cell_props *cell_opts, uint32_t property)
+static int get_prop_value_if_exists_otherwise_default(const struct f_cell_props *cell_opts, uint32_t property)
 {
     if (cell_opts == NULL || !PROP_IS_SET(cell_opts->properties_flags, property)) {
         cell_opts = &g_default_cell_properties;
@@ -308,15 +308,15 @@ static int get_prop_value_if_exists_otherwise_default(const struct fort_cell_pro
 
 
 FT_INTERNAL
-fort_cell_prop_container_t *create_cell_prop_container(void)
+f_cell_prop_container_t *create_cell_prop_container(void)
 {
-    fort_cell_prop_container_t *ret = create_vector(sizeof(fort_cell_props_t), DEFAULT_VECTOR_CAPACITY);
+    f_cell_prop_container_t *ret = create_vector(sizeof(f_cell_props_t), DEFAULT_VECTOR_CAPACITY);
     return ret;
 }
 
 
 FT_INTERNAL
-void destroy_cell_prop_container(fort_cell_prop_container_t *cont)
+void destroy_cell_prop_container(f_cell_prop_container_t *cont)
 {
     if (cont)
         destroy_vector(cont);
@@ -324,13 +324,13 @@ void destroy_cell_prop_container(fort_cell_prop_container_t *cont)
 
 
 FT_INTERNAL
-const fort_cell_props_t *cget_cell_prop(const fort_cell_prop_container_t *cont, size_t row, size_t col)
+const f_cell_props_t *cget_cell_prop(const f_cell_prop_container_t *cont, size_t row, size_t col)
 {
     assert(cont);
     size_t sz = vector_size(cont);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        const fort_cell_props_t *opt = (const fort_cell_props_t *)vector_at_c(cont, i);
+        const f_cell_props_t *opt = (const f_cell_props_t *)vector_at_c(cont, i);
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
@@ -339,27 +339,27 @@ const fort_cell_props_t *cget_cell_prop(const fort_cell_prop_container_t *cont, 
 
 
 FT_INTERNAL
-fort_cell_props_t *get_cell_prop_and_create_if_not_exists(fort_cell_prop_container_t *cont, size_t row, size_t col)
+f_cell_props_t *get_cell_prop_and_create_if_not_exists(f_cell_prop_container_t *cont, size_t row, size_t col)
 {
     assert(cont);
     size_t sz = vector_size(cont);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        fort_cell_props_t *opt = (fort_cell_props_t *)vector_at(cont, i);
+        f_cell_props_t *opt = (f_cell_props_t *)vector_at(cont, i);
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
 
-    fort_cell_props_t opt;
+    f_cell_props_t opt;
     if (row == FT_ANY_ROW && col == FT_ANY_COLUMN)
-        memcpy(&opt, &g_default_cell_properties, sizeof(fort_cell_props_t));
+        memcpy(&opt, &g_default_cell_properties, sizeof(f_cell_props_t));
     else
-        memset(&opt, 0, sizeof(fort_cell_props_t));
+        memset(&opt, 0, sizeof(f_cell_props_t));
 
     opt.cell_row = row;
     opt.cell_col = col;
     if (FT_IS_SUCCESS(vector_push(cont, &opt))) {
-        return (fort_cell_props_t *)vector_at(cont, sz);
+        return (f_cell_props_t *)vector_at(cont, sz);
     }
 
     return NULL;
@@ -367,12 +367,12 @@ fort_cell_props_t *get_cell_prop_and_create_if_not_exists(fort_cell_prop_contain
 
 
 FT_INTERNAL
-int get_cell_property_value_hierarcial(const fort_table_properties_t *propertiess, size_t row, size_t column, uint32_t property)
+int get_cell_property_hierarchically(const f_table_properties_t *propertiess, size_t row, size_t column, uint32_t property)
 {
     assert(propertiess);
     size_t row_origin = row;
 
-    const fort_cell_props_t *opt = NULL;
+    const f_cell_props_t *opt = NULL;
     if (propertiess->cell_properties != NULL) {
         while (1) {
             opt = cget_cell_prop(propertiess->cell_properties, row, column);
@@ -401,7 +401,7 @@ int get_cell_property_value_hierarcial(const fort_table_properties_t *properties
 }
 
 
-static fort_status_t set_cell_property_impl(fort_cell_props_t *opt, uint32_t property, int value)
+static f_status set_cell_property_impl(f_cell_props_t *opt, uint32_t property, int value)
 {
     assert(opt);
 
@@ -458,9 +458,9 @@ fort_fail:
 
 
 FT_INTERNAL
-fort_status_t set_cell_property(fort_cell_prop_container_t *cont, size_t row, size_t col, uint32_t property, int value)
+f_status set_cell_property(f_cell_prop_container_t *cont, size_t row, size_t col, uint32_t property, int value)
 {
-    fort_cell_props_t *opt = get_cell_prop_and_create_if_not_exists(cont, row, col);
+    f_cell_props_t *opt = get_cell_prop_and_create_if_not_exists(cont, row, col);
     if (opt == NULL)
         return FT_ERROR;
 
@@ -479,7 +479,7 @@ fort_status_t set_cell_property(fort_cell_prop_container_t *cont, size_t row, si
 
 
 FT_INTERNAL
-fort_status_t set_default_cell_property(uint32_t property, int value)
+f_status set_default_cell_property(uint32_t property, int value)
 {
     return set_cell_property_impl(&g_default_cell_properties, property, value);
 }
@@ -876,7 +876,7 @@ fort_entire_table_properties_t g_entire_table_properties = {
     0, /* bottom_margin */
 };
 
-static fort_status_t set_entire_table_property_internal(fort_entire_table_properties_t *properties, uint32_t property, int value)
+static f_status set_entire_table_property_internal(fort_entire_table_properties_t *properties, uint32_t property, int value)
 {
     assert(properties);
     CHECK_NOT_NEGATIVE(value);
@@ -899,7 +899,7 @@ fort_fail:
 
 
 FT_INTERNAL
-fort_status_t set_entire_table_property(fort_table_properties_t *table_properties, uint32_t property, int value)
+f_status set_entire_table_property(f_table_properties_t *table_properties, uint32_t property, int value)
 {
     assert(table_properties);
     return set_entire_table_property_internal(&table_properties->entire_table_properties, property, value);
@@ -907,34 +907,34 @@ fort_status_t set_entire_table_property(fort_table_properties_t *table_propertie
 
 
 FT_INTERNAL
-fort_status_t set_default_entire_table_property(uint32_t property, int value)
+f_status set_default_entire_table_property(uint32_t property, int value)
 {
     return set_entire_table_property_internal(&g_entire_table_properties, property, value);
 }
 
 
 FT_INTERNAL
-size_t max_border_elem_strlen(struct fort_table_properties *properties)
+size_t max_border_elem_strlen(struct f_table_properties *properties)
 {
     assert(properties);
     size_t result = 1;
     int i = 0;
-    for (i = 0; i < BorderItemPosSize; ++i) {
+    for (i = 0; i < BORDER_ITEM_POS_SIZE; ++i) {
         result = MAX(result, strlen(properties->border_style.border_chars[i]));
     }
 
-    for (i = 0; i < BorderItemPosSize; ++i) {
+    for (i = 0; i < BORDER_ITEM_POS_SIZE; ++i) {
         result = MAX(result, strlen(properties->border_style.header_border_chars[i]));
     }
 
-    for (i = 0; i < SepratorItemPosSize; ++i) {
+    for (i = 0; i < SEPARATOR_ITEM_POS_SIZE; ++i) {
         result = MAX(result, strlen(properties->border_style.separator_chars[i]));
     }
     return result;
 }
 
 
-fort_table_properties_t g_table_properties = {
+f_table_properties_t g_table_properties = {
     /* border_style */
     BASIC_STYLE,
     NULL,     /* cell_properties */
@@ -949,13 +949,13 @@ fort_table_properties_t g_table_properties = {
 
 
 FT_INTERNAL
-fort_table_properties_t *create_table_properties(void)
+f_table_properties_t *create_table_properties(void)
 {
-    fort_table_properties_t *properties = (fort_table_properties_t *)F_CALLOC(sizeof(fort_table_properties_t), 1);
+    f_table_properties_t *properties = (f_table_properties_t *)F_CALLOC(sizeof(f_table_properties_t), 1);
     if (properties == NULL) {
         return NULL;
     }
-    memcpy(properties, &g_table_properties, sizeof(fort_table_properties_t));
+    memcpy(properties, &g_table_properties, sizeof(f_table_properties_t));
     properties->cell_properties = create_cell_prop_container();
     if (properties->cell_properties == NULL) {
         destroy_table_properties(properties);
@@ -966,7 +966,7 @@ fort_table_properties_t *create_table_properties(void)
 }
 
 FT_INTERNAL
-void destroy_table_properties(fort_table_properties_t *properties)
+void destroy_table_properties(f_table_properties_t *properties)
 {
     if (properties == NULL)
         return;
@@ -978,16 +978,16 @@ void destroy_table_properties(fort_table_properties_t *properties)
 }
 
 static
-fort_cell_prop_container_t *copy_cell_properties(fort_cell_prop_container_t *cont)
+f_cell_prop_container_t *copy_cell_properties(f_cell_prop_container_t *cont)
 {
-    fort_cell_prop_container_t *result = create_cell_prop_container();
+    f_cell_prop_container_t *result = create_cell_prop_container();
     if (result == NULL)
         return NULL;
 
     size_t i = 0;
     size_t sz = vector_size(cont);
     for (i = 0; i < sz; ++i) {
-        fort_cell_props_t *opt = (fort_cell_props_t *)vector_at(cont, i);
+        f_cell_props_t *opt = (f_cell_props_t *)vector_at(cont, i);
         if (FT_IS_ERROR(vector_push(result, opt))) {
             destroy_cell_prop_container(result);
             return NULL;
@@ -997,9 +997,9 @@ fort_cell_prop_container_t *copy_cell_properties(fort_cell_prop_container_t *con
 }
 
 FT_INTERNAL
-fort_table_properties_t *copy_table_properties(const fort_table_properties_t *properties)
+f_table_properties_t *copy_table_properties(const f_table_properties_t *properties)
 {
-    fort_table_properties_t *new_opt = create_table_properties();
+    f_table_properties_t *new_opt = create_table_properties();
     if (new_opt == NULL)
         return NULL;
 

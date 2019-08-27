@@ -138,8 +138,8 @@ wchar_t *fort_wcsdup(const wchar_t *str)
 #endif
 
 
-FT_INTERNAL
-size_t number_of_columns_in_format_string(const char *fmt)
+static
+size_t columns_number_in_fmt_string(const char *fmt)
 {
     size_t separator_counter = 0;
     const char *pos = fmt;
@@ -154,10 +154,9 @@ size_t number_of_columns_in_format_string(const char *fmt)
     return separator_counter + 1;
 }
 
-
 #if defined(FT_HAVE_WCHAR)
-FT_INTERNAL
-size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
+static
+size_t columns_number_in_fmt_wstring(const wchar_t *fmt)
 {
     size_t separator_counter = 0;
     const wchar_t *pos = fmt;
@@ -173,10 +172,9 @@ size_t number_of_columns_in_format_wstring(const wchar_t *fmt)
 }
 #endif
 
-
 #if defined(FT_HAVE_UTF8)
-FT_INTERNAL
-size_t number_of_columns_in_format_u8string(const void *fmt)
+static
+size_t columns_number_in_fmt_u8string(const void *fmt)
 {
     size_t separator_counter = 0;
     const char *pos = (const char *)fmt;
@@ -193,18 +191,18 @@ size_t number_of_columns_in_format_u8string(const void *fmt)
 #endif
 
 FT_INTERNAL
-size_t number_of_columns_in_format_string2(const struct ft_string *fmt)
+size_t number_of_columns_in_format_string(const f_string_view_t *fmt)
 {
     switch (fmt->type) {
         case CHAR_BUF:
-            return number_of_columns_in_format_string(fmt->u.cstr);
+            return columns_number_in_fmt_string(fmt->u.cstr);
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
-            return number_of_columns_in_format_wstring(fmt->u.wstr);
+            return columns_number_in_fmt_wstring(fmt->u.wstr);
 #endif /* FT_HAVE_WCHAR */
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
-            return number_of_columns_in_format_u8string(fmt->u.u8str);
+            return columns_number_in_fmt_u8string(fmt->u.u8str);
 #endif /* FT_HAVE_UTF8 */
         default:
             assert(0);
@@ -213,18 +211,18 @@ size_t number_of_columns_in_format_string2(const struct ft_string *fmt)
 }
 
 FT_INTERNAL
-size_t number_of_columns_in_format_buffer(const string_buffer_t *fmt)
+size_t number_of_columns_in_format_buffer(const f_string_buffer_t *fmt)
 {
     switch (fmt->type) {
         case CHAR_BUF:
-            return number_of_columns_in_format_string(fmt->str.cstr);
+            return columns_number_in_fmt_string(fmt->str.cstr);
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
-            return number_of_columns_in_format_wstring(fmt->str.wstr);
+            return columns_number_in_fmt_wstring(fmt->str.wstr);
 #endif /* FT_HAVE_WCHAR */
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
-            return number_of_columns_in_format_u8string(fmt->str.u8str);
+            return columns_number_in_fmt_u8string(fmt->str.u8str);
 #endif /* FT_HAVE_UTF8 */
         default:
             assert(0);
@@ -263,7 +261,7 @@ int snprint_n_strings_impl(char *buf, size_t length, size_t n, const char *str)
 }
 
 static
-int snprint_n_strings(conv_context_t *cntx, size_t n, const char *str)
+int snprint_n_strings(f_conv_context_t *cntx, size_t n, const char *str)
 {
     int w = snprint_n_strings_impl(cntx->u.buf, cntx->raw_avail, n, str);
     if (w >= 0) {
@@ -285,7 +283,7 @@ int u8nprint_n_strings(void *buf, size_t length, size_t n, const void *str);
 
 
 FT_INTERNAL
-int print_n_strings(conv_context_t *cntx, size_t n, const char *str)
+int print_n_strings(f_conv_context_t *cntx, size_t n, const char *str)
 {
     int cod_w;
     int raw_written;
@@ -326,7 +324,7 @@ int print_n_strings(conv_context_t *cntx, size_t n, const char *str)
 }
 
 FT_INTERNAL
-int ft_nprint(conv_context_t *cntx, const char *str, size_t strlen)
+int ft_nprint(f_conv_context_t *cntx, const char *str, size_t strlen)
 {
     if (cntx->raw_avail + 1/* for 0 */ < strlen)
         return -1;
@@ -339,7 +337,7 @@ int ft_nprint(conv_context_t *cntx, const char *str, size_t strlen)
 }
 
 #ifdef FT_HAVE_WCHAR
-int ft_nwprint(conv_context_t *cntx, const wchar_t *str, size_t strlen)
+int ft_nwprint(f_conv_context_t *cntx, const wchar_t *str, size_t strlen)
 {
     if (cntx->raw_avail + 1/* for 0 */ < strlen)
         return -1;
@@ -359,7 +357,7 @@ int ft_nwprint(conv_context_t *cntx, const wchar_t *str, size_t strlen)
 
 #ifdef FT_HAVE_UTF8
 FT_INTERNAL
-int ft_nu8print(conv_context_t *cntx, const void *beg, const void *end)
+int ft_nu8print(f_conv_context_t *cntx, const void *beg, const void *end)
 {
     const char *bc = (const char *)beg;
     const char *ec = (const char *)end;

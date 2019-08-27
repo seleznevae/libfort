@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <string.h>
 
-struct vector {
+struct f_vector {
     size_t m_size;
     void  *m_data;
     size_t m_capacity;
@@ -10,7 +10,7 @@ struct vector {
 };
 
 
-static int vector_reallocate_(vector_t *vector, size_t new_capacity)
+static int vector_reallocate_(f_vector_t *vector, size_t new_capacity)
 {
     assert(vector);
     assert(new_capacity > vector->m_capacity);
@@ -24,9 +24,9 @@ static int vector_reallocate_(vector_t *vector, size_t new_capacity)
 
 
 FT_INTERNAL
-vector_t *create_vector(size_t item_size, size_t capacity)
+f_vector_t *create_vector(size_t item_size, size_t capacity)
 {
-    vector_t *vector = (vector_t *)F_MALLOC(sizeof(vector_t));
+    f_vector_t *vector = (f_vector_t *)F_MALLOC(sizeof(f_vector_t));
     if (vector == NULL) {
         return NULL;
     }
@@ -47,7 +47,7 @@ vector_t *create_vector(size_t item_size, size_t capacity)
 
 
 FT_INTERNAL
-void destroy_vector(vector_t *vector)
+void destroy_vector(f_vector_t *vector)
 {
     assert(vector);
     F_FREE(vector->m_data);
@@ -56,7 +56,7 @@ void destroy_vector(vector_t *vector)
 
 
 FT_INTERNAL
-size_t vector_size(const vector_t *vector)
+size_t vector_size(const f_vector_t *vector)
 {
     assert(vector);
     return vector->m_size;
@@ -64,7 +64,7 @@ size_t vector_size(const vector_t *vector)
 
 
 FT_INTERNAL
-size_t vector_capacity(const vector_t *vector)
+size_t vector_capacity(const f_vector_t *vector)
 {
     assert(vector);
     return vector->m_capacity;
@@ -72,7 +72,7 @@ size_t vector_capacity(const vector_t *vector)
 
 
 FT_INTERNAL
-int vector_push(vector_t *vector, const void *item)
+int vector_push(f_vector_t *vector, const void *item)
 {
     assert(vector);
     assert(item);
@@ -93,7 +93,7 @@ int vector_push(vector_t *vector, const void *item)
 
 
 FT_INTERNAL
-const void *vector_at_c(const vector_t *vector, size_t index)
+const void *vector_at_c(const f_vector_t *vector, size_t index)
 {
     if (index >= vector->m_size)
         return NULL;
@@ -103,7 +103,7 @@ const void *vector_at_c(const vector_t *vector, size_t index)
 
 
 FT_INTERNAL
-void *vector_at(vector_t *vector, size_t index)
+void *vector_at(f_vector_t *vector, size_t index)
 {
     if (index >= vector->m_size)
         return NULL;
@@ -113,7 +113,7 @@ void *vector_at(vector_t *vector, size_t index)
 
 
 FT_INTERNAL
-fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
+f_status vector_swap(f_vector_t *cur_vec, f_vector_t *mv_vec, size_t pos)
 {
     assert(cur_vec);
     assert(mv_vec);
@@ -169,12 +169,12 @@ fort_status_t vector_swap(vector_t *cur_vec, vector_t *mv_vec, size_t pos)
 
 #ifdef FT_TEST_BUILD
 
-vector_t *copy_vector(vector_t *v)
+f_vector_t *copy_vector(f_vector_t *v)
 {
     if (v == NULL)
         return NULL;
 
-    vector_t *new_vector = create_vector(v->m_item_size, v->m_capacity);
+    f_vector_t *new_vector = create_vector(v->m_item_size, v->m_capacity);
     if (new_vector == NULL)
         return NULL;
 
@@ -184,7 +184,7 @@ vector_t *copy_vector(vector_t *v)
     return new_vector;
 }
 
-size_t vector_index_of(const vector_t *vector, const void *item)
+size_t vector_index_of(const f_vector_t *vector, const void *item)
 {
     assert(vector);
     assert(item);
@@ -200,7 +200,7 @@ size_t vector_index_of(const vector_t *vector, const void *item)
 }
 
 
-int vector_erase(vector_t *vector, size_t index)
+int vector_erase(f_vector_t *vector, size_t index)
 {
     assert(vector);
 
@@ -215,7 +215,7 @@ int vector_erase(vector_t *vector, size_t index)
 }
 
 
-void vector_clear(vector_t *vector)
+void vector_clear(f_vector_t *vector)
 {
     vector->m_size = 0;
 }

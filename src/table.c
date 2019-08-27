@@ -5,9 +5,9 @@
 #include "row.h"
 
 FT_INTERNAL
-separator_t *create_separator(int enabled)
+f_separator_t *create_separator(int enabled)
 {
-    separator_t *res = (separator_t *)F_CALLOC(1, sizeof(separator_t));
+    f_separator_t *res = (f_separator_t *)F_CALLOC(1, sizeof(f_separator_t));
     if (res == NULL)
         return NULL;
     res->enabled = enabled;
@@ -16,14 +16,14 @@ separator_t *create_separator(int enabled)
 
 
 FT_INTERNAL
-void destroy_separator(separator_t *sep)
+void destroy_separator(f_separator_t *sep)
 {
     F_FREE(sep);
 }
 
 
 FT_INTERNAL
-separator_t *copy_separator(separator_t *sep)
+f_separator_t *copy_separator(f_separator_t *sep)
 {
     assert(sep);
     return create_separator(sep->enabled);
@@ -31,7 +31,7 @@ separator_t *copy_separator(separator_t *sep)
 
 
 static
-fort_row_t *get_row_impl(ft_table_t *table, size_t row, enum get_policy policy)
+f_row_t *get_row_impl(ft_table_t *table, size_t row, enum f_get_policy policy)
 {
     if (table == NULL || table->rows == NULL) {
         return NULL;
@@ -40,12 +40,12 @@ fort_row_t *get_row_impl(ft_table_t *table, size_t row, enum get_policy policy)
     switch (policy) {
         case DONT_CREATE_ON_NULL:
             if (row < vector_size(table->rows)) {
-                return *(fort_row_t **)vector_at(table->rows, row);
+                return *(f_row_t **)vector_at(table->rows, row);
             }
             return NULL;
         case CREATE_ON_NULL:
             while (row >= vector_size(table->rows)) {
-                fort_row_t *new_row = create_row();
+                f_row_t *new_row = create_row();
                 if (new_row == NULL)
                     return NULL;
                 if (FT_IS_ERROR(vector_push(table->rows, &new_row))) {
@@ -53,7 +53,7 @@ fort_row_t *get_row_impl(ft_table_t *table, size_t row, enum get_policy policy)
                     return NULL;
                 }
             }
-            return *(fort_row_t **)vector_at(table->rows, row);
+            return *(f_row_t **)vector_at(table->rows, row);
     }
 
     assert(0 && "Shouldn't be here!");
@@ -62,35 +62,35 @@ fort_row_t *get_row_impl(ft_table_t *table, size_t row, enum get_policy policy)
 
 
 FT_INTERNAL
-fort_row_t *get_row(ft_table_t *table, size_t row)
+f_row_t *get_row(ft_table_t *table, size_t row)
 {
     return get_row_impl(table, row, DONT_CREATE_ON_NULL);
 }
 
 
 FT_INTERNAL
-const fort_row_t *get_row_c(const ft_table_t *table, size_t row)
+const f_row_t *get_row_c(const ft_table_t *table, size_t row)
 {
     return get_row((ft_table_t *)table, row);
 }
 
 
 FT_INTERNAL
-fort_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row)
+f_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row)
 {
     return get_row_impl(table, row, CREATE_ON_NULL);
 }
 
 
 FT_INTERNAL
-string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table)
+f_string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table)
 {
     assert(table);
 
-    fort_row_t *row = get_row_and_create_if_not_exists(table, table->cur_row);
+    f_row_t *row = get_row_and_create_if_not_exists(table, table->cur_row);
     if (row == NULL)
         return NULL;
-    fort_cell_t *cell = get_cell_and_create_if_not_exists(row, table->cur_col);
+    f_cell_t *cell = get_cell_and_create_if_not_exists(row, table->cur_col);
     if (cell == NULL)
         return NULL;
 
@@ -102,24 +102,15 @@ string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table)
  * Returns number of cells (rows * cols)
  */
 FT_INTERNAL
-fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols)
+f_status get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols)
 {
     *rows = 0;
     *cols = 0;
     if (table && table->rows) {
         *rows = vector_size(table->rows);
-        /*
-        fort_row_t *row = NULL;
-        FOR_EACH(fort_row_t *, row, table->rows) {
-            (void)i0;
-            size_t cols_in_row = columns_in_row(row);
-            if (cols_in_row > *cols)
-                *cols = cols_in_row;
-        }
-        */
         size_t row_index = 0;
         for (row_index = 0; row_index < vector_size(table->rows); ++row_index) {
-            fort_row_t *row = *(fort_row_t **)vector_at(table->rows, row_index);
+            f_row_t *row = *(f_row_t **)vector_at(table->rows, row_index);
             size_t cols_in_row = columns_in_row(row);
             if (cols_in_row > *cols)
                 *cols = cols_in_row;
@@ -130,16 +121,14 @@ fort_status_t get_table_sizes(const ft_table_t *table, size_t *rows, size_t *col
 
 
 FT_INTERNAL
-fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
-        size_t **col_width_arr_p, size_t *col_width_arr_sz,
-        size_t **row_height_arr_p, size_t *row_height_arr_sz,
-        enum request_geom_type geom)
+f_status table_rows_and_cols_geometry(const ft_table_t *table,
+                                      size_t **col_width_arr_p, size_t *col_width_arr_sz,
+                                      size_t **row_height_arr_p, size_t *row_height_arr_sz,
+                                      enum f_geometry_type geom)
 {
     if (table == NULL) {
         return FT_ERROR;
     }
-
-
 
     size_t cols = 0;
     size_t rows = 0;
@@ -147,8 +136,8 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
     if (FT_IS_ERROR(status))
         return status;
 
-    size_t *col_width_arr = (size_t *)F_CALLOC(sizeof(size_t), cols);
-    size_t *row_height_arr = (size_t *)F_CALLOC(sizeof(size_t), rows);
+    size_t *col_width_arr = (size_t *)F_CALLOC(cols, sizeof(size_t));
+    size_t *row_height_arr = (size_t *)F_CALLOC(rows, sizeof(size_t));
     if (col_width_arr == NULL || row_height_arr == NULL) {
         F_FREE(col_width_arr);
         F_FREE(row_height_arr);
@@ -156,35 +145,35 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
     }
 
     int combined_cells_found = 0;
-    context_t context;
+    f_context_t context;
     context.table_properties = (table->properties ? table->properties : &g_table_properties);
     size_t col = 0;
     for (col = 0; col < cols; ++col) {
         col_width_arr[col] = 0;
         size_t row = 0;
         for (row = 0; row < rows; ++row) {
-            const fort_row_t *row_p = get_row_c(table, row);
-            const fort_cell_t *cell = get_cell_c(row_p, col);
+            const f_row_t *row_p = get_row_c(table, row);
+            const f_cell_t *cell = get_cell_c(row_p, col);
             context.column = col;
             context.row = row;
             if (cell) {
                 switch (get_cell_type(cell)) {
-                    case CommonCell:
+                    case COMMON_CELL:
                         col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context, geom));
                         break;
-                    case GroupMasterCell:
+                    case GROUP_MASTER_CELL:
                         combined_cells_found = 1;
                         break;
-                    case GroupSlaveCell:
+                    case GROUP_SLAVE_CELL:
                         ; /* Do nothing */
                         break;
                 }
                 row_height_arr[row] = MAX(row_height_arr[row], hint_height_cell(cell, &context));
             } else {
-                size_t cell_empty_string_height = get_cell_property_value_hierarcial(context.table_properties, context.row, context.column, FT_CPROP_EMPTY_STR_HEIGHT);
+                size_t cell_empty_string_height = get_cell_property_hierarchically(context.table_properties, context.row, context.column, FT_CPROP_EMPTY_STR_HEIGHT);
                 if (cell_empty_string_height) {
-                    size_t cell_top_padding = get_cell_property_value_hierarcial(context.table_properties, context.row, context.column, FT_CPROP_TOP_PADDING);
-                    size_t cell_bottom_padding = get_cell_property_value_hierarcial(context.table_properties, context.row, context.column, FT_CPROP_BOTTOM_PADDING);
+                    size_t cell_top_padding = get_cell_property_hierarchically(context.table_properties, context.row, context.column, FT_CPROP_TOP_PADDING);
+                    size_t cell_bottom_padding = get_cell_property_hierarchically(context.table_properties, context.row, context.column, FT_CPROP_BOTTOM_PADDING);
                     row_height_arr[row] = MAX(row_height_arr[row], cell_empty_string_height + cell_top_padding + cell_bottom_padding);
                 }
             }
@@ -195,12 +184,12 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
         for (col = 0; col < cols; ++col) {
             size_t row = 0;
             for (row = 0; row < rows; ++row) {
-                const fort_row_t *row_p = get_row_c(table, row);
-                const fort_cell_t *cell = get_cell_c(row_p, col);
+                const f_row_t *row_p = get_row_c(table, row);
+                const f_cell_t *cell = get_cell_c(row_p, col);
                 context.column = col;
                 context.row = row;
                 if (cell) {
-                    if (get_cell_type(cell) == GroupMasterCell) {
+                    if (get_cell_type(cell) == GROUP_MASTER_CELL) {
                         size_t hint_width = hint_width_cell(cell, &context, geom);
                         size_t slave_col = col + group_cell_number(row_p, col);
                         size_t cur_adj_col = col;
@@ -224,9 +213,10 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
         }
     }
 
-    /* todo: Maybe it is better to move min width checking to a particular cell width checking.
-     * At the moment min width includes paddings. Maybe it is better that min width weren't include
-     * paddings but be min width of the cell content without padding
+    /* todo: Maybe it is better to move min width checking to a particular cell
+     * width checking. At the moment min width includes paddings. Maybe it is
+     * better that min width weren't include paddings but be min width of the
+     * cell content without padding
      */
     /*
     if (table->properties) {
@@ -248,7 +238,7 @@ fort_status_t table_rows_and_cols_geometry(const ft_table_t *table,
  * Returns geometry in characters
  */
 FT_INTERNAL
-fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *width)
+f_status table_geometry(const ft_table_t *table, size_t *height, size_t *width)
 {
     if (table == NULL)
         return FT_ERROR;
@@ -278,24 +268,24 @@ fort_status_t table_geometry(const ft_table_t *table, size_t *height, size_t *wi
     F_FREE(col_width_arr);
     F_FREE(row_height_arr);
 
-    if (table->properties) {
-        *height += table->properties->entire_table_properties.top_margin;
-        *height += table->properties->entire_table_properties.bottom_margin;
-        *width += table->properties->entire_table_properties.left_margin;
-        *width += table->properties->entire_table_properties.right_margin;
+    f_table_properties_t *properties = table->properties;
+    if (properties) {
+        *height += properties->entire_table_properties.top_margin;
+        *height += properties->entire_table_properties.bottom_margin;
+        *width += properties->entire_table_properties.left_margin;
+        *width += properties->entire_table_properties.right_margin;
     }
 
     /* Take into account that border elements can be more than one byte long */
-    fort_table_properties_t *table_properties = table->properties ? table->properties : &g_table_properties;
+    f_table_properties_t *table_properties = properties ? properties : &g_table_properties;
     size_t max_border_elem_len = max_border_elem_strlen(table_properties);
     *width *= max_border_elem_len;
 
     return FT_SUCCESS;
-
 }
 
 FT_INTERNAL
-fort_status_t table_internal_codepoints_geometry(const ft_table_t *table, size_t *height, size_t *width)
+f_status table_internal_codepoints_geometry(const ft_table_t *table, size_t *height, size_t *width)
 {
     return table_geometry(table, height, width);
 }

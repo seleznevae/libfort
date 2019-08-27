@@ -71,7 +71,6 @@ SOFTWARE.
 /*****************************************************************************
  *               RETURN CODES
  *****************************************************************************/
-typedef int fort_status_t;
 #define FT_SUCCESS        0
 #define FT_MEMORY_ERROR   -1
 #define FT_ERROR          -2

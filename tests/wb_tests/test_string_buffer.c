@@ -19,7 +19,7 @@ const wchar_t *wstr_n_substring_beg(const wchar_t *str, wchar_t ch_separator, si
 const void *utf8_n_substring_beg(const void *str, utf8_int32_t ch_separator, size_t n);
 #endif
 
-fort_status_t str_n_substring(const char *str, char ch_separator, size_t n, const char **begin, const char **end);
+f_status str_n_substring(const char *str, char ch_separator, size_t n, const char **begin, const char **end);
 void wstr_n_substring(const wchar_t *str, wchar_t ch_separator, size_t n, const wchar_t **begin, const wchar_t **end);
 #ifdef FT_HAVE_UTF8
 void utf8_n_substring(const void *str, utf8_int32_t ch_separator, size_t n, const void **begin, const void **end);
@@ -351,7 +351,7 @@ void test_str_n_substring(void)
 
 void test_buffer_text_visible_width(void)
 {
-    string_buffer_t *buffer = create_string_buffer(200, CHAR_BUF);
+    f_string_buffer_t *buffer = create_string_buffer(200, CHAR_BUF);
     buffer->type = CHAR_BUF;
     char *old_value = buffer->str.cstr;
 
@@ -477,7 +477,7 @@ void test_buffer_text_visible_width(void)
 
 void test_buffer_text_visible_height(void)
 {
-    string_buffer_t *buffer = create_string_buffer(200, CHAR_BUF);
+    f_string_buffer_t *buffer = create_string_buffer(200, CHAR_BUF);
     buffer->type = CHAR_BUF;
     char *old_value = buffer->str.cstr;
 
@@ -606,41 +606,41 @@ static void test_print_n_strings_(const char *str, size_t n)
 {
     int sz = n * strlen(str);
     {
-        string_buffer_t *buffer = create_string_buffer(200, CHAR_BUF);
-        conv_context_t cntx;
+        f_string_buffer_t *buffer = create_string_buffer(200, CHAR_BUF);
+        const char *origin = (char *)buffer_get_data(buffer);
+        f_conv_context_t cntx;
         cntx.u.buf = (char *)buffer_get_data(buffer);
-        cntx.buf_origin = (char *)buffer_get_data(buffer);
         cntx.raw_avail = 200;
         cntx.b_type = CHAR_BUF;
         assert_true(print_n_strings(&cntx, n, str) == sz);
-        assert_true(cntx.u.buf - cntx.buf_origin == (ptrdiff_t)sz);
+        assert_true(cntx.u.buf - origin == (ptrdiff_t)sz);
         destroy_string_buffer(buffer);
     }
 
 #ifdef FT_HAVE_WCHAR
     {
-        string_buffer_t *buffer = create_string_buffer(200, W_CHAR_BUF);
-        conv_context_t cntx;
+        f_string_buffer_t *buffer = create_string_buffer(200, W_CHAR_BUF);
+        const char *origin = (char *)buffer_get_data(buffer);
+        f_conv_context_t cntx;
         cntx.u.buf = (char *)buffer_get_data(buffer);
-        cntx.buf_origin = (char *)buffer_get_data(buffer);
         cntx.raw_avail = 200;
         cntx.b_type = W_CHAR_BUF;
         assert_true(print_n_strings(&cntx, n, str) == /*sizeof(wchar_t) **/ sz);
-        assert_true(cntx.u.buf - cntx.buf_origin == (ptrdiff_t)sizeof(wchar_t) * sz);
+        assert_true(cntx.u.buf - origin == (ptrdiff_t)sizeof(wchar_t) * sz);
         destroy_string_buffer(buffer);
     }
 #endif /* FT_HAVE_WCHAR */
 
 #ifdef FT_HAVE_UTF8
     {
-        string_buffer_t *buffer = create_string_buffer(200, UTF8_BUF);
-        conv_context_t cntx;
+        f_string_buffer_t *buffer = create_string_buffer(200, UTF8_BUF);
+        const char *origin = (char *)buffer_get_data(buffer);
+        f_conv_context_t cntx;
         cntx.u.buf = (char *)buffer_get_data(buffer);
-        cntx.buf_origin = (char *)buffer_get_data(buffer);
         cntx.raw_avail = 200;
         cntx.b_type = UTF8_BUF;
         assert_true(print_n_strings(&cntx, n, str) ==  sz);
-        assert_true(cntx.u.buf - cntx.buf_origin == (ptrdiff_t)sz);
+        assert_true(cntx.u.buf - origin == (ptrdiff_t)sz);
         destroy_string_buffer(buffer);
     }
 #endif /* FT_HAVE_UTF8 */
