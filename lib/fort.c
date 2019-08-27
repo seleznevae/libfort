@@ -5247,16 +5247,17 @@ int print_row_separator_impl(conv_context_t *cntx,
     }
 
 
+    fort_table_properties_t *properties = context->table_properties;
     size_t written = 0;
     int tmp = 0;
 
     enum ft_row_type lower_row_type = FT_ROW_COMMON;
     if (lower_row != NULL) {
-        lower_row_type = (enum ft_row_type)get_cell_property_value_hierarcial(context->table_properties, context->row, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE);
+        lower_row_type = (enum ft_row_type)get_cell_property_value_hierarcial(properties, context->row, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE);
     }
     enum ft_row_type upper_row_type = FT_ROW_COMMON;
     if (upper_row != NULL) {
-        upper_row_type = (enum ft_row_type)get_cell_property_value_hierarcial(context->table_properties, context->row - 1, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE);
+        upper_row_type = (enum ft_row_type)get_cell_property_value_hierarcial(properties, context->row - 1, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE);
     }
 
     /* Row separator anatomy
@@ -5273,23 +5274,24 @@ int print_row_separator_impl(conv_context_t *cntx,
     const char **IB = NULL;
     const char **II = NULL;
 
+    struct fort_border_style *border_style = &properties->border_style;
 
     typedef const char *(*border_chars_point_t)[BorderItemPosSize];
     const char *(*border_chars)[BorderItemPosSize] = NULL;
-    border_chars = (border_chars_point_t)&context->table_properties->border_style.border_chars;
+    border_chars = (border_chars_point_t)&border_style->border_chars;
     if (upper_row_type == FT_ROW_HEADER || lower_row_type == FT_ROW_HEADER) {
-        border_chars = (border_chars_point_t)&context->table_properties->border_style.header_border_chars;
+        border_chars = (border_chars_point_t)&border_style->header_border_chars;
     }
 
     if (sep && sep->enabled) {
-        L = &(context->table_properties->border_style.separator_chars[LH_sip]);
-        I = &(context->table_properties->border_style.separator_chars[IH_sip]);
-        IV = &(context->table_properties->border_style.separator_chars[II_sip]);
-        R = &(context->table_properties->border_style.separator_chars[RH_sip]);
+        L = &(border_style->separator_chars[LH_sip]);
+        I = &(border_style->separator_chars[IH_sip]);
+        IV = &(border_style->separator_chars[II_sip]);
+        R = &(border_style->separator_chars[RH_sip]);
 
-        IT = &(context->table_properties->border_style.separator_chars[TI_sip]);
-        IB = &(context->table_properties->border_style.separator_chars[BI_sip]);
-        II = &(context->table_properties->border_style.separator_chars[IH_sip]);
+        IT = &(border_style->separator_chars[TI_sip]);
+        IB = &(border_style->separator_chars[BI_sip]);
+        II = &(border_style->separator_chars[IH_sip]);
 
         if (lower_row == NULL) {
             L = &(*border_chars)[BL_bip];
@@ -5353,8 +5355,10 @@ int print_row_separator_impl(conv_context_t *cntx,
         goto clear;
     }
 
+    fort_entire_table_properties_t *entire_tprops = &properties->entire_table_properties;
+
     /* Print left margin */
-    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.left_margin, FT_SPACE));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->left_margin, FT_SPACE));
 
     for (i = 0; i < cols; ++i) {
         if (i == 0) {
@@ -5376,7 +5380,7 @@ int print_row_separator_impl(conv_context_t *cntx,
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *R));
 
     /* Print right margin */
-    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, context->table_properties->entire_table_properties.right_margin, FT_SPACE));
+    CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->right_margin, FT_SPACE));
 
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, FT_NEWLINE));
 
@@ -5606,16 +5610,17 @@ vsnprintf_buffer(string_buffer_t *buffer, const struct ft_string *fmt,
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
+    size_t width_capacity = string_buffer_width_capacity(buffer);
     switch (buffer->type) {
         case CHAR_BUF:
-            return vsnprintf(buffer->str.cstr, string_buffer_width_capacity(buffer), fmt->u.cstr, *va);
+            return vsnprintf(buffer->str.cstr, width_capacity, fmt->u.cstr, *va);
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
-            return vswprintf(buffer->str.wstr, string_buffer_width_capacity(buffer), fmt->u.wstr, *va);
+            return vswprintf(buffer->str.wstr, width_capacity, fmt->u.wstr, *va);
 #endif
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
-            return vsnprintf(buffer->str.cstr, string_buffer_width_capacity(buffer), fmt->u.cstr, *va);
+            return vsnprintf(buffer->str.cstr, width_capacity, fmt->u.cstr, *va);
 #endif
         default:
             assert(0);
@@ -5707,8 +5712,6 @@ int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_
 {
     const context_t *context = cntx->cntx;
     assert(context);
-    const char *space_char = " ";
-    const char *new_line_char = "\n";
 
     if (row == NULL)
         return -1;
@@ -5721,12 +5724,13 @@ int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_
      *
      *  L    data    IV    data   IV   data    R
      */
+    fort_table_properties_t *properties = context->table_properties;
 
     typedef const char *(*border_chars_point_t)[BorderItemPosSize];
-    enum ft_row_type row_type = (enum ft_row_type)get_cell_property_value_hierarcial(context->table_properties, context->row, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE);
+    enum ft_row_type row_type = (enum ft_row_type)get_cell_property_value_hierarcial(properties, context->row, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE);
     const char *(*bord_chars)[BorderItemPosSize] = (row_type == FT_ROW_HEADER)
-            ? (border_chars_point_t)(&context->table_properties->border_style.header_border_chars)
-            : (border_chars_point_t)(&context->table_properties->border_style.border_chars);
+            ? (border_chars_point_t)(&properties->border_style.header_border_chars)
+            : (border_chars_point_t)(&properties->border_style.border_chars);
     const char **L = &(*bord_chars)[LL_bip];
     const char **IV = &(*bord_chars)[IV_bip];
     const char **R = &(*bord_chars)[RR_bip];
@@ -5738,7 +5742,7 @@ int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_
     fort_entire_table_properties_t *entire_tprops = &context->table_properties->entire_table_properties;
     for (i = 0; i < row_height; ++i) {
         /* Print left margin */
-        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->left_margin, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->left_margin, FT_SPACE));
 
         /* Print left table boundary */
         CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *L));
@@ -5761,7 +5765,7 @@ int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_
                 CHCK_RSLT_ADD_TO_WRITTEN(cell_printf(cell, i, cntx, cell_vis_width));
             } else {
                 /* Print empty cell */
-                CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, col_width_arr[j], space_char));
+                CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, col_width_arr[j], FT_SPACE));
             }
 
             /* Print boundary between cells */
@@ -5775,10 +5779,10 @@ int snprintf_row(const fort_row_t *row, conv_context_t *cntx, size_t *col_width_
         CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, *R));
 
         /* Print right margin */
-        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->right_margin, space_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, entire_tprops->right_margin, FT_SPACE));
 
         /* Print new line character */
-        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, new_line_char));
+        CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, 1, FT_NEWLINE));
     }
     return (int)written;
 
