@@ -945,6 +945,24 @@ public:
         return (*this)[row_idx][col_idx];
     }
 
+    size_t
+    cur_col()
+    {
+        return ft_cur_col(table_);
+    }
+
+    size_t
+    cur_row()
+    {
+        return ft_cur_row(table_);
+    }
+
+    class table_cell
+    cur_cell()
+    {
+        return cell(cur_row(), cur_col());
+    }
+
     /**
      * Get row.
      *
