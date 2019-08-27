@@ -67,7 +67,7 @@ enum str_buf_type {
 #endif /* FT_HAVE_WCHAR */
 };
 
-struct ft_gen_string {
+struct ft_string {
     union {
         const char *cstr;
 #ifdef FT_HAVE_WCHAR
@@ -79,8 +79,8 @@ struct ft_gen_string {
         const void *data;
     } u;
     enum str_buf_type type;
-
 };
+typedef struct ft_string ft_string_t;
 
 
 typedef const char **str_arr;
@@ -183,7 +183,7 @@ FT_INTERNAL
 size_t number_of_columns_in_format_string(const char *fmt);
 
 FT_INTERNAL
-size_t number_of_columns_in_format_string2(const struct ft_gen_string *fmt);
+size_t number_of_columns_in_format_string2(const struct ft_string *fmt);
 
 #if defined(FT_HAVE_WCHAR)
 FT_INTERNAL

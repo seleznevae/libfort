@@ -22,7 +22,7 @@ FT_INTERNAL
 fort_row_t *create_row_from_string(const char *str);
 
 FT_INTERNAL
-fort_row_t *create_row_from_fmt_string(const struct ft_gen_string  *fmt, va_list *va_args);
+fort_row_t *create_row_from_fmt_string(const struct ft_string  *fmt, va_list *va_args);
 
 FT_INTERNAL
 size_t columns_in_row(const fort_row_t *row);

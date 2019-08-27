@@ -616,7 +616,7 @@ fort_row_t *create_row_from_buffer(const string_buffer_t *buffer)
 }
 
 static int
-vsnprintf_buffer(string_buffer_t *buffer, const struct ft_gen_string *fmt,
+vsnprintf_buffer(string_buffer_t *buffer, const struct ft_string *fmt,
                  va_list *va)
 {
     switch (buffer->type) {
@@ -637,7 +637,7 @@ vsnprintf_buffer(string_buffer_t *buffer, const struct ft_gen_string *fmt,
 }
 
 FT_INTERNAL
-fort_row_t *create_row_from_fmt_string(const struct ft_gen_string  *fmt, va_list *va_args)
+fort_row_t *create_row_from_fmt_string(const struct ft_string  *fmt, va_list *va_args)
 {
     string_buffer_t *buffer = create_string_buffer(DEFAULT_STR_BUF_SIZE, fmt->type);
     if (buffer == NULL)

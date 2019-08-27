@@ -193,7 +193,7 @@ size_t number_of_columns_in_format_u8string(const void *fmt)
 #endif
 
 FT_INTERNAL
-size_t number_of_columns_in_format_string2(const struct ft_gen_string *fmt)
+size_t number_of_columns_in_format_string2(const struct ft_string *fmt)
 {
     switch (fmt->type) {
         case CHAR_BUF:
