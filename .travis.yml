@@ -158,14 +158,14 @@ script:
     fi
  
 
-  # cppcheck run
-  - |
-    if [ "${BASIC_LINUX_GCC}" = "yes" ]; then
-      cppcheck --std=posix --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
-      cppcheck --std=c89 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
-      cppcheck --std=c99 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
-      cppcheck --std=c++11 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
-    fi
+  ## cppcheck run
+  #- |
+  #  if [ "${BASIC_LINUX_GCC}" = "yes" ]; then
+  #    cppcheck --std=posix --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
+  #    cppcheck --std=c89 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
+  #    cppcheck --std=c99 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
+  #    cppcheck --std=c++11 --enable=warning,style,performance,portability,information,missingInclude --error-exitcode=1 lib
+  #  fi
 
   # clang-tidy run
   - |
