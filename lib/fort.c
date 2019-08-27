@@ -5576,7 +5576,7 @@ fort_row_t *create_row_from_buffer(const string_buffer_t *buffer)
 #endif /* FT_HAVE_WCHAR */
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
-            return create_row_from_string(buffer->str.u8str);
+            return create_row_from_string((const char *)buffer->str.u8str);
 #endif /* FT_HAVE_UTF8 */
         default:
             assert(0);
