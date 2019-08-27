@@ -1,3 +1,9 @@
+## v0.2.0
+
+### API
+
+- Added support for UTF-8 strings (`ft_u8write`, `ft_u8printf` ...).
+
 ## v0.1.6
 
 ### Internal
