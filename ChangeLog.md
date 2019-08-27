@@ -3,6 +3,7 @@
 ### API
 
 - Added support for UTF-8 strings (`ft_u8write`, `ft_u8printf` ...).
+- Added getters for current cell (`cur_col`, `cur_row`, `cur_cell`) to C++ API.
 
 ### Internal
 
