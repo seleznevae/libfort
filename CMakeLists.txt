@@ -14,6 +14,7 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 option(FORT_ENABLE_ASTYLE "Enable astyle" OFF)
 option(FORT_ENABLE_WCHAR "Enable wchar support" ON)
+option(FORT_ENABLE_UTF8 "Enable utf8 support" ON)
 set(FORT_BUILD_TYPE "common" CACHE STRING "Build type")
 
 set_property(CACHE FORT_BUILD_TYPE PROPERTY STRINGS
@@ -137,11 +138,16 @@ endforeach()
 # ------------------------------------------------------------------------------
 # Add WChar support for the build
 # ------------------------------------------------------------------------------
-if(FORT_ENABLE_WCHAR)
-    add_definitions(-DFT_CONGIG_HAVE_WCHAR)
+if(NOT FORT_ENABLE_WCHAR)
+    add_definitions(-DFT_CONGIG_DISABLE_WCHAR)
+endif()
+if(NOT FORT_ENABLE_UTF8)
+    add_definitions(-DFT_CONGIG_DISABLE_UTF8)
 endif()
 
 set(FORT_HAVE_WCHAR "${FORT_ENABLE_WCHAR}" CACHE STRING "fort option")
+set(FORT_HAVE_UTF8 "${FORT_ENABLE_UTF8}" CACHE STRING "fort option")
+
 
 
 # ------------------------------------------------------------------------------

@@ -144,7 +144,7 @@ script:
 
   # basic build with old c standard (use gnu89 instead of c89 because some functions are not defines in c89)
   - cd lib 
-  - ${CC} -Wall -Wextra -Werror --std=gnu89 -DFT_CONGIG_HAVE_WCHAR fort.c -c -o fort.o 
+  - ${CC} -Wall -Wextra -Werror --std=gnu89 fort.c -c -o fort.o 
   - rm fort.o 
   - cd .. 
 
@@ -199,12 +199,12 @@ script:
   - ls
   - ctest -VV
 
-  # Test without WCHAR support
+  # Test without WCHAR and UTF-8 support
   - cd ..
   - rm -r build/*
   - mkdir -p build
   - cd build
-  - cmake .. -DFORT_ENABLE_WCHAR=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
+  - cmake .. -DFORT_ENABLE_WCHAR=OFF -DFORT_ENABLE_UTF8=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"
   - cmake --build . --target all 
   - ls
   - ctest -VV

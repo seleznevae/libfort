@@ -53,20 +53,36 @@ SOFTWARE.
 /*****************************************************************************
  *               Configuration
  *****************************************************************************/
+///**
+// * libfort configuration macros
+// * (to enable/disable some options this macros should be defined/undefined)
+// */
+///** #define FT_CONGIG_HAVE_WCHAR */
+
+//#if defined(FT_CONGIG_HAVE_WCHAR)
+//#define FT_HAVE_WCHAR
+//#endif
+
+//#define FT_CONGIG_HAVE_UTF8
+//#if defined(FT_CONGIG_HAVE_UTF8)
+//#define FT_HAVE_UTF8
+//#endif
+
 /**
  * libfort configuration macros
- * (to enable/disable some options this macros should be defined/undefined)
+ * (to disable wchar_t/utf-8 support this macros should be defined)
  */
-/** #define FT_CONGIG_HAVE_WCHAR */
+/** #define FT_CONGIG_DISABLE_WCHAR */
+/** #define FT_CONGIG_DISABLE_UTF8 */
 
-#if defined(FT_CONGIG_HAVE_WCHAR)
+#if !defined(FT_CONGIG_DISABLE_WCHAR)
 #define FT_HAVE_WCHAR
 #endif
 
-#define FT_CONGIG_HAVE_UTF8
-#if defined(FT_CONGIG_HAVE_UTF8)
+#if !defined(FT_CONGIG_DISABLE_UTF8)
 #define FT_HAVE_UTF8
 #endif
+
 
 /*****************************************************************************
  *               RETURN CODES

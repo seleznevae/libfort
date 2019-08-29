@@ -1,4 +1,5 @@
 option(FORT_HAVE_WCHAR "Enable wchar support" ON)
+option(FORT_HAVE_UTF8 "Enable UTF8 support" ON)
 option(FORT_TEST_BUILD "Export some internal symbols for tests" ON)
 
 

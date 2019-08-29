@@ -14,7 +14,7 @@
 #define THEN(...)
 #define SCENARIO(...)
 
-#if defined(FT_CONGIG_HAVE_WCHAR)
+#if !defined(FT_CONGIG_DISABLE_WCHAR)
 #define FT_HAVE_WCHAR
 #endif
 
