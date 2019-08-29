@@ -53,20 +53,6 @@ SOFTWARE.
 /*****************************************************************************
  *               Configuration
  *****************************************************************************/
-///**
-// * libfort configuration macros
-// * (to enable/disable some options this macros should be defined/undefined)
-// */
-///** #define FT_CONGIG_HAVE_WCHAR */
-
-//#if defined(FT_CONGIG_HAVE_WCHAR)
-//#define FT_HAVE_WCHAR
-//#endif
-
-//#define FT_CONGIG_HAVE_UTF8
-//#if defined(FT_CONGIG_HAVE_UTF8)
-//#define FT_HAVE_UTF8
-//#endif
 
 /**
  * libfort configuration macros
