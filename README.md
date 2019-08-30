@@ -19,7 +19,7 @@
 - Customization of appearance (various [border styles](https://github.com/seleznevae/libfort/wiki/Border-styles-(C-API)) and row/column/cell [properties](https://github.com/seleznevae/libfort/wiki/Cell--and-table-properties-(C-API)) for indentation, alignment, padding)
 - A number of functions to fill the table (add content by adding separate cells, rows or use `printf` like functions)
 - Support of multiple lines in cells
-- Support of wide characters
+- Support of UTF-8 and wide characters
 
 ## Design goals
 - **Portability**. All main OSes (Linux, Windows, macOS, FreeBSD) and compilers are supported.
