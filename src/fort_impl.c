@@ -918,7 +918,6 @@ int ft_u8nwrite(ft_table_t *table, size_t n, const void *cell_content, ...)
     }
     va_end(va);
 
-    ft_ln(table);
     return status;
 }
 

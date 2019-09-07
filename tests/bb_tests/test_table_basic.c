@@ -826,6 +826,55 @@ void test_table_write(void)
     }
 #endif
 
+#ifdef FT_HAVE_UTF8
+    SCENARIO("Test wwrite functions(utf8 strings)") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "3")));
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "c")));
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "234")));
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "3.140000")));
+        ft_ln(table);
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "c")));
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "235")));
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "3.150000")));
+        assert_true(FT_IS_SUCCESS(ft_u8write_ln(table, "5")));
+
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "234")));
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "3.140000")));
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "3")));
+        assert_true(FT_IS_SUCCESS(ft_u8write_ln(table, "c")));
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "234")));
+        assert_true(FT_IS_SUCCESS(ft_u8write(table, "3.140000")));
+        assert_true(FT_IS_SUCCESS(ft_u8write_ln(table, "3")));
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 3   | c        | 234      | 3.140000 |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| c   | 234      | 3.140000 | 3        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 234 | 3.140000 | 3        | c        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+
     SCENARIO("Test nwrite functions") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -898,6 +947,42 @@ void test_table_write(void)
     }
 #endif
 
+#ifdef FT_HAVE_UTF8
+    SCENARIO("Test nwwrite functions(utf8 strings)") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        assert_true(ft_u8nwrite(table, 4, "3", "c", "234", "3.140000") == FT_SUCCESS);
+        ft_ln(table);
+        assert_true(ft_u8nwrite_ln(table, 4, "c", "235", "3.150000", "5") == FT_SUCCESS);
+        assert_true(ft_u8nwrite_ln(table, 4, "234", "3.140000", "3", "c") == FT_SUCCESS);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        assert_true(ft_u8nwrite_ln(table, 3, "234", "3.140000", "3") == FT_SUCCESS);
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 3   | c        | 234      | 3.140000 |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| c   | 234      | 3.140000 | 3        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 234 | 3.140000 | 3        | c        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* FT_HAVE_UTF8 */
 
     SCENARIO("Test row_write functions") {
         table = ft_create_table();
@@ -1129,6 +1214,47 @@ void test_table_write(void)
     }
 #endif
 
+#ifdef FT_HAVE_UTF8
+    SCENARIO("Test printf functions(utf8 strings)") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        int n = ft_u8printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        assert_true(n == 4);
+        n = ft_u8printf(table, "%c|%s|%f|%d", 'c', "235", 3.15, 5);
+        assert_true(n == 4);
+        ft_ln(table);
+        n = ft_u8printf_ln(table, "%s|%f|%d|%c", "234", 3.14,  3, 'c');
+        assert_true(n == 4);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        n = ft_u8printf(table, "%s|%f|%d", "234", 3.14, 3);
+        assert_true(n == 3);
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 3   | c        | 234      | 3.140000 |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| c   | 234      | 3.140000 | 3        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 234 | 3.140000 | 3        | c        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+
     SCENARIO("Test printf functions with strings with separators inside them") {
         table = ft_create_table();
         assert_true(table != NULL);
@@ -1207,6 +1333,48 @@ void test_table_write(void)
             L"|     |          |                       |          |\n"
             L"+-----+----------+-----------------------+----------+\n";
         assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif
+
+#ifdef FT_HAVE_UTF8
+    SCENARIO("Test printf functions with strings with separators inside them") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        int n = ft_u8printf_ln(table, "%d|%c|%s|%f", 3, 'c', "234", 3.14);
+        assert_true(n == 4);
+        n = ft_u8printf(table, "%c", 'c');
+        assert_true(n == 1);
+        n = ft_u8printf(table, "%s", "234");
+        assert_true(n == 1);
+        n = ft_u8printf(table, "%s", "string|with separator");
+        assert_true(n == 1);
+        n = ft_u8printf(table, "3");
+        assert_true(n == 1);
+        ft_ln(table);
+        n = ft_u8printf_ln(table, "%s|%f|%d|%c", "234", 3.14,  3, 'c');
+        assert_true(n == 4);
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+----------+-----------------------+----------+\n"
+            "|     |          |                       |          |\n"
+            "| 3   | c        | 234                   | 3.140000 |\n"
+            "|     |          |                       |          |\n"
+            "+-----+----------+-----------------------+----------+\n"
+            "|     |          |                       |          |\n"
+            "| c   | 234      | string|with separator | 3        |\n"
+            "|     |          |                       |          |\n"
+            "+-----+----------+-----------------------+----------+\n"
+            "|     |          |                       |          |\n"
+            "| 234 | 3.140000 | 3                     | c        |\n"
+            "|     |          |                       |          |\n"
+            "+-----+----------+-----------------------+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
 #endif
@@ -1290,6 +1458,49 @@ void test_table_write(void)
             L"|     |          |          |          |\n"
             L"+-----+----------+----------+----------+\n";
         assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+        ft_set_default_printf_field_separator('|');
+    }
+#endif
+
+#ifdef FT_HAVE_UTF8
+    SCENARIO("Test printf functions(utf8 strings)  with custom separator") {
+        ft_set_default_printf_field_separator('$');
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        int n = ft_u8printf_ln(table, "%d$%c$%s$%f", 3, 'c', "234", 3.14);
+        assert_true(n == 4);
+        n = ft_u8printf(table, "%c$%s$%f$%d", 'c', "235", 3.15, 5);
+        assert_true(n == 4);
+        ft_ln(table);
+        n = ft_u8printf_ln(table, "%s$%f$%d$%c", "234", 3.14,  3, 'c');
+        assert_true(n == 4);
+
+        /* Replace old values */
+        ft_set_cur_cell(table, 1, 1);
+        n = ft_u8printf(table, "%s$%f$%d", "234", 3.14, 3);
+        assert_true(n == 3);
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 3   | c        | 234      | 3.140000 |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| c   | 234      | 3.140000 | 3        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n"
+            "|     |          |          |          |\n"
+            "| 234 | 3.140000 | 3        | c        |\n"
+            "|     |          |          |          |\n"
+            "+-----+----------+----------+----------+\n";
+        assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
         ft_set_default_printf_field_separator('|');
     }

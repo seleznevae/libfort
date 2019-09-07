@@ -1,3 +1,9 @@
+## v0.2.1
+
+### Bug fixes
+
+- Fix incorrect `ft_u8nwrite` implementation.
+
 ## v0.2.0
 
 ### API
