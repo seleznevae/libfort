@@ -444,8 +444,8 @@ size_t string_buffer_raw_capacity(const f_string_buffer_t *buffer)
 }
 
 #ifdef FT_HAVE_UTF8
-FT_INTERNAL
-size_t ut8_width(const void *beg, const void *end)
+static
+size_t utf8_width(const void *beg, const void *end)
 {
     size_t sz = (size_t)((const char *)end - (const char *)beg);
     char *tmp = (char *)F_MALLOC(sizeof(char) * (sz + 1));
@@ -454,7 +454,7 @@ size_t ut8_width(const void *beg, const void *end)
 
     memcpy(tmp, beg, sz);
     tmp[sz] = '\0';
-    size_t result = utf8len(tmp);
+    size_t result = utf8width(tmp);
     F_FREE(tmp);
     return result;
 }
@@ -504,7 +504,7 @@ size_t buffer_text_visible_width(const f_string_buffer_t *buffer)
             if (beg == NULL || end == NULL)
                 return max_length;
 
-            max_length = MAX(max_length, (size_t)ut8_width(beg, end));
+            max_length = MAX(max_length, (size_t)utf8_width(beg, end));
             ++n;
         }
 #endif /* FT_HAVE_WCHAR */
@@ -534,7 +534,7 @@ buffer_substring(const f_string_buffer_t *buffer, size_t buffer_row, const void 
         case UTF8_BUF:
             utf8_n_substring(buffer->str.u8str, '\n', buffer_row, begin, end);
             if ((*(const char **)begin) && (*(const char **)end))
-                *str_it_width = ut8_width(*begin, *end);
+                *str_it_width = utf8_width(*begin, *end);
             break;
 #endif /* FT_HAVE_UTF8 */
         default:

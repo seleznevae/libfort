@@ -422,7 +422,7 @@ void test_buffer_text_visible_width(void)
     buffer->str.u8str = (void *)"Numbers  01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
     assert_true(buffer_text_visible_width(buffer) == 110);
     buffer->str.u8str = (void *)"Chinese   視野無限廣, 窗外有藍天";
-    assert_true(buffer_text_visible_width(buffer) == 22);
+    assert_true(buffer_text_visible_width(buffer) == 32);
     buffer->str.u8str = (void *)"German    Falsches Üben von Xylophonmusik quält jeden größeren Zwerg";
     assert_true(buffer_text_visible_width(buffer) == 68);
     buffer->str.u8str = (void *)"Greek     Ταχίστη αλώπηξ βαφής ψημένη γη, δρασκελίζει υπέρ νωθρού κυνός Takhístè";
@@ -430,7 +430,7 @@ void test_buffer_text_visible_width(void)
     buffer->str.u8str = (void *)"Irish     D’ḟuascail Íosa Úrṁac na hÓiġe Beannaiṫe pór Éaḃa agus Áḋaiṁ";
     assert_true(buffer_text_visible_width(buffer) == 70);
     buffer->str.u8str = (void *)"Japanese  いろはにほへと ちりぬるを わかよたれそ つねならむ うゐ";
-    assert_true(buffer_text_visible_width(buffer) == 39);
+    assert_true(buffer_text_visible_width(buffer) == 64);
     buffer->str.u8str = (void *)"Polish    Pójdźże, kiń tę chmurność w głąb flaszy";
     assert_true(buffer_text_visible_width(buffer) == 49);
     buffer->str.u8str = (void *)"Portuguese Luís argüia à Júlia que «brações, fé, chá, óxido, pôr, zângão» eram palavras do português";
@@ -446,7 +446,7 @@ void test_buffer_text_visible_width(void)
     buffer->str.u8str = (void *)"Numbers  01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
     assert_true(buffer_text_visible_width(buffer) == 110);
     buffer->str.u8str = (void *)"Chinese   視野無限廣,\n 窗外有藍天";
-    assert_true(buffer_text_visible_width(buffer) == 16);
+    assert_true(buffer_text_visible_width(buffer) == 21);
     buffer->str.u8str = (void *)"German    Falsches Üben von Xy\nlophonmusik quält \njeden größeren Zwerg";
     assert_true(buffer_text_visible_width(buffer) == 30);
     buffer->str.u8str = (void *)"Greek     Ταχίστη αλώπηξ βαφής\n ψημένη γη, δρασκελίζει\n υπέρ νωθρού \nκυνός Takhístè";
@@ -454,7 +454,7 @@ void test_buffer_text_visible_width(void)
     buffer->str.u8str = (void *)"Irish     D’ḟuascail Íosa Úrṁa\nc na hÓiġe Beannaiṫe\n pór Éaḃa agus Áḋaiṁ";
     assert_true(buffer_text_visible_width(buffer) == 30);
     buffer->str.u8str = (void *)"Japanese  いろはにほへと ちり\nぬるを わかよたれそ つねならむ うゐ";
-    assert_true(buffer_text_visible_width(buffer) == 20);
+    assert_true(buffer_text_visible_width(buffer) == 35);
     buffer->str.u8str = (void *)"Polish    Pójdźże, kiń tę chmu\nrność w głąb flaszy";
     assert_true(buffer_text_visible_width(buffer) == 30);
     buffer->str.u8str = (void *)"Portuguese Luís argüia à Júlia\n que «brações, fé, chá,\n óxido, pôr, \nzângão» eram palavras\n do português";

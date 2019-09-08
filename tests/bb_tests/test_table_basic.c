@@ -146,6 +146,23 @@ void test_bug_fixes(void)
         ft_destroy_table(table);
     }
 #endif /* FT_HAVE_UTF8 */
+
+#ifdef FT_HAVE_UTF8
+    SCENARIO("Issue 15 - https://github.com/seleznevae/libfort/issues/15") {
+        ft_table_t *table = ft_create_table();
+        ft_set_border_style(table, FT_NICE_STYLE);
+
+        ft_u8write_ln(table, "視野無限廣");
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "╔════════════╗\n"
+            "║ 視野無限廣 ║\n"
+            "╚════════════╝\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* FT_HAVE_UTF8 */
 }
 
 void test_table_basic(void)
@@ -676,6 +693,23 @@ void test_utf8_table(void)
             ft_destroy_table(table); \
     }
 
+#define TEST_UTF8_BORDER_WIDE(content) \
+    { \
+            table = ft_create_table(); \
+            assert_true(table != NULL); \
+            assert(ft_set_border_style(table, FT_BASIC_STYLE) == 0); \
+            assert_true(ft_u8write_ln(table, content) == FT_SUCCESS); \
+            const char *table_str = ft_to_u8string(table); \
+            assert_true(table_str != NULL); \
+            char table_str_etalon[1024] = {'\0'}; \
+            snprintf(table_str_etalon, 1024, \
+                "+----------------------+\n"  \
+                "| %s |\n" \
+                "+----------------------+\n", content); \
+            assert_str_equal(table_str, table_str_etalon); \
+            ft_destroy_table(table); \
+    }
+
     TEST_UTF8_BORDER("1234567890");
     TEST_UTF8_BORDER("Xylophmsik");
     TEST_UTF8_BORDER("ψημένηζειθ");
@@ -685,10 +719,11 @@ void test_utf8_table(void)
     TEST_UTF8_BORDER("французких");
     TEST_UTF8_BORDER("Benjamínúñ");
     TEST_UTF8_BORDER("görmüştüçğ");
-    TEST_UTF8_BORDER("視野無限廣窗外有藍天");
-    TEST_UTF8_BORDER("いろはにほへとちりぬ");
-    TEST_UTF8_BORDER("𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕𠴕𠵼");
+    TEST_UTF8_BORDER_WIDE("視野無限廣窗外有藍天");
+    TEST_UTF8_BORDER_WIDE("いろはにほへとちりぬ");
+    TEST_UTF8_BORDER_WIDE("𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕𠴕𠵼");
 #undef TEST_UTF8_BORDER
+#undef TEST_UTF8_BORDER_WIDE
 
 #define TEST_UTF8_STYLE(content) \
     { \
@@ -709,6 +744,25 @@ void test_utf8_table(void)
             assert_str_equal(table_str, table_str_etalon); \
             ft_destroy_table(table); \
     }
+#define TEST_UTF8_STYLE_WIDE(content) \
+    { \
+            table = ft_create_table(); \
+            assert_true(table != NULL); \
+            assert(ft_set_border_style(table, FT_BASIC_STYLE) == 0); \
+            assert_true(ft_u8write_ln(table, content) == FT_SUCCESS); \
+            assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_FG_COLOR, FT_COLOR_YELLOW) == FT_SUCCESS); \
+            assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CELL_BG_COLOR, FT_COLOR_RED) == FT_SUCCESS); \
+            assert(ft_set_cell_prop(table, 0, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_UNDERLINED) == FT_SUCCESS); \
+            const char *table_str = ft_to_u8string(table); \
+            assert_true(table_str != NULL); \
+            char table_str_etalon[1024] = {'\0'}; \
+            snprintf(table_str_etalon, 1024, \
+                "+----------------------+\n"  \
+                "|\033[41m \033[4m\033[33m%s\033[0m\033[41m \033[0m|\n" \
+                "+----------------------+\n", content); \
+            assert_str_equal(table_str, table_str_etalon); \
+            ft_destroy_table(table); \
+    }
     TEST_UTF8_STYLE("1234567890");
     TEST_UTF8_STYLE("Xylophmsik");
     TEST_UTF8_STYLE("ψημένηζειθ");
@@ -718,10 +772,11 @@ void test_utf8_table(void)
     TEST_UTF8_STYLE("французких");
     TEST_UTF8_STYLE("Benjamínúñ");
     TEST_UTF8_STYLE("görmüştüçğ");
-    TEST_UTF8_STYLE("視野無限廣窗外有藍天");
-    TEST_UTF8_STYLE("いろはにほへとちりぬ");
-    TEST_UTF8_STYLE("𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕𠴕𠵼");
+    TEST_UTF8_STYLE_WIDE("視野無限廣窗外有藍天");
+    TEST_UTF8_STYLE_WIDE("いろはにほへとちりぬ");
+    TEST_UTF8_STYLE_WIDE("𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕𠴕𠵼");
 #undef TEST_UTF8_STYLE
+#undef TEST_UTF8_STYLE_WIDE
 
 }
 #endif /* FT_HAVE_UTF8 */

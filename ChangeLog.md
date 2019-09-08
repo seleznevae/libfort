@@ -1,3 +1,9 @@
+## v0.2.2
+
+### Bug fixes
+
+- Fix incorrect behaviour in case of wide east asian symbols.
+
 ## v0.2.1
 
 ### Bug fixes
