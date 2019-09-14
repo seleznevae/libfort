@@ -262,6 +262,12 @@ The following compilers are currently used in continuous integration at [Travis]
 Please note:
 - In case of clang on OS X before using **libfort** with ```wchar_t``` with real unicode symbols it may be necessary to set ```setlocale(LC_CTYPE, "");``` because otherwise standard function ```swprintf```, that libfort uses internally, may fail and ```ft_to_string``` will return error.
 
+
+## Contributing to libfort
+
+See the [contribution guidelines](https://github.com/seleznevae/libfort/blob/develop/CONTRIBUTING.md) for more information.
+
+
 ## License
 
 <img align="right" src="http://opensource.org/trademarks/opensource/OSI-Approved-License-100x137.png">
