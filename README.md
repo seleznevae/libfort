@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/seleznevae/libfort.svg?branch=master)](https://travis-ci.org/seleznevae/libfort)
 [![Build Status](https://api.cirrus-ci.com/github/seleznevae/libfort.svg)](https://cirrus-ci.com/github/seleznevae/libfort)
 [![Build status](https://ci.appveyor.com/api/projects/status/ll1qygb56pho95xw/branch/master?svg=true)](https://ci.appveyor.com/project/seleznevae/libfort/branch/master)
-[![Build Status](https://cloud.drone.io/api/badges/seleznevae/libfort/status.svg?ref=/refs/heads/develop)](https://cloud.drone.io/seleznevae/libfort)
+[![Build Status](https://cloud.drone.io/api/badges/seleznevae/libfort/status.svg?ref=refs/heads/master)](https://cloud.drone.io/seleznevae/libfort)
 [![Coverage Status](https://coveralls.io/repos/github/seleznevae/libfort/badge.svg?branch=master)](https://coveralls.io/github/seleznevae/libfort?branch=master)
 [![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/oHLjXe8WmmKE3B1R)
 [![Documentation](https://img.shields.io/badge/docs-doxygen-blue.svg)](http://seleznevae.github.io/libfort)
