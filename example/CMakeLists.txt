@@ -4,9 +4,9 @@ add_executable(${PROJECT_NAME}_ex
 target_link_libraries(${PROJECT_NAME}_ex
     fort)
 
-add_executable(${PROJECT_NAME}_ex_print_styles
+add_executable(${PROJECT_NAME}_print_styles
     print_styles.c)
-target_link_libraries(${PROJECT_NAME}_ex_print_styles
+target_link_libraries(${PROJECT_NAME}_print_styles
     fort)
 
 add_executable(${PROJECT_NAME}_ex_cpp
@@ -16,6 +16,6 @@ target_link_libraries(${PROJECT_NAME}_ex_cpp
 
 if(DEFINED FORT_LINK_LIBRARIES)
     target_link_libraries(${PROJECT_NAME}_ex "${FORT_LINK_LIBRARIES}")
-    target_link_libraries(${PROJECT_NAME}_ex_print_styles "${FORT_LINK_LIBRARIES}")
+    target_link_libraries(${PROJECT_NAME}_print_styles "${FORT_LINK_LIBRARIES}")
     target_link_libraries(${PROJECT_NAME}_ex_cpp "${FORT_LINK_LIBRARIES}")
 endif()

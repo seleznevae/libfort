@@ -253,7 +253,7 @@ endif()
 
 enable_testing()
 add_test(NAME ${PROJECT_NAME}_ex COMMAND ${PROJECT_NAME}_ex)
-add_test(NAME ${PROJECT_NAME}_ex_print_styles COMMAND ${PROJECT_NAME}_ex_print_styles)
+add_test(NAME ${PROJECT_NAME}_print_styles COMMAND ${PROJECT_NAME}_print_styles)
 add_test(NAME ${PROJECT_NAME}_ex_cpp COMMAND ${PROJECT_NAME}_ex_cpp)
 add_test(NAME ${PROJECT_NAME}_test COMMAND ${PROJECT_NAME}_test)
 add_test(NAME ${PROJECT_NAME}_test_cpp COMMAND ${PROJECT_NAME}_test_cpp)
