@@ -107,7 +107,7 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
 
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COVERAGE_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS}")
-        #target_link_libraries(${PROJECT_NAME}_example_cpp gcov)
+        #target_link_libraries(${PROJECT_NAME}_ex_cpp gcov)
     endif()
 
 endif()
@@ -157,6 +157,7 @@ set(FORT_HAVE_UTF8 "${FORT_ENABLE_UTF8}" CACHE STRING "fort option")
 add_subdirectory(lib)
 add_subdirectory(src)
 add_subdirectory(tests)
+add_subdirectory(example)
 
 
 # ------------------------------------------------------------------------------
@@ -170,24 +171,6 @@ file(GLOB_RECURSE FortHeaders
     "tests/*.hpp"
     "src/*.h")
 add_custom_target(headers SOURCES ${FortHeaders})
-
-
-add_executable(${PROJECT_NAME}_example
-    example/main.c)
-target_link_libraries(${PROJECT_NAME}_example
-    fort)
-
-
-add_executable(${PROJECT_NAME}_example_cpp
-    example/main.cpp)
-target_link_libraries(${PROJECT_NAME}_example_cpp
-    fort)
-
-if(DEFINED FORT_LINK_LIBRARIES)
-    target_link_libraries(${PROJECT_NAME}_example_cpp "${FORT_LINK_LIBRARIES}")
-    target_link_libraries(${PROJECT_NAME}_example "${FORT_LINK_LIBRARIES}")
-endif()
-
 
 
 # ------------------------------------------------------------------------------
@@ -269,8 +252,9 @@ endif()
 # ------------------------------------------------------------------------------
 
 enable_testing()
-add_test(NAME ${PROJECT_NAME}_example COMMAND ${PROJECT_NAME}_example)
-add_test(NAME ${PROJECT_NAME}_example_cpp COMMAND ${PROJECT_NAME}_example_cpp)
+add_test(NAME ${PROJECT_NAME}_ex COMMAND ${PROJECT_NAME}_ex)
+add_test(NAME ${PROJECT_NAME}_ex_print_styles COMMAND ${PROJECT_NAME}_ex_print_styles)
+add_test(NAME ${PROJECT_NAME}_ex_cpp COMMAND ${PROJECT_NAME}_ex_cpp)
 add_test(NAME ${PROJECT_NAME}_test COMMAND ${PROJECT_NAME}_test)
 add_test(NAME ${PROJECT_NAME}_test_cpp COMMAND ${PROJECT_NAME}_test_cpp)
 add_test(NAME ${PROJECT_NAME}_test_dev COMMAND ${PROJECT_NAME}_test_dev)
