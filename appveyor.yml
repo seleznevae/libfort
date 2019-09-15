@@ -24,6 +24,3 @@ build:
 test_script:
   - dir
   - ctest -VV -C %CONFIGURATION%
-  - cd %CONFIGURATION%
-  - dir
-  - ctest -VV
