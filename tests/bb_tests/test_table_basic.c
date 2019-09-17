@@ -163,6 +163,31 @@ void test_bug_fixes(void)
         ft_destroy_table(table);
     }
 #endif /* FT_HAVE_UTF8 */
+
+
+#ifdef FT_HAVE_UTF8
+    SCENARIO("Issue 16 - https://github.com/seleznevae/libfort/issues/16") {
+        ft_table_t *table = ft_create_table();
+        ft_set_border_style(table, FT_DOUBLE2_STYLE);
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+
+        ft_u8write_ln(table, "cm³", "cm²");
+        ft_u8write_ln(table, "123", "123");
+        ft_u8write_ln(table, "yxₙ", "yx₌");
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "╔═════╤═════╗\n"
+            "║ cm³ │ cm² ║\n"
+            "╠═════╪═════╣\n"
+            "║ 123 │ 123 ║\n"
+            "╟─────┼─────╢\n"
+            "║ yxₙ │ yx₌ ║\n"
+            "╚═════╧═════╝\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* FT_HAVE_UTF8 */
 }
 
 void test_table_basic(void)
