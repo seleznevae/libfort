@@ -53,8 +53,14 @@ target_include_directories(${PROJECT_NAME}_test_cpp
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set(${PROJECT_NAME}_tests
+    ${PROJECT_NAME}_test_dev
+    ${PROJECT_NAME}_test_cpp
+    ${PROJECT_NAME}_test
+    PARENT_SCOPE)
+
 if(DEFINED FORT_LINK_LIBRARIES)
-    target_link_libraries(${PROJECT_NAME}_test_dev "${FORT_LINK_LIBRARIES}")
-    target_link_libraries(${PROJECT_NAME}_test_cpp "${FORT_LINK_LIBRARIES}")
-    target_link_libraries(${PROJECT_NAME}_test "${FORT_LINK_LIBRARIES}")
+    foreach(exe ${${PROJECT_NAME}_tests})
+        target_link_libraries(${exe} "${FORT_LINK_LIBRARIES}")
+    endforeach()
 endif()

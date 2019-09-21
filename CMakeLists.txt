@@ -136,7 +136,7 @@ endforeach()
 
 
 # ------------------------------------------------------------------------------
-# Add WChar support for the build
+# Add wchar and UTF-8 support for the build
 # ------------------------------------------------------------------------------
 if(NOT FORT_ENABLE_WCHAR)
     add_definitions(-DFT_CONGIG_DISABLE_WCHAR)
@@ -174,7 +174,7 @@ add_custom_target(headers SOURCES ${FortHeaders})
 
 
 # ------------------------------------------------------------------------------
-# Set preprocessor macros for all test builds
+# Set preprocessor macros for all test builds.
 # ------------------------------------------------------------------------------
 
 target_compile_definitions(${PROJECT_NAME}_test_dev PRIVATE FT_TEST_BUILD=1)
@@ -182,7 +182,7 @@ target_compile_definitions(${PROJECT_NAME}_test_cpp PRIVATE FT_TEST_BUILD=1)
 target_compile_definitions(${PROJECT_NAME}_test PRIVATE FT_TEST_BUILD=1)
 
 # ------------------------------------------------------------------------------
-# Astyle
+# Setup text formatting via astyle.
 # ------------------------------------------------------------------------------
 
 if(FORT_ENABLE_ASTYLE)
@@ -248,13 +248,13 @@ endif()
 
 
 # ------------------------------------------------------------------------------
-# Tests
+# Add examples and unit tests to ctest driver.
 # ------------------------------------------------------------------------------
 
 enable_testing()
-add_test(NAME ${PROJECT_NAME}_ex COMMAND ${PROJECT_NAME}_ex)
-add_test(NAME ${PROJECT_NAME}_print_styles COMMAND ${PROJECT_NAME}_print_styles)
-add_test(NAME ${PROJECT_NAME}_ex_cpp COMMAND ${PROJECT_NAME}_ex_cpp)
-add_test(NAME ${PROJECT_NAME}_test COMMAND ${PROJECT_NAME}_test)
-add_test(NAME ${PROJECT_NAME}_test_cpp COMMAND ${PROJECT_NAME}_test_cpp)
-add_test(NAME ${PROJECT_NAME}_test_dev COMMAND ${PROJECT_NAME}_test_dev)
+list(APPEND ${PROJECT_NAME}_ctests
+    ${${PROJECT_NAME}_tests}
+    ${${PROJECT_NAME}_examples})
+foreach(exe ${${PROJECT_NAME}_ctests})
+    add_test(NAME ${exe} COMMAND ${exe})
+endforeach()
