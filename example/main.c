@@ -4,71 +4,6 @@
 #include <locale.h>
 #include <string.h>
 
-static ft_table_t *create_basic_table(void)
-{
-    ft_table_t *table = ft_create_table();
-    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
-
-    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
-    ft_write_ln(table, "Rank", "Title", "Year", "Rating");
-
-    ft_write_ln(table, "1", "The Shawshank Redemption", "1994", "9.5");
-    ft_write_ln(table, "2", "12 Angry Men", "1957", "8.8");
-    ft_write_ln(table, "3", "It's a Wonderful Life", "1946", "8.6");
-    ft_add_separator(table);
-    ft_write_ln(table, "4", "2001: A Space Odyssey", "1968", "8.5");
-    ft_write_ln(table, "5", "Blade Runner", "1982", "8.1");
-    return table;
-}
-
-void complex_layout_example(void)
-{
-    ft_table_t *table = ft_create_table();
-    /* Change border style */
-    ft_set_border_style(table, FT_DOUBLE2_STYLE);
-
-
-    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
-    ft_write_ln(table, "Sed", "Aenean", "Text");
-
-    ft_write_ln(table, "Duis", "Aliquam",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n"
-                "In accumsan felis eros, nec malesuada sapien bibendum eget.");
-    ft_write_ln(table, "Mauris", "Curabitur",
-                "Proin condimentum eros viverra nunc ultricies, at fringilla \n"
-                "quam pellentesque.");
-    ft_write_ln(table, "Summary", "", "Sed tempor est eget odio varius dignissim.");
-
-    ft_set_cell_prop(table, 0, 2, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_prop(table, 3, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_span(table, 3, 0, 2);
-    printf("%s\n", ft_to_string(table));
-    ft_destroy_table(table);
-}
-
-void different_cell_properties_example(void)
-{
-    ft_table_t *table = ft_create_table();
-    /* Change border style */
-    ft_set_border_style(table, FT_DOUBLE2_STYLE);
-
-    /* Set "header" type for the first row */
-    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
-    ft_write_ln(table, "Movie title", "Director", "Year", "Rating");
-
-    ft_write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
-    ft_write_ln(table, "The Godfather", "Francis Ford Coppola", "1972", "9.2");
-    ft_write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
-
-    /* Set center alignment for the 1st and 3rd columns */
-    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
-    ft_set_cell_prop(table, FT_ANY_ROW, 3, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
-
-    printf("%s\n", ft_to_string(table));
-    ft_destroy_table(table);
-}
-
 void fill_table_with_data_example(void)
 {
     ft_table_t *table = ft_create_table();
@@ -94,9 +29,7 @@ void fill_table_with_data_example(void)
 
 int main(void)
 {
-    different_cell_properties_example();
     fill_table_with_data_example();
-    complex_layout_example();
 
     int result = 0;
 
@@ -171,15 +104,6 @@ int main(void)
     printf("%s\n", ft_to_string(table));
     ft_destroy_table(table);
 
-    /* Debug */
-    ft_set_default_border_style(FT_SOLID_STYLE);
-    table = create_basic_table();
-    ft_set_cell_prop(table, FT_CUR_ROW, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
-    ft_write_ln(table, "Summary", "", "", "8.7");
-    ft_set_cell_span(table, 6, 0, 3);
-    ft_set_cell_span(table, 0, 0, 3);
-    printf("Table:\n%s\n", ft_to_string(table));
-    ft_destroy_table(table);
 
     fflush(stdout);
     /*-------------------------------------------------------------*/
