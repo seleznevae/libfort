@@ -4,6 +4,16 @@ add_executable(${PROJECT_NAME}_ex
 target_link_libraries(${PROJECT_NAME}_ex
     fort)
 
+add_executable(${PROJECT_NAME}_simple_table
+    simple_table.c)
+target_link_libraries(${PROJECT_NAME}_simple_table
+    fort)
+
+add_executable(${PROJECT_NAME}_custom_border_style
+    custom_border_style.c)
+target_link_libraries(${PROJECT_NAME}_custom_border_style
+    fort)
+
 add_executable(${PROJECT_NAME}_print_styles
     print_styles.c)
 target_link_libraries(${PROJECT_NAME}_print_styles
@@ -14,6 +24,12 @@ add_executable(${PROJECT_NAME}_math_table
 target_link_libraries(${PROJECT_NAME}_math_table
     fort)
 
+add_executable(${PROJECT_NAME}_beautiful_table
+    beautiful_table.c)
+target_link_libraries(${PROJECT_NAME}_beautiful_table
+    fort)
+
+
 add_executable(${PROJECT_NAME}_ex_cpp
     main.cpp)
 target_link_libraries(${PROJECT_NAME}_ex_cpp
@@ -21,8 +37,11 @@ target_link_libraries(${PROJECT_NAME}_ex_cpp
 
 set(${PROJECT_NAME}_examples
     ${PROJECT_NAME}_ex
+    ${PROJECT_NAME}_simple_table
+    ${PROJECT_NAME}_custom_border_style
     ${PROJECT_NAME}_print_styles
     ${PROJECT_NAME}_math_table
+    ${PROJECT_NAME}_beautiful_table
     ${PROJECT_NAME}_ex_cpp
     PARENT_SCOPE)
 
