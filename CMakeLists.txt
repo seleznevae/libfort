@@ -157,7 +157,7 @@ set(FORT_HAVE_UTF8 "${FORT_ENABLE_UTF8}" CACHE STRING "fort option")
 add_subdirectory(lib)
 add_subdirectory(src)
 add_subdirectory(tests)
-add_subdirectory(example)
+add_subdirectory(examples)
 
 
 # ------------------------------------------------------------------------------
