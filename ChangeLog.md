@@ -1,3 +1,9 @@
+## v0.2.3
+
+### Internal
+
+- Refactoring of examples.
+
 ## v0.2.2
 
 ### Bug fixes

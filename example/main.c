@@ -36,23 +36,6 @@ void base_example(void)
     ft_destroy_table(table);
 }
 
-void math_example(void)
-{
-#ifdef FT_HAVE_UTF8
-    ft_table_t *table = ft_create_table();
-    ft_set_border_style(table, FT_DOUBLE2_STYLE);
-    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
-
-    ft_u8write_ln(table, "N", "Figure", "Volume, cm³", "Accuracy");
-
-    ft_u8write_ln(table, "1", "○", "3.145", "±0.3");
-    ft_u8write_ln(table, "2", "◸", "4.95", "±0.25");
-
-    printf("%s\n", (const char *)ft_to_u8string(table));
-    ft_destroy_table(table);
-#endif /* FT_HAVE_UTF8 */
-
-}
 
 void complex_layout_example(void)
 {
@@ -284,7 +267,6 @@ int main(void)
     different_cell_properties_example();
     fill_table_with_data_example();
     complex_layout_example();
-    math_example();
     custom_border_style_example();
     colorfull_table();
 

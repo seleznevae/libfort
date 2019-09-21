@@ -9,6 +9,11 @@ add_executable(${PROJECT_NAME}_print_styles
 target_link_libraries(${PROJECT_NAME}_print_styles
     fort)
 
+add_executable(${PROJECT_NAME}_math_table
+    math_table.c)
+target_link_libraries(${PROJECT_NAME}_math_table
+    fort)
+
 add_executable(${PROJECT_NAME}_ex_cpp
     main.cpp)
 target_link_libraries(${PROJECT_NAME}_ex_cpp
@@ -17,6 +22,7 @@ target_link_libraries(${PROJECT_NAME}_ex_cpp
 set(${PROJECT_NAME}_examples
     ${PROJECT_NAME}_ex
     ${PROJECT_NAME}_print_styles
+    ${PROJECT_NAME}_math_table
     ${PROJECT_NAME}_ex_cpp
     PARENT_SCOPE)
 
