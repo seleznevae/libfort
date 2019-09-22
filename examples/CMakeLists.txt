@@ -47,6 +47,21 @@ target_link_libraries(${PROJECT_NAME}_non_ascii_table
 
 
 
+add_executable(${PROJECT_NAME}_simple_table_cpp
+    1-simple_table.cpp)
+target_link_libraries(${PROJECT_NAME}_simple_table_cpp
+    fort)
+
+add_executable(${PROJECT_NAME}_custom_table_cpp
+    2-custom_table.cpp)
+target_link_libraries(${PROJECT_NAME}_custom_table_cpp
+    fort)
+
+add_executable(${PROJECT_NAME}_complex_layout_cpp
+    3-complex_layout.cpp)
+target_link_libraries(${PROJECT_NAME}_complex_layout_cpp
+    fort)
+
 add_executable(${PROJECT_NAME}_ex_cpp
     main.cpp)
 target_link_libraries(${PROJECT_NAME}_ex_cpp
@@ -62,7 +77,10 @@ set(${PROJECT_NAME}_examples
     ${PROJECT_NAME}_beautiful_table
     ${PROJECT_NAME}_complex_layout
     ${PROJECT_NAME}_non_ascii_table
+
     ${PROJECT_NAME}_ex_cpp
+    ${PROJECT_NAME}_simple_table_cpp
+    ${PROJECT_NAME}_custom_table_cpp
     PARENT_SCOPE)
 
 if(DEFINED FORT_LINK_LIBRARIES)
