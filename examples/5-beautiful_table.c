@@ -8,7 +8,7 @@
 
 void colorfull_table_wchar(void)
 {
-#if defined(FT_HAVE_WCHAR)
+#if defined(FT_HAVE_WCHAR) && !defined(FT_MICROSOFT_COMPILER)
     setlocale(LC_CTYPE, "");
 
     ft_table_t *table = ft_create_table();
@@ -58,12 +58,7 @@ void colorfull_table_wchar(void)
     ft_set_tbl_prop(table, FT_TPROP_LEFT_MARGIN, 10);
 
     const wchar_t *table_wstr = ft_to_wstring(table);
-    if (table_wstr) {
-        fwprintf(stderr, L"Table:\n%ls\n\n ", table_wstr);
-    } else {
-        fwprintf(stderr, L"Table conversion failed !!!\n ");
-    }
-
+    fwprintf(stderr, L"Table:\n%ls\n\n ", table_wstr);
     ft_destroy_table(table);
 #endif
 }
@@ -118,12 +113,7 @@ void colorfull_table_utf8(void)
     ft_set_tbl_prop(table, FT_TPROP_LEFT_MARGIN, 10);
 
     const char *table_str = ft_to_u8string(table);
-    if (table_str) {
-        printf("Table:\n%s\n\n ", table_str);
-    } else {
-        printf("Table conversion failed !!!\n ");
-    }
-
+    printf("Table:\n%s\n\n ", table_str);
     ft_destroy_table(table);
 #endif
 }
