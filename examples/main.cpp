@@ -6,7 +6,7 @@
 int main()
 {
     {
-        fort::table table;
+        fort::char_table table;
         // Fill table with data
         table << fort::header
             << "Rank" << "Title" << "Year" << "Rating" << fort::endr
@@ -27,7 +27,7 @@ int main()
 
 
     {
-        fort::table table;
+        fort::char_table table;
         // Fill table with data
         table << fort::header;
         table.write_ln("Rank", "Title", "Year", "Rating");
@@ -49,7 +49,7 @@ int main()
     }
 
     {
-        fort::table table;
+        fort::char_table table;
         // Fill table with data
         table << fort::header
             << "Rank" << "Title" << "Year" << "Rating" << fort::endr
@@ -66,7 +66,7 @@ int main()
     }
 
     {
-        fort::table table;
+        fort::char_table table;
         /* Set table border style */
         table.set_border_style(FT_BASIC_STYLE);
 

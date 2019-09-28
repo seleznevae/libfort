@@ -2,10 +2,11 @@
 #include "fort.hpp"
 #include "test_utils.hpp"
 
+
 void test_cpp_bug_fixes(void)
 {
     SCENARIO("Issue 11 - https://github.com/seleznevae/libfort/issues/11") {
-        fort::table table;
+        fort::char_table table;
         table << fort::header
               << "1" << "2" << fort::endr
               << "3" << "4" << fort::endr;
@@ -30,7 +31,7 @@ void test_cpp_bug_fixes(void)
 void test_cpp_table_basic(void)
 {
     WHEN("All columns are equal and not empty.") {
-        fort::table table;
+        fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
 
         table << fort::header
@@ -57,7 +58,7 @@ void test_cpp_table_basic(void)
     }
 
     WHEN("Checking basic constructors and assignmets.") {
-        fort::table table;
+        fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
 
         table << fort::header
@@ -65,12 +66,12 @@ void test_cpp_table_basic(void)
               << "3" << "c" << "234" << "3.140000" << fort::endr
               << "3" << "c" << "234" << "3.140000" << fort::endr;
 
-        fort::table table2(std::move(table));
-        fort::table table3;
+        fort::char_table table2(std::move(table));
+        fort::char_table table3;
         table3 = std::move(table2);
 
-        fort::table table4(table3);
-        fort::table table5;
+        fort::char_table table4(table3);
+        fort::char_table table5;
         table5 = table4;
 
         std::string table_str = table5.to_string();
@@ -92,7 +93,7 @@ void test_cpp_table_basic(void)
     }
 
     WHEN("All columns are not equal and not empty") {
-        fort::table table;
+        fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
 
         table << fort::header
@@ -119,7 +120,7 @@ void test_cpp_table_basic(void)
     }
 
     WHEN("All columns are not equal and some cells are empty") {
-        fort::table table;
+        fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
 
         table << fort::header
@@ -146,7 +147,7 @@ void test_cpp_table_basic(void)
     }
 
     WHEN("All cells are empty") {
-        fort::table table;
+        fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
 
         table << fort::header
@@ -177,7 +178,7 @@ void test_cpp_table_basic(void)
 void test_cpp_table_write(void)
 {
     SCENARIO("Test write functions") {
-        fort::table table;
+        fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
         table << fort::header;
         assert_true(table.write("3"));
@@ -219,7 +220,7 @@ void test_cpp_table_write(void)
     }
 
     SCENARIO("Test n write functions") {
-        fort::table table;
+        fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
         table << fort::header;
         assert_true(table.write("3", "c", "234", "3.140000"));
@@ -251,7 +252,7 @@ void test_cpp_table_write(void)
     }
 
     SCENARIO("Test range_write functions") {
-        fort::table table;
+        fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
 
         table << fort::header;
@@ -291,7 +292,7 @@ void test_cpp_table_write(void)
 void test_cpp_table_changing_cell(void)
 {
     WHEN("All columns are equal and not empty") {
-        fort::table table;
+        fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
 
         table << fort::header

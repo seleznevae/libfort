@@ -5,7 +5,7 @@
 
 void test_cpp_table_tbl_properties(void)
 {
-    fort::table table;
+    fort::char_table table;
     WHEN("Test setting entire table properties") {
         set_test_properties_as_default();
 
@@ -66,7 +66,7 @@ void test_cpp_table_cell_properties(void)
     WHEN("Setting property for one cell") {
         set_test_properties_as_default();
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
         table[1][1].set_cell_top_padding(2);
 
         std::string table_str = table.to_string();
@@ -91,7 +91,7 @@ void test_cpp_table_cell_properties(void)
     WHEN("Setting property for one cell(2)") {
         set_test_properties_as_default();
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
         table.cell(1, 1).set_cell_top_padding(2);
 
         std::string table_str = table.to_string();
@@ -116,7 +116,7 @@ void test_cpp_table_cell_properties(void)
     WHEN("Setting property for the row") {
         set_test_properties_as_default();
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
         table[1].set_cell_top_padding(2);
 
         std::string table_str = table.to_string();
@@ -141,7 +141,7 @@ void test_cpp_table_cell_properties(void)
     WHEN("Setting property for the column") {
         set_test_properties_as_default();
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
         table.column(1).set_cell_top_padding(2);
 
         std::string table_str = table.to_string();
@@ -168,7 +168,7 @@ void test_cpp_table_cell_properties(void)
     WHEN("Setting property for all cells in the table") {
         set_test_properties_as_default();
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
         table.set_cell_top_padding(2);
 
         std::string table_str = table.to_string();
@@ -195,12 +195,12 @@ void test_cpp_table_cell_properties(void)
     WHEN("All paddings = 1") {
         set_test_properties_as_default();
 
-        fort::table::default_props().set_cell_top_padding(2);
-        fort::table::default_props().set_cell_bottom_padding(3);
-        fort::table::default_props().set_cell_left_padding(1);
-        fort::table::default_props().set_cell_right_padding(0);
+        fort::char_table::default_props().set_cell_top_padding(2);
+        fort::char_table::default_props().set_cell_bottom_padding(3);
+        fort::char_table::default_props().set_cell_left_padding(1);
+        fort::char_table::default_props().set_cell_right_padding(0);
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
 
         std::string table_str = table.to_string();
         std::string table_str_etalon =
@@ -230,12 +230,12 @@ void test_cpp_table_cell_properties(void)
     }
 
     WHEN("Top and bottom padding = 0") {
-        fort::table::default_props().set_cell_top_padding(0);
-        fort::table::default_props().set_cell_bottom_padding(0);
-        fort::table::default_props().set_cell_left_padding(1);
-        fort::table::default_props().set_cell_right_padding(1);
+        fort::char_table::default_props().set_cell_top_padding(0);
+        fort::char_table::default_props().set_cell_bottom_padding(0);
+        fort::char_table::default_props().set_cell_left_padding(1);
+        fort::char_table::default_props().set_cell_right_padding(1);
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
 
         std::string table_str = table.to_string();
         std::string table_str_etalon =
@@ -250,12 +250,12 @@ void test_cpp_table_cell_properties(void)
     }
 
     WHEN("Left and right padding = 0") {
-        fort::table::default_props().set_cell_top_padding(1);
-        fort::table::default_props().set_cell_bottom_padding(1);
-        fort::table::default_props().set_cell_left_padding(0);
-        fort::table::default_props().set_cell_right_padding(0);
+        fort::char_table::default_props().set_cell_top_padding(1);
+        fort::char_table::default_props().set_cell_bottom_padding(1);
+        fort::char_table::default_props().set_cell_left_padding(0);
+        fort::char_table::default_props().set_cell_right_padding(0);
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
 
         std::string table_str = table.to_string();
         std::string table_str_etalon =
@@ -276,12 +276,12 @@ void test_cpp_table_cell_properties(void)
     }
 
     WHEN("All paddings = 0") {
-        fort::table::default_props().set_cell_top_padding(0);
-        fort::table::default_props().set_cell_bottom_padding(0);
-        fort::table::default_props().set_cell_left_padding(0);
-        fort::table::default_props().set_cell_right_padding(0);
+        fort::char_table::default_props().set_cell_top_padding(0);
+        fort::char_table::default_props().set_cell_bottom_padding(0);
+        fort::char_table::default_props().set_cell_left_padding(0);
+        fort::char_table::default_props().set_cell_right_padding(0);
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
 
         std::string table_str = table.to_string();
         std::string table_str_etalon =
@@ -296,13 +296,13 @@ void test_cpp_table_cell_properties(void)
     }
 
     WHEN("Empty string has 0 heigt") {
-        fort::table::default_props().set_cell_top_padding(1);
-        fort::table::default_props().set_cell_bottom_padding(1);
-        fort::table::default_props().set_cell_left_padding(1);
-        fort::table::default_props().set_cell_right_padding(1);
-        fort::table::default_props().set_cell_empty_str_height(0);
+        fort::char_table::default_props().set_cell_top_padding(1);
+        fort::char_table::default_props().set_cell_bottom_padding(1);
+        fort::char_table::default_props().set_cell_left_padding(1);
+        fort::char_table::default_props().set_cell_right_padding(1);
+        fort::char_table::default_props().set_cell_empty_str_height(0);
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
         table << "";
 
         std::string table_str = table.to_string();
@@ -328,7 +328,7 @@ void test_cpp_table_cell_properties(void)
 
     WHEN("Setting properties for a particular table") {
         set_test_properties_as_default();
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
         table.set_cell_bottom_padding(0);
         table.set_cell_top_padding(0);
         table.set_cell_left_padding(0);
@@ -371,7 +371,7 @@ void test_cpp_table_cell_properties(void)
 
     WHEN("Set table width and column alignment") {
         set_test_properties_as_default();
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
 
         table.column(1).set_cell_min_width(7);
         table.column(1).set_cell_text_align(fort::text_align::left);
@@ -401,10 +401,10 @@ void test_cpp_table_cell_properties(void)
 
     WHEN("Set table width and column alignment as default") {
         set_test_properties_as_default();
-        fort::table::default_props().set_cell_min_width(5);
-        fort::table::default_props().set_cell_text_align(fort::text_align::center);
+        fort::char_table::default_props().set_cell_min_width(5);
+        fort::char_table::default_props().set_cell_text_align(fort::text_align::center);
 
-        fort::table table = create_cpp_test_int_table(false);
+        fort::char_table table = create_cpp_test_int_table(false);
         std::string table_str = table.to_string();
         std::string table_str_etalon =
             "+-----+-----+-----+-----+\n"
@@ -426,7 +426,7 @@ void test_cpp_table_cell_properties(void)
     WHEN("Multiline cell") {
 
         set_test_properties_as_default();
-        fort::table table;
+        fort::char_table table;
         table[0].set_cell_row_type(fort::row_type::header);
 
         table << 4 << 'c' << "234" << 3.14 << fort::endr;
@@ -454,7 +454,7 @@ void test_cpp_table_cell_properties(void)
 
     WHEN("Cells with spans") {
         set_test_properties_as_default();
-        fort::table table;
+        fort::char_table table;
 
         table[0][0].set_cell_span(5);
         table[1][1].set_cell_span(3);
@@ -499,7 +499,7 @@ void test_cpp_table_cell_properties(void)
 
     WHEN("Cells with spans in common and header cells") {
         set_test_properties_as_default();
-        fort::table table;
+        fort::char_table table;
 
         table.set_border_style(FT_DOUBLE2_STYLE);
 
@@ -550,7 +550,7 @@ void test_cpp_table_text_styles(void)
     set_test_properties_as_default();
 
     WHEN("Simple table with one cell and foreground content color") {
-        fort::table table;
+        fort::char_table table;
 
         table[0][0].set_cell_content_fg_color(fort::color::yellow);
         table << 42;
@@ -566,7 +566,7 @@ void test_cpp_table_text_styles(void)
     }
 
     WHEN("Simple table with one cell and background content color") {
-        fort::table table;
+        fort::char_table table;
 
         table[0][0].set_cell_content_bg_color(fort::color::yellow);
         table << 42;
@@ -582,7 +582,7 @@ void test_cpp_table_text_styles(void)
     }
 
     WHEN("Simple table with one cell and background cell color") {
-        fort::table table;
+        fort::char_table table;
 
         table[0][0].set_cell_bg_color(fort::color::yellow);
         table << 42;
@@ -598,7 +598,7 @@ void test_cpp_table_text_styles(void)
     }
 
     WHEN("Simple table with one cell and content style") {
-        fort::table table;
+        fort::char_table table;
 
         table[0][0].set_cell_content_text_style(fort::text_style::underlined);
         table << 42;
@@ -614,7 +614,7 @@ void test_cpp_table_text_styles(void)
     }
 
     WHEN("Simple table with one cell and multiple content style") {
-        fort::table table;
+        fort::char_table table;
 
         table[0][0].set_cell_content_text_style(fort::text_style::underlined);
         table[0][0].set_cell_content_text_style(fort::text_style::bold);
@@ -631,7 +631,7 @@ void test_cpp_table_text_styles(void)
     }
 
     WHEN("Simple table with one cell and cell style") {
-        fort::table table;
+        fort::char_table table;
 
         table[0][0].set_cell_text_style(fort::text_style::underlined);
         table << 42;
@@ -647,7 +647,7 @@ void test_cpp_table_text_styles(void)
     }
 
     WHEN("Simple table with one cell and multiple cell style") {
-        fort::table table;
+        fort::char_table table;
 
         table[0][0].set_cell_text_style(fort::text_style::underlined);
         table[0][0].set_cell_text_style(fort::text_style::bold);
@@ -664,7 +664,7 @@ void test_cpp_table_text_styles(void)
     }
 
     WHEN("Simple table with one cell background color, content foreground color and style.") {
-        fort::table table;
+        fort::char_table table;
 
         table[0][0].set_cell_content_fg_color(fort::color::yellow);
         table[0][0].set_cell_bg_color(fort::color::red);

@@ -5,7 +5,7 @@
 
 int main(void)
 {
-    fort::table table;
+    fort::char_table table;
     table << fort::header;
     /* Fill each cell with operator[] */
     table [0][0] = "N";

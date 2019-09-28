@@ -5,7 +5,7 @@
 
 int main()
 {
-    fort::table table;
+    fort::char_table table;
     /* Set table border style */
     table.set_border_style(FT_DOUBLE2_STYLE);
 

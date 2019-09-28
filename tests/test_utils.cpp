@@ -2,7 +2,7 @@
 #include "tests.h"
 
 
-bool set_cpp_test_props_for_table(fort::table *table)
+bool set_cpp_test_props_for_table(fort::char_table *table)
 {
     assert_true(table->set_cell_bottom_padding(1));
     assert_true(table->set_cell_top_padding(1));
@@ -33,9 +33,9 @@ bool set_cpp_test_props_for_table(fort::table *table)
 
 
 
-fort::table create_cpp_test_int_table(int set_test_opts)
+fort::char_table create_cpp_test_int_table(int set_test_opts)
 {
-    fort::table table;
+    fort::char_table table;
 
     if (set_test_opts) {
         assert_true(set_cpp_test_props_for_table(&table) == true);
@@ -54,14 +54,14 @@ int set_test_properties_as_default(void)
 {
     bool status = true;
 
-    status = status && fort::table::default_props().set_cell_min_width(0);
-    status = status && fort::table::default_props().set_cell_text_align(fort::text_align::right);
+    status = status && fort::char_table::default_props().set_cell_min_width(0);
+    status = status && fort::char_table::default_props().set_cell_text_align(fort::text_align::right);
 
-    status = status && fort::table::default_props().set_cell_bottom_padding(1);
-    status = status && fort::table::default_props().set_cell_top_padding(1);
-    status = status && fort::table::default_props().set_cell_left_padding(1);
-    status = status && fort::table::default_props().set_cell_right_padding(1);
-    status = status && fort::table::default_props().set_cell_empty_str_height(1);
+    status = status && fort::char_table::default_props().set_cell_bottom_padding(1);
+    status = status && fort::char_table::default_props().set_cell_top_padding(1);
+    status = status && fort::char_table::default_props().set_cell_left_padding(1);
+    status = status && fort::char_table::default_props().set_cell_right_padding(1);
+    status = status && fort::char_table::default_props().set_cell_empty_str_height(1);
 
     assert_true(status == true);
 

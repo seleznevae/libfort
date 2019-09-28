@@ -1,4 +1,8 @@
-## v0.2.3
+## v0.3.0
+
+### API
+
+- Changes in C++ API (introduced classes `char_table` and `utf8-table` instead of `table`).
 
 ### Internal
 

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(libfort VERSION 0.2.3)
+project(libfort VERSION 0.3.0)
 
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)"
     "\\1.\\2" libfort_SOVERSION
@@ -220,8 +220,10 @@ if(FORT_ENABLE_ASTYLE)
         --min-conditional-indent=0
         --indent=spaces=4
         ${CMAKE_SOURCE_DIR}/lib/*.h
+        ${CMAKE_SOURCE_DIR}/lib/*.hpp
         ${CMAKE_SOURCE_DIR}/lib/*.c
         ${CMAKE_SOURCE_DIR}/src/*.h
+        ${CMAKE_SOURCE_DIR}/src/*.hpp
         ${CMAKE_SOURCE_DIR}/src/*.c
         ${CMAKE_SOURCE_DIR}/tests/*.c
         ${CMAKE_SOURCE_DIR}/tests/*.h

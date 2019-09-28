@@ -5,7 +5,7 @@
 
 int main()
 {
-    fort::table table;
+    fort::char_table table;
     table << fort::header
         << "N" << "Driver" << "Time" << "Avg Speed" << fort::endr
         << "1" << "Ricciardo" << "1:25.945" << "47.362" << fort::endr

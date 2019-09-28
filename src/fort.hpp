@@ -97,18 +97,28 @@ enum class text_style {
     hidden        = FT_TSTYLE_HIDDEN
 };
 
+
+enum class table_type {
+    character,
+#ifdef FT_HAVE_UTF8
+    utf8
+#endif /* FT_HAVE_UTF8 */
+};
+
 /**
  * Table manipulator.
  *
  * Table manipulators can be used to change current cell and change appearance
  * of cells.
  */
-class table_manipulator {
+class table_manipulator
+{
 public:
     explicit table_manipulator(int i)
-        :value(i)
+        : value(i)
     {
     }
+    template <table_type TT>
     friend class table;
 private:
     int value;
@@ -136,11 +146,12 @@ const table_manipulator separator(2);
  * which user can specify properties.
  */
 template <typename table>
-class property_owner {
+class property_owner
+{
 public:
 
     property_owner(std::size_t row_idx, std::size_t coll_idx, table *tbl, bool def = false)
-        :ps_row_idx_(row_idx), ps_coll_idx_(coll_idx),
+        : ps_row_idx_(row_idx), ps_coll_idx_(coll_idx),
           ps_table_(tbl), set_default_properties_(def) {}
 
     /**
@@ -343,19 +354,31 @@ protected:
     }
 };
 
+
 /**
  * Formatted table.
  *
- * Table class is a C++ wrapper around struct ft_table.
+ * Table template class is a C++ wrapper around struct {@link ft_table}.
+ * Template parameter is {@link table_type}. Useful instantiations of table
+ * template class are {@link char_table} and {@link utf8_table}.
  */
-class table: public property_owner<table> {
+template <table_type TT = table_type::character>
+class table: public property_owner<table<TT>>
+{
+    /**
+     *  Utility types.
+     */
+    using table_t = table<TT>;
+    using property_owner_t = property_owner<table_t>;
+
 public:
 
     /**
      * Default constructor.
      */
     table()
-        :property_owner(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(ft_create_table())
+        : property_owner_t(FT_ANY_ROW, FT_ANY_COLUMN, this),
+          table_(ft_create_table())
     {
 
         if (table_ == NULL)
@@ -373,8 +396,8 @@ public:
     /**
      * Copy contstructor.
      */
-    table(const table& tbl)
-        :property_owner(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(NULL)
+    table(const table &tbl)
+        : property_owner_t(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(NULL)
     {
         if (tbl.table_) {
             ft_table_t *table_copy = ft_copy_table(tbl.table_);
@@ -392,8 +415,8 @@ public:
     /**
      * Move contstructor.
      */
-    table(table&& tbl)
-        :property_owner(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(tbl.table_)
+    table(table &&tbl)
+        : property_owner_t(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(tbl.table_)
     {
         if (tbl.stream_.tellp() >= 0) {
             stream_ << tbl.stream_.str();
@@ -405,7 +428,7 @@ public:
     /**
      * Copy assignment operator.
      */
-    table& operator=(const table& tbl)
+    table &operator=(const table &tbl)
     {
         if (&tbl == this)
             return *this;
@@ -428,7 +451,7 @@ public:
     /**
      * Move assignment operator.
      */
-    table& operator=(table&& tbl)
+    table &operator=(table &&tbl)
     {
         if (&tbl == this)
             return *this;
@@ -455,7 +478,7 @@ public:
      */
     std::string to_string() const
     {
-        const char *str = ft_to_string(table_);
+        const char *str = c_str();
         if (str == NULL)
             throw std::runtime_error("Libfort runtime error");
         return str;
@@ -478,7 +501,13 @@ public:
      */
     const char *c_str() const
     {
+#ifdef FT_HAVE_UTF8
+        return (TT == table_type::character)
+               ? ft_to_string(table_)
+               : (const char *)ft_to_u8string(table_);
+#else
         return ft_to_string(table_);
+#endif
     }
 
     /**
@@ -497,7 +526,16 @@ public:
     {
         stream_ << arg;
         if (stream_.tellp() >= 0) {
+#ifdef FT_HAVE_UTF8
+            if (TT == table_type::character) {
+                ft_nwrite(table_, 1, stream_.str().c_str());
+            } else {
+                ft_u8nwrite(table_, 1, (const void *)stream_.str().c_str());
+            }
+#else
             ft_nwrite(table_, 1, stream_.str().c_str());
+#endif
+
             stream_.str(std::string());
         }
         return *this;
@@ -527,7 +565,15 @@ public:
      */
     bool write(const char *str)
     {
+#ifdef FT_HAVE_UTF8
+        if (TT == table_type::character) {
+            return FT_IS_SUCCESS(ft_write(table_, str));
+        } else {
+            return FT_IS_SUCCESS(ft_u8write(table_, (const void *)str));
+        }
+#else
         return FT_IS_SUCCESS(ft_write(table_, str));
+#endif
     }
 
     /**
@@ -544,7 +590,15 @@ public:
      */
     bool write_ln(const char *str)
     {
+#ifdef FT_HAVE_UTF8
+        if (TT == table_type::character) {
+            return FT_IS_SUCCESS(ft_write_ln(table_, str));
+        } else {
+            return FT_IS_SUCCESS(ft_u8write_ln(table_, str));
+        }
+#else
         return FT_IS_SUCCESS(ft_write_ln(table_, str));
+#endif
     }
 
     /**
@@ -853,20 +907,24 @@ public:
     /**
      * Table cell.
      */
-    class table_cell: public property_owner<table>
+    class table_cell: public property_owner_t
     {
+        using property_owner_t::ps_coll_idx_;
+        using property_owner_t::ps_row_idx_;
+        using property_owner_t::ps_table_;
+        using property_owner_t::set_default_properties_;
     public:
         table_cell(std::size_t row_idx, std::size_t coll_idx, table &tbl)
-            :property_owner(row_idx, coll_idx, &tbl) {}
+            : property_owner_t(row_idx, coll_idx, &tbl) {}
 
-        table_cell& operator=(const char *str)
+        table_cell &operator=(const char *str)
         {
             ft_set_cur_cell(ps_table_->table_, ps_row_idx_, ps_coll_idx_);
             ps_table_->write(str);
             return *this;
         }
 
-        table_cell& operator=(const std::string &str)
+        table_cell &operator=(const std::string &str)
         {
             return operator=(str.c_str());
         }
@@ -892,14 +950,16 @@ public:
     /**
      * Table row.
      */
-    class table_row: public property_owner<table>
+    class table_row: public property_owner_t
     {
+        using property_owner_t::ps_row_idx_;
+        using property_owner_t::ps_table_;
     public:
         table_row(std::size_t row_idx, table &tbl)
-            :property_owner(row_idx, FT_ANY_COLUMN, &tbl) {}
+            : property_owner_t(row_idx, FT_ANY_COLUMN, &tbl) {}
 
         class table_cell
-        operator[](std::size_t coll_idx)
+            operator[](std::size_t coll_idx)
         {
             return table_cell(ps_row_idx_, coll_idx, *ps_table_);
         }
@@ -908,22 +968,22 @@ public:
     /**
      * Table column.
      */
-    class table_column: public property_owner<table>
+    class table_column: public property_owner_t
     {
     public:
         table_column(std::size_t col_idx, table &tbl)
-            :property_owner(FT_ANY_ROW, col_idx, &tbl) {}
+            : property_owner_t(FT_ANY_ROW, col_idx, &tbl) {}
     };
 
-    class default_properties: public property_owner<table>
+    class default_properties: public property_owner_t
     {
     public:
         default_properties(table *tbl)
-            :property_owner(FT_ANY_ROW, FT_ANY_COLUMN, tbl, true) {}
+            : property_owner_t(FT_ANY_ROW, FT_ANY_COLUMN, tbl, true) {}
     };
 
     class table_row
-    operator[](std::size_t row_idx)
+        operator[](std::size_t row_idx)
     {
         return table_row(row_idx, *this);
     }
@@ -940,7 +1000,7 @@ public:
      *   table_cell object.
      */
     class table_cell
-    cell(std::size_t row_idx, std::size_t col_idx)
+        cell(std::size_t row_idx, std::size_t col_idx)
     {
         return (*this)[row_idx][col_idx];
     }
@@ -976,7 +1036,7 @@ public:
      *   Current cell.
      */
     class table_cell
-    cur_cell()
+        cur_cell()
     {
         return cell(cur_row(), cur_col());
     }
@@ -990,7 +1050,7 @@ public:
      *   table_row object.
      */
     class table_row
-    row(std::size_t row_idx)
+        row(std::size_t row_idx)
     {
         return table_row(row_idx, *this);
     }
@@ -1004,18 +1064,33 @@ public:
      *   table_column object.
      */
     class table_column
-    column(std::size_t col_idx)
+        column(std::size_t col_idx)
     {
         return table_column(col_idx, *this);
     }
 
     static class default_properties
-    default_props()
+        default_props()
     {
         return default_properties(NULL);
     }
 };
 
+/**
+ * Formatted table containing common char content.
+ *
+ * Content of the table is treated as a string where each byte represesents a
+ * character. Should work for ascii characters. In case of usage of different
+ * international symbols it is recommended to use {@link utf8_table}.
+ */
+using char_table = table<table_type::character>;
+
+#ifdef FT_HAVE_UTF8
+/**
+ * Formatted table containing utf-8 content.
+ */
+using utf8_table = table<table_type::utf8>;
+#endif
 
 /**
  * Set default border style for all new formatted tables.
@@ -1032,6 +1107,6 @@ inline bool set_default_border_style(struct ft_border_style *style)
 }
 
 
-}
+} // namespace fort
 
 #endif // LIBFORT_HPP
