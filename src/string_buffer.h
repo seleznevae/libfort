@@ -73,4 +73,10 @@ FT_INTERNAL
 int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t *cntx, size_t cod_width,
                   const char *content_style_tag, const char *reset_content_style_tag);
 
+#ifdef FT_HAVE_UTF8
+FT_INTERNAL
+void buffer_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size_t *width));
+#endif /* FT_HAVE_UTF8 */
+
+
 #endif /* STRING_BUFFER_H */

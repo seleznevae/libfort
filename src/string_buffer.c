@@ -444,9 +444,24 @@ size_t string_buffer_raw_capacity(const f_string_buffer_t *buffer)
 }
 
 #ifdef FT_HAVE_UTF8
+/* User provided function to compute utf8 string visible width */
+static int (*_custom_u8strwid)(const void *beg, const void *end, size_t *width) = NULL;
+
+FT_INTERNAL
+void buffer_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size_t *width))
+{
+    _custom_u8strwid = u8strwid;
+}
+
 static
 size_t utf8_width(const void *beg, const void *end)
 {
+    if (_custom_u8strwid) {
+        size_t width = 0;
+        if (!_custom_u8strwid(beg, end, &width))
+            return width;
+    }
+
     size_t sz = (size_t)((const char *)end - (const char *)beg);
     char *tmp = (char *)F_MALLOC(sizeof(char) * (sz + 1));
     // @todo: add check to tmp

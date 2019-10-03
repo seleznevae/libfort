@@ -1821,6 +1821,12 @@ FT_INTERNAL
 int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t *cntx, size_t cod_width,
                   const char *content_style_tag, const char *reset_content_style_tag);
 
+#ifdef FT_HAVE_UTF8
+FT_INTERNAL
+void buffer_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size_t *width));
+#endif /* FT_HAVE_UTF8 */
+
+
 #endif /* STRING_BUFFER_H */
 
 /********************************************************
@@ -3528,6 +3534,12 @@ const void *ft_to_u8string(const ft_table_t *table)
 {
     return (const void *)ft_to_string_impl(table, UTF8_BUF);
 }
+
+void ft_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size_t *width))
+{
+    buffer_set_u8strwid_func(u8strwid);
+}
+
 #endif /* FT_HAVE_UTF8 */
 
 /********************************************************
@@ -6300,9 +6312,24 @@ size_t string_buffer_raw_capacity(const f_string_buffer_t *buffer)
 }
 
 #ifdef FT_HAVE_UTF8
+/* User provided function to compute utf8 string visible width */
+static int (*_custom_u8strwid)(const void *beg, const void *end, size_t *width) = NULL;
+
+FT_INTERNAL
+void buffer_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size_t *width))
+{
+    _custom_u8strwid = u8strwid;
+}
+
 static
 size_t utf8_width(const void *beg, const void *end)
 {
+    if (_custom_u8strwid) {
+        size_t width = 0;
+        if (!_custom_u8strwid(beg, end, &width))
+            return width;
+    }
+
     size_t sz = (size_t)((const char *)end - (const char *)beg);
     char *tmp = (char *)F_MALLOC(sizeof(char) * (sz + 1));
     // @todo: add check to tmp

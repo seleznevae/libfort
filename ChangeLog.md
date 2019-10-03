@@ -3,6 +3,7 @@
 ### API
 
 - Changes in C++ API (introduced classes `char_table` and `utf8-table` instead of `table`).
+- Add function `ft_set_u8strwid_func` to set custom function to compute width of utf8 strings.
 
 ### Internal
 

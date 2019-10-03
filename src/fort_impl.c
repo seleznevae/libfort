@@ -983,4 +983,10 @@ const void *ft_to_u8string(const ft_table_t *table)
 {
     return (const void *)ft_to_string_impl(table, UTF8_BUF);
 }
+
+void ft_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size_t *width))
+{
+    buffer_set_u8strwid_func(u8strwid);
+}
+
 #endif /* FT_HAVE_UTF8 */

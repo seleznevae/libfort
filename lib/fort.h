@@ -915,6 +915,27 @@ int ft_u8printf_ln(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_
 
 const void *ft_to_u8string(const ft_table_t *table);
 
+/**
+ * Set custom function to compute visible width of utf8 string.
+ *
+ * libfort internally has a very simple logic to compute visible width of utf8
+ * strings. It considers that each codepoint will occupy one position on the
+ * terminal in case of monowidth font (some east asians wide and fullwidth
+ * characters (see http://www.unicode.org/reports/tr11/tr11-33.html) will occupy
+ * 2 positions). This logic is very simple and covers wide range of cases. But
+ * obviously there a lot of cases when it is not sufficient. In such cases user
+ * should use some external libraries and provide an appropriate function to
+ * libfort.
+ *
+ * @param u8strwid
+ *   User provided function to evaluate width of utf8 string ( beg - start of
+ *   utf8 string, end - end of utf8 string (not included), width - pointer to
+ *   the result). If function succeed it should return 0, otherwise some non-
+ *   zero value. If function returns nonzero value libfort fallbacks to default
+ *   internal algorithm.
+ */
+void ft_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size_t *width));
+
 #endif /* FT_HAVE_UTF8 */
 
 

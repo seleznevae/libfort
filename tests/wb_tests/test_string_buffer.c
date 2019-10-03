@@ -349,6 +349,20 @@ void test_str_n_substring(void)
 #endif
 }
 
+#if defined(FT_HAVE_UTF8)
+/* Custom function to compute visible width of utf8 strings */
+int u8strwid(const void *beg, const void *end, size_t *width)
+{
+    const char *custom_str = "custom_string";
+    const size_t raw_len = (const char *)end - (const char *)beg;
+    if (memcmp(beg, custom_str, MIN(strlen(custom_str), raw_len)) == 0) {
+        *width = 25;
+        return 0;
+    }
+    return 1;
+}
+#endif
+
 void test_buffer_text_visible_width(void)
 {
     f_string_buffer_t *buffer = create_string_buffer(200, CHAR_BUF);
@@ -467,6 +481,17 @@ void test_buffer_text_visible_width(void)
     assert_true(buffer_text_visible_width(buffer) == 30);
 
 
+    /* Test custom width function for utf8 strings */
+    ft_set_u8strwid_func(&u8strwid);
+    buffer->str.u8str = (void *)"custom_string";
+    assert_true(buffer_text_visible_width(buffer) == 25);
+    buffer->str.u8str = (void *)"123456789012345678901234\ncustom_string";
+    assert_true(buffer_text_visible_width(buffer) == 25);
+    buffer->str.u8str = (void *)"12345678901234567890123456\ncustom_string";
+    assert_true(buffer_text_visible_width(buffer) == 26);
+    buffer->str.u8str = (void *)"common_string";
+    assert_true(buffer_text_visible_width(buffer) == 13);
+    ft_set_u8strwid_func(NULL);
 #endif
 
     buffer->type = CHAR_BUF;
