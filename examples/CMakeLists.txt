@@ -67,16 +67,16 @@ add_executable(${PROJECT_NAME}_fill_table_cpp
 target_link_libraries(${PROJECT_NAME}_fill_table_cpp
     fort)
 
+add_executable(${PROJECT_NAME}_beautiful_table_cpp
+    5-beautiful_table.cpp)
+target_link_libraries(${PROJECT_NAME}_beautiful_table_cpp
+    fort)
+
 add_executable(${PROJECT_NAME}_non_ascii_table_cpp
     9-non_ascii_table.cpp)
 target_link_libraries(${PROJECT_NAME}_non_ascii_table_cpp
     fort)
 
-
-add_executable(${PROJECT_NAME}_ex_cpp
-    main.cpp)
-target_link_libraries(${PROJECT_NAME}_ex_cpp
-    fort)
 
 set(${PROJECT_NAME}_examples
     ${PROJECT_NAME}_simple_table
@@ -89,11 +89,11 @@ set(${PROJECT_NAME}_examples
     ${PROJECT_NAME}_complex_layout
     ${PROJECT_NAME}_non_ascii_table
 
-    ${PROJECT_NAME}_ex_cpp
     ${PROJECT_NAME}_simple_table_cpp
     ${PROJECT_NAME}_custom_table_cpp
     ${PROJECT_NAME}_complex_layout_cpp
     ${PROJECT_NAME}_fill_table_cpp
+    ${PROJECT_NAME}_beautiful_table_cpp
     ${PROJECT_NAME}_non_ascii_table_cpp
     PARENT_SCOPE)
 
