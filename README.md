@@ -83,7 +83,7 @@ int main(void)
 #include "fort.hpp"
 int main(void)
 {
-    fort::table table;
+    fort::char_table table;
     table << fort::header
         << "N" << "Driver" << "Time" << "Avg Speed" << fort::endr
         << "1" << "Ricciardo" << "1:25.945" << "47.362" << fort::endr
@@ -140,7 +140,7 @@ int main(void)
 #include "fort.hpp"
 int main(void)
 {
-    fort::table table;
+    fort::char_table table;
     /* Change border style */
     table.set_border_style(FT_DOUBLE2_STYLE);
 
@@ -205,7 +205,7 @@ int main(void)
 #include "fort.hpp"
 int main(void)
 {
-    fort::table table;
+    fort::char_table table;
     table << fort::header;
     /* Fill each cell with operator[] */
     table [0][0] = "N";
@@ -238,6 +238,76 @@ Output:
 | 3 | Earth   | 29.78       | 288            |
 +---+---------+-------------+----------------+
 ```
+
+### Working with multibyte-character-strings
+`libfort` supports `wchar_t` and utf-8 strings. Here are simple examples of working with utf-8 strings:
+
+
+```C
+/* C API */
+#include <stdio.h>
+#include "fort.h"
+int main(void)
+{
+    ft_table_t *table = ft_create_table();
+    ft_set_border_style(table, FT_NICE_STYLE);
+    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+    ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_LEFT);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+
+    ft_u8write_ln(table, "Ранг", "Название", "Год", "Рейтинг");
+    ft_u8write_ln(table, "1", "Побег из Шоушенка", "1994", "9.5");
+    ft_u8write_ln(table, "2", "12 разгневанных мужчин", "1957", "8.8");
+    ft_u8write_ln(table, "3", "Космическая одиссея 2001 года", "1968", "8.5");
+    ft_u8write_ln(table, "4", "Бегущий по лезвию", "1982", "8.1");
+
+    printf("%s\n", (const char *)ft_to_u8string(table));
+    ft_destroy_table(table);
+}
+```
+
+```C++
+/* C++ API */
+#include <iostream>
+#include "fort.hpp"
+int main(void)
+{
+    fort::utf8_table table;
+    table.set_border_style(FT_NICE_STYLE);
+    table.column(0).set_cell_text_align(fort::text_align::center);
+    table.column(1).set_cell_text_align(fort::text_align::center);
+
+    table << fort::header
+          << "Ранг" << "Название" << "Год" << "Рейтинг" << fort::endr
+          << "1" << "Побег из Шоушенка" << "1994" << "9.5"<< fort::endr
+          << "2" << "12 разгневанных мужчин" << "1957" << "8.8" << fort::endr
+          << "3" << "Космическая одиссея 2001 года" << "1968" << "8.5" << fort::endr
+          << "4" << "Бегущий по лезвию" << "1982" << "8.1" << fort::endr;
+    std::cout << table.to_string() << std::endl;
+}
+```
+
+Output:
+```text
+╔══════╦═══════════════════════════════╦══════╦═════════╗
+║ Ранг ║           Название            ║ Год  ║ Рейтинг ║
+╠══════╬═══════════════════════════════╬══════╬═════════╣
+║  1   ║       Побег из Шоушенка       ║ 1994 ║ 9.5     ║
+║  2   ║    12 разгневанных мужчин     ║ 1957 ║ 8.8     ║
+║  3   ║ Космическая одиссея 2001 года ║ 1968 ║ 8.5     ║
+║  4   ║       Бегущий по лезвию       ║ 1982 ║ 8.1     ║
+╚══════╩═══════════════════════════════╩══════╩═════════╝
+```
+
+Please note:
+-  `libfort` internally has a very simple logic to compute visible width of utf-8
+strings. It considers that each codepoint will occupy one position on the
+terminal in case of monowidth font (some east asians wide and fullwidth
+characters (see http://www.unicode.org/reports/tr11/tr11-33.html) will occupy
+2 positions). This logic is very simple and covers wide range of cases. But
+obviously there a lot of cases when it is not sufficient. In such cases user
+should use some external libraries and provide an appropriate function to
+`libfort` via `ft_set_u8strwid_func` function.
 
 ## Supported platforms and compilers
 

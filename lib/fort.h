@@ -56,7 +56,7 @@ SOFTWARE.
 
 /**
  * libfort configuration macros
- * (to disable wchar_t/utf-8 support this macros should be defined)
+ * (to disable wchar_t/UTF-8 support this macros should be defined)
  */
 /** #define FT_CONGIG_DISABLE_WCHAR */
 /** #define FT_CONGIG_DISABLE_UTF8 */
@@ -916,9 +916,9 @@ int ft_u8printf_ln(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_
 const void *ft_to_u8string(const ft_table_t *table);
 
 /**
- * Set custom function to compute visible width of utf8 string.
+ * Set custom function to compute visible width of UTF-8 string.
  *
- * libfort internally has a very simple logic to compute visible width of utf8
+ * libfort internally has a very simple logic to compute visible width of UTF-8
  * strings. It considers that each codepoint will occupy one position on the
  * terminal in case of monowidth font (some east asians wide and fullwidth
  * characters (see http://www.unicode.org/reports/tr11/tr11-33.html) will occupy
@@ -928,8 +928,8 @@ const void *ft_to_u8string(const ft_table_t *table);
  * libfort.
  *
  * @param u8strwid
- *   User provided function to evaluate width of utf8 string ( beg - start of
- *   utf8 string, end - end of utf8 string (not included), width - pointer to
+ *   User provided function to evaluate width of UTF-8 string ( beg - start of
+ *   UTF-8 string, end - end of UTF-8 string (not included), width - pointer to
  *   the result). If function succeed it should return 0, otherwise some non-
  *   zero value. If function returns nonzero value libfort fallbacks to default
  *   internal algorithm.
