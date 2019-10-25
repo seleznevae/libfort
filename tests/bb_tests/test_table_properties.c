@@ -220,6 +220,40 @@ void test_table_cell_properties(void)
         ft_destroy_table(table);
     }
 
+    WHEN("Setting property for the current cell") {
+        set_test_properties_as_default();
+
+        table = create_test_int_table(0);
+        ft_set_cell_prop(table, FT_CUR_ROW, FT_CUR_COLUMN, FT_CPROP_TOP_PADDING, 2);
+        ft_write(table, "3", "4");
+        ft_set_cell_prop(table, FT_CUR_ROW, FT_CUR_COLUMN, FT_CPROP_TOP_PADDING, 0);
+        ft_write_ln(table, "55", "67");
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   |    |    |\n"
+            "| 3 | 4 | 55 | 67 |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n"
+            "|   |   | 55 |    |\n"
+            "|   | 4 |    | 67 |\n"
+            "| 3 |   |    |    |\n"
+            "|   |   |    |    |\n"
+            "+---+---+----+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
     WHEN("Setting property for all cells in the table") {
         set_test_properties_as_default();
 

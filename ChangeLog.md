@@ -1,3 +1,9 @@
+## v0.3.1
+
+### Bug fixes
+
+- Fix incorrect behaviour when setting properties with `FT_CUR_...` macroses.
+
 ## v0.3.0
 
 ### API

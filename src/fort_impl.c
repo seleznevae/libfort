@@ -843,7 +843,7 @@ int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t propert
 
     if (row == FT_CUR_ROW)
         row = table->cur_row;
-    if (row == FT_CUR_COLUMN)
+    if (col == FT_CUR_COLUMN)
         col = table->cur_col;
 
     return set_cell_property(table->properties->cell_properties, row, col, property, value);
