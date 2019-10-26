@@ -256,17 +256,17 @@ script:
   #   fi
 
   # Build for coveralls (should be the last)
-  # - |
-  #   if [ "${CC}" = 'gcc' ]; then
-  #     cd ..  ;
-  #     rm -r build/* ;
-  #     cd build ;
-  #     cmake .. -DFORT_BUILD_TYPE=coveralls -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}" ;
-  #     cmake --build . --target all ;
-  #     ls ;
-  #     ./tests/libfort_test_dev ;
-  #   fi
-  # - cd ..
+  - |
+    if [ "${CC}" = 'gcc' ]; then
+      cd ..  ;
+      rm -r build/* ;
+      cd build ;
+      cmake .. -DFORT_BUILD_TYPE=coveralls -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}" ;
+      cmake --build . --target all ;
+      ls ;
+      ./tests/libfort_test_dev ;
+    fi
+  - cd ..
 
 
 
