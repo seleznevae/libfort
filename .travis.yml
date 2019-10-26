@@ -222,25 +222,25 @@ script:
     fi
 
   # Astyle Format
-  - |
-    if [ "${CC}" = 'gcc' ]; then
-      ls
-      cd ..  ;
-      rm -r build/* ;
-      cd build ;
-      cmake .. -DFORT_ENABLE_ASTYLE=ON ;
-      make ;
-      make format ;
-      cd .. ;
-      if [[ -n $(git diff) ]]; then
-          echo "You must run make format before submitting a pull request" ;
-          echo "" ;
-          git diff ;
-          exit -1 ;
-      fi
-      cd build ;
-      rm -rf external
-    fi
+  # - |
+  #   if [ "${CC}" = 'gcc' ]; then
+  #     ls
+  #     cd ..  ;
+  #     rm -r build/* ;
+  #     cd build ;
+  #     cmake .. -DFORT_ENABLE_ASTYLE=ON ;
+  #     make ;
+  #     make format ;
+  #     cd .. ;
+  #     if [[ -n $(git diff) ]]; then
+  #         echo "You must run make format before submitting a pull request" ;
+  #         echo "" ;
+  #         git diff ;
+  #         exit -1 ;
+  #     fi
+  #     cd build ;
+  #     rm -rf external
+  #   fi
 
 
   # Clang static analyzer (doesn't work - can't find scan-build)
