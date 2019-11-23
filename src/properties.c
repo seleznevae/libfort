@@ -246,12 +246,14 @@ static struct f_cell_props g_default_cell_properties = {
     FT_ANY_COLUMN, /* cell_col */
 
     /* properties_flags */
-    FT_CPROP_MIN_WIDTH  | FT_CPROP_TEXT_ALIGN | FT_CPROP_TOP_PADDING
+    FT_CPROP_MIN_WIDTH  | FT_CPROP_MAX_WIDTH
+    | FT_CPROP_TEXT_ALIGN | FT_CPROP_TOP_PADDING
     | FT_CPROP_BOTTOM_PADDING | FT_CPROP_LEFT_PADDING | FT_CPROP_RIGHT_PADDING
     | FT_CPROP_EMPTY_STR_HEIGHT | FT_CPROP_CONT_FG_COLOR | FT_CPROP_CELL_BG_COLOR
     | FT_CPROP_CONT_BG_COLOR | FT_CPROP_CELL_TEXT_STYLE | FT_CPROP_CONT_TEXT_STYLE,
 
     0,             /* col_min_width */
+    UINT_MAX,      /* col_max_width */
     FT_ALIGNED_LEFT,  /* align */
     0,      /* cell_padding_top         */
     0,      /* cell_padding_bottom      */
@@ -276,6 +278,8 @@ static int get_prop_value_if_exists_otherwise_default(const struct f_cell_props 
     switch (property) {
         case FT_CPROP_MIN_WIDTH:
             return cell_opts->col_min_width;
+        case FT_CPROP_MAX_WIDTH:
+            return cell_opts->col_max_width;
         case FT_CPROP_TEXT_ALIGN:
             return cell_opts->align;
         case FT_CPROP_TOP_PADDING:
@@ -409,6 +413,11 @@ static f_status set_cell_property_impl(f_cell_props_t *opt, uint32_t property, i
     if (PROP_IS_SET(property, FT_CPROP_MIN_WIDTH)) {
         CHECK_NOT_NEGATIVE(value);
         opt->col_min_width = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_MAX_WIDTH)) {
+        if (opt->cell_row != FT_ANY_ROW)
+            goto fort_fail;
+        CHECK_NOT_NEGATIVE(value);
+        opt->col_max_width = value;
     } else if (PROP_IS_SET(property, FT_CPROP_TEXT_ALIGN)) {
         opt->align = (enum ft_text_alignment)value;
     } else if (PROP_IS_SET(property, FT_CPROP_TOP_PADDING)) {
@@ -465,16 +474,6 @@ f_status set_cell_property(f_cell_prop_container_t *cont, size_t row, size_t col
         return FT_ERROR;
 
     return set_cell_property_impl(opt, property, value);
-    /*
-    PROP_SET(opt->propertiess, property);
-    if (PROP_IS_SET(property, FT_CPROP_MIN_WIDTH)) {
-        opt->col_min_width = value;
-    } else if (PROP_IS_SET(property, FT_CPROP_TEXT_ALIGN)) {
-        opt->align = value;
-    }
-
-    return FT_SUCCESS;
-    */
 }
 
 

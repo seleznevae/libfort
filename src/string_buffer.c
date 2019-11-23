@@ -590,6 +590,12 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     f_table_properties_t *props = context->table_properties;
     size_t row = context->row;
     size_t column = context->column;
+    unsigned max_width_prop = (unsigned)get_cell_property_hierarchically(props, row, column, FT_CPROP_MAX_WIDTH);
+    size_t padding_left = get_cell_property_hierarchically(props, row, column, FT_CPROP_LEFT_PADDING);
+    size_t padding_right = get_cell_property_hierarchically(props, row, column, FT_CPROP_RIGHT_PADDING);
+    /* Max width includes paddings see comments in @hint_width_cell */
+    size_t max_width = (max_width_prop == UINT_MAX) ? UINT_MAX : max_width_prop - padding_left - padding_right;
+    int explicitly_limited = vis_width == max_width;
 
     if (buffer == NULL || buffer->str.data == NULL
         || buffer_row >= buffer_text_visible_height(buffer)) {
@@ -597,7 +603,9 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     }
 
     size_t content_width = buffer_text_visible_width(buffer);
-    if (vis_width < content_width)
+    if (explicitly_limited)
+        content_width = MIN(max_width, content_width);
+    if ((vis_width < content_width) && !explicitly_limited)
         return -1;
 
     size_t left = 0;
@@ -628,9 +636,17 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     buffer_substring(buffer, buffer_row, &beg, &end, &str_it_width);
     if (beg == NULL || end == NULL)
         return -1;
-    if (str_it_width < 0 || content_width < (size_t)str_it_width)
+    if (str_it_width < 0 || ((content_width < (size_t)str_it_width) && !explicitly_limited))
         return -1;
 
+    /* Take into account max width property */
+    if (max_width_prop != UINT_MAX) {
+        /* note: Need to calculate visible width here !!!! */
+        if ((size_t)((char *)end - (char *)beg) > max_width) {
+            end = (char *)beg + max_width;
+            str_it_width = max_width;
+        }
+    }
     size_t padding = content_width - (size_t)str_it_width;
 
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, left, FT_SPACE));

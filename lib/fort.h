@@ -46,8 +46,8 @@ SOFTWARE.
 
 #define LIBFORT_MAJOR_VERSION 0
 #define LIBFORT_MINOR_VERSION 3
-#define LIBFORT_REVISION 0
-#define LIBFORT_VERSION_STR "0.3.0"
+#define LIBFORT_REVISION 1
+#define LIBFORT_VERSION_STR "0.3.1"
 
 
 /*****************************************************************************
@@ -696,18 +696,19 @@ int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
  * @{
  */
 #define FT_CPROP_MIN_WIDTH        (0x01U << 0) /**< Minimum width */
-#define FT_CPROP_TEXT_ALIGN       (0x01U << 1) /**< Text alignment */
-#define FT_CPROP_TOP_PADDING      (0x01U << 2) /**< Top padding for cell content */
-#define FT_CPROP_BOTTOM_PADDING   (0x01U << 3) /**< Bottom padding for cell content */
-#define FT_CPROP_LEFT_PADDING     (0x01U << 4) /**< Left padding for cell content */
-#define FT_CPROP_RIGHT_PADDING    (0x01U << 5) /**< Right padding for cell content */
-#define FT_CPROP_EMPTY_STR_HEIGHT (0x01U << 6) /**< Height of empty cell */
-#define FT_CPROP_ROW_TYPE         (0x01U << 7) /**< Row type */
-#define FT_CPROP_CONT_FG_COLOR    (0x01U << 8) /**< Cell content foreground text color */
-#define FT_CPROP_CELL_BG_COLOR    (0x01U << 9) /**< Cell background color */
-#define FT_CPROP_CONT_BG_COLOR    (0x01U << 10) /**< Cell content background color */
-#define FT_CPROP_CELL_TEXT_STYLE  (0x01U << 11) /**< Cell text style */
-#define FT_CPROP_CONT_TEXT_STYLE  (0x01U << 12) /**< Cell content text style */
+#define FT_CPROP_MAX_WIDTH        (0x01U << 1) /**< Maximum width */
+#define FT_CPROP_TEXT_ALIGN       (0x01U << 2) /**< Text alignment */
+#define FT_CPROP_TOP_PADDING      (0x01U << 3) /**< Top padding for cell content */
+#define FT_CPROP_BOTTOM_PADDING   (0x01U << 4) /**< Bottom padding for cell content */
+#define FT_CPROP_LEFT_PADDING     (0x01U << 5) /**< Left padding for cell content */
+#define FT_CPROP_RIGHT_PADDING    (0x01U << 6) /**< Right padding for cell content */
+#define FT_CPROP_EMPTY_STR_HEIGHT (0x01U << 7) /**< Height of empty cell */
+#define FT_CPROP_ROW_TYPE         (0x01U << 8) /**< Row type */
+#define FT_CPROP_CONT_FG_COLOR    (0x01U << 9) /**< Cell content foreground text color */
+#define FT_CPROP_CELL_BG_COLOR    (0x01U << 10) /**< Cell background color */
+#define FT_CPROP_CONT_BG_COLOR    (0x01U << 11) /**< Cell content background color */
+#define FT_CPROP_CELL_TEXT_STYLE  (0x01U << 12) /**< Cell text style */
+#define FT_CPROP_CONT_TEXT_STYLE  (0x01U << 13) /**< Cell content text style */
 /** @} */
 
 

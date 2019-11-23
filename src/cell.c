@@ -85,7 +85,12 @@ size_t hint_width_cell(const f_cell_t *cell, const f_context_t *context, enum f_
     if (cell->str_buffer && cell->str_buffer->str.data) {
         result += buffer_text_visible_width(cell->str_buffer);
     }
+    /* todo:
+     * need to think about a case when MIN / MAX properties are set at the same
+     * time.
+     */
     result = MAX(result, (size_t)get_cell_property_hierarchically(properties, row, column, FT_CPROP_MIN_WIDTH));
+    result = MIN(result, (size_t)get_cell_property_hierarchically(properties, row, column, FT_CPROP_MAX_WIDTH));
 
     if (geom == INTERN_REPR_GEOMETRY) {
         char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];

@@ -1874,6 +1874,7 @@ struct f_cell_props {
     uint32_t properties_flags;
 
     unsigned int col_min_width;
+    unsigned int col_max_width;
     enum ft_text_alignment align;
     unsigned int cell_padding_top;
     unsigned int cell_padding_bottom;
@@ -2341,7 +2342,13 @@ size_t hint_width_cell(const f_cell_t *cell, const f_context_t *context, enum f_
     if (cell->str_buffer && cell->str_buffer->str.data) {
         result += buffer_text_visible_width(cell->str_buffer);
     }
+    /* todo:
+     * need to think about a case when MIN / MAX properties are set at the same
+     * time.
+     *
+     */
     result = MAX(result, (size_t)get_cell_property_hierarchically(properties, row, column, FT_CPROP_MIN_WIDTH));
+    result = MIN(result, (size_t)get_cell_property_hierarchically(properties, row, column, FT_CPROP_MAX_WIDTH));
 
     if (geom == INTERN_REPR_GEOMETRY) {
         char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
@@ -4281,12 +4288,14 @@ static struct f_cell_props g_default_cell_properties = {
     FT_ANY_COLUMN, /* cell_col */
 
     /* properties_flags */
-    FT_CPROP_MIN_WIDTH  | FT_CPROP_TEXT_ALIGN | FT_CPROP_TOP_PADDING
+    FT_CPROP_MIN_WIDTH  | FT_CPROP_MAX_WIDTH
+    | FT_CPROP_TEXT_ALIGN | FT_CPROP_TOP_PADDING
     | FT_CPROP_BOTTOM_PADDING | FT_CPROP_LEFT_PADDING | FT_CPROP_RIGHT_PADDING
     | FT_CPROP_EMPTY_STR_HEIGHT | FT_CPROP_CONT_FG_COLOR | FT_CPROP_CELL_BG_COLOR
     | FT_CPROP_CONT_BG_COLOR | FT_CPROP_CELL_TEXT_STYLE | FT_CPROP_CONT_TEXT_STYLE,
 
     0,             /* col_min_width */
+    UINT_MAX,      /* col_max_width */
     FT_ALIGNED_LEFT,  /* align */
     0,      /* cell_padding_top         */
     0,      /* cell_padding_bottom      */
@@ -4311,6 +4320,8 @@ static int get_prop_value_if_exists_otherwise_default(const struct f_cell_props 
     switch (property) {
         case FT_CPROP_MIN_WIDTH:
             return cell_opts->col_min_width;
+        case FT_CPROP_MAX_WIDTH:
+            return cell_opts->col_max_width;
         case FT_CPROP_TEXT_ALIGN:
             return cell_opts->align;
         case FT_CPROP_TOP_PADDING:
@@ -4444,6 +4455,11 @@ static f_status set_cell_property_impl(f_cell_props_t *opt, uint32_t property, i
     if (PROP_IS_SET(property, FT_CPROP_MIN_WIDTH)) {
         CHECK_NOT_NEGATIVE(value);
         opt->col_min_width = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_MAX_WIDTH)) {
+        if (opt->cell_row != FT_ANY_ROW)
+            goto fort_fail;
+        CHECK_NOT_NEGATIVE(value);
+        opt->col_max_width = value;
     } else if (PROP_IS_SET(property, FT_CPROP_TEXT_ALIGN)) {
         opt->align = (enum ft_text_alignment)value;
     } else if (PROP_IS_SET(property, FT_CPROP_TOP_PADDING)) {
@@ -4500,16 +4516,6 @@ f_status set_cell_property(f_cell_prop_container_t *cont, size_t row, size_t col
         return FT_ERROR;
 
     return set_cell_property_impl(opt, property, value);
-    /*
-    PROP_SET(opt->propertiess, property);
-    if (PROP_IS_SET(property, FT_CPROP_MIN_WIDTH)) {
-        opt->col_min_width = value;
-    } else if (PROP_IS_SET(property, FT_CPROP_TEXT_ALIGN)) {
-        opt->align = value;
-    }
-
-    return FT_SUCCESS;
-    */
 }
 
 
@@ -6458,6 +6464,12 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     f_table_properties_t *props = context->table_properties;
     size_t row = context->row;
     size_t column = context->column;
+    unsigned max_width_prop = (unsigned)get_cell_property_hierarchically(props, row, column, FT_CPROP_MAX_WIDTH);
+    size_t padding_left = get_cell_property_hierarchically(props, row, column, FT_CPROP_LEFT_PADDING);
+    size_t padding_right = get_cell_property_hierarchically(props, row, column, FT_CPROP_RIGHT_PADDING);
+    /* Max width includes paddings see comments in @hint_width_cell */
+    size_t max_width = (max_width_prop == UINT_MAX) ? UINT_MAX : max_width_prop - padding_left - padding_right;
+    int explicitly_limited = vis_width == max_width;
 
     if (buffer == NULL || buffer->str.data == NULL
         || buffer_row >= buffer_text_visible_height(buffer)) {
@@ -6465,7 +6477,9 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     }
 
     size_t content_width = buffer_text_visible_width(buffer);
-    if (vis_width < content_width)
+    if (explicitly_limited)
+        content_width = MIN(max_width, content_width);
+    if ((vis_width < content_width) && !explicitly_limited)
         return -1;
 
     size_t left = 0;
@@ -6496,9 +6510,17 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     buffer_substring(buffer, buffer_row, &beg, &end, &str_it_width);
     if (beg == NULL || end == NULL)
         return -1;
-    if (str_it_width < 0 || content_width < (size_t)str_it_width)
+    if (str_it_width < 0 || ((content_width < (size_t)str_it_width) && !explicitly_limited))
         return -1;
 
+    /* Take into account max width property */
+    if (max_width_prop != UINT_MAX) {
+        /* note: Need to calculate visible width here !!!! */
+        if ((size_t)((char *)end - (char *)beg) > max_width) {
+            end = (char *)beg + max_width;
+            str_it_width = max_width;
+        }
+    }
     size_t padding = content_width - (size_t)str_it_width;
 
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, left, FT_SPACE));

@@ -34,6 +34,7 @@ struct f_cell_props {
     uint32_t properties_flags;
 
     unsigned int col_min_width;
+    unsigned int col_max_width;
     enum ft_text_alignment align;
     unsigned int cell_padding_top;
     unsigned int cell_padding_bottom;
