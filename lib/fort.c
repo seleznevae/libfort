@@ -2582,7 +2582,6 @@ SOFTWARE.
 #include <assert.h>
 #include <string.h>
 #include <wchar.h>
-#include <ctype.h>
 
 /* #include "vector.h" */ /* Commented by amalgamation script */
 /* #include "fort_utils.h" */ /* Commented by amalgamation script */
@@ -5416,10 +5415,14 @@ int print_row_separator_impl(f_conv_context_t *cntx,
     size_t i = 0;
 
     /* If all chars are not printable, skip line separator */
-    if ((strlen(*L) == 0 || (strlen(*L) == 1 && !isprint(**L)))
-        && (strlen(*I) == 0 || (strlen(*I) == 1 && !isprint(**I)))
-        && (strlen(*IV) == 0 || (strlen(*IV) == 1 && !isprint(**IV)))
-        && (strlen(*R) == 0 || (strlen(*R) == 1 && !isprint(**R)))) {
+    /* NOTE: argument of `isprint` should be explicitly converted to
+     * unsigned char according to
+     * https://en.cppreference.com/w/c/string/byte/isprint
+     */
+    if ((strlen(*L) == 0 || (strlen(*L) == 1 && !isprint((unsigned char) **L)))
+        && (strlen(*I) == 0 || (strlen(*I) == 1 && !isprint((unsigned char) **I)))
+        && (strlen(*IV) == 0 || (strlen(*IV) == 1 && !isprint((unsigned char) **IV)))
+        && (strlen(*R) == 0 || (strlen(*R) == 1 && !isprint((unsigned char) **R)))) {
         status = 0;
         goto clear;
     }
