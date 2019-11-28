@@ -1,3 +1,9 @@
+## v0.3.2
+
+### Bug fixes
+
+- Fix undefined behavior due to incorrect usage of `isprint` function.
+
 ## v0.3.1
 
 ### Bug fixes
