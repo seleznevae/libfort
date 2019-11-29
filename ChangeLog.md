@@ -4,6 +4,10 @@
 
 - Fix undefined behavior due to incorrect usage of `isprint` function.
 
+### Internal
+
+- Fix compilation for compilers other than gcc, clang, msvc.
+
 ## v0.3.1
 
 ### Bug fixes

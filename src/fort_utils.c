@@ -14,7 +14,7 @@ char g_col_separator = FORT_DEFAULT_COL_SEPARATOR;
  *               LIBFORT helpers
  *****************************************************************************/
 
-#ifndef FT_MICROSOFT_COMPILER
+#if defined(FT_GCC_COMPILER) || defined(FT_CLANG_COMPILER)
 void *(*fort_malloc)(size_t size) = &malloc;
 void (*fort_free)(void *ptr) = &free;
 void *(*fort_calloc)(size_t nmemb, size_t size) = &calloc;
@@ -85,7 +85,7 @@ void set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr))
            || (f_malloc != NULL && f_free != NULL) /* Use custom functions */);
 
     if (f_malloc == NULL && f_free == NULL) {
-#ifndef FT_MICROSOFT_COMPILER
+#if defined(FT_GCC_COMPILER) || defined(FT_CLANG_COMPILER)
         fort_malloc = &malloc;
         fort_free = &free;
         fort_calloc = &calloc;
