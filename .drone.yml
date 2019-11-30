@@ -22,7 +22,10 @@ steps:
   - name: test-tcc-compiler
     image: alpine
     commands:
-      - apk add gcc g++ cmake make binutils-gold tcc
+      - apk add gcc g++ cmake make binutils-gold
+      # tcc available only in in edge alpine repo
+      - echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+      - apk add tcc
       - ls
       - uname -a
       - mkdir -p build
