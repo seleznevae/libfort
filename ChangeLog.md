@@ -7,6 +7,7 @@
 ### Internal
 
 - Fix compilation for compilers other than gcc, clang, msvc.
+- Add build with tcc to CI.
 
 ## v0.3.1
 

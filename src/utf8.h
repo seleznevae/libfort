@@ -74,7 +74,7 @@ extern "C" {
 #define utf8_nonnull
 #define utf8_pure
 #define utf8_restrict
-#define utf8_weak
+#define utf8_weak inline
 #endif
 
 #ifdef __cplusplus

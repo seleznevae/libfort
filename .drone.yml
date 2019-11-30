@@ -19,6 +19,21 @@ steps:
       - ls
       - ctest -VV
 
+  - name: test-tcc-compiler
+    image: alpine
+    commands:
+      - apk add gcc g++ cmake make binutils-gold tcc
+      - ls
+      - uname -a
+      - mkdir -p build
+      - cd build
+      # Tests with wchar don't pass
+      - cmake .. -DCMAKE_C_COMPILER=/usr/bin/tcc -DFORT_ENABLE_WCHAR=OFF
+      - cmake --build . --target libfort_test_dev
+      - ./tests/libfort_test_dev
+      - cmake --build . --target libfort_test
+      - ./tests/libfort_test
+
 
 ---
 kind: pipeline
