@@ -8,6 +8,7 @@
 
 - Fix compilation for compilers other than gcc, clang, msvc.
 - Add build with tcc to CI.
+- Rewrote `mk_wcwidth` function.
 
 ## v0.3.1
 
