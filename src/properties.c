@@ -253,7 +253,7 @@ static struct f_cell_props g_default_cell_properties = {
     | FT_CPROP_CONT_BG_COLOR | FT_CPROP_CELL_TEXT_STYLE | FT_CPROP_CONT_TEXT_STYLE,
 
     0,             /* col_min_width */
-    UINT_MAX,      /* col_max_width */
+    FT_MAX_WIDTH_UNLIMITED,      /* col_max_width */
     FT_ALIGNED_LEFT,  /* align */
     0,      /* cell_padding_top         */
     0,      /* cell_padding_bottom      */

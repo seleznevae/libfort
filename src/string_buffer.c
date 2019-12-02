@@ -530,13 +530,19 @@ size_t buffer_text_visible_width(const f_string_buffer_t *buffer)
 
 
 static void
-buffer_substring(const f_string_buffer_t *buffer, size_t buffer_row, const void **begin, const void **end,  ptrdiff_t *str_it_width)
+buffer_substring(const f_string_buffer_t *buffer, size_t vis_width, size_t buffer_row, const void **begin, const void **end,  ptrdiff_t *str_it_width)
 {
     switch (buffer->type) {
         case CHAR_BUF:
             str_n_substring(buffer->str.cstr, '\n', buffer_row, (const char **)begin, (const char **)end);
-            if ((*(const char **)begin) && (*(const char **)end))
+            if ((*(const char **)begin) && (*(const char **)end)) {
                 *str_it_width = str_iter_width(*(const char **)begin, *(const char **)end);
+
+                if (*str_it_width > vis_width) {
+                    *str_it_width = vis_width;
+                    *end = *begin + vis_width;
+                }
+            }
             break;
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
@@ -594,8 +600,9 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     size_t padding_left = get_cell_property_hierarchically(props, row, column, FT_CPROP_LEFT_PADDING);
     size_t padding_right = get_cell_property_hierarchically(props, row, column, FT_CPROP_RIGHT_PADDING);
     /* Max width includes paddings see comments in @hint_width_cell */
-    size_t max_width = (max_width_prop == UINT_MAX) ? UINT_MAX : max_width_prop - padding_left - padding_right;
-    int explicitly_limited = vis_width == max_width;
+    size_t max_width = (max_width_prop >= FT_MAX_WIDTH_UNLIMITED) ? FT_MAX_WIDTH_UNLIMITED : max_width_prop - padding_left - padding_right;
+    if (max_width < vis_width)
+        return -1;
 
     if (buffer == NULL || buffer->str.data == NULL
         || buffer_row >= buffer_text_visible_height(buffer)) {
@@ -603,9 +610,8 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     }
 
     size_t content_width = buffer_text_visible_width(buffer);
-    if (explicitly_limited)
-        content_width = MIN(max_width, content_width);
-    if ((vis_width < content_width) && !explicitly_limited)
+    content_width = MIN(max_width, content_width);
+    if (vis_width < content_width)
         return -1;
 
     size_t left = 0;
@@ -633,20 +639,12 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     ptrdiff_t str_it_width = 0;
     const void *beg = NULL;
     const void *end = NULL;
-    buffer_substring(buffer, buffer_row, &beg, &end, &str_it_width);
+    buffer_substring(buffer, content_width, buffer_row, &beg, &end, &str_it_width);
     if (beg == NULL || end == NULL)
         return -1;
-    if (str_it_width < 0 || ((content_width < (size_t)str_it_width) && !explicitly_limited))
+    if (str_it_width < 0 || content_width < (size_t)str_it_width)
         return -1;
 
-    /* Take into account max width property */
-    if (max_width_prop != UINT_MAX) {
-        /* note: Need to calculate visible width here !!!! */
-        if ((size_t)((char *)end - (char *)beg) > max_width) {
-            end = (char *)beg + max_width;
-            str_it_width = max_width;
-        }
-    }
     size_t padding = content_width - (size_t)str_it_width;
 
     CHCK_RSLT_ADD_TO_WRITTEN(print_n_strings(cntx, left, FT_SPACE));

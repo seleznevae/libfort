@@ -8,8 +8,7 @@ int main(void)
     ft_table_t *table = ft_create_table();
 
     /* Setup header */
-//    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
-    ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+    ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
     ft_write_ln(table, "N", "Driver", "Time", "Avg Speed");
 
     ft_write_ln(table, "1", "Ricciardo", "1:25.945", "222.128");
