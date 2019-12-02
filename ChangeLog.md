@@ -1,3 +1,15 @@
+## v0.3.2
+
+### Bug fixes
+
+- Fix undefined behavior due to incorrect usage of `isprint` function.
+
+### Internal
+
+- Fix compilation for compilers other than gcc, clang, msvc.
+- Add build with tcc to CI.
+- Rewrote `mk_wcwidth` function.
+
 ## v0.3.1
 
 ### Bug fixes

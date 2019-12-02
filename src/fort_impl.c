@@ -31,7 +31,6 @@ SOFTWARE.
 #include <assert.h>
 #include <string.h>
 #include <wchar.h>
-#include <ctype.h>
 
 #include "vector.h"
 #include "fort_utils.h"

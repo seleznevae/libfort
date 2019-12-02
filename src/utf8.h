@@ -71,7 +71,10 @@ extern "C" {
 #define utf8_restrict __restrict
 #define utf8_weak __inline
 #else
-#error Non clang, non gcc, non MSVC compiler found!
+#define utf8_nonnull
+#define utf8_pure
+#define utf8_restrict
+#define utf8_weak inline
 #endif
 
 #ifdef __cplusplus
