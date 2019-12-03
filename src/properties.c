@@ -659,7 +659,7 @@ f_status set_default_cell_property(uint32_t property, int value)
      "┌", "─", "┬", "┐",          \
      "│", "│", "│",               \
      "", "", "", "",              \
-     "└", "─", "┴", "╯",          \
+     "└", "─", "┴", "┘",          \
      "│", "─", "│", "─",          \
     },                            \
     /* header_border_chars */     \

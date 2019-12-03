@@ -3,6 +3,7 @@
 ### Bug fixes
 
 - Fix undefined behavior due to incorrect usage of `isprint` function.
+- Fix incorrect border character in `SOLID` style
 
 ### Internal
 
