@@ -6418,9 +6418,9 @@ buffer_substring(const f_string_buffer_t *buffer, size_t vis_width, size_t buffe
             if ((*(const char **)begin) && (*(const char **)end)) {
                 *str_it_width = str_iter_width(*(const char **)begin, *(const char **)end);
 
-                if (*str_it_width > vis_width) {
+                if (*str_it_width > (ptrdiff_t)vis_width) {
                     *str_it_width = vis_width;
-                    *end = *begin + vis_width;
+                    *end = (char *)*begin + vis_width;
                 }
             }
             break;
