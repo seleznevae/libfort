@@ -560,7 +560,7 @@ void test_table_builtin_border_styles(void)
         "├──────┼──────────────────────────┼──────┼────────┤\n"
         "│  4   │ 2001: A Space Odyssey    │ 1968 │    8.5 │\n"
         "│  5   │ Blade Runner             │ 1982 │    8.1 │\n"
-        "└──────┴──────────────────────────┴──────┴────────╯\n";
+        "└──────┴──────────────────────────┴──────┴────────┘\n";
     assert_str_equal(table_str, table_str_etalon);
     ft_destroy_table(table);
 
