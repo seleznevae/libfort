@@ -547,15 +547,27 @@ buffer_substring(const f_string_buffer_t *buffer, size_t vis_width, size_t buffe
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
             wstr_n_substring(buffer->str.wstr, L'\n', buffer_row, (const wchar_t **)begin, (const wchar_t **)end);
-            if ((*(const wchar_t **)begin) && (*(const wchar_t **)end))
+            if ((*(const wchar_t **)begin) && (*(const wchar_t **)end)) {
                 *str_it_width = wcs_iter_width(*(const wchar_t **)begin, *(const wchar_t **)end);
+
+                if (*str_it_width > (ptrdiff_t)vis_width) {
+                    *str_it_width = vis_width;
+                    *end = (wchar_t *)*begin + vis_width;
+                }
+            }
             break;
 #endif /* FT_HAVE_WCHAR */
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
             utf8_n_substring(buffer->str.u8str, '\n', buffer_row, begin, end);
-            if ((*(const char **)begin) && (*(const char **)end))
+            if ((*(const char **)begin) && (*(const char **)end)) {
                 *str_it_width = utf8_width(*begin, *end);
+
+                if (*str_it_width > (ptrdiff_t)vis_width) {
+                    *end = utf8forw((const void *)*begin, vis_width, &vis_width);
+                    *str_it_width = vis_width;
+                }
+            }
             break;
 #endif /* FT_HAVE_UTF8 */
         default:

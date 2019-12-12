@@ -486,6 +486,12 @@ utf8_nonnull utf8_pure utf8_weak size_t utf8len(const void *str);
 // Visible width of utf8string.
 utf8_nonnull utf8_pure utf8_weak size_t utf8width(const void *str);
 
+// Forward pointer by `vis_w` visible codepoints
+// (or less if end of string is encountered). Sets `width` to visible width of
+// string between `str` and returned value.
+utf8_nonnull utf8_pure utf8_weak const void *utf8forw(const void *str,
+        size_t vis_w, size_t *width);
+
 // Visible width of codepoint.
 utf8_nonnull utf8_pure utf8_weak int utf8cwidth(utf8_int32_t c);
 
@@ -907,6 +913,36 @@ size_t utf8width(const void *str)
         str = utf8codepoint(str, &c);
     }
     return length;
+}
+
+const void *utf8forw(const void *str, size_t vis_w, size_t *width)
+{
+    size_t length = 0;
+    utf8_int32_t c = 0;
+    /* We need to store previous value of str
+     * because some codepoints may occupy more than
+     * one symbol and during iteration we may exceed vis_w.
+     */
+    const void *prev_str = str;
+    size_t old_length = 0;
+
+    str = utf8codepoint(str, &c);
+    while (c != 0) {
+        old_length = length;
+        length += utf8cwidth(c);
+        if (length > vis_w)
+            break;
+        prev_str = str;
+        str = utf8codepoint(str, &c);
+    }
+
+    if (length > vis_w) {
+        *width = old_length;
+        return prev_str;
+    } else {
+        *width = length;
+        return str;
+    }
 }
 
 int utf8ncasecmp(const void *src1, const void *src2, size_t n)
@@ -6427,15 +6463,27 @@ buffer_substring(const f_string_buffer_t *buffer, size_t vis_width, size_t buffe
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
             wstr_n_substring(buffer->str.wstr, L'\n', buffer_row, (const wchar_t **)begin, (const wchar_t **)end);
-            if ((*(const wchar_t **)begin) && (*(const wchar_t **)end))
+            if ((*(const wchar_t **)begin) && (*(const wchar_t **)end)) {
                 *str_it_width = wcs_iter_width(*(const wchar_t **)begin, *(const wchar_t **)end);
+
+                if (*str_it_width > (ptrdiff_t)vis_width) {
+                    *str_it_width = vis_width;
+                    *end = (wchar_t *)*begin + vis_width;
+                }
+            }
             break;
 #endif /* FT_HAVE_WCHAR */
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
             utf8_n_substring(buffer->str.u8str, '\n', buffer_row, begin, end);
-            if ((*(const char **)begin) && (*(const char **)end))
+            if ((*(const char **)begin) && (*(const char **)end)) {
                 *str_it_width = utf8_width(*begin, *end);
+
+                if (*str_it_width > (ptrdiff_t)vis_width) {
+                    *end = utf8forw((const void *)*begin, vis_width, &vis_width);
+                    *str_it_width = vis_width;
+                }
+            }
             break;
 #endif /* FT_HAVE_UTF8 */
         default:
