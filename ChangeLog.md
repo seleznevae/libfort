@@ -1,3 +1,9 @@
+## v0.4.0
+
+### API
+
+- Add functions to check if table is empty to the API.
+
 ## v0.3.2
 
 ### Bug fixes

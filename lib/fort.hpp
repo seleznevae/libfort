@@ -1012,7 +1012,7 @@ public:
      *   Column number of the current cell.
      */
     size_t
-    cur_col()
+    cur_col() const noexcept
     {
         return ft_cur_col(table_);
     }
@@ -1024,9 +1024,22 @@ public:
      *   Row number of the current cell.
      */
     size_t
-    cur_row()
+    cur_row() const noexcept
     {
         return ft_cur_row(table_);
+    }
+
+    /**
+     * Check if table is empty.
+     *
+     * @return
+     *   true - table is empty
+     *   false - some data has been inserted
+     */
+    bool
+    is_empty() const noexcept
+    {
+        return ft_is_empty(table_);
     }
 
     /**

@@ -145,13 +145,13 @@ void ft_ln(ft_table_t *table)
     table->cur_row++;
 }
 
-size_t ft_cur_row(ft_table_t *table)
+size_t ft_cur_row(const ft_table_t *table)
 {
     assert(table);
     return table->cur_row;
 }
 
-size_t ft_cur_col(ft_table_t *table)
+size_t ft_cur_col(const ft_table_t *table)
 {
     assert(table);
     return table->cur_col;
@@ -162,6 +162,15 @@ void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col)
     assert(table);
     table->cur_row = row;
     table->cur_col = col;
+}
+
+int ft_is_empty(const ft_table_t *table)
+{
+    assert(table);
+    if (table->rows == NULL || (vector_size(table->rows) == 0))
+        return 1;
+    else
+        return 0;
 }
 
 static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct f_string_view *fmt, va_list *va)

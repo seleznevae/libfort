@@ -197,6 +197,7 @@ void test_table_basic(void)
     WHEN("Empty table") {
         table = ft_create_table();
         assert_true(table != NULL);
+        assert_true(ft_is_empty(table) == 1);
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -213,6 +214,26 @@ void test_table_basic(void)
         assert_true(table_str != NULL);
         assert_str_equal(table_str, table_str_etalon);
 #endif /* FT_HAVE_UTF8 */
+
+        ft_set_cur_cell(table, 5, 6);
+        assert_true(ft_is_empty(table) == 1);
+        ft_destroy_table(table);
+    }
+
+    WHEN("Empty string content") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(ft_is_empty(table) == 1);
+        assert_true(ft_write_ln(table, "") == FT_SUCCESS);
+        assert_true(ft_is_empty(table) == 0);
+
+        const char *table_str = ft_to_string(table);
+        const char *table_str_etalon =
+            "+--+\n"
+            "|  |\n"
+            "+--+\n";
+        assert_str_equal(table_str, table_str_etalon);
+
         ft_destroy_table(table);
     }
 
@@ -225,6 +246,7 @@ void test_table_basic(void)
         assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
+        assert_true(ft_is_empty(table) == 0);
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
