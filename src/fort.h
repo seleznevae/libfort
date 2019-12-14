@@ -286,7 +286,7 @@ void ft_ln(ft_table_t *table);
  * @return
  *   Row number of the current cell.
  */
-size_t ft_cur_row(ft_table_t *table);
+size_t ft_cur_row(const ft_table_t *table);
 
 /**
  * Get column number of the current cell.
@@ -296,7 +296,7 @@ size_t ft_cur_row(ft_table_t *table);
  * @return
  *   Column number of the current cell.
  */
-size_t ft_cur_col(ft_table_t *table);
+size_t ft_cur_col(const ft_table_t *table);
 
 /**
  * Set current cell position.
@@ -313,7 +313,16 @@ size_t ft_cur_col(ft_table_t *table);
  */
 void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col);
 
-
+/**
+ * Check if table is empty.
+ *
+ * @param table
+ *   Pointer to  the table.
+ * @return
+ *   1 - table is empty
+ *   0 - some data has been inserted
+ */
+int ft_is_empty(const ft_table_t *table);
 
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
 

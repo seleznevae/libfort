@@ -30,6 +30,16 @@ void test_cpp_bug_fixes(void)
 
 void test_cpp_table_basic(void)
 {
+    WHEN("Empty table.") {
+        fort::char_table table;
+        assert_true(set_cpp_test_props_for_table(&table));
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon = "";
+        assert_string_equal(table_str, table_str_etalon);
+        assert_true(table.is_empty());
+    }
+
     WHEN("All columns are equal and not empty.") {
         fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
@@ -55,6 +65,7 @@ void test_cpp_table_basic(void)
             "|   |   |     |          |\n"
             "+---+---+-----+----------+\n";
         assert_string_equal(table_str, table_str_etalon);
+        assert_true(table.is_empty() == false);
     }
 
     WHEN("Checking basic constructors and assignmets.") {
