@@ -300,6 +300,52 @@ void test_cpp_table_write(void)
     }
 }
 
+void test_cpp_table_insert(void)
+{
+    SCENARIO("Test insert into beginning") {
+        fort::char_table table;
+        table.set_adding_strategy(fort::add_strategy::insert);
+        table.set_border_style(FT_BOLD_STYLE);
+        table << "val1" << "val2" << fort::endr
+              << "val3" << "val4" << fort::endr;
+
+        table.set_cur_cell(0, 0);
+        table << fort::header
+              << "hdr1" << "hdr2" << fort::endr;
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "┏━━━━━━┳━━━━━━┓\n"
+            "┃ hdr1 ┃ hdr2 ┃\n"
+            "┣━━━━━━╋━━━━━━┫\n"
+            "┃ val1 ┃ val2 ┃\n"
+            "┃ val3 ┃ val4 ┃\n"
+            "┗━━━━━━┻━━━━━━┛\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+
+    SCENARIO("Test insert into the middle") {
+        fort::char_table table;
+        table.set_adding_strategy(fort::add_strategy::insert);
+        table.set_border_style(FT_BOLD_STYLE);
+        table << fort::header << "hdr1" << "hdr2" << fort::endr
+              << "val1" << "val4" << fort::endr;
+
+        table.set_cur_cell(1, 1);
+        table << "val2" << fort::endr << "val3";
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "┏━━━━━━┳━━━━━━┓\n"
+            "┃ hdr1 ┃ hdr2 ┃\n"
+            "┣━━━━━━╋━━━━━━┫\n"
+            "┃ val1 ┃ val2 ┃\n"
+            "┃ val3 ┃ val4 ┃\n"
+            "┗━━━━━━┻━━━━━━┛\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+}
+
 void test_cpp_table_changing_cell(void)
 {
     WHEN("All columns are equal and not empty") {

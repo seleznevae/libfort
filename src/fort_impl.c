@@ -57,7 +57,14 @@ ft_table_t *ft_create_table(void)
         F_FREE(result);
         return NULL;
     }
-    result->properties = NULL;
+
+    result->properties = create_table_properties();
+    if (result->properties == NULL) {
+        destroy_vector(result->separators);
+        destroy_vector(result->rows);
+        F_FREE(result);
+        return NULL;
+    }
     result->conv_buffer = NULL;
     result->cur_row = 0;
     result->cur_col = 0;
@@ -123,7 +130,12 @@ ft_table_t *ft_copy_table(ft_table_t *table)
         vector_push(result->separators, &new_sep);
     }
 
-
+    /* note: by default new table has allocated default properties, so we
+     * have to destroy them first.
+     */
+    if (result->properties) {
+        destroy_table_properties(result->properties);
+    }
     result->properties = copy_table_properties(table->properties);
     if (result->properties == NULL) {
         ft_destroy_table(result);
@@ -137,12 +149,57 @@ ft_table_t *ft_copy_table(ft_table_t *table)
     return result;
 }
 
+static int split_cur_row(ft_table_t *table, f_row_t **tail_of_cur_row)
+{
+    if (table->cur_row >= vector_size(table->rows)) {
+        tail_of_cur_row = NULL;
+        return 0;
+    }
 
-void ft_ln(ft_table_t *table)
+    f_row_t *row = *(f_row_t **)vector_at(table->rows, table->cur_row);
+    if (table->cur_col >= columns_in_row(row)) {
+        tail_of_cur_row = NULL;
+        return 0;
+    }
+
+    f_row_t *tail = split_row(row, table->cur_col);
+    if (!tail) {
+        tail_of_cur_row = NULL;
+        return FT_ERROR;
+    }
+
+    *tail_of_cur_row = tail;
+    return 0;
+}
+
+int ft_ln(ft_table_t *table)
 {
     assert(table);
+    fort_entire_table_properties_t *table_props = &table->properties->entire_table_properties;
+    switch (table_props->add_strategy) {
+        case FT_STRATEGY_INSERT: {
+            f_row_t *new_row = NULL;
+            if (FT_IS_ERROR(split_cur_row(table, &new_row))) {
+                return FT_ERROR;
+            }
+            if (new_row) {
+                if (FT_IS_ERROR(vector_insert(table->rows, &new_row, table->cur_row + 1))) {
+                    destroy_row(new_row);
+                    return FT_ERROR;
+                }
+            }
+            break;
+        }
+        case FT_STRATEGY_REPLACE:
+            // do nothing
+            break;
+        default:
+            assert(0 && "Unexpected situation inside libfort");
+            break;
+    }
     table->cur_col = 0;
     table->cur_row++;
+    return FT_SUCCESS;
 }
 
 size_t ft_cur_row(const ft_table_t *table)
@@ -206,7 +263,22 @@ static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct f_str
 
     new_cols = columns_in_row(new_row);
     cur_row_p = (f_row_t **)vector_at(table->rows, row);
-    swap_row(*cur_row_p, new_row, table->cur_col);
+
+    switch (table->properties->entire_table_properties.add_strategy) {
+        case FT_STRATEGY_INSERT: {
+            if (FT_IS_ERROR(insert_row(*cur_row_p, new_row, table->cur_col)))
+                goto clear;
+            break;
+        }
+        case FT_STRATEGY_REPLACE: {
+            if (FT_IS_ERROR(swap_row(*cur_row_p, new_row, table->cur_col)))
+                goto clear;
+            break;
+        }
+        default:
+            assert(0 && "Unexpected situation inside libfort");
+            break;
+    }
 
     table->cur_col += new_cols;
     destroy_row(new_row);

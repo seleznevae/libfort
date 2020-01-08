@@ -87,6 +87,30 @@ void test_vector_basic(void)
         }
     }
 
+    WHEN("Testing insert method vector") {
+        vector_clear(vector);
+
+        size_t capacity = 10 * init_capacity;
+        for (i = 0; i < capacity; ++i) {
+            item_t item = (item_t)i;
+            vector_insert(vector, &item, 0);
+        }
+        assert_true(vector_size(vector) == capacity);
+        for (i = 0; i < capacity; ++i) {
+            assert_true(*(item_t *)vector_at(vector, i) == (item_t)(capacity - i) - 1);
+        }
+
+        item_t item_666 = 666;
+        vector_insert(vector, &item_666, 5 * capacity - 1);
+        assert_true(vector_size(vector) == 5 * capacity);
+        assert_true(*(item_t *)vector_at(vector, 5 * capacity - 1) == item_666);
+
+        item_t item_777 = 777;
+        vector_insert(vector, &item_777, 10);
+        assert_true(vector_size(vector) == 5 * capacity + 1);
+        assert_true(*(item_t *)vector_at(vector, 10) == item_777);
+    }
+
     WHEN("Moving from another vector") {
         vector_clear(vector);
         for (i = 0; i < 10; ++i) {

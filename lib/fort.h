@@ -275,8 +275,14 @@ ft_table_t *ft_copy_table(ft_table_t *table);
  *
  * @param table
  *   Pointer to formatted table.
+ * @return
+ *   - 0: Success; data were written
+ *   - (<0): In case of error.
+ * @note
+ *   This function can fail only in case FT_STRATEGY_INSERT adding strategy
+ *   was set for the table.
  */
-void ft_ln(ft_table_t *table);
+int ft_ln(ft_table_t *table);
 
 /**
  * Get row number of the current cell.
@@ -812,12 +818,23 @@ int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t propert
  * @name Table properties identifiers.
  * @{
  */
-#define FT_TPROP_LEFT_MARGIN   (0x01U << 0)
-#define FT_TPROP_TOP_MARGIN    (0x01U << 1)
-#define FT_TPROP_RIGHT_MARGIN  (0x01U << 2)
-#define FT_TPROP_BOTTOM_MARGIN (0x01U << 3)
+#define FT_TPROP_LEFT_MARGIN     (0x01U << 0)
+#define FT_TPROP_TOP_MARGIN      (0x01U << 1)
+#define FT_TPROP_RIGHT_MARGIN    (0x01U << 2)
+#define FT_TPROP_BOTTOM_MARGIN   (0x01U << 3)
+#define FT_TPROP_ADDING_STRATEGY (0x01U << 4)
 /** @} */
 
+/**
+ * Adding strategy.
+ *
+ * Determines what happens with old content if current cell is not empty after
+ * adding data to it. Default strategy is FT_STRATEGY_REPLACE.
+ */
+enum ft_adding_strategy {
+    FT_STRATEGY_REPLACE = 0,  /**< Replace old content. */
+    FT_STRATEGY_INSERT        /**< Insert new conten. Old content is shifted. */
+};
 
 
 /**

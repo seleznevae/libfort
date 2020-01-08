@@ -1608,8 +1608,95 @@ void test_table_write(void)
     }
 #endif
 
+    SCENARIO("Test write and printf functions simultaneously") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        assert_true(FT_IS_SUCCESS(ft_write(table, "0", "1")));
+        assert_true(FT_IS_SUCCESS(ft_printf(table, "2|3")));
+        assert_true(FT_IS_SUCCESS(ft_write(table, "5", "6")));
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+---+---+---+---+\n"
+            "| 0 | 1 | 2 | 3 | 5 | 6 |\n"
+            "+---+---+---+---+---+---+\n";
+        assert_str_equal(table_str, table_str_etalon);
+
+        ft_destroy_table(table);
+    }
 }
 
+void test_table_insert_strategy(void)
+{
+    SCENARIO("Test ft_ln") {
+        ft_table_t *table = ft_create_table();
+        assert_true(table != NULL);
+        ft_set_tbl_prop(table, FT_TPROP_ADDING_STRATEGY, FT_STRATEGY_INSERT);
+        assert_true(FT_IS_SUCCESS(ft_write_ln(table, "0", "1", "2")));
+        ft_set_cur_cell(table, 0, 2);
+        assert_true(FT_IS_SUCCESS(ft_ln(table)));
+        ft_set_cur_cell(table, 1, 1);
+        assert_true(FT_IS_SUCCESS(ft_write(table, "3")));
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+\n"
+            "| 0 | 1 |\n"
+            "| 2 | 3 |\n"
+            "+---+---+\n";
+        assert_str_equal(table_str, table_str_etalon);
+
+        ft_destroy_table(table);
+    }
+
+    SCENARIO("Test write functions") {
+        ft_table_t *table = ft_create_table();
+        assert_true(table != NULL);
+        ft_set_tbl_prop(table, FT_TPROP_ADDING_STRATEGY, FT_STRATEGY_INSERT);
+        assert_true(FT_IS_SUCCESS(ft_write_ln(table, "0", "1", "2", "4", "5")));
+        ft_set_cur_cell(table, 0, 2);
+        assert_true(FT_IS_SUCCESS(ft_ln(table)));
+        ft_set_cur_cell(table, 1, 1);
+        assert_true(FT_IS_SUCCESS(ft_write_ln(table, "3")));
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+\n"
+            "| 0 | 1 |\n"
+            "| 2 | 3 |\n"
+            "| 4 | 5 |\n"
+            "+---+---+\n";
+        assert_str_equal(table_str, table_str_etalon);
+
+        ft_destroy_table(table);
+    }
+
+    SCENARIO("Test printf functions") {
+        ft_table_t *table = ft_create_table();
+        assert_true(table != NULL);
+        ft_set_tbl_prop(table, FT_TPROP_ADDING_STRATEGY, FT_STRATEGY_INSERT);
+        assert_true(FT_IS_SUCCESS(ft_write_ln(table, "0", "1", "2", "5", "6")));
+        ft_set_cur_cell(table, 0, 2);
+        assert_true(FT_IS_SUCCESS(ft_ln(table)));
+        ft_set_cur_cell(table, 1, 1);
+        assert_true(FT_IS_SUCCESS(ft_printf_ln(table, "3|4")));
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+---+---+\n"
+            "| 0 | 1 |   |\n"
+            "| 2 | 3 | 4 |\n"
+            "| 5 | 6 |   |\n"
+            "+---+---+---+\n";
+        assert_str_equal(table_str, table_str_etalon);
+
+        ft_destroy_table(table);
+    }
+}
 
 void test_table_copy(void)
 {

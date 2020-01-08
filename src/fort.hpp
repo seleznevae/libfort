@@ -61,6 +61,17 @@ enum class row_type {
 };
 
 /**
+ * Adding strategy.
+ *
+ * Determines what happens with old content if current cell is not empty after
+ * adding data to it. Default strategy is 'replace'.
+ */
+enum class add_strategy {
+    replace = FT_STRATEGY_REPLACE,
+    insert  = FT_STRATEGY_INSERT
+};
+
+/**
  * Colors.
  */
 enum class color {
@@ -892,6 +903,22 @@ public:
     bool set_bottom_margin(unsigned value)
     {
         return FT_IS_SUCCESS(ft_set_tbl_prop(table_, FT_TPROP_BOTTOM_MARGIN, value));
+    }
+
+    /**
+     * Set table adding strategy.
+     *
+     * @param value
+     *   Adding strategy.
+     * @return
+     *   - true: Success; table property was changed.
+     *   - false: In case of error.
+     */
+    bool set_adding_strategy(fort::add_strategy value)
+    {
+        return FT_IS_SUCCESS(ft_set_tbl_prop(table_,
+                                             FT_TPROP_ADDING_STRATEGY,
+                                             static_cast<int>(value)));
     }
 private:
     ft_table_t *table_;
