@@ -2837,8 +2837,7 @@ static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct f_str
     new_cols = columns_in_row(new_row);
     cur_row_p = (f_row_t **)vector_at(table->rows, row);
 
-    fort_entire_table_properties_t *table_props = &table->properties->entire_table_properties;
-    switch (table_props->add_strategy) {
+    switch (table->properties->entire_table_properties.add_strategy) {
         case FT_STRATEGY_INSERT: {
             if (FT_IS_ERROR(insert_row(*cur_row_p, new_row, table->cur_col)))
                 goto clear;
