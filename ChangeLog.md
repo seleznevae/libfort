@@ -3,6 +3,8 @@
 ### API
 
 - Add functions to check if table is empty to the API.
+- `ft_ln` returns status of operation.
+- Add new table property `adding_strategy` (2 strategies available - replace(default) and insert).
 
 ## v0.3.2
 

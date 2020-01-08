@@ -874,6 +874,7 @@ fort_entire_table_properties_t g_entire_table_properties = {
     0, /* top_margin */
     0, /* right_margin */
     0, /* bottom_margin */
+    FT_STRATEGY_REPLACE, /* add_strategy */
 };
 
 static f_status set_entire_table_property_internal(fort_entire_table_properties_t *properties, uint32_t property, int value)
@@ -888,6 +889,8 @@ static f_status set_entire_table_property_internal(fort_entire_table_properties_
         properties->right_margin = value;
     } else if (PROP_IS_SET(property, FT_TPROP_BOTTOM_MARGIN)) {
         properties->bottom_margin = value;
+    } else if (PROP_IS_SET(property, FT_TPROP_ADDING_STRATEGY)) {
+        properties->add_strategy = (enum ft_adding_strategy)value;
     } else {
         return FT_EINVAL;
     }
@@ -943,7 +946,8 @@ f_table_properties_t g_table_properties = {
         0, /* left_margin */
         0, /* top_margin */
         0, /* right_margin */
-        0  /* bottom_margin */
+        0,  /* bottom_margin */
+        FT_STRATEGY_REPLACE, /* add_strategy */
     }
 };
 

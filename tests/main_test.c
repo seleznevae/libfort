@@ -16,6 +16,7 @@ void test_table_changing_cell(void);
 void test_wcs_table_boundaries(void);
 #endif
 void test_table_write(void);
+void test_table_insert_strategy(void);
 void test_table_border_style(void);
 void test_table_builtin_border_styles(void);
 void test_table_cell_properties(void);
@@ -49,6 +50,7 @@ struct test_case bb_test_suite [] = {
     {"test_utf8_table", test_utf8_table},
 #endif
     {"test_table_write", test_table_write},
+    {"test_table_insert_strategy", test_table_insert_strategy},
     {"test_table_changing_cell", test_table_changing_cell},
     {"test_table_border_style", test_table_border_style},
     {"test_table_builtin_border_styles", test_table_builtin_border_styles},

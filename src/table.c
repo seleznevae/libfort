@@ -81,7 +81,6 @@ f_row_t *get_row_and_create_if_not_exists(ft_table_t *table, size_t row)
     return get_row_impl(table, row, CREATE_ON_NULL);
 }
 
-
 FT_INTERNAL
 f_string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table)
 {
@@ -90,7 +89,21 @@ f_string_buffer_t *get_cur_str_buffer_and_create_if_not_exists(ft_table_t *table
     f_row_t *row = get_row_and_create_if_not_exists(table, table->cur_row);
     if (row == NULL)
         return NULL;
-    f_cell_t *cell = get_cell_and_create_if_not_exists(row, table->cur_col);
+
+    f_cell_t *cell = NULL;
+    fort_entire_table_properties_t *table_props = &table->properties->entire_table_properties;
+    switch (table_props->add_strategy) {
+        case FT_STRATEGY_INSERT:
+            cell = create_cell_in_position(row, table->cur_col);
+            break;
+        case FT_STRATEGY_REPLACE:
+            cell = get_cell_and_create_if_not_exists(row, table->cur_col);
+            break;
+        default:
+            assert(0 && "Unexpected situation inside libfort");
+            break;
+    }
+
     if (cell == NULL)
         return NULL;
 

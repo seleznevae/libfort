@@ -19,6 +19,9 @@ FT_INTERNAL
 f_row_t *copy_row(f_row_t *row);
 
 FT_INTERNAL
+f_row_t *split_row(f_row_t *row, size_t pos);
+
+FT_INTERNAL
 f_row_t *create_row_from_string(const char *str);
 
 FT_INTERNAL
@@ -37,7 +40,13 @@ FT_INTERNAL
 f_cell_t *get_cell_and_create_if_not_exists(f_row_t *row, size_t col);
 
 FT_INTERNAL
+f_cell_t *create_cell_in_position(f_row_t *row, size_t col);
+
+FT_INTERNAL
 f_status swap_row(f_row_t *cur_row, f_row_t *ins_row, size_t pos);
+
+FT_INTERNAL
+f_status insert_row(f_row_t *cur_row, f_row_t *ins_row, size_t pos);
 
 FT_INTERNAL
 size_t group_cell_number(const f_row_t *row, size_t master_cell_col);

@@ -177,6 +177,7 @@ struct fort_entire_table_properties {
     unsigned int top_margin;
     unsigned int right_margin;
     unsigned int bottom_margin;
+    enum ft_adding_strategy add_strategy;
 };
 typedef struct fort_entire_table_properties fort_entire_table_properties_t;
 extern fort_entire_table_properties_t g_entire_table_properties;

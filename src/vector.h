@@ -22,6 +22,12 @@ FT_INTERNAL
 int vector_push(f_vector_t *, const void *item);
 
 FT_INTERNAL
+int vector_insert(f_vector_t *, const void *item, size_t pos);
+
+FT_INTERNAL
+f_vector_t *vector_split(f_vector_t *, size_t pos);
+
+FT_INTERNAL
 const void *vector_at_c(const f_vector_t *vector, size_t index);
 
 FT_INTERNAL
@@ -30,12 +36,15 @@ void *vector_at(f_vector_t *, size_t index);
 FT_INTERNAL
 f_status vector_swap(f_vector_t *cur_vec, f_vector_t *mv_vec, size_t pos);
 
+FT_INTERNAL
+void vector_clear(f_vector_t *);
+
+FT_INTERNAL
+int vector_erase(f_vector_t *, size_t index);
 
 #ifdef FT_TEST_BUILD
 f_vector_t *copy_vector(f_vector_t *);
 size_t vector_index_of(const f_vector_t *, const void *item);
-int vector_erase(f_vector_t *, size_t index);
-void vector_clear(f_vector_t *);
 #endif
 
 #endif /* VECTOR_H */
