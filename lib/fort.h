@@ -330,6 +330,16 @@ void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col);
  */
 int ft_is_empty(const ft_table_t *table);
 
+/**
+ * Get number of rows in the table.
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @return
+ *   Number of rows in the table.
+ */
+size_t ft_row_count(const ft_table_t *table);
+
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
 
 /**

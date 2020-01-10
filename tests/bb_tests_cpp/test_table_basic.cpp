@@ -38,6 +38,7 @@ void test_cpp_table_basic(void)
         std::string table_str_etalon = "";
         assert_string_equal(table_str, table_str_etalon);
         assert_true(table.is_empty());
+        assert_true(table.row_count() == 0);
     }
 
     WHEN("All columns are equal and not empty.") {
@@ -66,6 +67,7 @@ void test_cpp_table_basic(void)
             "+---+---+-----+----------+\n";
         assert_string_equal(table_str, table_str_etalon);
         assert_true(table.is_empty() == false);
+        assert_true(table.row_count() == 3);
     }
 
     WHEN("Checking basic constructors and assignmets.") {

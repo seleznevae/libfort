@@ -5,6 +5,7 @@
 - Add functions to check if table is empty to the API.
 - `ft_ln` returns status of operation.
 - Add new table property `adding_strategy` (2 strategies available - replace(default) and insert).
+- Add function `ft_row_count` (`row_count` in C++ API) to get number of rows in the table.
 
 ## v0.3.2
 
