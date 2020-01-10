@@ -198,6 +198,7 @@ void test_table_basic(void)
         table = ft_create_table();
         assert_true(table != NULL);
         assert_true(ft_is_empty(table) == 1);
+        assert_true(ft_row_count(table) == 0);
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -217,6 +218,7 @@ void test_table_basic(void)
 
         ft_set_cur_cell(table, 5, 6);
         assert_true(ft_is_empty(table) == 1);
+        assert_true(ft_row_count(table) == 0);
         ft_destroy_table(table);
     }
 
@@ -226,6 +228,7 @@ void test_table_basic(void)
         assert_true(ft_is_empty(table) == 1);
         assert_true(ft_write_ln(table, "") == FT_SUCCESS);
         assert_true(ft_is_empty(table) == 0);
+        assert_true(ft_row_count(table) == 1);
 
         const char *table_str = ft_to_string(table);
         const char *table_str_etalon =
@@ -247,6 +250,7 @@ void test_table_basic(void)
         assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
         assert_true(ft_write_ln(table, "3", "c", "234", "3.140000") == FT_SUCCESS);
         assert_true(ft_is_empty(table) == 0);
+        assert_true(ft_row_count(table) == 3);
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);

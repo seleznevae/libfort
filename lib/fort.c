@@ -2797,10 +2797,13 @@ void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col)
 int ft_is_empty(const ft_table_t *table)
 {
     assert(table);
-    if (table->rows == NULL || (vector_size(table->rows) == 0))
-        return 1;
-    else
-        return 0;
+    return ft_row_count(table) == 0;
+}
+
+size_t ft_row_count(const ft_table_t *table)
+{
+    assert(table && table->rows);
+    return vector_size(table->rows);
 }
 
 static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct f_string_view *fmt, va_list *va)

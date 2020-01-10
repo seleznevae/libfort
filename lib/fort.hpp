@@ -1070,6 +1070,18 @@ public:
     }
 
     /**
+     * Get number of rows in the table.
+     *
+     * @return
+     *   Number of rows in the table.
+     */
+    std::size_t
+    row_count() const noexcept
+    {
+        return ft_row_count(table_);
+    }
+
+    /**
      * Get current cell.
      *
      * @return
