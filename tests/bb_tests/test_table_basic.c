@@ -1825,7 +1825,7 @@ static struct ft_table *create_test_table()
 
 void test_table_erase(void)
 {
-    WHEN("Test invalid arguments") {
+    WHEN("Invalid arguments") {
         ft_table_t *table = create_test_table();
 
         // invalid rows
