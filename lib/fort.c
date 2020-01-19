@@ -337,6 +337,9 @@ f_vector_t *copy_vector(f_vector_t *);
 size_t vector_index_of(const f_vector_t *, const void *item);
 #endif
 
+#define VECTOR_AT(vector, pos, data_type) \
+    *(data_type *)vector_at((vector), (pos))
+
 #endif /* VECTOR_H */
 
 /********************************************************
@@ -2147,6 +2150,10 @@ f_row_t *copy_row(f_row_t *row);
 FT_INTERNAL
 f_row_t *split_row(f_row_t *row, size_t pos);
 
+// Delete range [left; right] of cells (both ends included)
+FT_INTERNAL
+int ft_row_delete_range(f_row_t *row, size_t left, size_t right);
+
 FT_INTERNAL
 f_row_t *create_row_from_string(const char *str);
 
@@ -2805,6 +2812,58 @@ size_t ft_row_count(const ft_table_t *table)
     assert(table && table->rows);
     return vector_size(table->rows);
 }
+
+int ft_delete_range(ft_table_t *table,
+                    size_t top_left_row, size_t top_left_col,
+                    size_t bottom_right_row, size_t bottom_right_col)
+{
+    assert(table && table->rows);
+    int status = FT_SUCCESS;
+
+    size_t rows_n = vector_size(table->rows);
+
+    if (top_left_row == FT_CUR_ROW)
+        top_left_row = table->cur_row;
+    if (bottom_right_row == FT_CUR_ROW)
+        bottom_right_row = table->cur_row;
+
+    if (top_left_col == FT_CUR_COLUMN)
+        top_left_col = table->cur_row;
+    if (bottom_right_col == FT_CUR_COLUMN)
+        bottom_right_col = table->cur_row;
+
+    if (top_left_row > bottom_right_row || top_left_col > bottom_right_col)
+        return FT_EINVAL;
+
+    f_row_t *row = NULL;
+    size_t i = top_left_row;
+    while (i < rows_n && i <= bottom_right_row) {
+        row = VECTOR_AT(table->rows, i, f_row_t *);
+        status = ft_row_delete_range(row, top_left_col, bottom_right_col);
+        if (FT_IS_ERROR(status))
+            goto clear;
+        ++i;
+    }
+
+    size_t n_iterations = MIN(rows_n - 1, bottom_right_row) - top_left_row + 1;
+    size_t j = 0;
+    i = top_left_row;
+    for (j = 0; j < n_iterations; ++j) {
+        row = VECTOR_AT(table->rows, i, f_row_t *);
+        if (columns_in_row(row)) {
+            ++i;
+        } else {
+            destroy_row(row);
+            status = vector_erase(table->rows, i);
+            if (FT_IS_ERROR(status))
+                goto clear;
+        }
+    }
+
+clear:
+    return status;
+}
+
 
 static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct f_string_view *fmt, va_list *va)
 {
@@ -5270,6 +5329,27 @@ f_row_t *split_row(f_row_t *row, size_t pos)
     return tail;
 }
 
+FT_INTERNAL
+int ft_row_delete_range(f_row_t *row, size_t left, size_t right)
+{
+    assert(row);
+    size_t cols_n = vector_size(row->cells);
+    if (cols_n == 0 || (right < left))
+        return FT_SUCCESS;
+
+    f_cell_t *cell = NULL;
+    size_t i = left;
+    while (i < cols_n && i <= right) {
+        cell = VECTOR_AT(row->cells, i, f_cell_t *);
+        destroy_cell(cell);
+        ++i;
+    }
+    size_t n_destroy = MIN(cols_n - 1, right) - left + 1;
+    while (n_destroy--) {
+        vector_erase(row->cells, left);
+    }
+    return FT_SUCCESS;
+}
 
 FT_INTERNAL
 size_t columns_in_row(const f_row_t *row)
