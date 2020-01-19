@@ -2841,7 +2841,7 @@ int ft_delete_range(ft_table_t *table,
         row = VECTOR_AT(table->rows, i, f_row_t *);
         status = ft_row_delete_range(row, top_left_col, bottom_right_col);
         if (FT_IS_ERROR(status))
-            goto clear;
+            return status;
         ++i;
     }
 
@@ -2856,12 +2856,11 @@ int ft_delete_range(ft_table_t *table,
             destroy_row(row);
             status = vector_erase(table->rows, i);
             if (FT_IS_ERROR(status))
-                goto clear;
+                return status;
         }
     }
 
-clear:
-    return status;
+    return FT_SUCCESS;
 }
 
 
