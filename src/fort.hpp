@@ -990,6 +990,15 @@ public:
         {
             return table_cell(ps_row_idx_, coll_idx, *ps_table_);
         }
+
+        void erase()
+        {
+            if (FT_IS_ERROR(ft_erase_range(ps_table_->table_,
+                                           property_owner_t::ps_row_idx_, 0,
+                                           property_owner_t::ps_row_idx_, (UINT_MAX - 2)))) {
+                throw std::runtime_error("Failed to erase row");
+            }
+        }
     };
 
     /**
@@ -997,10 +1006,44 @@ public:
      */
     class table_column: public property_owner_t
     {
+        using property_owner_t::ps_coll_idx_;
+        using property_owner_t::ps_table_;
     public:
         table_column(std::size_t col_idx, table &tbl)
             : property_owner_t(FT_ANY_ROW, col_idx, &tbl) {}
+
+        void erase()
+        {
+            if (FT_IS_ERROR(ft_erase_range(ps_table_->table_,
+                                           0, ps_coll_idx_,
+                                           (UINT_MAX - 2), ps_coll_idx_))) {
+                throw std::runtime_error("Failed to erase column");
+            }
+        }
     };
+
+    /**
+     * Table column.
+     */
+    class cell_range: public property_owner_t
+    {
+        using property_owner_t::ps_coll_idx_;
+        using property_owner_t::ps_row_idx_;
+        using property_owner_t::ps_table_;
+    public:
+        table_column(std::size_t col_idx, table &tbl)
+            : property_owner_t(FT_ANY_ROW, col_idx, &tbl) {}
+
+        void erase()
+        {
+            if (FT_IS_ERROR(ft_erase_range(ps_table_->table_,
+                                           0, ps_coll_idx_,
+                                           (UINT_MAX - 2), ps_coll_idx_))) {
+                throw std::runtime_error("Failed to erase column");
+            }
+        }
+    };
+
 
     class default_properties: public property_owner_t
     {

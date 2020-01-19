@@ -99,7 +99,7 @@ f_row_t *split_row(f_row_t *row, size_t pos)
 }
 
 FT_INTERNAL
-int ft_row_delete_range(f_row_t *row, size_t left, size_t right)
+int ft_row_erase_range(f_row_t *row, size_t left, size_t right)
 {
     assert(row);
     size_t cols_n = vector_size(row->cells);

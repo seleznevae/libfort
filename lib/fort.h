@@ -341,7 +341,7 @@ int ft_is_empty(const ft_table_t *table);
 size_t ft_row_count(const ft_table_t *table);
 
 /**
- *  Delete range of cells.
+ *  Erase range of cells.
  *
  *  Range of cells is determined by 2 points (top-left and bottom-right) (both
  *  ends are included).
@@ -360,9 +360,9 @@ size_t ft_row_count(const ft_table_t *table);
  *   - 0 - Operation was successfully implemented
  *   - (<0): In case of error
  */
-int ft_delete_range(ft_table_t *table,
-                    size_t top_left_row, size_t top_left_col,
-                    size_t bottom_right_row, size_t bottom_right_col);
+int ft_erase_range(ft_table_t *table,
+                   size_t top_left_row, size_t top_left_col,
+                   size_t bottom_right_row, size_t bottom_right_col);
 
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
 

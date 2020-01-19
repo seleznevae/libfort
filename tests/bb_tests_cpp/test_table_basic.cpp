@@ -388,3 +388,77 @@ void test_cpp_table_changing_cell(void)
         assert_string_equal(table_str, table_str_etalon);
     }
 }
+
+static fort::char_table create_test_table()
+{
+    fort::char_table table;
+    table.write_ln("00", "01", "02");
+    table.write_ln("10", "11", "12");
+    table.write_ln("20", "21", "22");
+
+    return table;
+}
+
+void test_cpp_table_erase(void)
+{
+    WHEN("Erase row") {
+        fort::char_table table = create_test_table();
+        table[1].erase();
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+----+----+----+\n"
+            "| 00 | 01 | 02 |\n"
+            "| 20 | 21 | 22 |\n"
+            "+----+----+----+\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+
+//    WHEN("Erase last row") {
+//        ft_table_t *table = create_test_table();
+//        assert_true(FT_IS_SUCCESS(ft_erase_range(table, 2, 0, 2, 999)));
+
+//        const char *table_str = ft_to_string(table);
+//        assert_true(table_str != NULL);
+//        const char *table_str_etalon =
+//            "+----+----+----+\n"
+//            "| 00 | 01 | 02 |\n"
+//            "| 10 | 11 | 12 |\n"
+//            "+----+----+----+\n";
+//        assert_str_equal(table_str, table_str_etalon);
+//        ft_destroy_table(table);
+//    }
+
+//    WHEN("Erase column") {
+//        ft_table_t *table = create_test_table();
+//        assert_true(FT_IS_SUCCESS(ft_erase_range(table, 0, 1, 999, 1)));
+
+//        const char *table_str = ft_to_string(table);
+//        assert_true(table_str != NULL);
+//        const char *table_str_etalon =
+//            "+----+----+\n"
+//            "| 00 | 02 |\n"
+//            "| 10 | 12 |\n"
+//            "| 20 | 22 |\n"
+//            "+----+----+\n";
+//        assert_str_equal(table_str, table_str_etalon);
+//        ft_destroy_table(table);
+//    }
+
+//    WHEN("Erase last column") {
+//        ft_table_t *table = create_test_table();
+//        assert_true(FT_IS_SUCCESS(ft_erase_range(table, 0, 2, 999, 2)));
+
+//        const char *table_str = ft_to_string(table);
+//        assert_true(table_str != NULL);
+//        const char *table_str_etalon =
+//            "+----+----+\n"
+//            "| 00 | 01 |\n"
+//            "| 10 | 11 |\n"
+//            "| 20 | 21 |\n"
+//            "+----+----+\n";
+//        assert_str_equal(table_str, table_str_etalon);
+//        ft_destroy_table(table);
+//    }
+
+}

@@ -2152,7 +2152,7 @@ f_row_t *split_row(f_row_t *row, size_t pos);
 
 // Delete range [left; right] of cells (both ends included)
 FT_INTERNAL
-int ft_row_delete_range(f_row_t *row, size_t left, size_t right);
+int ft_row_erase_range(f_row_t *row, size_t left, size_t right);
 
 FT_INTERNAL
 f_row_t *create_row_from_string(const char *str);
@@ -2813,9 +2813,9 @@ size_t ft_row_count(const ft_table_t *table)
     return vector_size(table->rows);
 }
 
-int ft_delete_range(ft_table_t *table,
-                    size_t top_left_row, size_t top_left_col,
-                    size_t bottom_right_row, size_t bottom_right_col)
+int ft_erase_range(ft_table_t *table,
+                   size_t top_left_row, size_t top_left_col,
+                   size_t bottom_right_row, size_t bottom_right_col)
 {
     assert(table && table->rows);
     int status = FT_SUCCESS;
@@ -2839,7 +2839,7 @@ int ft_delete_range(ft_table_t *table,
     size_t i = top_left_row;
     while (i < rows_n && i <= bottom_right_row) {
         row = VECTOR_AT(table->rows, i, f_row_t *);
-        status = ft_row_delete_range(row, top_left_col, bottom_right_col);
+        status = ft_row_erase_range(row, top_left_col, bottom_right_col);
         if (FT_IS_ERROR(status))
             return status;
         ++i;
@@ -5329,7 +5329,7 @@ f_row_t *split_row(f_row_t *row, size_t pos)
 }
 
 FT_INTERNAL
-int ft_row_delete_range(f_row_t *row, size_t left, size_t right)
+int ft_row_erase_range(f_row_t *row, size_t left, size_t right)
 {
     assert(row);
     size_t cols_n = vector_size(row->cells);

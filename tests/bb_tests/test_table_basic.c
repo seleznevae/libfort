@@ -1823,23 +1823,23 @@ static struct ft_table *create_test_table()
     return table;
 }
 
-void test_table_cell_deletion(void)
+void test_table_erase(void)
 {
     WHEN("Test invalid arguments") {
         ft_table_t *table = create_test_table();
 
         // invalid rows
-        assert_true(ft_delete_range(table, 1, 1, 0, 2) == FT_EINVAL);
+        assert_true(ft_erase_range(table, 1, 1, 0, 2) == FT_EINVAL);
 
         // invalid colums
-        assert_true(ft_delete_range(table, 1, 1, 2, 0) == FT_EINVAL);
+        assert_true(ft_erase_range(table, 1, 1, 2, 0) == FT_EINVAL);
 
         ft_destroy_table(table);
     }
 
-    WHEN("Delete one cell") {
+    WHEN("Erase one cell") {
         ft_table_t *table = create_test_table();
-        assert_true(FT_IS_SUCCESS(ft_delete_range(table, 1, 1, 1, 1)));
+        assert_true(FT_IS_SUCCESS(ft_erase_range(table, 1, 1, 1, 1)));
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -1853,10 +1853,10 @@ void test_table_cell_deletion(void)
         ft_destroy_table(table);
     }
 
-    WHEN("Delete one last cell") {
+    WHEN("Erase one last cell") {
         ft_table_t *table = create_test_table();
         ft_write_ln(table, "30");
-        assert_true(FT_IS_SUCCESS(ft_delete_range(table, 3, 0, 3, 0)));
+        assert_true(FT_IS_SUCCESS(ft_erase_range(table, 3, 0, 3, 0)));
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -1870,9 +1870,9 @@ void test_table_cell_deletion(void)
         ft_destroy_table(table);
     }
 
-    WHEN("Delete row") {
+    WHEN("Erase row") {
         ft_table_t *table = create_test_table();
-        assert_true(FT_IS_SUCCESS(ft_delete_range(table, 1, 0, 1, 999)));
+        assert_true(FT_IS_SUCCESS(ft_erase_range(table, 1, 0, 1, 999)));
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -1885,9 +1885,9 @@ void test_table_cell_deletion(void)
         ft_destroy_table(table);
     }
 
-    WHEN("Delete last row") {
+    WHEN("Erase last row") {
         ft_table_t *table = create_test_table();
-        assert_true(FT_IS_SUCCESS(ft_delete_range(table, 2, 0, 2, 999)));
+        assert_true(FT_IS_SUCCESS(ft_erase_range(table, 2, 0, 2, 999)));
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -1900,9 +1900,9 @@ void test_table_cell_deletion(void)
         ft_destroy_table(table);
     }
 
-    WHEN("Delete column") {
+    WHEN("Erase column") {
         ft_table_t *table = create_test_table();
-        assert_true(FT_IS_SUCCESS(ft_delete_range(table, 0, 1, 999, 1)));
+        assert_true(FT_IS_SUCCESS(ft_erase_range(table, 0, 1, 999, 1)));
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
@@ -1916,9 +1916,9 @@ void test_table_cell_deletion(void)
         ft_destroy_table(table);
     }
 
-    WHEN("Delete last column") {
+    WHEN("Erase last column") {
         ft_table_t *table = create_test_table();
-        assert_true(FT_IS_SUCCESS(ft_delete_range(table, 0, 2, 999, 2)));
+        assert_true(FT_IS_SUCCESS(ft_erase_range(table, 0, 2, 999, 2)));
 
         const char *table_str = ft_to_string(table);
         assert_true(table_str != NULL);
