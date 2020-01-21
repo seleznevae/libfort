@@ -738,6 +738,8 @@ int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
 #define FT_CUR_ROW    (UINT_MAX - 1) /**< Current row */
 /** @} */
 
+#define FT_MAX_ROW_INDEX (UINT_MAX - 2)
+#define FT_MAX_COL_INDEX (UINT_MAX - 2)
 
 
 /**

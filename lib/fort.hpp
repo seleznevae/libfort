@@ -995,7 +995,7 @@ public:
         {
             if (FT_IS_ERROR(ft_erase_range(ps_table_->table_,
                                            property_owner_t::ps_row_idx_, 0,
-                                           property_owner_t::ps_row_idx_, (UINT_MAX - 2)))) {
+                                           property_owner_t::ps_row_idx_, FT_MAX_COL_INDEX))) {
                 throw std::runtime_error("Failed to erase row");
             }
         }
@@ -1016,7 +1016,7 @@ public:
         {
             if (FT_IS_ERROR(ft_erase_range(ps_table_->table_,
                                            0, ps_coll_idx_,
-                                           (UINT_MAX - 2), ps_coll_idx_))) {
+                                           FT_MAX_ROW_INDEX, ps_coll_idx_))) {
                 throw std::runtime_error("Failed to erase column");
             }
         }
