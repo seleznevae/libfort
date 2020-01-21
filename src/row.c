@@ -98,6 +98,27 @@ f_row_t *split_row(f_row_t *row, size_t pos)
     return tail;
 }
 
+FT_INTERNAL
+int ft_row_erase_range(f_row_t *row, size_t left, size_t right)
+{
+    assert(row);
+    size_t cols_n = vector_size(row->cells);
+    if (cols_n == 0 || (right < left))
+        return FT_SUCCESS;
+
+    f_cell_t *cell = NULL;
+    size_t i = left;
+    while (i < cols_n && i <= right) {
+        cell = VECTOR_AT(row->cells, i, f_cell_t *);
+        destroy_cell(cell);
+        ++i;
+    }
+    size_t n_destroy = MIN(cols_n - 1, right) - left + 1;
+    while (n_destroy--) {
+        vector_erase(row->cells, left);
+    }
+    return FT_SUCCESS;
+}
 
 FT_INTERNAL
 size_t columns_in_row(const f_row_t *row)

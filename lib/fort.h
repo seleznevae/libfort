@@ -340,6 +340,30 @@ int ft_is_empty(const ft_table_t *table);
  */
 size_t ft_row_count(const ft_table_t *table);
 
+/**
+ *  Erase range of cells.
+ *
+ *  Range of cells is determined by 2 points (top-left and bottom-right) (both
+ *  ends are included).
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @param top_left_row
+ *   Row number of the top left cell in the range.
+ * @param top_left_col
+ *   Column number of the top left cell in the range.
+ * @param bottom_right_row
+ *   Row number of the bottom right cell in the range.
+ * @param bottom_right_col
+ *   Column number of the bottom right cell in the range.
+ * @return
+ *   - 0 - Operation was successfully implemented
+ *   - (<0): In case of error
+ */
+int ft_erase_range(ft_table_t *table,
+                   size_t top_left_row, size_t top_left_col,
+                   size_t bottom_right_row, size_t bottom_right_col);
+
 #if defined(FT_CLANG_COMPILER) || defined(FT_GCC_COMPILER)
 
 /**
@@ -714,6 +738,8 @@ int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
 #define FT_CUR_ROW    (UINT_MAX - 1) /**< Current row */
 /** @} */
 
+#define FT_MAX_ROW_INDEX (UINT_MAX - 2)
+#define FT_MAX_COL_INDEX (UINT_MAX - 2)
 
 
 /**

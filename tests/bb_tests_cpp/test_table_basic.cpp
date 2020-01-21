@@ -388,3 +388,95 @@ void test_cpp_table_changing_cell(void)
         assert_string_equal(table_str, table_str_etalon);
     }
 }
+
+static fort::char_table create_test_table()
+{
+    fort::char_table table;
+    table.write_ln("00", "01", "02");
+    table.write_ln("10", "11", "12");
+    table.write_ln("20", "21", "22");
+
+    return table;
+}
+
+void test_cpp_table_erase(void)
+{
+    WHEN("Invalid arguments") {
+        std::string err_msg;
+        try {
+            fort::char_table table = create_test_table();
+            table.range(1, 1, 0, 0).erase();
+        } catch (std::exception &e) {
+            err_msg = e.what();
+        }
+        assert_string_equal(err_msg, std::string("Failed to erase column"));
+    }
+
+    WHEN("Erase one cell") {
+        fort::char_table table = create_test_table();
+        table.range(1, 1, 1, 1).erase();
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+----+----+----+\n"
+            "| 00 | 01 | 02 |\n"
+            "| 10 | 12 |    |\n"
+            "| 20 | 21 | 22 |\n"
+            "+----+----+----+\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+
+    WHEN("Erase row") {
+        fort::char_table table = create_test_table();
+        table[1].erase();
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+----+----+----+\n"
+            "| 00 | 01 | 02 |\n"
+            "| 20 | 21 | 22 |\n"
+            "+----+----+----+\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+
+    WHEN("Erase last row") {
+        fort::char_table table = create_test_table();
+        table[2].erase();
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+----+----+----+\n"
+            "| 00 | 01 | 02 |\n"
+            "| 10 | 11 | 12 |\n"
+            "+----+----+----+\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+
+    WHEN("Erase column") {
+        fort::char_table table = create_test_table();
+        table.column(1).erase();
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+----+----+\n"
+            "| 00 | 02 |\n"
+            "| 10 | 12 |\n"
+            "| 20 | 22 |\n"
+            "+----+----+\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+
+    WHEN("Erase last column") {
+        fort::char_table table = create_test_table();
+        table.column(2).erase();
+
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+----+----+\n"
+            "| 00 | 01 |\n"
+            "| 10 | 11 |\n"
+            "| 20 | 21 |\n"
+            "+----+----+\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
+}

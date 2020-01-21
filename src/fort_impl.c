@@ -233,6 +233,57 @@ size_t ft_row_count(const ft_table_t *table)
     return vector_size(table->rows);
 }
 
+int ft_erase_range(ft_table_t *table,
+                   size_t top_left_row, size_t top_left_col,
+                   size_t bottom_right_row, size_t bottom_right_col)
+{
+    assert(table && table->rows);
+    int status = FT_SUCCESS;
+
+    size_t rows_n = vector_size(table->rows);
+
+    if (top_left_row == FT_CUR_ROW)
+        top_left_row = table->cur_row;
+    if (bottom_right_row == FT_CUR_ROW)
+        bottom_right_row = table->cur_row;
+
+    if (top_left_col == FT_CUR_COLUMN)
+        top_left_col = table->cur_row;
+    if (bottom_right_col == FT_CUR_COLUMN)
+        bottom_right_col = table->cur_row;
+
+    if (top_left_row > bottom_right_row || top_left_col > bottom_right_col)
+        return FT_EINVAL;
+
+    f_row_t *row = NULL;
+    size_t i = top_left_row;
+    while (i < rows_n && i <= bottom_right_row) {
+        row = VECTOR_AT(table->rows, i, f_row_t *);
+        status = ft_row_erase_range(row, top_left_col, bottom_right_col);
+        if (FT_IS_ERROR(status))
+            return status;
+        ++i;
+    }
+
+    size_t n_iterations = MIN(rows_n - 1, bottom_right_row) - top_left_row + 1;
+    size_t j = 0;
+    i = top_left_row;
+    for (j = 0; j < n_iterations; ++j) {
+        row = VECTOR_AT(table->rows, i, f_row_t *);
+        if (columns_in_row(row)) {
+            ++i;
+        } else {
+            destroy_row(row);
+            status = vector_erase(table->rows, i);
+            if (FT_IS_ERROR(status))
+                return status;
+        }
+    }
+
+    return FT_SUCCESS;
+}
+
+
 static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct f_string_view *fmt, va_list *va)
 {
     size_t i = 0;

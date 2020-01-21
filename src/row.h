@@ -21,6 +21,10 @@ f_row_t *copy_row(f_row_t *row);
 FT_INTERNAL
 f_row_t *split_row(f_row_t *row, size_t pos);
 
+// Delete range [left; right] of cells (both ends included)
+FT_INTERNAL
+int ft_row_erase_range(f_row_t *row, size_t left, size_t right);
+
 FT_INTERNAL
 f_row_t *create_row_from_string(const char *str);
 

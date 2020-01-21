@@ -27,6 +27,9 @@ These pages contain the API documentation of **libfort** - simple library to cre
         - @link ft_table_write_ln ft_table_write_ln @endlink -- fill cells with the strings from the 2D array and move to the next line
         - @link ft_add_separator ft_add_separator @endlink -- add horizontal separator
 
+    - Remove content
+        - @link ft_erase_range ft_erase_range @endlink -- erase range of cells
+
     - Modify appearance of the table
         - @link ft_set_default_border_style ft_set_default_border_style @endlink -- set default border style for all new created tables
         - @link ft_set_border_style ft_set_border_style @endlink -- modify border style of the table

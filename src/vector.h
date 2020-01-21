@@ -47,4 +47,7 @@ f_vector_t *copy_vector(f_vector_t *);
 size_t vector_index_of(const f_vector_t *, const void *item);
 #endif
 
+#define VECTOR_AT(vector, pos, data_type) \
+    *(data_type *)vector_at((vector), (pos))
+
 #endif /* VECTOR_H */

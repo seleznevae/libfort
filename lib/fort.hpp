@@ -990,6 +990,15 @@ public:
         {
             return table_cell(ps_row_idx_, coll_idx, *ps_table_);
         }
+
+        void erase()
+        {
+            if (FT_IS_ERROR(ft_erase_range(ps_table_->table_,
+                                           property_owner_t::ps_row_idx_, 0,
+                                           property_owner_t::ps_row_idx_, FT_MAX_COL_INDEX))) {
+                throw std::runtime_error("Failed to erase row");
+            }
+        }
     };
 
     /**
@@ -997,10 +1006,57 @@ public:
      */
     class table_column: public property_owner_t
     {
+        using property_owner_t::ps_coll_idx_;
+        using property_owner_t::ps_table_;
     public:
         table_column(std::size_t col_idx, table &tbl)
             : property_owner_t(FT_ANY_ROW, col_idx, &tbl) {}
+
+        void erase()
+        {
+            if (FT_IS_ERROR(ft_erase_range(ps_table_->table_,
+                                           0, ps_coll_idx_,
+                                           FT_MAX_ROW_INDEX, ps_coll_idx_))) {
+                throw std::runtime_error("Failed to erase column");
+            }
+        }
     };
+
+    /**
+     * Range of cells.
+     *
+     * @note: at the moment function of propery owener will work only on the
+     * top left cell.
+     * @todo: Implement their work on the whole range.
+     */
+    class cell_range: public property_owner_t
+    {
+        using property_owner_t::ps_coll_idx_;
+        using property_owner_t::ps_row_idx_;
+        using property_owner_t::ps_table_;
+    public:
+        cell_range(size_t top_left_row, size_t top_left_col,
+                   size_t bottom_right_row, size_t bottom_right_col,
+                   table &tbl)
+            : property_owner_t(top_left_row, top_left_col, &tbl),
+              bottom_right_row_(bottom_right_row),
+              bottom_right_col_(bottom_right_col)
+        {}
+
+        void erase()
+        {
+            if (FT_IS_ERROR(ft_erase_range(ps_table_->table_,
+                                           ps_row_idx_, ps_coll_idx_,
+                                           bottom_right_row_, bottom_right_col_))) {
+                throw std::runtime_error("Failed to erase column");
+            }
+        }
+
+    private:
+        std::size_t bottom_right_row_;
+        std::size_t bottom_right_col_;
+    };
+
 
     class default_properties: public property_owner_t
     {
@@ -1119,6 +1175,23 @@ public:
         column(std::size_t col_idx)
     {
         return table_column(col_idx, *this);
+    }
+
+    /**
+     * Get range of cells.
+     *
+     * @param col_idx
+     *   Column index.
+     * @return
+     *   table_column object.
+     */
+    class cell_range
+        range(std::size_t top_left_row, std::size_t top_left_col,
+              std::size_t bottom_right_row, std::size_t bottom_right_col)
+    {
+        return cell_range(top_left_row, top_left_col,
+                          bottom_right_row, bottom_right_col,
+                          *this);
     }
 
     static class default_properties
