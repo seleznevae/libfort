@@ -1932,4 +1932,34 @@ void test_table_erase(void)
         ft_destroy_table(table);
     }
 
+    WHEN("Erasion lines with separators") {
+        ft_table_t *table = ft_create_table();
+        assert_true(table != NULL);
+        ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_BOTTOM_PADDING, 0);
+        ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_TOP_PADDING, 0);
+
+        ft_write_ln(table, "00", "01", "02");
+        ft_write_ln(table, "10", "11", "12");
+        ft_add_separator(table);
+        ft_write_ln(table, "20", "21", "22");
+        ft_write_ln(table, "30", "31", "32");
+        ft_add_separator(table);
+        ft_write_ln(table, "40", "41", "42");
+
+        assert_true(FT_IS_SUCCESS(ft_erase_range(table, 1, 0, 2, 9999)));
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+----+----+----+\n"
+            "| 00 | 01 | 02 |\n"
+            "| 30 | 31 | 32 |\n"
+            "+----+----+----+\n"
+            "| 40 | 41 | 42 |\n"
+            "+----+----+----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+
 }

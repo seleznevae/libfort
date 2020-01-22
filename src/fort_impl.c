@@ -265,6 +265,8 @@ int ft_erase_range(ft_table_t *table,
         ++i;
     }
 
+    f_separator_t *separator = NULL;
+
     size_t n_iterations = MIN(rows_n - 1, bottom_right_row) - top_left_row + 1;
     size_t j = 0;
     i = top_left_row;
@@ -277,6 +279,11 @@ int ft_erase_range(ft_table_t *table,
             status = vector_erase(table->rows, i);
             if (FT_IS_ERROR(status))
                 return status;
+            if (i < vector_size(table->separators)) {
+                separator = VECTOR_AT(table->separators, i, f_separator_t *);
+                destroy_separator(separator);
+                vector_erase(table->separators, i);
+            }
         }
     }
 
