@@ -40,7 +40,7 @@ void destroy_each_cell(f_vector_t *cells)
     size_t i = 0;
     size_t cells_n = vector_size(cells);
     for (i = 0; i < cells_n; ++i) {
-        f_cell_t *cell = *(f_cell_t **)vector_at(cells, i);
+        f_cell_t *cell = VECTOR_AT(cells, i, f_cell_t *);
         destroy_cell(cell);
     }
 }
@@ -70,7 +70,7 @@ f_row_t *copy_row(f_row_t *row)
     size_t i = 0;
     size_t cols_n = vector_size(row->cells);
     for (i = 0; i < cols_n; ++i) {
-        f_cell_t *cell = *(f_cell_t **)vector_at(row->cells, i);
+        f_cell_t *cell = VECTOR_AT(row->cells, i, f_cell_t *);
         f_cell_t *new_cell = copy_cell(cell);
         if (new_cell == NULL) {
             destroy_row(result);
@@ -140,7 +140,7 @@ f_cell_t *get_cell_impl(f_row_t *row, size_t col, enum f_get_policy policy)
     switch (policy) {
         case DONT_CREATE_ON_NULL:
             if (col < columns_in_row(row)) {
-                return *(f_cell_t **)vector_at(row->cells, col);
+                return VECTOR_AT(row->cells, col, f_cell_t *);
             }
             return NULL;
         case CREATE_ON_NULL:
@@ -153,7 +153,7 @@ f_cell_t *get_cell_impl(f_row_t *row, size_t col, enum f_get_policy policy)
                     return NULL;
                 }
             }
-            return *(f_cell_t **)vector_at(row->cells, col);
+            return VECTOR_AT(row->cells, col, f_cell_t *);
     }
 
     assert(0 && "Shouldn't be here!");
@@ -195,7 +195,7 @@ f_cell_t *create_cell_in_position(f_row_t *row, size_t col)
         destroy_cell(new_cell);
         return NULL;
     }
-    return *(f_cell_t **)vector_at(row->cells, col);
+    return VECTOR_AT(row->cells, col, f_cell_t *);
 }
 
 
@@ -233,7 +233,7 @@ f_status insert_row(f_row_t *cur_row, f_row_t *ins_row, size_t pos)
     size_t sz = vector_size(ins_row->cells);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        f_cell_t *cell = *(f_cell_t **)vector_at(ins_row->cells, i);
+        f_cell_t *cell = VECTOR_AT(ins_row->cells, i, f_cell_t *);
         if (FT_IS_ERROR(vector_insert(cur_row->cells, &cell, pos + i))) {
             /* clean up what we have inserted */
             while (i--) {
@@ -859,7 +859,7 @@ int snprintf_row(const f_row_t *row, f_conv_context_t *cntx, size_t *col_width_a
         while (j < col_width_arr_sz) {
             if (j < cols_in_row) {
                 ((f_context_t *)context)->column = j;
-                f_cell_t *cell = *(f_cell_t **)vector_at(row->cells, j);
+                f_cell_t *cell = VECTOR_AT(row->cells, j, f_cell_t *);
                 size_t cell_vis_width = 0;
 
                 size_t group_slave_sz = group_cell_number(row, j);

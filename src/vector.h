@@ -50,4 +50,7 @@ size_t vector_index_of(const f_vector_t *, const void *item);
 #define VECTOR_AT(vector, pos, data_type) \
     *(data_type *)vector_at((vector), (pos))
 
+#define VECTOR_AT_C(vector, pos, const_data_type) \
+    *(const_data_type *)vector_at_c((vector), (pos))
+
 #endif /* VECTOR_H */

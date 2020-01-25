@@ -82,14 +82,14 @@ void ft_destroy_table(ft_table_t *table)
     if (table->rows) {
         size_t row_n = vector_size(table->rows);
         for (i = 0; i < row_n; ++i) {
-            destroy_row(*(f_row_t **)vector_at(table->rows, i));
+            destroy_row(VECTOR_AT(table->rows, i, f_row_t *));
         }
         destroy_vector(table->rows);
     }
     if (table->separators) {
         size_t row_n = vector_size(table->separators);
         for (i = 0; i < row_n; ++i) {
-            destroy_separator(*(f_separator_t **)vector_at(table->separators, i));
+            destroy_separator(VECTOR_AT(table->separators, i, f_separator_t *));
         }
         destroy_vector(table->separators);
     }
@@ -110,7 +110,7 @@ ft_table_t *ft_copy_table(ft_table_t *table)
     size_t i = 0;
     size_t rows_n = vector_size(table->rows);
     for (i = 0; i < rows_n; ++i) {
-        f_row_t *row = *(f_row_t **)vector_at(table->rows, i);
+        f_row_t *row = VECTOR_AT(table->rows, i, f_row_t *);
         f_row_t *new_row = copy_row(row);
         if (new_row == NULL) {
             ft_destroy_table(result);
@@ -121,7 +121,7 @@ ft_table_t *ft_copy_table(ft_table_t *table)
 
     size_t sep_sz = vector_size(table->separators);
     for (i = 0; i < sep_sz; ++i) {
-        f_separator_t *sep = *(f_separator_t **)vector_at(table->separators, i);
+        f_separator_t *sep = VECTOR_AT(table->separators, i, f_separator_t *);
         f_separator_t *new_sep = copy_separator(sep);
         if (new_sep == NULL) {
             ft_destroy_table(result);
@@ -156,7 +156,7 @@ static int split_cur_row(ft_table_t *table, f_row_t **tail_of_cur_row)
         return 0;
     }
 
-    f_row_t *row = *(f_row_t **)vector_at(table->rows, table->cur_row);
+    f_row_t *row = VECTOR_AT(table->rows, table->cur_row, f_row_t *);
     if (table->cur_col >= columns_in_row(row)) {
         tail_of_cur_row = NULL;
         return 0;
@@ -323,7 +323,7 @@ static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct f_str
     /* todo: clearing pushed items in case of error ?? */
 
     new_cols = columns_in_row(new_row);
-    cur_row_p = (f_row_t **)vector_at(table->rows, row);
+    cur_row_p = &VECTOR_AT(table->rows, row, f_row_t *);
 
     switch (table->properties->entire_table_properties.add_strategy) {
         case FT_STRATEGY_INSERT: {
@@ -779,8 +779,8 @@ const void *ft_to_string_impl(const ft_table_t *table, enum f_string_type b_type
     }
 
     for (i = 0; i < rows; ++i) {
-        cur_sep = (i < sep_size) ? (*(f_separator_t **)vector_at(table->separators, i)) : NULL;
-        cur_row = *(f_row_t **)vector_at(table->rows, i);
+        cur_sep = (i < sep_size) ? VECTOR_AT(table->separators, i, f_separator_t *) : NULL;
+        cur_row = VECTOR_AT(table->rows, i, f_row_t *);
         enum f_hor_separator_pos separatorPos = (i == 0) ? TOP_SEPARATOR : INSIDE_SEPARATOR;
         context.row = i;
         FT_CHECK(print_row_separator(&cntx, col_vis_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep));
@@ -788,7 +788,7 @@ const void *ft_to_string_impl(const ft_table_t *table, enum f_string_type b_type
         prev_row = cur_row;
     }
     cur_row = NULL;
-    cur_sep = (i < sep_size) ? (*(f_separator_t **)vector_at(table->separators, i)) : NULL;
+    cur_sep = (i < sep_size) ? VECTOR_AT(table->separators, i, f_separator_t *) : NULL;
     context.row = i;
     FT_CHECK(print_row_separator(&cntx, col_vis_width_arr, cols, prev_row, cur_row, BOTTOM_SEPARATOR, cur_sep));
 
@@ -833,7 +833,7 @@ int ft_add_separator(ft_table_t *table)
             return status;
     }
 
-    f_separator_t **sep_p = (f_separator_t **)vector_at(table->separators, table->cur_row);
+    f_separator_t **sep_p = &VECTOR_AT(table->separators, table->cur_row, f_separator_t *);
     if (*sep_p == NULL)
         *sep_p = create_separator(F_TRUE);
     else

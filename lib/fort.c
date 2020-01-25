@@ -340,6 +340,9 @@ size_t vector_index_of(const f_vector_t *, const void *item);
 #define VECTOR_AT(vector, pos, data_type) \
     *(data_type *)vector_at((vector), (pos))
 
+#define VECTOR_AT_C(vector, pos, const_data_type) \
+    *(const_data_type *)vector_at_c((vector), (pos))
+
 #endif /* VECTOR_H */
 
 /********************************************************
@@ -2662,14 +2665,14 @@ void ft_destroy_table(ft_table_t *table)
     if (table->rows) {
         size_t row_n = vector_size(table->rows);
         for (i = 0; i < row_n; ++i) {
-            destroy_row(*(f_row_t **)vector_at(table->rows, i));
+            destroy_row(VECTOR_AT(table->rows, i, f_row_t *));
         }
         destroy_vector(table->rows);
     }
     if (table->separators) {
         size_t row_n = vector_size(table->separators);
         for (i = 0; i < row_n; ++i) {
-            destroy_separator(*(f_separator_t **)vector_at(table->separators, i));
+            destroy_separator(VECTOR_AT(table->separators, i, f_separator_t *));
         }
         destroy_vector(table->separators);
     }
@@ -2690,7 +2693,7 @@ ft_table_t *ft_copy_table(ft_table_t *table)
     size_t i = 0;
     size_t rows_n = vector_size(table->rows);
     for (i = 0; i < rows_n; ++i) {
-        f_row_t *row = *(f_row_t **)vector_at(table->rows, i);
+        f_row_t *row = VECTOR_AT(table->rows, i, f_row_t *);
         f_row_t *new_row = copy_row(row);
         if (new_row == NULL) {
             ft_destroy_table(result);
@@ -2701,7 +2704,7 @@ ft_table_t *ft_copy_table(ft_table_t *table)
 
     size_t sep_sz = vector_size(table->separators);
     for (i = 0; i < sep_sz; ++i) {
-        f_separator_t *sep = *(f_separator_t **)vector_at(table->separators, i);
+        f_separator_t *sep = VECTOR_AT(table->separators, i, f_separator_t *);
         f_separator_t *new_sep = copy_separator(sep);
         if (new_sep == NULL) {
             ft_destroy_table(result);
@@ -2736,7 +2739,7 @@ static int split_cur_row(ft_table_t *table, f_row_t **tail_of_cur_row)
         return 0;
     }
 
-    f_row_t *row = *(f_row_t **)vector_at(table->rows, table->cur_row);
+    f_row_t *row = VECTOR_AT(table->rows, table->cur_row, f_row_t *);
     if (table->cur_col >= columns_in_row(row)) {
         tail_of_cur_row = NULL;
         return 0;
@@ -2903,7 +2906,7 @@ static int ft_row_printf_impl_(ft_table_t *table, size_t row, const struct f_str
     /* todo: clearing pushed items in case of error ?? */
 
     new_cols = columns_in_row(new_row);
-    cur_row_p = (f_row_t **)vector_at(table->rows, row);
+    cur_row_p = &VECTOR_AT(table->rows, row, f_row_t *);
 
     switch (table->properties->entire_table_properties.add_strategy) {
         case FT_STRATEGY_INSERT: {
@@ -3359,8 +3362,8 @@ const void *ft_to_string_impl(const ft_table_t *table, enum f_string_type b_type
     }
 
     for (i = 0; i < rows; ++i) {
-        cur_sep = (i < sep_size) ? (*(f_separator_t **)vector_at(table->separators, i)) : NULL;
-        cur_row = *(f_row_t **)vector_at(table->rows, i);
+        cur_sep = (i < sep_size) ? VECTOR_AT(table->separators, i, f_separator_t *) : NULL;
+        cur_row = VECTOR_AT(table->rows, i, f_row_t *);
         enum f_hor_separator_pos separatorPos = (i == 0) ? TOP_SEPARATOR : INSIDE_SEPARATOR;
         context.row = i;
         FT_CHECK(print_row_separator(&cntx, col_vis_width_arr, cols, prev_row, cur_row, separatorPos, cur_sep));
@@ -3368,7 +3371,7 @@ const void *ft_to_string_impl(const ft_table_t *table, enum f_string_type b_type
         prev_row = cur_row;
     }
     cur_row = NULL;
-    cur_sep = (i < sep_size) ? (*(f_separator_t **)vector_at(table->separators, i)) : NULL;
+    cur_sep = (i < sep_size) ? VECTOR_AT(table->separators, i, f_separator_t *) : NULL;
     context.row = i;
     FT_CHECK(print_row_separator(&cntx, col_vis_width_arr, cols, prev_row, cur_row, BOTTOM_SEPARATOR, cur_sep));
 
@@ -3413,7 +3416,7 @@ int ft_add_separator(ft_table_t *table)
             return status;
     }
 
-    f_separator_t **sep_p = (f_separator_t **)vector_at(table->separators, table->cur_row);
+    f_separator_t **sep_p = &VECTOR_AT(table->separators, table->cur_row, f_separator_t *);
     if (*sep_p == NULL)
         *sep_p = create_separator(F_TRUE);
     else
@@ -4535,7 +4538,7 @@ const f_cell_props_t *cget_cell_prop(const f_cell_prop_container_t *cont, size_t
     size_t sz = vector_size(cont);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        const f_cell_props_t *opt = (const f_cell_props_t *)vector_at_c(cont, i);
+        const f_cell_props_t *opt = &VECTOR_AT_C(cont, i, const f_cell_props_t);
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
@@ -4550,7 +4553,7 @@ f_cell_props_t *get_cell_prop_and_create_if_not_exists(f_cell_prop_container_t *
     size_t sz = vector_size(cont);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        f_cell_props_t *opt = (f_cell_props_t *)vector_at(cont, i);
+        f_cell_props_t *opt = &VECTOR_AT(cont, i, f_cell_props_t);
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
@@ -4564,7 +4567,7 @@ f_cell_props_t *get_cell_prop_and_create_if_not_exists(f_cell_prop_container_t *
     opt.cell_row = row;
     opt.cell_col = col;
     if (FT_IS_SUCCESS(vector_push(cont, &opt))) {
-        return (f_cell_props_t *)vector_at(cont, sz);
+        return &VECTOR_AT(cont, sz, f_cell_props_t);
     }
 
     return NULL;
@@ -5277,7 +5280,7 @@ void destroy_each_cell(f_vector_t *cells)
     size_t i = 0;
     size_t cells_n = vector_size(cells);
     for (i = 0; i < cells_n; ++i) {
-        f_cell_t *cell = *(f_cell_t **)vector_at(cells, i);
+        f_cell_t *cell = VECTOR_AT(cells, i, f_cell_t *);
         destroy_cell(cell);
     }
 }
@@ -5307,7 +5310,7 @@ f_row_t *copy_row(f_row_t *row)
     size_t i = 0;
     size_t cols_n = vector_size(row->cells);
     for (i = 0; i < cols_n; ++i) {
-        f_cell_t *cell = *(f_cell_t **)vector_at(row->cells, i);
+        f_cell_t *cell = VECTOR_AT(row->cells, i, f_cell_t *);
         f_cell_t *new_cell = copy_cell(cell);
         if (new_cell == NULL) {
             destroy_row(result);
@@ -5377,7 +5380,7 @@ f_cell_t *get_cell_impl(f_row_t *row, size_t col, enum f_get_policy policy)
     switch (policy) {
         case DONT_CREATE_ON_NULL:
             if (col < columns_in_row(row)) {
-                return *(f_cell_t **)vector_at(row->cells, col);
+                return VECTOR_AT(row->cells, col, f_cell_t *);
             }
             return NULL;
         case CREATE_ON_NULL:
@@ -5390,7 +5393,7 @@ f_cell_t *get_cell_impl(f_row_t *row, size_t col, enum f_get_policy policy)
                     return NULL;
                 }
             }
-            return *(f_cell_t **)vector_at(row->cells, col);
+            return VECTOR_AT(row->cells, col, f_cell_t *);
     }
 
     assert(0 && "Shouldn't be here!");
@@ -5432,7 +5435,7 @@ f_cell_t *create_cell_in_position(f_row_t *row, size_t col)
         destroy_cell(new_cell);
         return NULL;
     }
-    return *(f_cell_t **)vector_at(row->cells, col);
+    return VECTOR_AT(row->cells, col, f_cell_t *);
 }
 
 
@@ -5470,7 +5473,7 @@ f_status insert_row(f_row_t *cur_row, f_row_t *ins_row, size_t pos)
     size_t sz = vector_size(ins_row->cells);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        f_cell_t *cell = *(f_cell_t **)vector_at(ins_row->cells, i);
+        f_cell_t *cell = VECTOR_AT(ins_row->cells, i, f_cell_t *);
         if (FT_IS_ERROR(vector_insert(cur_row->cells, &cell, pos + i))) {
             /* clean up what we have inserted */
             while (i--) {
@@ -6096,7 +6099,7 @@ int snprintf_row(const f_row_t *row, f_conv_context_t *cntx, size_t *col_width_a
         while (j < col_width_arr_sz) {
             if (j < cols_in_row) {
                 ((f_context_t *)context)->column = j;
-                f_cell_t *cell = *(f_cell_t **)vector_at(row->cells, j);
+                f_cell_t *cell = VECTOR_AT(row->cells, j, f_cell_t *);
                 size_t cell_vis_width = 0;
 
                 size_t group_slave_sz = group_cell_number(row, j);
@@ -6895,7 +6898,7 @@ f_row_t *get_row_impl(ft_table_t *table, size_t row, enum f_get_policy policy)
     switch (policy) {
         case DONT_CREATE_ON_NULL:
             if (row < vector_size(table->rows)) {
-                return *(f_row_t **)vector_at(table->rows, row);
+                return VECTOR_AT(table->rows, row, f_row_t *);
             }
             return NULL;
         case CREATE_ON_NULL:
@@ -6908,7 +6911,7 @@ f_row_t *get_row_impl(ft_table_t *table, size_t row, enum f_get_policy policy)
                     return NULL;
                 }
             }
-            return *(f_row_t **)vector_at(table->rows, row);
+            return VECTOR_AT(table->rows, row, f_row_t *);
     }
 
     assert(0 && "Shouldn't be here!");
@@ -6978,7 +6981,7 @@ f_status get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols)
         *rows = vector_size(table->rows);
         size_t row_index = 0;
         for (row_index = 0; row_index < vector_size(table->rows); ++row_index) {
-            f_row_t *row = *(f_row_t **)vector_at(table->rows, row_index);
+            f_row_t *row = VECTOR_AT(table->rows, row_index, f_row_t *);
             size_t cols_in_row = columns_in_row(row);
             if (cols_in_row > *cols)
                 *cols = cols_in_row;

@@ -40,7 +40,7 @@ f_row_t *get_row_impl(ft_table_t *table, size_t row, enum f_get_policy policy)
     switch (policy) {
         case DONT_CREATE_ON_NULL:
             if (row < vector_size(table->rows)) {
-                return *(f_row_t **)vector_at(table->rows, row);
+                return VECTOR_AT(table->rows, row, f_row_t *);
             }
             return NULL;
         case CREATE_ON_NULL:
@@ -53,7 +53,7 @@ f_row_t *get_row_impl(ft_table_t *table, size_t row, enum f_get_policy policy)
                     return NULL;
                 }
             }
-            return *(f_row_t **)vector_at(table->rows, row);
+            return VECTOR_AT(table->rows, row, f_row_t *);
     }
 
     assert(0 && "Shouldn't be here!");
@@ -123,7 +123,7 @@ f_status get_table_sizes(const ft_table_t *table, size_t *rows, size_t *cols)
         *rows = vector_size(table->rows);
         size_t row_index = 0;
         for (row_index = 0; row_index < vector_size(table->rows); ++row_index) {
-            f_row_t *row = *(f_row_t **)vector_at(table->rows, row_index);
+            f_row_t *row = VECTOR_AT(table->rows, row_index, f_row_t *);
             size_t cols_in_row = columns_in_row(row);
             if (cols_in_row > *cols)
                 *cols = cols_in_row;

@@ -8,6 +8,10 @@
 - Add new table property `adding_strategy` (2 strategies available - replace(default) and insert).
 - Add function `ft_row_count` (`row_count` in C++ API) to get number of rows in the table.
 
+### Internal
+
+- Refactoring of code that uses vectors.
+
 ## v0.3.2
 
 ### Bug fixes

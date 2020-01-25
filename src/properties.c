@@ -330,7 +330,7 @@ const f_cell_props_t *cget_cell_prop(const f_cell_prop_container_t *cont, size_t
     size_t sz = vector_size(cont);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        const f_cell_props_t *opt = (const f_cell_props_t *)vector_at_c(cont, i);
+        const f_cell_props_t *opt = &VECTOR_AT_C(cont, i, const f_cell_props_t);
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
@@ -345,7 +345,7 @@ f_cell_props_t *get_cell_prop_and_create_if_not_exists(f_cell_prop_container_t *
     size_t sz = vector_size(cont);
     size_t i = 0;
     for (i = 0; i < sz; ++i) {
-        f_cell_props_t *opt = (f_cell_props_t *)vector_at(cont, i);
+        f_cell_props_t *opt = &VECTOR_AT(cont, i, f_cell_props_t);
         if (opt->cell_row == row && opt->cell_col == col)
             return opt;
     }
@@ -359,7 +359,7 @@ f_cell_props_t *get_cell_prop_and_create_if_not_exists(f_cell_prop_container_t *
     opt.cell_row = row;
     opt.cell_col = col;
     if (FT_IS_SUCCESS(vector_push(cont, &opt))) {
-        return (f_cell_props_t *)vector_at(cont, sz);
+        return &VECTOR_AT(cont, sz, f_cell_props_t);
     }
 
     return NULL;
