@@ -12,6 +12,10 @@
 
 - Refactoring of code that uses vectors.
 
+### Docs
+
+- Add tutorial from github wiki to repository.
+
 ## v0.3.2
 
 ### Bug fixes

@@ -40,7 +40,7 @@ For C++ projects that use compiler with C++11 support (and later) there are also
 ```
 
 ## Documentation
-See guide on [wiki](https://github.com/seleznevae/libfort/wiki) of the project and doxygen [API documentation](http://seleznevae.github.io/libfort).
+See guide in [tutorial](https://github.com/seleznevae/libfort/blob/develop/docs/tutorial/Tutorial.md) of the library and doxygen [API documentation](http://seleznevae.github.io/libfort).
 
 ## Getting Started
 
