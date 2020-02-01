@@ -39,6 +39,14 @@ For C++ projects that use compiler with C++11 support (and later) there are also
 #include "fort.hpp"
 ```
 
+### Integration with cmake
+
+To add **libfort** to a cmake project clone repository and add these lines to your `CMakeLists.txt` file:
+```cmake
+add_subdirectory(${PATH_TO_LIBFORT}/lib)
+target_link_libraries(${YOUR_APP} fort)
+```
+
 ## Documentation
 See guide in [tutorial](https://github.com/seleznevae/libfort/blob/develop/docs/tutorial/Tutorial.md) of the library and doxygen [API documentation](http://seleznevae.github.io/libfort).
 
