@@ -188,7 +188,7 @@ public:
      *   - true: Success; cell property was changed.
      *   - false: In case of error
      */
-    bool set_cell_text_align(enum fort::text_align value)
+    bool set_cell_text_align(fort::text_align value)
     {
         return set_property(FT_CPROP_TEXT_ALIGN, static_cast<int>(value));
     }
@@ -258,7 +258,7 @@ public:
      *   - true: Success; cell property was changed.
      *   - false: In case of error.
      */
-    bool set_cell_row_type(enum fort::row_type value)
+    bool set_cell_row_type(fort::row_type value)
     {
         return set_property(FT_CPROP_ROW_TYPE, static_cast<int>(value));
     }
@@ -286,7 +286,7 @@ public:
      *   - true: Success; cell property was changed.
      *   - false: In case of error.
      */
-    bool set_cell_content_fg_color(enum fort::color value)
+    bool set_cell_content_fg_color(fort::color value)
     {
         return set_property(FT_CPROP_CONT_FG_COLOR, static_cast<int>(value));
     }
@@ -300,7 +300,7 @@ public:
      *   - true: Success; cell property was changed.
      *   - false: In case of error.
      */
-    bool set_cell_bg_color(enum fort::color value)
+    bool set_cell_bg_color(fort::color value)
     {
         return set_property(FT_CPROP_CELL_BG_COLOR, static_cast<int>(value));
     }
@@ -314,7 +314,7 @@ public:
      *   - true: Success; cell property was changed.
      *   - false: In case of error.
      */
-    bool set_cell_content_bg_color(enum fort::color value)
+    bool set_cell_content_bg_color(fort::color value)
     {
         return set_property(FT_CPROP_CONT_BG_COLOR, static_cast<int>(value));
     }
@@ -328,7 +328,7 @@ public:
      *   - true: Success; cell property was changed.
      *   - false: In case of error.
      */
-    bool set_cell_text_style(enum fort::text_style value)
+    bool set_cell_text_style(fort::text_style value)
     {
         return set_property(FT_CPROP_CELL_TEXT_STYLE, static_cast<int>(value));
     }
@@ -342,7 +342,7 @@ public:
      *   - true: Success; cell property was changed.
      *   - false: In case of error.
      */
-    bool set_cell_content_text_style(enum fort::text_style value)
+    bool set_cell_content_text_style(fort::text_style value)
     {
         return set_property(FT_CPROP_CONT_TEXT_STYLE, static_cast<int>(value));
     }
