@@ -143,6 +143,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
         return FT_ERROR;
     }
 
+    size_t column_visible_width = 0;
     size_t cols = 0;
     size_t rows = 0;
     int status = get_table_sizes(table, &rows, &cols);
@@ -164,6 +165,17 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
     for (col = 0; col < cols; ++col) {
         col_width_arr[col] = 0;
         size_t row = 0;
+        if (geom == INTERN_REPR_GEOMETRY) {
+            column_visible_width = 0;
+            for (row = 0; row < rows; ++row) {
+                const f_row_t *row_p = get_row_c(table, row);
+                const f_cell_t *cell = get_cell_c(row_p, col);
+                if (!cell)
+                    continue;
+                size_t cell_vis_width = hint_width_cell(cell, &context, VISIBLE_GEOMETRY);
+                column_visible_width = MAX(column_visible_width, cell_vis_width);
+            }
+        }
         for (row = 0; row < rows; ++row) {
             const f_row_t *row_p = get_row_c(table, row);
             const f_cell_t *cell = get_cell_c(row_p, col);
@@ -190,6 +202,11 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
                     row_height_arr[row] = MAX(row_height_arr[row], cell_empty_string_height + cell_top_padding + cell_bottom_padding);
                 }
             }
+        }
+
+        if (geom == INTERN_REPR_GEOMETRY &&
+            col_width_arr[col] > column_visible_width) {
+            col_width_arr[col] += column_visible_width;
         }
     }
 
