@@ -8,6 +8,10 @@
 - Add new table property `adding_strategy` (2 strategies available - replace(default) and insert).
 - Add function `ft_row_count` (`row_count` in C++ API) to get number of rows in the table.
 
+### Bug fixes
+
+- Fix incorrect cell width evaluation in case of invisible symbols
+
 ### Internal
 
 - Refactoring of code that uses vectors.
