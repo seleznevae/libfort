@@ -7062,8 +7062,12 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
             }
         }
 
-        if (geom == INTERN_REPR_GEOMETRY &&
-            col_width_arr[col] > column_visible_width) {
+        // In theory it is possible that cell with max intern. representation
+        // just consists of invisible symobls and therefore in future a lot of
+        // paddings will be added to it during conversion to string. So to be
+        // sure we add max visible width in the column.
+        // TODO: Try to reduce this addition.
+        if (geom == INTERN_REPR_GEOMETRY) {
             col_width_arr[col] += column_visible_width;
         }
     }
