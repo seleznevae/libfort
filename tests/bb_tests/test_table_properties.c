@@ -485,7 +485,7 @@ void test_table_cell_properties(void)
 
 
 
-    WHEN("Set table width and column alignment") {
+    WHEN("Set table min width and column alignment") {
 
         set_test_properties_as_default();
 
@@ -552,6 +552,167 @@ void test_table_cell_properties(void)
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+
+    WHEN("Set table max width for a particular cell is impossible") {
+        table = ft_create_table();
+        int status = ft_set_cell_prop(table, 0, 0, FT_CPROP_MAX_WIDTH, 5);
+        assert_true(status == FT_EINVAL);
+        ft_destroy_table(table);
+    }
+
+    WHEN("Set table max width 1") {
+        set_test_properties_as_default();
+        table = ft_create_table();
+        ft_write_ln(table, "123456789");
+
+        int status = FT_SUCCESS;
+        status |= ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_MAX_WIDTH, 5);
+        assert_true(status == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+\n"
+            "|     |\n"
+            "| 123 |\n"
+            "|     |\n"
+            "+-----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    WHEN("Set table max width 1") {
+        set_test_properties_as_default();
+        table = ft_create_table();
+        ft_wwrite_ln(table, L"123456789");
+
+        int status = FT_SUCCESS;
+        status |= ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_MAX_WIDTH, 5);
+        assert_true(status == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+-----+\n"
+            L"|     |\n"
+            L"| 123 |\n"
+            L"|     |\n"
+            L"+-----+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* ifdef FT_HAVE_WCHAR */
+
+#ifdef FT_HAVE_UTF8
+    WHEN("Set table max width 1") {
+        set_test_properties_as_default();
+        table = ft_create_table();
+        ft_u8write_ln(table, "視野無限廣窗外有");
+
+        int status = FT_SUCCESS;
+        status |= ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_MAX_WIDTH, 5);
+        assert_true(status == FT_SUCCESS);
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+\n"
+            "|     |\n"
+            "| 視  |\n"
+            "|     |\n"
+            "+-----+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* ifdef FT_HAVE_UTF8 */
+
+
+    WHEN("Set table max width 2") {
+        set_test_properties_as_default();
+        table = ft_create_table();
+        ft_write_ln(table, "123456789", "123456789");
+        ft_write_ln(table, "123456789", "123456789");
+
+        int status = FT_SUCCESS;
+        status |= ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_MAX_WIDTH, 5);
+        status |= ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_MAX_WIDTH, 7);
+        assert_true(status == FT_SUCCESS);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+-------+\n"
+            "|     |       |\n"
+            "| 123 | 12345 |\n"
+            "|     |       |\n"
+            "+-----+-------+\n"
+            "|     |       |\n"
+            "| 123 | 12345 |\n"
+            "|     |       |\n"
+            "+-----+-------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+
+#ifdef FT_HAVE_WCHAR
+    WHEN("Set table max width 2") {
+        set_test_properties_as_default();
+        table = ft_create_table();
+        ft_wwrite_ln(table, L"123456789", L"123456789");
+        ft_wwrite_ln(table, L"123456789", L"123456789");
+
+        int status = FT_SUCCESS;
+        status |= ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_MAX_WIDTH, 5);
+        status |= ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_MAX_WIDTH, 7);
+        assert_true(status == FT_SUCCESS);
+
+        const wchar_t *table_str = ft_to_wstring(table);
+        assert_true(table_str != NULL);
+        const wchar_t *table_str_etalon =
+            L"+-----+-------+\n"
+            L"|     |       |\n"
+            L"| 123 | 12345 |\n"
+            L"|     |       |\n"
+            L"+-----+-------+\n"
+            L"|     |       |\n"
+            L"| 123 | 12345 |\n"
+            L"|     |       |\n"
+            L"+-----+-------+\n";
+        assert_wcs_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* ifdef FT_HAVE_WCHAR */
+
+#ifdef FT_HAVE_UTF8
+    WHEN("Set table max width 2") {
+        set_test_properties_as_default();
+        table = ft_create_table();
+        ft_u8write_ln(table, "視野無限廣窗外有", "視野無限廣窗外有");
+
+        int status = FT_SUCCESS;
+        /* We test 2 different cases:
+         * 1 - trailing wide character doesn't fit into odd max width and therefore
+         *     library have to add a space at the end
+         * 2 - wide character fits into the even max width
+         */
+        status |= ft_set_cell_prop(table, FT_ANY_ROW, 0, FT_CPROP_MAX_WIDTH, 5);
+        status |= ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_MAX_WIDTH, 6);
+        assert_true(status == FT_SUCCESS);
+
+        const char *table_str = ft_to_u8string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+-----+------+\n"
+            "|     |      |\n"
+            "| 視  | 視野 |\n"
+            "|     |      |\n"
+            "+-----+------+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
+#endif /* ifdef FT_HAVE_UTF8 */
+
 
     WHEN("Multiline cell") {
         set_test_properties_as_default();

@@ -530,26 +530,44 @@ size_t buffer_text_visible_width(const f_string_buffer_t *buffer)
 
 
 static void
-buffer_substring(const f_string_buffer_t *buffer, size_t buffer_row, const void **begin, const void **end,  ptrdiff_t *str_it_width)
+buffer_substring(const f_string_buffer_t *buffer, size_t vis_width, size_t buffer_row, const void **begin, const void **end,  ptrdiff_t *str_it_width)
 {
     switch (buffer->type) {
         case CHAR_BUF:
             str_n_substring(buffer->str.cstr, '\n', buffer_row, (const char **)begin, (const char **)end);
-            if ((*(const char **)begin) && (*(const char **)end))
+            if ((*(const char **)begin) && (*(const char **)end)) {
                 *str_it_width = str_iter_width(*(const char **)begin, *(const char **)end);
+
+                if (*str_it_width > (ptrdiff_t)vis_width) {
+                    *str_it_width = vis_width;
+                    *end = (char *)*begin + vis_width;
+                }
+            }
             break;
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
             wstr_n_substring(buffer->str.wstr, L'\n', buffer_row, (const wchar_t **)begin, (const wchar_t **)end);
-            if ((*(const wchar_t **)begin) && (*(const wchar_t **)end))
+            if ((*(const wchar_t **)begin) && (*(const wchar_t **)end)) {
                 *str_it_width = wcs_iter_width(*(const wchar_t **)begin, *(const wchar_t **)end);
+
+                if (*str_it_width > (ptrdiff_t)vis_width) {
+                    *str_it_width = vis_width;
+                    *end = (wchar_t *)*begin + vis_width;
+                }
+            }
             break;
 #endif /* FT_HAVE_WCHAR */
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
             utf8_n_substring(buffer->str.u8str, '\n', buffer_row, begin, end);
-            if ((*(const char **)begin) && (*(const char **)end))
+            if ((*(const char **)begin) && (*(const char **)end)) {
                 *str_it_width = utf8_width(*begin, *end);
+
+                if (*str_it_width > (ptrdiff_t)vis_width) {
+                    *end = utf8forw((const void *)*begin, vis_width, &vis_width);
+                    *str_it_width = vis_width;
+                }
+            }
             break;
 #endif /* FT_HAVE_UTF8 */
         default:
@@ -590,6 +608,13 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     f_table_properties_t *props = context->table_properties;
     size_t row = context->row;
     size_t column = context->column;
+    unsigned max_width_prop = (unsigned)get_cell_property_hierarchically(props, row, column, FT_CPROP_MAX_WIDTH);
+    size_t padding_left = get_cell_property_hierarchically(props, row, column, FT_CPROP_LEFT_PADDING);
+    size_t padding_right = get_cell_property_hierarchically(props, row, column, FT_CPROP_RIGHT_PADDING);
+    /* Max width includes paddings see comments in @hint_width_cell */
+    size_t max_width = (max_width_prop >= FT_MAX_WIDTH_UNLIMITED) ? FT_MAX_WIDTH_UNLIMITED : max_width_prop - padding_left - padding_right;
+    if (max_width < vis_width)
+        return -1;
 
     if (buffer == NULL || buffer->str.data == NULL
         || buffer_row >= buffer_text_visible_height(buffer)) {
@@ -597,6 +622,7 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     }
 
     size_t content_width = buffer_text_visible_width(buffer);
+    content_width = MIN(max_width, content_width);
     if (vis_width < content_width)
         return -1;
 
@@ -625,7 +651,7 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     ptrdiff_t str_it_width = 0;
     const void *beg = NULL;
     const void *end = NULL;
-    buffer_substring(buffer, buffer_row, &beg, &end, &str_it_width);
+    buffer_substring(buffer, content_width, buffer_row, &beg, &end, &str_it_width);
     if (beg == NULL || end == NULL)
         return -1;
     if (str_it_width < 0 || content_width < (size_t)str_it_width)

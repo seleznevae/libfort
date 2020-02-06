@@ -501,6 +501,12 @@ utf8_nonnull utf8_pure utf8_weak size_t utf8len(const void *str);
 // Visible width of utf8string.
 utf8_nonnull utf8_pure utf8_weak size_t utf8width(const void *str);
 
+// Forward pointer by `vis_w` visible codepoints
+// (or less if end of string is encountered). Sets `width` to visible width of
+// string between `str` and returned value.
+utf8_nonnull utf8_pure utf8_weak const void *utf8forw(const void *str,
+        size_t vis_w, size_t *width);
+
 // Visible width of codepoint.
 utf8_nonnull utf8_pure utf8_weak int utf8cwidth(utf8_int32_t c);
 
@@ -922,6 +928,36 @@ size_t utf8width(const void *str)
         str = utf8codepoint(str, &c);
     }
     return length;
+}
+
+const void *utf8forw(const void *str, size_t vis_w, size_t *width)
+{
+    size_t length = 0;
+    utf8_int32_t c = 0;
+    /* We need to store previous value of str
+     * because some codepoints may occupy more than
+     * one symbol and during iteration we may exceed vis_w.
+     */
+    const void *prev_str = str;
+    size_t old_length = 0;
+
+    str = utf8codepoint(str, &c);
+    while (c != 0) {
+        old_length = length;
+        length += utf8cwidth(c);
+        if (length > vis_w)
+            break;
+        prev_str = str;
+        str = utf8codepoint(str, &c);
+    }
+
+    if (length > vis_w) {
+        *width = old_length;
+        return prev_str;
+    } else {
+        *width = length;
+        return str;
+    }
 }
 
 int utf8ncasecmp(const void *src1, const void *src2, size_t n)
@@ -1868,6 +1904,7 @@ void buffer_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, 
 #define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)(property)))
 
 #define TEXT_STYLE_TAG_MAX_SIZE (64 * 2)
+#define FT_MAX_WIDTH_UNLIMITED INT_MAX
 
 FT_INTERNAL
 void get_style_tag_for_cell(const f_table_properties_t *props,
@@ -1892,6 +1929,7 @@ struct f_cell_props {
     uint32_t properties_flags;
 
     unsigned int col_min_width;
+    unsigned int col_max_width;
     enum ft_text_alignment align;
     unsigned int cell_padding_top;
     unsigned int cell_padding_bottom;
@@ -2373,7 +2411,12 @@ size_t hint_width_cell(const f_cell_t *cell, const f_context_t *context, enum f_
     if (cell->str_buffer && cell->str_buffer->str.data) {
         result += buffer_text_visible_width(cell->str_buffer);
     }
+    /* todo:
+     * need to think about a case when MIN / MAX properties are set at the same
+     * time.
+     */
     result = MAX(result, (size_t)get_cell_property_hierarchically(properties, row, column, FT_CPROP_MIN_WIDTH));
+    result = MIN(result, (size_t)get_cell_property_hierarchically(properties, row, column, FT_CPROP_MAX_WIDTH));
 
     if (geom == INTERN_REPR_GEOMETRY) {
         char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
@@ -4454,12 +4497,14 @@ static struct f_cell_props g_default_cell_properties = {
     FT_ANY_COLUMN, /* cell_col */
 
     /* properties_flags */
-    FT_CPROP_MIN_WIDTH  | FT_CPROP_TEXT_ALIGN | FT_CPROP_TOP_PADDING
+    FT_CPROP_MIN_WIDTH  | FT_CPROP_MAX_WIDTH
+    | FT_CPROP_TEXT_ALIGN | FT_CPROP_TOP_PADDING
     | FT_CPROP_BOTTOM_PADDING | FT_CPROP_LEFT_PADDING | FT_CPROP_RIGHT_PADDING
     | FT_CPROP_EMPTY_STR_HEIGHT | FT_CPROP_CONT_FG_COLOR | FT_CPROP_CELL_BG_COLOR
     | FT_CPROP_CONT_BG_COLOR | FT_CPROP_CELL_TEXT_STYLE | FT_CPROP_CONT_TEXT_STYLE,
 
     0,             /* col_min_width */
+    FT_MAX_WIDTH_UNLIMITED,      /* col_max_width */
     FT_ALIGNED_LEFT,  /* align */
     0,      /* cell_padding_top         */
     0,      /* cell_padding_bottom      */
@@ -4484,6 +4529,8 @@ static int get_prop_value_if_exists_otherwise_default(const struct f_cell_props 
     switch (property) {
         case FT_CPROP_MIN_WIDTH:
             return cell_opts->col_min_width;
+        case FT_CPROP_MAX_WIDTH:
+            return cell_opts->col_max_width;
         case FT_CPROP_TEXT_ALIGN:
             return cell_opts->align;
         case FT_CPROP_TOP_PADDING:
@@ -4617,6 +4664,11 @@ static f_status set_cell_property_impl(f_cell_props_t *opt, uint32_t property, i
     if (PROP_IS_SET(property, FT_CPROP_MIN_WIDTH)) {
         CHECK_NOT_NEGATIVE(value);
         opt->col_min_width = value;
+    } else if (PROP_IS_SET(property, FT_CPROP_MAX_WIDTH)) {
+        if (opt->cell_row != FT_ANY_ROW)
+            goto fort_fail;
+        CHECK_NOT_NEGATIVE(value);
+        opt->col_max_width = value;
     } else if (PROP_IS_SET(property, FT_CPROP_TEXT_ALIGN)) {
         opt->align = (enum ft_text_alignment)value;
     } else if (PROP_IS_SET(property, FT_CPROP_TOP_PADDING)) {
@@ -4673,16 +4725,6 @@ f_status set_cell_property(f_cell_prop_container_t *cont, size_t row, size_t col
         return FT_ERROR;
 
     return set_cell_property_impl(opt, property, value);
-    /*
-    PROP_SET(opt->propertiess, property);
-    if (PROP_IS_SET(property, FT_CPROP_MIN_WIDTH)) {
-        opt->col_min_width = value;
-    } else if (PROP_IS_SET(property, FT_CPROP_TEXT_ALIGN)) {
-        opt->align = value;
-    }
-
-    return FT_SUCCESS;
-    */
 }
 
 
@@ -6680,26 +6722,44 @@ size_t buffer_text_visible_width(const f_string_buffer_t *buffer)
 
 
 static void
-buffer_substring(const f_string_buffer_t *buffer, size_t buffer_row, const void **begin, const void **end,  ptrdiff_t *str_it_width)
+buffer_substring(const f_string_buffer_t *buffer, size_t vis_width, size_t buffer_row, const void **begin, const void **end,  ptrdiff_t *str_it_width)
 {
     switch (buffer->type) {
         case CHAR_BUF:
             str_n_substring(buffer->str.cstr, '\n', buffer_row, (const char **)begin, (const char **)end);
-            if ((*(const char **)begin) && (*(const char **)end))
+            if ((*(const char **)begin) && (*(const char **)end)) {
                 *str_it_width = str_iter_width(*(const char **)begin, *(const char **)end);
+
+                if (*str_it_width > (ptrdiff_t)vis_width) {
+                    *str_it_width = vis_width;
+                    *end = (char *)*begin + vis_width;
+                }
+            }
             break;
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
             wstr_n_substring(buffer->str.wstr, L'\n', buffer_row, (const wchar_t **)begin, (const wchar_t **)end);
-            if ((*(const wchar_t **)begin) && (*(const wchar_t **)end))
+            if ((*(const wchar_t **)begin) && (*(const wchar_t **)end)) {
                 *str_it_width = wcs_iter_width(*(const wchar_t **)begin, *(const wchar_t **)end);
+
+                if (*str_it_width > (ptrdiff_t)vis_width) {
+                    *str_it_width = vis_width;
+                    *end = (wchar_t *)*begin + vis_width;
+                }
+            }
             break;
 #endif /* FT_HAVE_WCHAR */
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
             utf8_n_substring(buffer->str.u8str, '\n', buffer_row, begin, end);
-            if ((*(const char **)begin) && (*(const char **)end))
+            if ((*(const char **)begin) && (*(const char **)end)) {
                 *str_it_width = utf8_width(*begin, *end);
+
+                if (*str_it_width > (ptrdiff_t)vis_width) {
+                    *end = utf8forw((const void *)*begin, vis_width, &vis_width);
+                    *str_it_width = vis_width;
+                }
+            }
             break;
 #endif /* FT_HAVE_UTF8 */
         default:
@@ -6740,6 +6800,13 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     f_table_properties_t *props = context->table_properties;
     size_t row = context->row;
     size_t column = context->column;
+    unsigned max_width_prop = (unsigned)get_cell_property_hierarchically(props, row, column, FT_CPROP_MAX_WIDTH);
+    size_t padding_left = get_cell_property_hierarchically(props, row, column, FT_CPROP_LEFT_PADDING);
+    size_t padding_right = get_cell_property_hierarchically(props, row, column, FT_CPROP_RIGHT_PADDING);
+    /* Max width includes paddings see comments in @hint_width_cell */
+    size_t max_width = (max_width_prop >= FT_MAX_WIDTH_UNLIMITED) ? FT_MAX_WIDTH_UNLIMITED : max_width_prop - padding_left - padding_right;
+    if (max_width < vis_width)
+        return -1;
 
     if (buffer == NULL || buffer->str.data == NULL
         || buffer_row >= buffer_text_visible_height(buffer)) {
@@ -6747,6 +6814,7 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     }
 
     size_t content_width = buffer_text_visible_width(buffer);
+    content_width = MIN(max_width, content_width);
     if (vis_width < content_width)
         return -1;
 
@@ -6775,7 +6843,7 @@ int buffer_printf(f_string_buffer_t *buffer, size_t buffer_row, f_conv_context_t
     ptrdiff_t str_it_width = 0;
     const void *beg = NULL;
     const void *end = NULL;
-    buffer_substring(buffer, buffer_row, &beg, &end, &str_it_width);
+    buffer_substring(buffer, content_width, buffer_row, &beg, &end, &str_it_width);
     if (beg == NULL || end == NULL)
         return -1;
     if (str_it_width < 0 || content_width < (size_t)str_it_width)

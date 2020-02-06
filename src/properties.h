@@ -10,6 +10,7 @@
 #define PROP_UNSET(ft_props, property) ((ft_props) &= ~((uint32_t)(property)))
 
 #define TEXT_STYLE_TAG_MAX_SIZE (64 * 2)
+#define FT_MAX_WIDTH_UNLIMITED INT_MAX
 
 FT_INTERNAL
 void get_style_tag_for_cell(const f_table_properties_t *props,
@@ -34,6 +35,7 @@ struct f_cell_props {
     uint32_t properties_flags;
 
     unsigned int col_min_width;
+    unsigned int col_max_width;
     enum ft_text_alignment align;
     unsigned int cell_padding_top;
     unsigned int cell_padding_bottom;
