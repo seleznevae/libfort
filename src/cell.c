@@ -65,7 +65,7 @@ enum f_cell_type get_cell_type(const f_cell_t *cell)
 }
 
 FT_INTERNAL
-size_t hint_vis_width_cell(const f_cell_t *cell, const f_context_t *context)
+size_t cell_vis_width(const f_cell_t *cell, const f_context_t *context)
 {
     /* todo:
      * At the moment min width includes paddings. Maybe it is better that min width weren't include
@@ -90,7 +90,7 @@ size_t hint_vis_width_cell(const f_cell_t *cell, const f_context_t *context)
 }
 
 FT_INTERNAL
-size_t invis_codepoints_width_cell(const f_cell_t *cell, const f_context_t *context)
+size_t cell_invis_codes_width(const f_cell_t *cell, const f_context_t *context)
 {
     assert(cell);
     assert(context);
@@ -146,7 +146,7 @@ int cell_printf(f_cell_t *cell, size_t row, f_conv_context_t *cntx, size_t vis_w
     const f_context_t *context = cntx->cntx;
     size_t buf_len = vis_width;
 
-    if (cell == NULL || (vis_width < hint_vis_width_cell(cell, context))) {
+    if (cell == NULL || (vis_width < cell_vis_width(cell, context))) {
         return -1;
     }
 

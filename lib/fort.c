@@ -2091,10 +2091,10 @@ FT_INTERNAL
 f_cell_t *copy_cell(f_cell_t *cell);
 
 FT_INTERNAL
-size_t hint_vis_width_cell(const f_cell_t *cell, const f_context_t *context);
+size_t cell_vis_width(const f_cell_t *cell, const f_context_t *context);
 
 FT_INTERNAL
-size_t invis_codepoints_width_cell(const f_cell_t *cell, const f_context_t *context);
+size_t cell_invis_codes_width(const f_cell_t *cell, const f_context_t *context);
 
 FT_INTERNAL
 size_t hint_height_cell(const f_cell_t *cell, const f_context_t *context);
@@ -2356,7 +2356,7 @@ enum f_cell_type get_cell_type(const f_cell_t *cell)
 }
 
 FT_INTERNAL
-size_t hint_vis_width_cell(const f_cell_t *cell, const f_context_t *context)
+size_t cell_vis_width(const f_cell_t *cell, const f_context_t *context)
 {
     /* todo:
      * At the moment min width includes paddings. Maybe it is better that min width weren't include
@@ -2381,7 +2381,7 @@ size_t hint_vis_width_cell(const f_cell_t *cell, const f_context_t *context)
 }
 
 FT_INTERNAL
-size_t invis_codepoints_width_cell(const f_cell_t *cell, const f_context_t *context)
+size_t cell_invis_codes_width(const f_cell_t *cell, const f_context_t *context)
 {
     assert(cell);
     assert(context);
@@ -2437,7 +2437,7 @@ int cell_printf(f_cell_t *cell, size_t row, f_conv_context_t *cntx, size_t vis_w
     const f_context_t *context = cntx->cntx;
     size_t buf_len = vis_width;
 
-    if (cell == NULL || (vis_width < hint_vis_width_cell(cell, context))) {
+    if (cell == NULL || (vis_width < cell_vis_width(cell, context))) {
         return -1;
     }
 
@@ -7044,7 +7044,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
             if (cell) {
                 switch (get_cell_type(cell)) {
                     case COMMON_CELL:
-                        col_width_arr[col] = MAX(col_width_arr[col], hint_vis_width_cell(cell, &context));
+                        col_width_arr[col] = MAX(col_width_arr[col], cell_vis_width(cell, &context));
                         break;
                     case GROUP_MASTER_CELL:
                         combined_cells_found = 1;
@@ -7073,7 +7073,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
                     continue;
                 context.column = col;
                 context.row = row;
-                size_t inv_codepoints = invis_codepoints_width_cell(cell, &context);
+                size_t inv_codepoints = cell_invis_codes_width(cell, &context);
                 max_invis_codepoints = MAX(max_invis_codepoints, inv_codepoints);
             }
             col_width_arr[col] += max_invis_codepoints;
@@ -7090,9 +7090,9 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
                 context.row = row;
                 if (cell) {
                     if (get_cell_type(cell) == GROUP_MASTER_CELL) {
-                        size_t hint_width = hint_vis_width_cell(cell, &context);
+                        size_t hint_width = cell_vis_width(cell, &context);
                         if (geom == INTERN_REPR_GEOMETRY) {
-                            hint_width += invis_codepoints_width_cell(cell, &context);
+                            hint_width += cell_invis_codes_width(cell, &context);
                         }
                         size_t slave_col = col + group_cell_number(row_p, col);
                         size_t cur_adj_col = col;
