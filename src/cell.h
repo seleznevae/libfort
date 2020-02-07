@@ -13,7 +13,10 @@ FT_INTERNAL
 f_cell_t *copy_cell(f_cell_t *cell);
 
 FT_INTERNAL
-size_t hint_width_cell(const f_cell_t *cell, const f_context_t *context, enum f_geometry_type geom);
+size_t hint_vis_width_cell(const f_cell_t *cell, const f_context_t *context);
+
+FT_INTERNAL
+size_t invis_codepoints_width_cell(const f_cell_t *cell, const f_context_t *context);
 
 FT_INTERNAL
 size_t hint_height_cell(const f_cell_t *cell, const f_context_t *context);

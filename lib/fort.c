@@ -2091,7 +2091,10 @@ FT_INTERNAL
 f_cell_t *copy_cell(f_cell_t *cell);
 
 FT_INTERNAL
-size_t hint_width_cell(const f_cell_t *cell, const f_context_t *context, enum f_geometry_type geom);
+size_t hint_vis_width_cell(const f_cell_t *cell, const f_context_t *context);
+
+FT_INTERNAL
+size_t invis_codepoints_width_cell(const f_cell_t *cell, const f_context_t *context);
 
 FT_INTERNAL
 size_t hint_height_cell(const f_cell_t *cell, const f_context_t *context);
@@ -2353,7 +2356,7 @@ enum f_cell_type get_cell_type(const f_cell_t *cell)
 }
 
 FT_INTERNAL
-size_t hint_width_cell(const f_cell_t *cell, const f_context_t *context, enum f_geometry_type geom)
+size_t hint_vis_width_cell(const f_cell_t *cell, const f_context_t *context)
 {
     /* todo:
      * At the moment min width includes paddings. Maybe it is better that min width weren't include
@@ -2374,25 +2377,35 @@ size_t hint_width_cell(const f_cell_t *cell, const f_context_t *context, enum f_
         result += buffer_text_visible_width(cell->str_buffer);
     }
     result = MAX(result, (size_t)get_cell_property_hierarchically(properties, row, column, FT_CPROP_MIN_WIDTH));
+    return result;
+}
 
-    if (geom == INTERN_REPR_GEOMETRY) {
-        char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_style_tag_for_cell(properties, row, column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(cell_style_tag);
+FT_INTERNAL
+size_t invis_codepoints_width_cell(const f_cell_t *cell, const f_context_t *context)
+{
+    assert(cell);
+    assert(context);
 
-        char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_reset_style_tag_for_cell(properties, row, column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(reset_cell_style_tag);
+    f_table_properties_t *properties = context->table_properties;
+    size_t row = context->row;
+    size_t column = context->column;
 
-        char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_style_tag_for_content(properties, row, column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(content_style_tag);
+    size_t result = 0;
+    char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_cell(properties, row, column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    result += strlen(cell_style_tag);
 
-        char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_reset_style_tag_for_content(properties, row, column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(reset_content_style_tag);
-    }
+    char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_cell(properties, row, column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    result += strlen(reset_cell_style_tag);
 
+    char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_content(properties, row, column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    result += strlen(content_style_tag);
+
+    char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_content(properties, row, column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    result += strlen(reset_content_style_tag);
     return result;
 }
 
@@ -2424,7 +2437,7 @@ int cell_printf(f_cell_t *cell, size_t row, f_conv_context_t *cntx, size_t vis_w
     const f_context_t *context = cntx->cntx;
     size_t buf_len = vis_width;
 
-    if (cell == NULL || (vis_width < hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
+    if (cell == NULL || (vis_width < hint_vis_width_cell(cell, context))) {
         return -1;
     }
 
@@ -7001,7 +7014,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
         return FT_ERROR;
     }
 
-    size_t column_visible_width = 0;
+    size_t max_invis_codepoints = 0;
     size_t cols = 0;
     size_t rows = 0;
     int status = get_table_sizes(table, &rows, &cols);
@@ -7023,17 +7036,6 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
     for (col = 0; col < cols; ++col) {
         col_width_arr[col] = 0;
         size_t row = 0;
-        if (geom == INTERN_REPR_GEOMETRY) {
-            column_visible_width = 0;
-            for (row = 0; row < rows; ++row) {
-                const f_row_t *row_p = get_row_c(table, row);
-                const f_cell_t *cell = get_cell_c(row_p, col);
-                if (!cell)
-                    continue;
-                size_t cell_vis_width = hint_width_cell(cell, &context, VISIBLE_GEOMETRY);
-                column_visible_width = MAX(column_visible_width, cell_vis_width);
-            }
-        }
         for (row = 0; row < rows; ++row) {
             const f_row_t *row_p = get_row_c(table, row);
             const f_cell_t *cell = get_cell_c(row_p, col);
@@ -7042,7 +7044,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
             if (cell) {
                 switch (get_cell_type(cell)) {
                     case COMMON_CELL:
-                        col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context, geom));
+                        col_width_arr[col] = MAX(col_width_arr[col], hint_vis_width_cell(cell, &context));
                         break;
                     case GROUP_MASTER_CELL:
                         combined_cells_found = 1;
@@ -7062,13 +7064,19 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
             }
         }
 
-        // In theory it is possible that cell with max intern. representation
-        // just consists of invisible symobls and therefore in future a lot of
-        // paddings will be added to it during conversion to string. So to be
-        // sure we add max visible width in the column.
-        // TODO: Try to reduce this addition.
         if (geom == INTERN_REPR_GEOMETRY) {
-            col_width_arr[col] += column_visible_width;
+            max_invis_codepoints = 0;
+            for (row = 0; row < rows; ++row) {
+                const f_row_t *row_p = get_row_c(table, row);
+                const f_cell_t *cell = get_cell_c(row_p, col);
+                if (!cell)
+                    continue;
+                context.column = col;
+                context.row = row;
+                size_t inv_codepoints = invis_codepoints_width_cell(cell, &context);
+                max_invis_codepoints = MAX(max_invis_codepoints, inv_codepoints);
+            }
+            col_width_arr[col] += max_invis_codepoints;
         }
     }
 
@@ -7082,7 +7090,10 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
                 context.row = row;
                 if (cell) {
                     if (get_cell_type(cell) == GROUP_MASTER_CELL) {
-                        size_t hint_width = hint_width_cell(cell, &context, geom);
+                        size_t hint_width = hint_vis_width_cell(cell, &context);
+                        if (geom == INTERN_REPR_GEOMETRY) {
+                            hint_width += invis_codepoints_width_cell(cell, &context);
+                        }
                         size_t slave_col = col + group_cell_number(row_p, col);
                         size_t cur_adj_col = col;
                         size_t group_width = col_width_arr[col];

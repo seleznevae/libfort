@@ -65,7 +65,7 @@ enum f_cell_type get_cell_type(const f_cell_t *cell)
 }
 
 FT_INTERNAL
-size_t hint_width_cell(const f_cell_t *cell, const f_context_t *context, enum f_geometry_type geom)
+size_t hint_vis_width_cell(const f_cell_t *cell, const f_context_t *context)
 {
     /* todo:
      * At the moment min width includes paddings. Maybe it is better that min width weren't include
@@ -86,25 +86,35 @@ size_t hint_width_cell(const f_cell_t *cell, const f_context_t *context, enum f_
         result += buffer_text_visible_width(cell->str_buffer);
     }
     result = MAX(result, (size_t)get_cell_property_hierarchically(properties, row, column, FT_CPROP_MIN_WIDTH));
+    return result;
+}
 
-    if (geom == INTERN_REPR_GEOMETRY) {
-        char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_style_tag_for_cell(properties, row, column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(cell_style_tag);
+FT_INTERNAL
+size_t invis_codepoints_width_cell(const f_cell_t *cell, const f_context_t *context)
+{
+    assert(cell);
+    assert(context);
 
-        char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_reset_style_tag_for_cell(properties, row, column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(reset_cell_style_tag);
+    f_table_properties_t *properties = context->table_properties;
+    size_t row = context->row;
+    size_t column = context->column;
 
-        char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_style_tag_for_content(properties, row, column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(content_style_tag);
+    size_t result = 0;
+    char cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_cell(properties, row, column, cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    result += strlen(cell_style_tag);
 
-        char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
-        get_reset_style_tag_for_content(properties, row, column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
-        result += strlen(reset_content_style_tag);
-    }
+    char reset_cell_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_cell(properties, row, column, reset_cell_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    result += strlen(reset_cell_style_tag);
 
+    char content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_style_tag_for_content(properties, row, column, content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    result += strlen(content_style_tag);
+
+    char reset_content_style_tag[TEXT_STYLE_TAG_MAX_SIZE];
+    get_reset_style_tag_for_content(properties, row, column, reset_content_style_tag, TEXT_STYLE_TAG_MAX_SIZE);
+    result += strlen(reset_content_style_tag);
     return result;
 }
 
@@ -136,7 +146,7 @@ int cell_printf(f_cell_t *cell, size_t row, f_conv_context_t *cntx, size_t vis_w
     const f_context_t *context = cntx->cntx;
     size_t buf_len = vis_width;
 
-    if (cell == NULL || (vis_width < hint_width_cell(cell, context, VISIBLE_GEOMETRY))) {
+    if (cell == NULL || (vis_width < hint_vis_width_cell(cell, context))) {
         return -1;
     }
 
