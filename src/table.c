@@ -143,6 +143,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
         return FT_ERROR;
     }
 
+    size_t max_invis_codepoints = 0;
     size_t cols = 0;
     size_t rows = 0;
     int status = get_table_sizes(table, &rows, &cols);
@@ -172,7 +173,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
             if (cell) {
                 switch (get_cell_type(cell)) {
                     case COMMON_CELL:
-                        col_width_arr[col] = MAX(col_width_arr[col], hint_width_cell(cell, &context, geom));
+                        col_width_arr[col] = MAX(col_width_arr[col], cell_vis_width(cell, &context));
                         break;
                     case GROUP_MASTER_CELL:
                         combined_cells_found = 1;
@@ -191,6 +192,21 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
                 }
             }
         }
+
+        if (geom == INTERN_REPR_GEOMETRY) {
+            max_invis_codepoints = 0;
+            for (row = 0; row < rows; ++row) {
+                const f_row_t *row_p = get_row_c(table, row);
+                const f_cell_t *cell = get_cell_c(row_p, col);
+                if (!cell)
+                    continue;
+                context.column = col;
+                context.row = row;
+                size_t inv_codepoints = cell_invis_codes_width(cell, &context);
+                max_invis_codepoints = MAX(max_invis_codepoints, inv_codepoints);
+            }
+            col_width_arr[col] += max_invis_codepoints;
+        }
     }
 
     if (combined_cells_found) {
@@ -203,7 +219,10 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
                 context.row = row;
                 if (cell) {
                     if (get_cell_type(cell) == GROUP_MASTER_CELL) {
-                        size_t hint_width = hint_width_cell(cell, &context, geom);
+                        size_t hint_width = cell_vis_width(cell, &context);
+                        if (geom == INTERN_REPR_GEOMETRY) {
+                            hint_width += cell_invis_codes_width(cell, &context);
+                        }
                         size_t slave_col = col + group_cell_number(row_p, col);
                         size_t cur_adj_col = col;
                         size_t group_width = col_width_arr[col];
