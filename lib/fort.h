@@ -82,22 +82,22 @@ SOFTWARE.
 /**
  * Memory allocation failed.
  */
-#define FT_MEMORY_ERROR   -1
-
-/**
- * General error.
- */
-#define FT_ERROR          -2
+#define FT_MEMORY_ERROR  -1
 
 /**
  * Invalid argument.
  */
-#define FT_EINVAL         -3
+#define FT_EINVAL        -2
 
 /**
  *  Libfort internal logic error.
  */
-#define FT_INTERN_ERROR   -4
+#define FT_INTERN_ERROR  -3
+
+/**
+ * General error.
+ */
+#define FT_GEN_ERROR     -4
 
 
 #define FT_IS_SUCCESS(arg) ((arg) >= 0)

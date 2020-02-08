@@ -2580,7 +2580,7 @@ f_status fill_cell_from_buffer(f_cell_t *cell, const f_string_buffer_t *buffer)
 #endif /* FT_HAVE_UTF8 */
         default:
             assert(0);
-            return FT_ERROR;
+            return FT_GEN_ERROR;
     }
 
 }
@@ -2761,7 +2761,7 @@ static int split_cur_row(ft_table_t *table, f_row_t **tail_of_cur_row)
     f_row_t *tail = split_row(row, table->cur_col);
     if (!tail) {
         tail_of_cur_row = NULL;
-        return FT_ERROR;
+        return FT_GEN_ERROR;
     }
 
     *tail_of_cur_row = tail;
@@ -2776,12 +2776,12 @@ int ft_ln(ft_table_t *table)
         case FT_STRATEGY_INSERT: {
             f_row_t *new_row = NULL;
             if (FT_IS_ERROR(split_cur_row(table, &new_row))) {
-                return FT_ERROR;
+                return FT_GEN_ERROR;
             }
             if (new_row) {
                 if (FT_IS_ERROR(vector_insert(table->rows, &new_row, table->cur_row + 1))) {
                     destroy_row(new_row);
-                    return FT_ERROR;
+                    return FT_GEN_ERROR;
                 }
             }
             break;
@@ -3034,7 +3034,7 @@ static int ft_write_impl_(ft_table_t *table, const f_string_view_t *cell_content
     assert(table);
     f_string_buffer_t *buf = get_cur_str_buffer_and_create_if_not_exists(table);
     if (buf == NULL)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
 
     int status = FT_SUCCESS;
     switch (cell_content->type) {
@@ -3052,7 +3052,7 @@ static int ft_write_impl_(ft_table_t *table, const f_string_view_t *cell_content
             break;
 #endif
         default:
-            status = FT_ERROR;
+            status = FT_GEN_ERROR;
     }
     if (FT_IS_SUCCESS(status)) {
         table->cur_col++;
@@ -3436,7 +3436,7 @@ int ft_add_separator(ft_table_t *table)
         (*sep_p)->enabled = F_TRUE;
 
     if (*sep_p == NULL)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
     return FT_SUCCESS;
 }
 
@@ -3574,7 +3574,7 @@ int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t propert
     if (table->properties->cell_properties == NULL) {
         table->properties->cell_properties = create_cell_prop_container();
         if (table->properties->cell_properties == NULL) {
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         }
     }
 
@@ -3619,7 +3619,7 @@ const char *ft_strerror(int error_code)
     switch (error_code) {
         case FT_MEMORY_ERROR:
             return "Libfort error (out of memory)";
-        case FT_ERROR:
+        case FT_GEN_ERROR:
             return "Libfort error (general error)";
         case FT_EINVAL:
             return "Libfort error (invalid argument)";
@@ -3646,7 +3646,7 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
 
     f_row_t *row_p = get_row_and_create_if_not_exists(table, row);
     if (row_p == NULL)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
 
     return row_set_cell_span(row_p, col, hor_span);
 }
@@ -4702,7 +4702,7 @@ f_status set_cell_property(f_cell_prop_container_t *cont, size_t row, size_t col
 {
     f_cell_props_t *opt = get_cell_prop_and_create_if_not_exists(cont, row, col);
     if (opt == NULL)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
 
     return set_cell_property_impl(opt, property, value);
     /*
@@ -5498,7 +5498,7 @@ f_status insert_row(f_row_t *cur_row, f_row_t *ins_row, size_t pos)
     while (vector_size(cur_row->cells) < pos) {
         f_cell_t *new_cell = create_cell();
         if (!new_cell)
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         vector_push(cur_row->cells, &new_cell);
     }
 
@@ -5511,7 +5511,7 @@ f_status insert_row(f_row_t *cur_row, f_row_t *ins_row, size_t pos)
             while (i--) {
                 vector_erase(cur_row->cells, pos);
             }
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         }
     }
     /* Clear cells so that it will be safe to destroy this row */
@@ -5573,7 +5573,7 @@ f_status row_set_cell_span(f_row_t *row, size_t cell_column, size_t hor_span)
 
     f_cell_t *main_cell = get_cell_and_create_if_not_exists(row, cell_column);
     if (main_cell == NULL) {
-        return FT_ERROR;
+        return FT_GEN_ERROR;
     }
     set_cell_type(main_cell, GROUP_MASTER_CELL);
     --hor_span;
@@ -5582,7 +5582,7 @@ f_status row_set_cell_span(f_row_t *row, size_t cell_column, size_t hor_span)
     while (hor_span) {
         f_cell_t *slave_cell = get_cell_and_create_if_not_exists(row, cell_column);
         if (slave_cell == NULL) {
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         }
         set_cell_type(slave_cell, GROUP_SLAVE_CELL);
         --hor_span;
@@ -5601,7 +5601,7 @@ int print_row_separator_impl(f_conv_context_t *cntx,
 {
     assert(cntx);
 
-    int status = FT_ERROR;
+    int status = FT_GEN_ERROR;
 
     const f_context_t *context = cntx->cntx;
 
@@ -7030,7 +7030,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
                                       enum f_geometry_type geom)
 {
     if (table == NULL) {
-        return FT_ERROR;
+        return FT_GEN_ERROR;
     }
 
     size_t max_invis_codepoints = 0;
@@ -7045,7 +7045,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
     if (col_width_arr == NULL || row_height_arr == NULL) {
         F_FREE(col_width_arr);
         F_FREE(row_height_arr);
-        return FT_ERROR;
+        return FT_GEN_ERROR;
     }
 
     int combined_cells_found = 0;
@@ -7163,7 +7163,7 @@ FT_INTERNAL
 f_status table_geometry(const ft_table_t *table, size_t *height, size_t *width)
 {
     if (table == NULL)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
 
     *height = 0;
     *width = 0;
@@ -7302,7 +7302,7 @@ int vector_push(f_vector_t *vector, const void *item)
 
     if (vector->m_size == vector->m_capacity) {
         if (vector_reallocate_(vector, vector->m_capacity * 2) == -1)
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         vector->m_capacity = vector->m_capacity * 2;
     }
 
@@ -7322,7 +7322,7 @@ int vector_insert(f_vector_t *vector, const void *item, size_t pos)
     size_t needed_capacity = MAX(pos + 1, vector->m_size + 1);
     if (vector->m_capacity < needed_capacity) {
         if (vector_reallocate_(vector, needed_capacity) == -1)
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         vector->m_capacity = needed_capacity;
     }
     size_t offset = pos * vector->m_item_size;
@@ -7402,7 +7402,7 @@ f_status vector_swap(f_vector_t *cur_vec, f_vector_t *mv_vec, size_t pos)
     size_t min_targ_size = pos + mv_sz;
     if (vector_capacity(cur_vec) < min_targ_size) {
         if (vector_reallocate_(cur_vec, min_targ_size) == -1)
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         cur_vec->m_capacity = min_targ_size;
     }
 
@@ -7451,7 +7451,7 @@ int vector_erase(f_vector_t *vector, size_t index)
     assert(vector);
 
     if (vector->m_size == 0 || index >= vector->m_size)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
 
     memmove((char *)vector->m_data + vector->m_item_size * index,
             (char *)vector->m_data + vector->m_item_size * (index + 1),

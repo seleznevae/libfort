@@ -79,7 +79,7 @@ int vector_push(f_vector_t *vector, const void *item)
 
     if (vector->m_size == vector->m_capacity) {
         if (vector_reallocate_(vector, vector->m_capacity * 2) == -1)
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         vector->m_capacity = vector->m_capacity * 2;
     }
 
@@ -99,7 +99,7 @@ int vector_insert(f_vector_t *vector, const void *item, size_t pos)
     size_t needed_capacity = MAX(pos + 1, vector->m_size + 1);
     if (vector->m_capacity < needed_capacity) {
         if (vector_reallocate_(vector, needed_capacity) == -1)
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         vector->m_capacity = needed_capacity;
     }
     size_t offset = pos * vector->m_item_size;
@@ -179,7 +179,7 @@ f_status vector_swap(f_vector_t *cur_vec, f_vector_t *mv_vec, size_t pos)
     size_t min_targ_size = pos + mv_sz;
     if (vector_capacity(cur_vec) < min_targ_size) {
         if (vector_reallocate_(cur_vec, min_targ_size) == -1)
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         cur_vec->m_capacity = min_targ_size;
     }
 
@@ -228,7 +228,7 @@ int vector_erase(f_vector_t *vector, size_t index)
     assert(vector);
 
     if (vector->m_size == 0 || index >= vector->m_size)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
 
     memmove((char *)vector->m_data + vector->m_item_size * index,
             (char *)vector->m_data + vector->m_item_size * (index + 1),

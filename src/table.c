@@ -140,7 +140,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
                                       enum f_geometry_type geom)
 {
     if (table == NULL) {
-        return FT_ERROR;
+        return FT_GEN_ERROR;
     }
 
     size_t max_invis_codepoints = 0;
@@ -155,7 +155,7 @@ f_status table_rows_and_cols_geometry(const ft_table_t *table,
     if (col_width_arr == NULL || row_height_arr == NULL) {
         F_FREE(col_width_arr);
         F_FREE(row_height_arr);
-        return FT_ERROR;
+        return FT_GEN_ERROR;
     }
 
     int combined_cells_found = 0;
@@ -273,7 +273,7 @@ FT_INTERNAL
 f_status table_geometry(const ft_table_t *table, size_t *height, size_t *width)
 {
     if (table == NULL)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
 
     *height = 0;
     *width = 0;
