@@ -3614,6 +3614,25 @@ void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *pt
     set_memory_funcs(f_malloc, f_free);
 }
 
+const char *ft_strerror(int error_code)
+{
+    switch (error_code) {
+        case FT_MEMORY_ERROR:
+            return "Libfort error (out of memory)";
+        case FT_ERROR:
+            return "Libfort error (general error)";
+        case FT_EINVAL:
+            return "Libfort error (invalid argument)";
+        case FT_INTERN_ERROR:
+            return "Libfort error (internal logic error)";
+        default:
+            if (error_code < 0)
+                return "Libfort unknown error";
+            else
+                return "Libfort success";
+    }
+}
+
 int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
 {
     assert(table);
