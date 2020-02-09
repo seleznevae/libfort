@@ -6,7 +6,8 @@ add_library(fort
 
 target_include_directories(fort
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 set_target_properties(fort
@@ -30,14 +31,25 @@ endif()
 
 include(GNUInstallDirs)
 install(
-    TARGETS
-      fort
+    TARGETS fort
+    EXPORT  LibFort
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-install(FILES fort.h fort.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(
+    FILES fort.h fort.hpp
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 
 configure_file(libfort.pc.in libfort.pc @ONLY)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libfort.pc DESTINATION lib/pkgconfig)
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/libfort.pc
+    DESTINATION lib/pkgconfig
+)
+
+install(
+    EXPORT LibFort
+    NAMESPACE LibFort::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)

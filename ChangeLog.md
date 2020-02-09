@@ -15,6 +15,7 @@
 ### Internal
 
 - Refactoring of code that uses vectors.
+- Add target export in cmake.
 
 ### Docs
 
