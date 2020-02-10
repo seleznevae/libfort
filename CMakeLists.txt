@@ -266,6 +266,6 @@ endforeach()
 # ------------------------------------------------------------------------------
 export(
     TARGETS fort 
-    FILE libfort-exports.cmake
+    FILE ${PROJECT_NAME}-targets.cmake
 )
 
