@@ -73,9 +73,3 @@ install(
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
-export(
-	TARGETS fort 
-	NAMESPACE ${PROJECT_NAME}::
-	FILE ${PROJECT_NAME}-exports.cmake
-)
-
