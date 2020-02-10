@@ -260,3 +260,12 @@ list(APPEND ${PROJECT_NAME}_ctests
 foreach(exe ${${PROJECT_NAME}_ctests})
     add_test(NAME ${exe} COMMAND ${exe})
 endforeach()
+
+# ------------------------------------------------------------------------------
+# Exported targets for outer applications.
+# ------------------------------------------------------------------------------
+export(
+    TARGETS fort 
+    FILE libfort-exports.cmake
+)
+
