@@ -265,7 +265,7 @@ endforeach()
 # Exported targets for outer applications.
 # ------------------------------------------------------------------------------
 export(
-    TARGETS fort 
+    TARGETS fort
     FILE ${PROJECT_NAME}-targets.cmake
 )
 
