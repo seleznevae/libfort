@@ -255,6 +255,20 @@ script:
   #     scan-build make ;
   #   fi
 
+  # Test package installation
+  - cd ..
+  - rm -r build/*
+  - cmake -H. -Bbuild -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=`pwd`/install
+  - cmake --build build --target all
+  - cmake --build build -- install
+  - ls `pwd`/install
+  - cd tests/package_tests
+  - cmake -H. -B_build -DCMAKE_PREFIX_PATH=../../install -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
+  - cmake --build _build -- -j3
+  - ./_build/app
+  - rm -rf _build
+  - cd ../../build
+
   # Build for coveralls (should be the last)
   - |
     if [ "${CC}" = 'gcc' ]; then
