@@ -263,10 +263,12 @@ script:
   - cmake --build build -- install
   - ls `pwd`/install
   - cd tests/package_tests
-  - cmake -H. -B_build -DCMAKE_PREFIX_PATH=../../install -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11
+  - cmake -H. -B_build -DCMAKE_PREFIX_PATH=../../install -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=./_install_foo
   - cmake --build _build -- -j3
-  - ./_build/app
+  - ./_build/foo-app
+  - cmake --build _build -- install
   - rm -rf _build
+  - rm -rf _install_foo
   - cd ../../build
 
   # Build for coveralls (should be the last)
@@ -281,11 +283,6 @@ script:
       ./tests/libfort_test_dev ;
     fi
   - cd ..
-
-
-
-
-
 
 
 

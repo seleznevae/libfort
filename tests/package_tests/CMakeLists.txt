@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
+project(foo)
+
 find_package(libfort)
 
 # Assert exports of libfort
@@ -16,8 +18,35 @@ if (NOT ${libfort_VERSION} EQUAL "0.4.0")
 	message(FATAL_ERROR "libfort_VERSION is incorrect")
 endif()
 
-add_executable(app 
-    1-simple_table.cpp)
+# Create target that depend on libfort and check they'll compile ok
+add_executable(foo-app
+    foo-app.cpp)
+target_link_libraries(foo-app
+	PRIVATE libfort::fort
+)
 
-target_link_libraries(app
-    libfort::fort)
+add_library(foo-lib
+	foo-lib.cpp)
+target_link_libraries(foo-lib
+    PRIVATE libfort::fort)
+
+include(GNUInstallDirs)
+install(
+	TARGETS foo-lib
+	EXPORT ${PROJECT_NAME}-targets
+	INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+
+include(CMakePackageConfigHelpers)
+
+install(
+	EXPORT ${PROJECT_NAME}-targets
+	FILE ${PROJECT_NAME}-targets.cmake
+	NAMESPACE ${PROJECT_NAME}::
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
