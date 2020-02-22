@@ -258,7 +258,7 @@ script:
   # Test package installation
   - cd ..
   - rm -r build/*
-  - cmake -H. -Bbuild -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=`pwd`/install
+  - cmake -H. -Bbuild -DFORT_ENABLE_TESTING=OFF -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=`pwd`/install
   - cmake --build build --target all
   - cmake --build build -- install
   - ls `pwd`/install
