@@ -11,8 +11,11 @@ target_include_directories(fort
 )
 
 set_target_properties(fort
-    PROPERTIES VERSION ${libfort_VERSION}
-    SOVERSION ${libfort_SOVERSION})
+    PROPERTIES
+        VERSION ${libfort_VERSION}
+        SOVERSION ${libfort_SOVERSION}
+        POSITION_INDEPENDENT_CODE ON
+)
 
 if(NOT FORT_HAVE_WCHAR)
     target_compile_definitions(fort

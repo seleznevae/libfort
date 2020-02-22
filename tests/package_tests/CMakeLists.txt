@@ -28,11 +28,16 @@ target_link_libraries(foo-app
 add_library(foo-lib
 	foo-lib.cpp)
 target_link_libraries(foo-lib
-    PRIVATE libfort::fort)
+	PRIVATE libfort::fort)
+
+add_library(foo-lib-shared SHARED
+	foo-lib.cpp)
+target_link_libraries(foo-lib-shared
+	PRIVATE libfort::fort)
 
 include(GNUInstallDirs)
 install(
-	TARGETS foo-lib
+	TARGETS foo-lib foo-lib-shared
 	EXPORT ${PROJECT_NAME}-targets
 	INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
