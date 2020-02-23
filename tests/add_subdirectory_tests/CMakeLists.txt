@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(foo)
 
+set(FORT_ENABLE_TESTING OFF CACHE INTERNAL "")
 add_subdirectory(libfort)
 
 # Create target that depend on libfort and check they'll compile ok

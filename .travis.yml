@@ -271,10 +271,9 @@ script:
   - rm -rf _install_foo
   - cd ../../build
 
-  # Test subdirectory
+  # Test cmake integration via `add_subdirectory`
   - cd ..
   - rm -r build/*
-  - mkdir build
   - ln -s `pwd` tests/add_subdirectory_tests/libfort
   - cd tests/add_subdirectory_tests/
   - cmake -H. -B_build -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=./_install_foo
