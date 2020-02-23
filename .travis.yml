@@ -255,6 +255,35 @@ script:
   #     scan-build make ;
   #   fi
 
+  # Test package installation
+  - cd ..
+  - rm -r build/*
+  - cmake -H. -Bbuild -DFORT_ENABLE_TESTING=OFF -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=`pwd`/install
+  - cmake --build build --target all
+  - cmake --build build -- install
+  - ls `pwd`/install
+  - cd tests/package_tests
+  - cmake -H. -B_build -DCMAKE_PREFIX_PATH=../../install -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=./_install_foo
+  - cmake --build _build -- -j3
+  - ./_build/foo-app
+  - cmake --build _build -- install
+  - rm -rf _build
+  - rm -rf _install_foo
+  - cd ../../build
+
+  # Test cmake integration via `add_subdirectory`
+  - cd ..
+  - rm -r build/*
+  - ln -s `pwd` tests/add_subdirectory_tests/libfort
+  - cd tests/add_subdirectory_tests/
+  - cmake -H. -B_build -DCMAKE_C_STANDARD=99 -DCMAKE_CXX_STANDARD=11 -DCMAKE_INSTALL_PREFIX=./_install_foo
+  - cmake --build _build -- -j3
+  - ./_build/foo-app
+  - cmake --build _build -- install
+  - rm -rf _build
+  - rm -rf _install_foo
+  - cd ../../build
+
   # Build for coveralls (should be the last)
   - |
     if [ "${CC}" = 'gcc' ]; then
@@ -267,11 +296,6 @@ script:
       ./tests/libfort_test_dev ;
     fi
   - cd ..
-
-
-
-
-
 
 
 

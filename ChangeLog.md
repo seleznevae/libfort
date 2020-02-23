@@ -17,6 +17,9 @@
 ### Internal
 
 - Refactoring of code that uses vectors.
+- Add target export in cmake.
+- Add option `FORT_ENABLE_TESTING` to turn on/off building tests and examples.
+- Add option `POSITION_INDEPENDENT_CODE` for library target (libfort::fort).
 
 ### Docs
 
