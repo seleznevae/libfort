@@ -3618,18 +3618,18 @@ const char *ft_strerror(int error_code)
 {
     switch (error_code) {
         case FT_MEMORY_ERROR:
-            return "Libfort error (out of memory)";
+            return "Out of memory";
         case FT_GEN_ERROR:
-            return "Libfort error (general error)";
+            return "General error";
         case FT_EINVAL:
-            return "Libfort error (invalid argument)";
+            return "Invalid argument";
         case FT_INTERN_ERROR:
-            return "Libfort error (internal logic error)";
+            return "Internal libfort error";
         default:
             if (error_code < 0)
-                return "Libfort unknown error";
+                return "Unknown error code";
             else
-                return "Libfort success";
+                return "Success";
     }
 }
 

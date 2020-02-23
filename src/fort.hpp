@@ -391,9 +391,8 @@ public:
         : property_owner_t(FT_ANY_ROW, FT_ANY_COLUMN, this),
           table_(ft_create_table())
     {
-
         if (table_ == NULL)
-            throw std::runtime_error("Libfort runtime error");
+            throw std::bad_alloc();
     }
 
     /**
@@ -413,7 +412,7 @@ public:
         if (tbl.table_) {
             ft_table_t *table_copy = ft_copy_table(tbl.table_);
             if (table_copy == NULL)
-                throw std::runtime_error("Libfort runtime error");
+                throw std::runtime_error("Error during table copy");
 
             stream_.str(std::string());
             if (tbl.stream_.tellp() >= 0) {
@@ -447,7 +446,7 @@ public:
         if (tbl.table_) {
             ft_table_t *table_copy = ft_copy_table(tbl.table_);
             if (table_copy == NULL)
-                throw std::runtime_error("Libfort runtime error");
+                throw std::runtime_error("Error during table copy");
 
             stream_.str(std::string());
             if (tbl.stream_.tellp() >= 0) {
@@ -491,7 +490,7 @@ public:
     {
         const char *str = c_str();
         if (str == NULL)
-            throw std::runtime_error("Libfort runtime error");
+            throw std::runtime_error("Error during table to string conversion");
         return str;
     }
 

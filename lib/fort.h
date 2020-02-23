@@ -91,11 +91,18 @@ SOFTWARE.
 
 /**
  *  Libfort internal logic error.
+ *
+ *  Usually such errors mean that something is wrong in
+ *  libfort internal logic and in most of cases cause of
+ *  these errors is a library bug.
  */
 #define FT_INTERN_ERROR  -3
 
 /**
  * General error.
+ *
+ * Different errors that do not belong to the group of errors
+ * mentioned above.
  */
 #define FT_GEN_ERROR     -4
 
