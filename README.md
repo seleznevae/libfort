@@ -41,10 +41,19 @@ For C++ projects that use compiler with C++11 support (and later) there are also
 
 ### Integration with cmake
 
-To add **libfort** to a cmake project clone repository and add these lines to your `CMakeLists.txt` file:
+In case **libfort** is installed on the host system it should be sufficient to use `find_package`:
 ```cmake
-add_subdirectory(${PATH_TO_LIBFORT}/lib)
-target_link_libraries(${YOUR_APP} fort)
+find_package(libfort)
+target_link_libraries(your_target PRIVATE libfort::fort)
+```
+
+In case you downloaded **libfort** sources and embedded them in your project (e.g. put all sources in directory `third-party/libfort`) you can use `add_subdirectory`:
+```cmake
+# Disable building tests and examples in libfort project
+set(FORT_ENABLE_TESTING OFF CACHE INTERNAL "")
+
+add_subdirectory(third-party/libfort)
+target_link_libraries(your_target PRIVATE fort)
 ```
 
 ## Documentation
