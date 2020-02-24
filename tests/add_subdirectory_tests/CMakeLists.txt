@@ -15,12 +15,12 @@ target_link_libraries(foo-app
 add_library(foo-lib
 	foo-lib.cpp)
 target_link_libraries(foo-lib
-	PRIVATE fort)
+	PRIVATE libfort::fort)
 
 add_library(foo-lib-shared SHARED
 	foo-lib.cpp)
 target_link_libraries(foo-lib-shared
-	PRIVATE fort)
+	PRIVATE libfort::fort)
 
 include(GNUInstallDirs)
 install(
