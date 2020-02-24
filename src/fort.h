@@ -46,8 +46,8 @@ SOFTWARE.
 
 #define LIBFORT_MAJOR_VERSION 0
 #define LIBFORT_MINOR_VERSION 4
-#define LIBFORT_REVISION 0
-#define LIBFORT_VERSION_STR "0.4.0"
+#define LIBFORT_REVISION 1
+#define LIBFORT_VERSION_STR "0.4.1"
 
 
 /*****************************************************************************

@@ -1,3 +1,9 @@
+## v0.4.1
+
+### Internal
+
+- Add alias `libfort::fort` for `fort` target that can be used via `add_subdirectory` in cmake.
+
 ## v0.4.0
 
 ### API
