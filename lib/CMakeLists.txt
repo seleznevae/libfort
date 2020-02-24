@@ -3,6 +3,7 @@ option(FORT_HAVE_UTF8 "Enable UTF8 support" ON)
 
 add_library(fort
     fort.c)
+add_library(${PROJECT_NAME}::fort ALIAS fort)
 
 target_include_directories(fort
     PUBLIC
