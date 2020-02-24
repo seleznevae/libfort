@@ -73,10 +73,40 @@ SOFTWARE.
 /*****************************************************************************
  *               RETURN CODES
  *****************************************************************************/
+
+/**
+ * Operation successfully ended.
+ */
 #define FT_SUCCESS        0
-#define FT_MEMORY_ERROR   -1
-#define FT_ERROR          -2
-#define FT_EINVAL         -3
+
+/**
+ * Memory allocation failed.
+ */
+#define FT_MEMORY_ERROR  -1
+
+/**
+ * Invalid argument.
+ */
+#define FT_EINVAL        -2
+
+/**
+ *  Libfort internal logic error.
+ *
+ *  Usually such errors mean that something is wrong in
+ *  libfort internal logic and in most of cases cause of
+ *  these errors is a library bug.
+ */
+#define FT_INTERN_ERROR  -3
+
+/**
+ * General error.
+ *
+ * Different errors that do not belong to the group of errors
+ * mentioned above.
+ */
+#define FT_GEN_ERROR     -4
+
+
 #define FT_IS_SUCCESS(arg) ((arg) >= 0)
 #define FT_IS_ERROR(arg) ((arg) < 0)
 
@@ -936,6 +966,16 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
  */
 void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
 
+
+/**
+ * Return string describing the `error_code`.
+ *
+ * @param error_code
+ *   Error code returned by the library.
+ * @return
+ *   String describing the error.
+ */
+const char *ft_strerror(int error_code);
 
 
 

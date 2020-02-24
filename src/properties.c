@@ -462,7 +462,7 @@ f_status set_cell_property(f_cell_prop_container_t *cont, size_t row, size_t col
 {
     f_cell_props_t *opt = get_cell_prop_and_create_if_not_exists(cont, row, col);
     if (opt == NULL)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
 
     return set_cell_property_impl(opt, property, value);
     /*

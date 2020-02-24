@@ -165,7 +165,7 @@ static int split_cur_row(ft_table_t *table, f_row_t **tail_of_cur_row)
     f_row_t *tail = split_row(row, table->cur_col);
     if (!tail) {
         tail_of_cur_row = NULL;
-        return FT_ERROR;
+        return FT_GEN_ERROR;
     }
 
     *tail_of_cur_row = tail;
@@ -180,12 +180,12 @@ int ft_ln(ft_table_t *table)
         case FT_STRATEGY_INSERT: {
             f_row_t *new_row = NULL;
             if (FT_IS_ERROR(split_cur_row(table, &new_row))) {
-                return FT_ERROR;
+                return FT_GEN_ERROR;
             }
             if (new_row) {
                 if (FT_IS_ERROR(vector_insert(table->rows, &new_row, table->cur_row + 1))) {
                     destroy_row(new_row);
-                    return FT_ERROR;
+                    return FT_GEN_ERROR;
                 }
             }
             break;
@@ -438,7 +438,7 @@ static int ft_write_impl_(ft_table_t *table, const f_string_view_t *cell_content
     assert(table);
     f_string_buffer_t *buf = get_cur_str_buffer_and_create_if_not_exists(table);
     if (buf == NULL)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
 
     int status = FT_SUCCESS;
     switch (cell_content->type) {
@@ -456,7 +456,7 @@ static int ft_write_impl_(ft_table_t *table, const f_string_view_t *cell_content
             break;
 #endif
         default:
-            status = FT_ERROR;
+            status = FT_GEN_ERROR;
     }
     if (FT_IS_SUCCESS(status)) {
         table->cur_col++;
@@ -840,7 +840,7 @@ int ft_add_separator(ft_table_t *table)
         (*sep_p)->enabled = F_TRUE;
 
     if (*sep_p == NULL)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
     return FT_SUCCESS;
 }
 
@@ -978,7 +978,7 @@ int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t propert
     if (table->properties->cell_properties == NULL) {
         table->properties->cell_properties = create_cell_prop_container();
         if (table->properties->cell_properties == NULL) {
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         }
     }
 
@@ -1018,6 +1018,25 @@ void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *pt
     set_memory_funcs(f_malloc, f_free);
 }
 
+const char *ft_strerror(int error_code)
+{
+    switch (error_code) {
+        case FT_MEMORY_ERROR:
+            return "Out of memory";
+        case FT_GEN_ERROR:
+            return "General error";
+        case FT_EINVAL:
+            return "Invalid argument";
+        case FT_INTERN_ERROR:
+            return "Internal libfort error";
+        default:
+            if (error_code < 0)
+                return "Unknown error code";
+            else
+                return "Success";
+    }
+}
+
 int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
 {
     assert(table);
@@ -1031,7 +1050,7 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
 
     f_row_t *row_p = get_row_and_create_if_not_exists(table, row);
     if (row_p == NULL)
-        return FT_ERROR;
+        return FT_GEN_ERROR;
 
     return row_set_cell_span(row_p, col, hor_span);
 }

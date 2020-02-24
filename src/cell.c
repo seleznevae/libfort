@@ -289,7 +289,7 @@ f_status fill_cell_from_buffer(f_cell_t *cell, const f_string_buffer_t *buffer)
 #endif /* FT_HAVE_UTF8 */
         default:
             assert(0);
-            return FT_ERROR;
+            return FT_GEN_ERROR;
     }
 
 }

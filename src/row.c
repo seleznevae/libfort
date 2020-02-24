@@ -226,7 +226,7 @@ f_status insert_row(f_row_t *cur_row, f_row_t *ins_row, size_t pos)
     while (vector_size(cur_row->cells) < pos) {
         f_cell_t *new_cell = create_cell();
         if (!new_cell)
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         vector_push(cur_row->cells, &new_cell);
     }
 
@@ -239,7 +239,7 @@ f_status insert_row(f_row_t *cur_row, f_row_t *ins_row, size_t pos)
             while (i--) {
                 vector_erase(cur_row->cells, pos);
             }
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         }
     }
     /* Clear cells so that it will be safe to destroy this row */
@@ -301,7 +301,7 @@ f_status row_set_cell_span(f_row_t *row, size_t cell_column, size_t hor_span)
 
     f_cell_t *main_cell = get_cell_and_create_if_not_exists(row, cell_column);
     if (main_cell == NULL) {
-        return FT_ERROR;
+        return FT_GEN_ERROR;
     }
     set_cell_type(main_cell, GROUP_MASTER_CELL);
     --hor_span;
@@ -310,7 +310,7 @@ f_status row_set_cell_span(f_row_t *row, size_t cell_column, size_t hor_span)
     while (hor_span) {
         f_cell_t *slave_cell = get_cell_and_create_if_not_exists(row, cell_column);
         if (slave_cell == NULL) {
-            return FT_ERROR;
+            return FT_GEN_ERROR;
         }
         set_cell_type(slave_cell, GROUP_SLAVE_CELL);
         --hor_span;
@@ -329,7 +329,7 @@ int print_row_separator_impl(f_conv_context_t *cntx,
 {
     assert(cntx);
 
-    int status = FT_ERROR;
+    int status = FT_GEN_ERROR;
 
     const f_context_t *context = cntx->cntx;
 

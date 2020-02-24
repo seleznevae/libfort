@@ -24,6 +24,7 @@ void test_table_cell_properties(void);
 void test_table_text_styles(void);
 void test_table_tbl_properties(void);
 void test_memory_errors(void);
+void test_error_codes(void);
 #ifdef FT_HAVE_UTF8
 void test_utf8_table(void);
 #endif
@@ -60,6 +61,7 @@ struct test_case bb_test_suite [] = {
     {"test_table_tbl_properties", test_table_tbl_properties},
     {"test_table_text_styles", test_table_text_styles},
     {"test_memory_errors", test_memory_errors},
+    {"test_error_codes", test_error_codes},
 };
 
 #ifdef FORT_WB_TESTING_ENABLED

@@ -12,6 +12,7 @@ add_executable(${PROJECT_NAME}_test_dev
     bb_tests/test_table_border_style.c
     bb_tests/test_table_properties.c
     bb_tests/test_memory_errors.c
+    bb_tests/test_error_codes.c
     tests.c
     test_utils.c)
 target_link_libraries(${PROJECT_NAME}_test_dev
@@ -30,6 +31,7 @@ add_executable(${PROJECT_NAME}_test
     bb_tests/test_table_border_style.c
     bb_tests/test_table_properties.c
     bb_tests/test_memory_errors.c
+    bb_tests/test_error_codes.c
     tests.c
     test_utils.c)
 target_link_libraries(${PROJECT_NAME}_test
