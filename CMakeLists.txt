@@ -8,6 +8,7 @@ string(REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)"
 
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
+message("BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}")
 # ------------------------------------------------------------------------------
 # Build options
 # ------------------------------------------------------------------------------
