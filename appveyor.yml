@@ -2,92 +2,102 @@ version: '{build}'
 
 environment:
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      configuration: Debug
-      platform: x86
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Visual Studio 14 2015
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #   configuration: Debug
+    #   platform: x86
+    #   CXX_FLAGS: ""
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Visual Studio 14 2015
 
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      configuration: Debug
-      platform: x86
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Visual Studio 15 2017
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   configuration: Debug
+    #   platform: x86
+    #   CXX_FLAGS: ""
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Visual Studio 15 2017
+
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    #   configuration: Debug
+    #   platform: x86
+    #   CXX_FLAGS: ""
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Visual Studio 16 2019
+
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    #   configuration: Debug
+    #   platform: x64
+    #   CXX_FLAGS: ""
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Visual Studio 16 2019
+
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #   configuration: Debug
+    #   COMPILER: mingw
+    #   platform: x86
+    #   CXX_FLAGS: ""
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Ninja
+
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #   configuration: Release
+    #   COMPILER: mingw
+    #   platform: x86
+    #   CXX_FLAGS: ""
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Ninja
+
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #   configuration: Release
+    #   platform: x86
+    #   CXX_FLAGS: ""
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Visual Studio 14 2015
+
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #   configuration: Release
+    #   platform: x86
+    #   name: with_win_header
+    #   CXX_FLAGS: ""
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Visual Studio 14 2015
+
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   configuration: Release
+    #   platform: x86
+    #   CXX_FLAGS: "/permissive- /std:c++latest /utf-8"
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Visual Studio 15 2017
+
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    #   configuration: Release
+    #   platform: x86
+    #   CXX_FLAGS: ""
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Visual Studio 16 2019
+
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #   configuration: Release
+    #   platform: x64
+    #   CXX_FLAGS: ""
+    #   LINKER_FLAGS: ""
+    #   GENERATOR: Visual Studio 14 2015
+    #   SHARED_LIBS: "OFF"
+
+    # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #   configuration: Release
+    #   platform: x64
+    #   CXX_FLAGS: "/permissive- /std:c++latest /utf-8 /F4000000"
+    #   LINKER_FLAGS: "/STACK:4000000"
+    #   GENERATOR: Visual Studio 15 2017
+    #   SHARED_LIBS: "OFF"
 
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      configuration: Debug
-      platform: x86
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Visual Studio 16 2019
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      configuration: Debug
+      configuration: Release
       platform: x64
       CXX_FLAGS: ""
       LINKER_FLAGS: ""
       GENERATOR: Visual Studio 16 2019
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      configuration: Debug
-      COMPILER: mingw
-      platform: x86
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Ninja
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      configuration: Release
-      COMPILER: mingw
-      platform: x86
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Ninja
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      configuration: Release
-      platform: x86
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Visual Studio 14 2015
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      configuration: Release
-      platform: x86
-      name: with_win_header
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Visual Studio 14 2015
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      configuration: Release
-      platform: x86
-      CXX_FLAGS: "/permissive- /std:c++latest /utf-8"
-      LINKER_FLAGS: ""
-      GENERATOR: Visual Studio 15 2017
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      configuration: Release
-      platform: x86
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Visual Studio 16 2019
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      configuration: Release
-      platform: x64
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Visual Studio 14 2015
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      configuration: Release
-      platform: x64
-      CXX_FLAGS: "/permissive- /std:c++latest /utf-8 /F4000000"
-      LINKER_FLAGS: "/STACK:4000000"
-      GENERATOR: Visual Studio 15 2017
+      SHARED_LIBS: "ON"
 
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       configuration: Release
@@ -95,6 +105,7 @@ environment:
       CXX_FLAGS: ""
       LINKER_FLAGS: ""
       GENERATOR: Visual Studio 16 2019
+      SHARED_LIBS: "OFF"
 
 
 init:
@@ -112,7 +123,7 @@ install:
 
 before_build:
   - dir
-  - if "%GENERATOR%"=="Ninja" (cmake . -G "%GENERATOR%" -DCMAKE_BUILD_TYPE="%configuration%" -DCMAKE_CXX_FLAGS="%CXX_FLAGS%" -DCMAKE_EXE_LINKER_FLAGS="%LINKER_FLAGS%" -DCMAKE_IGNORE_PATH="C:/Program Files/Git/usr/bin") else (cmake . -G "%GENERATOR%" -A "%GENERATOR_PLATFORM%" -DCMAKE_CXX_FLAGS="%CXX_FLAGS%" -DCMAKE_EXE_LINKER_FLAGS="%LINKER_FLAGS%" -DCMAKE_IGNORE_PATH="C:/Program Files/Git/usr/bin")  
+  - if "%GENERATOR%"=="Ninja" (cmake . -G "%GENERATOR%" -DCMAKE_BUILD_TYPE="%configuration%" -DBUILD_SHARED_LIBS="%SHARED_LIBS%" -DCMAKE_CXX_FLAGS="%CXX_FLAGS%" -DCMAKE_EXE_LINKER_FLAGS="%LINKER_FLAGS%" -DCMAKE_IGNORE_PATH="C:/Program Files/Git/usr/bin") else (cmake . -G "%GENERATOR%" -A "%GENERATOR_PLATFORM%" -DCMAKE_CXX_FLAGS="%CXX_FLAGS%" -DCMAKE_EXE_LINKER_FLAGS="%LINKER_FLAGS%" -DCMAKE_IGNORE_PATH="C:/Program Files/Git/usr/bin")  
   - dir
   
 build_script:
