@@ -97,23 +97,7 @@ environment:
       CXX_FLAGS: ""
       LINKER_FLAGS: ""
       GENERATOR: Visual Studio 16 2019
-      SHARED_LIBS: "TRUE"
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      configuration: Release
-      platform: x64
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Visual Studio 16 2019
       SHARED_LIBS: "ON"
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      configuration: Release
-      platform: x64
-      CXX_FLAGS: ""
-      LINKER_FLAGS: ""
-      GENERATOR: Visual Studio 16 2019
-      SHARED_LIBS: ON
 
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       configuration: Release

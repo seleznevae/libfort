@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.4.0)
 
 project(libfort VERSION 0.4.1)
 
@@ -12,6 +12,9 @@ message("BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}")
 # ------------------------------------------------------------------------------
 # Build options
 # ------------------------------------------------------------------------------
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 
 option(FORT_ENABLE_ASTYLE "Enable astyle" OFF)
 option(FORT_ENABLE_WCHAR "Enable wchar support" ON)

@@ -131,6 +131,20 @@ SOFTWARE.
 #define FT_UNDEFINED_COMPILER
 #endif
 
+/*****************************************************************************
+ *               Export/import
+ *****************************************************************************/
+
+#if defined (_MSC_VER) && defined (BUILD_SHARED_LIBS)
+#if defined(LIBFORT_EXPORT)
+#define  FT_EXPORT __declspec(dllexport)
+#else
+#define  FT_EXPORT __declspec(dllimport)
+#endif
+#else
+#define FT_EXPORT
+#endif
+
 
 /*****************************************************************************
  *               Declare inline
