@@ -30,6 +30,8 @@ SOFTWARE.
 
 #define FT_AMALGAMED_SOURCE /* Macros to make internal libfort functions static */
 
+#define LIBFORT_EXPORT 1
+
 
 /********************************************************
    Begin of file "fort_utils.h"

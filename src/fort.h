@@ -135,7 +135,7 @@ SOFTWARE.
  *               Export/import
  *****************************************************************************/
 
-#if defined (_MSC_VER) && defined (BUILD_SHARED_LIBS)
+#if defined (_MSC_VER) //&& defined (BUILD_SHARED_LIBS)
 #if defined(LIBFORT_EXPORT)
 #define  FT_EXPORT __declspec(dllexport)
 #else
@@ -727,21 +727,21 @@ struct ft_border_style {
  * properly initialized.
  * @{
  */
-extern const struct ft_border_style *const FT_BASIC_STYLE;
-extern const struct ft_border_style *const FT_BASIC2_STYLE;
-extern const struct ft_border_style *const FT_SIMPLE_STYLE;
-extern const struct ft_border_style *const FT_PLAIN_STYLE;
-extern const struct ft_border_style *const FT_DOT_STYLE;
-extern const struct ft_border_style *const FT_EMPTY_STYLE;
-extern const struct ft_border_style *const FT_EMPTY2_STYLE;
-extern const struct ft_border_style *const FT_SOLID_STYLE;
-extern const struct ft_border_style *const FT_SOLID_ROUND_STYLE;
-extern const struct ft_border_style *const FT_NICE_STYLE;
-extern const struct ft_border_style *const FT_DOUBLE_STYLE;
-extern const struct ft_border_style *const FT_DOUBLE2_STYLE;
-extern const struct ft_border_style *const FT_BOLD_STYLE;
-extern const struct ft_border_style *const FT_BOLD2_STYLE;
-extern const struct ft_border_style *const FT_FRAME_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_BASIC_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_BASIC2_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_SIMPLE_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_PLAIN_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_DOT_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_EMPTY_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_EMPTY2_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_SOLID_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_SOLID_ROUND_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_NICE_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_DOUBLE_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_DOUBLE2_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_BOLD_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_BOLD2_STYLE;
+FT_EXPORT extern const struct ft_border_style *const FT_FRAME_STYLE;
 /** @} */
 
 
