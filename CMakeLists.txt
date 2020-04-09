@@ -267,7 +267,7 @@ if(FORT_ENABLE_TESTING)
         ${${PROJECT_NAME}_examples})
     foreach(exe ${${PROJECT_NAME}_ctests})
         add_test(NAME ${exe} COMMAND ${exe})
-        set_tests_properties(${exe} PROPERTIES ENVIRONMENT "PATH=${CMAKE_CURRENT_BINARY_DIR};${CMAKE_CURRENT_BINARY_DIR}\\lib\\Release;${CMAKE_CURRENT_BINARY_DIR}/tests/Release;${CMAKE_CURRENT_BINARY_DIR}\\examples\\Release;$ENV{PATH}" )
+        set_tests_properties(${exe} PROPERTIES ENVIRONMENT "PATH=C:\\projects\\libfort\\lib\\Release;${CMAKE_CURRENT_BINARY_DIR};${CMAKE_CURRENT_BINARY_DIR}\\lib\\Release;${CMAKE_CURRENT_BINARY_DIR}/tests/Release;${CMAKE_CURRENT_BINARY_DIR}\\examples\\Release;$ENV{PATH}" )
     endforeach()
 endif()
 
