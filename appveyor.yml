@@ -131,4 +131,5 @@ build_script:
 
 test_script:
   - dir
+  - dir lib
   - ctest -VV -C %CONFIGURATION%
