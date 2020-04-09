@@ -267,6 +267,7 @@ if(FORT_ENABLE_TESTING)
         ${${PROJECT_NAME}_examples})
     foreach(exe ${${PROJECT_NAME}_ctests})
         add_test(NAME ${exe} COMMAND ${exe})
+        set_tests_properties(${exe} PROPERTIES ENVIRONMENT "PATH=${CURRENT_BINARY_DIR};${CURRENT_BINARY_DIR}/lib;$ENV{PATH}" )
     endforeach()
 endif()
 
