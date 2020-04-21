@@ -1,5 +1,9 @@
 ## v0.4.1
 
+### Bug fixes
+
+- Fix incorrect behaviour in case of using standard iostream manipulators with fort::table.
+
 ### Internal
 
 - Add alias `libfort::fort` for `fort` target that can be used via `add_subdirectory` in cmake.

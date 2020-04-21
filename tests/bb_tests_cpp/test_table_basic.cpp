@@ -2,6 +2,16 @@
 #include "fort.hpp"
 #include "test_utils.hpp"
 
+namespace fort
+{
+// Write custom specialisation for testing purposes.
+using setw_type = typename std::decay<decltype(std::setw(0))>::type;
+template <>
+constexpr bool is_stream_manipulator<setw_type>() noexcept
+{
+    return false;
+}
+}
 
 void test_cpp_bug_fixes(void)
 {
@@ -96,6 +106,40 @@ void test_cpp_bug_fixes(void)
             "|\033[31m\033[0m      |\033[31m\033[0m      | \033[31m||||||\033[0m                         |\n"
             "+------+------+--------------------------------+\n";
         assert_string_equal(table_str, table_str_etalon);
+    }
+
+
+    SCENARIO("Issue 49 - https://github.com/seleznevae/libfort/issues/49") {
+        {
+            fort::char_table table;
+            table << std::setprecision(5) << 3.14 << std::hex << 256 << fort::endr
+                  << std::fixed << std::setprecision(2) << 11.1234567;
+            std::string table_str = table.to_string();
+            std::string table_str_etalon =
+                "+-------+-----+\n"
+                "|       |     |\n"
+                "|  3.14 | 100 |\n"
+                "|       |     |\n"
+                "+-------+-----+\n"
+                "|       |     |\n"
+                "| 11.12 |     |\n"
+                "|       |     |\n"
+                "+-------+-----+\n";
+            assert_string_equal(table_str, table_str_etalon);
+        }
+
+        {
+            fort::char_table table;
+            table << std::setw(15) << 3.14000001;
+            std::string table_str = table.to_string();
+            std::string table_str_etalon =
+                "+--+-----------------+\n"
+                "|  |                 |\n"
+                "|  |            3.14 |\n"
+                "|  |                 |\n"
+                "+--+-----------------+\n";
+            assert_string_equal(table_str, table_str_etalon);
+        }
     }
 }
 
