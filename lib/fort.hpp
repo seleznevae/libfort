@@ -34,9 +34,11 @@ SOFTWARE.
 #ifndef LIBFORT_HPP
 #define LIBFORT_HPP
 
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include <stdexcept>
-#include <sstream>
+#include <type_traits>
 
 #include "fort.h"
 
@@ -149,6 +151,39 @@ const table_manipulator endr(1);
  * Table manipulator to add separator to the table.
  */
 const table_manipulator separator(2);
+
+// Utility functions for internal library usage.
+namespace detail
+{
+template <typename T>
+constexpr bool is_stream_manipulator_impl() noexcept
+{
+    using Tdec = typename std::decay<T>::type;
+    // Manipulators for integral types
+    return std::is_same<Tdec, typename std::decay<decltype(std::dec)>::type>::value
+           || std::is_same<Tdec, typename std::decay<decltype(std::hex)>::type>::value
+           || std::is_same<Tdec, typename std::decay<decltype(std::oct)>::type>::value
+           // Floating-point manipulators
+           || std::is_same<Tdec, typename std::decay<decltype(std::fixed)>::type>::value
+           || std::is_same<Tdec, typename std::decay<decltype(std::scientific)>::type>::value
+           // Misc
+           || std::is_same<Tdec, typename std::decay<decltype(std::setbase(0))>::type>::value
+           || std::is_same<Tdec, typename std::decay<decltype(std::setfill('\0'))>::type>::value
+           || std::is_same<Tdec, typename std::decay<decltype(std::setprecision(0))>::type>::value
+           || std::is_same<Tdec, typename std::decay<decltype(std::setw(0))>::type>::value;
+}
+}
+
+/**
+ * Utility function that is used internally by the library to check if argument
+ * passed to operator<< is a manipulator. In case default behaviour is not
+ * enough write custom specialization of this function.
+ */
+template <typename T>
+constexpr bool is_stream_manipulator() noexcept
+{
+    return detail::is_stream_manipulator_impl<T>();
+}
 
 /**
  * Property owner.
@@ -534,8 +569,9 @@ public:
     template <typename T>
     table &operator<<(const T &arg)
     {
+        constexpr bool is_manip = fort::is_stream_manipulator<typename std::decay<T>::type>();
         stream_ << arg;
-        if (stream_.tellp() >= 0) {
+        if (stream_.tellp() >= 0 && !is_manip) {
 #ifdef FT_HAVE_UTF8
             if (TT == table_type::character) {
                 ft_nwrite(table_, 1, stream_.str().c_str());

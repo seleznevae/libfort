@@ -97,6 +97,25 @@ void test_cpp_bug_fixes(void)
             "+------+------+--------------------------------+\n";
         assert_string_equal(table_str, table_str_etalon);
     }
+
+
+    SCENARIO("Issue 49 - https://github.com/seleznevae/libfort/issues/49") {
+        fort::char_table table;
+        table << std::setprecision(5) << 3.14 << std::hex << 256 << fort::endr
+              << std::fixed << std::setprecision(2) << 11.1234567;
+        std::string table_str = table.to_string();
+        std::string table_str_etalon =
+            "+-------+-----+\n"
+            "|       |     |\n"
+            "|  3.14 | 100 |\n"
+            "|       |     |\n"
+            "+-------+-----+\n"
+            "|       |     |\n"
+            "| 11.12 |     |\n"
+            "|       |     |\n"
+            "+-------+-----+\n";
+        assert_string_equal(table_str, table_str_etalon);
+    }
 }
 
 void test_cpp_table_basic(void)
