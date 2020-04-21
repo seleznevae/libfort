@@ -166,8 +166,6 @@ constexpr bool is_stream_manipulator_impl() noexcept
            // Floating-point manipulators
            || std::is_same<Tdec, typename std::decay<decltype(std::fixed)>::type>::value
            || std::is_same<Tdec, typename std::decay<decltype(std::scientific)>::type>::value
-           || std::is_same<Tdec, typename std::decay<decltype(std::hexfloat)>::type>::value
-           || std::is_same<Tdec, typename std::decay<decltype(std::defaultfloat)>::type>::value
            // Misc
            || std::is_same<Tdec, typename std::decay<decltype(std::setbase(0))>::type>::value
            || std::is_same<Tdec, typename std::decay<decltype(std::setfill('\0'))>::type>::value
