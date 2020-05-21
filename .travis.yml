@@ -8,7 +8,7 @@ matrix:
       before_script:
         - pip install --user cpp-coveralls
         - pip install --user cmakelint
-      env: 
+      env:
         - BASIC_LINUX_GCC=yes
       addons:
         apt:
@@ -28,7 +28,7 @@ matrix:
       os: linux
       sudo: required # to prevent fail of executables build with clang and sanitizers
       compiler: clang
-      env: 
+      env:
         - CC=clang
         - BASIC_LINUX_CLANG=yes
       addons:
@@ -41,7 +41,7 @@ matrix:
       os: linux
       sudo: false
       compiler: gcc
-      env: 
+      env:
         - FORT_C_COMPILER=gcc-4.9
         - FORT_CXX_COMPILER=g++-4.9
       addons:
@@ -53,7 +53,7 @@ matrix:
       os: linux
       sudo: false
       compiler: gcc
-      env: 
+      env:
         - FORT_C_COMPILER=gcc-5
         - FORT_CXX_COMPILER=g++-5
       addons:
@@ -65,7 +65,7 @@ matrix:
       os: linux
       sudo: false
       compiler: gcc
-      env: 
+      env:
         - FORT_C_COMPILER=gcc-6
         - FORT_CXX_COMPILER=g++-6
       addons:
@@ -77,7 +77,7 @@ matrix:
       os: linux
       sudo: required
       compiler: gcc
-      env: 
+      env:
         - FORT_C_COMPILER=gcc-7
         - FORT_CXX_COMPILER=g++-7
       addons:
@@ -89,13 +89,25 @@ matrix:
       os: linux
       sudo: required
       compiler: gcc
-      env: 
+      env:
         - FORT_C_COMPILER=gcc-8
         - FORT_CXX_COMPILER=g++-8
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-8']
+
+    - name: "Linux gcc-9"
+      os: linux
+      sudo: required
+      compiler: gcc
+      env:
+        - FORT_C_COMPILER=gcc-9
+        - FORT_CXX_COMPILER=g++-9
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-9']
 
 
     # OSX / Clang
