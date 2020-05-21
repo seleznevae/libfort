@@ -1,3 +1,9 @@
+## v0.4.2
+
+### Internal
+
+- Add builds with gcc-9 to CI.
+
 ## v0.4.1
 
 ### Bug fixes
