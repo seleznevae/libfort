@@ -332,13 +332,14 @@ The following compilers are currently used in continuous integration at [Travis]
 
 | Compiler           | Operating System             |
 |--------------------|------------------------------|
-| GCC 4.8.4          | Ubuntu 14.04.3               | 
-| GCC 4.9.4          | Ubuntu 14.04.3               | 
-| GCC 5.5.0          | Ubuntu 14.04.3               | 
-| GCC 6.4.0          | Ubuntu 14.04.3               | 
-| GCC 7.3.0          | Ubuntu 14.04.3               | 
-| GCC 8.1.0          | Ubuntu 14.04.3               | 
-| Clang 5.0.0        | Ubuntu 14.04.3               | 
+| GCC 5.5.0          | Ubuntu 16.04.11              |
+| GCC 4.9.4          | Ubuntu 16.04.11              |
+| GCC 5.5.0          | Ubuntu 16.04.11              |
+| GCC 6.5.0          | Ubuntu 16.04.11              |
+| GCC 7.5.0          | Ubuntu 16.04.11              |
+| GCC 8.4.0          | Ubuntu 16.04.11              |
+| GCC 9.3.0          | Ubuntu 16.04.11              |
+| Clang 5.0.0        | Ubuntu 16.04.11              |
 | AppleClang 7.3.0   | Darwin Kernel Version 15.6.0 |
 | AppleClang 8.1.0   | Darwin Kernel Version 16.7.0 |
 | AppleClang 9.1.0   | Darwin Kernel Version 17.4.0 |
