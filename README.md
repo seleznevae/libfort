@@ -343,7 +343,7 @@ The following compilers are currently used in continuous integration at [Travis]
 | AppleClang 7.3.0   | Darwin Kernel Version 15.6.0 |
 | AppleClang 8.1.0   | Darwin Kernel Version 16.7.0 |
 | AppleClang 9.1.0   | Darwin Kernel Version 17.4.0 |
-| Clang 6.0.1        | FreeBSD 12.0                 |
+| Clang 8.0.1        | FreeBSD 12.1                 |
 | Visual Studio 2017 | Windows Server 2016          |
 
 
