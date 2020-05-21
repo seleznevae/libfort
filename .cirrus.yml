@@ -1,14 +1,16 @@
 freebsd_instance:
-  image: freebsd-12-0-release-amd64
+  image_family: freebsd-12-1
 
 main_task:
+  install_script:
+    - uname -a
+    - pkg install -y cmake
+
   script:
     - CMAKE_C_FLAGS="-Werror"
     - CMAKE_CXX_FLAGS="-Werror"
 
-    - uname -a
     - ls
-    - yes | pkg install cmake
     - cc --version
     - c++ --version
 
