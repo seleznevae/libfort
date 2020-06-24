@@ -28,7 +28,7 @@
 - **Heavy testing.** The goal is to cover 100% of the code (it is not reached yet) and to run tests on all major compilers and platforms.
 
 ## Integration
-Add 2 files ( [`fort.c`](https://github.com/seleznevae/libfort/blob/master/lib/fort.c)  and [`fort.h`](https://github.com/seleznevae/libfort/blob/master/lib/fort.h) from [**lib**](https://github.com/seleznevae/libfort/tree/master/lib) direrctory) to your C or C++ project and include
+Add 2 files ( [`fort.c`](https://github.com/seleznevae/libfort/blob/master/lib/fort.c)  and [`fort.h`](https://github.com/seleznevae/libfort/blob/master/lib/fort.h) from [**lib**](https://github.com/seleznevae/libfort/tree/master/lib) directory) to your C or C++ project and include
 ```C
 #include "fort.h"
 ```
