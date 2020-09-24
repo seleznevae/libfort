@@ -3,6 +3,7 @@
 ### Internal
 
 - Add builds with gcc-9 to CI.
+- Fix invalid pointer to integer cast that might cause problems on some platforms.
 
 ## v0.4.1
 

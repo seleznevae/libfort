@@ -6867,7 +6867,7 @@ int buffer_check_align(f_string_buffer_t *buffer)
             return 1;
 #ifdef FT_HAVE_WCHAR
         case W_CHAR_BUF:
-            return (((unsigned long)buffer->str.data) & (sizeof(wchar_t) - 1)) == 0;
+            return (((uintptr_t)buffer->str.data) & (sizeof(wchar_t) - 1)) == 0;
 #endif
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
