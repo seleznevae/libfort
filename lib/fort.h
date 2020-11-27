@@ -1041,6 +1041,12 @@ void ft_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size
 #endif /* FT_HAVE_UTF8 */
 
 
+void ft_sort_rows(ft_table_t *table,
+                  size_t top_left_row, size_t top_left_col,
+                  size_t bottom_right_row, size_t bottom_right_col,
+                  int (*cmp)(int col, void *, void *));
+
+
 FT_END_DECLS
 
 #endif /* LIBFORT_H */

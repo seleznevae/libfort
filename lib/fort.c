@@ -327,6 +327,9 @@ FT_INTERNAL
 f_status vector_swap(f_vector_t *cur_vec, f_vector_t *mv_vec, size_t pos);
 
 FT_INTERNAL
+void vector_swap_elems(f_vector_t *vec, size_t i, size_t j);
+
+FT_INTERNAL
 void vector_clear(f_vector_t *);
 
 FT_INTERNAL
@@ -2634,6 +2637,7 @@ SOFTWARE.
 /* #include "table.h" */ /* Commented by amalgamation script */
 /* #include "row.h" */ /* Commented by amalgamation script */
 /* #include "properties.h" */ /* Commented by amalgamation script */
+/* #include "cell.h" */ /* Commented by amalgamation script */
 
 
 ft_table_t *ft_create_table(void)
@@ -3746,6 +3750,88 @@ void ft_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size
 }
 
 #endif /* FT_HAVE_UTF8 */
+
+static
+int cmp_rows(f_row_t *row1, f_row_t *row2,
+             size_t left_col, size_t right_col,
+             int (*cmp)(int col, void *, void *))
+{
+    assert(left_col == right_col); // for now
+
+    f_cell_t *c1 = get_cell(row1, left_col);
+    f_cell_t *c2 = get_cell(row2, left_col);
+
+    f_string_buffer_t *sb1 = c1 ? cell_get_string_buffer(c1) : NULL;
+    f_string_buffer_t *sb2 = c2 ? cell_get_string_buffer(c2) : NULL;
+
+    void *str1 = sb1 ? sb1->str.data : NULL;
+    void *str2 = sb2 ? sb2->str.data : NULL;
+    return cmp(left_col, str1, str2);
+}
+
+static
+size_t partition(f_vector_t *rows,
+                 size_t begin_row, size_t end_row,
+                 size_t left_col, size_t right_col,
+                 int (*cmp)(int col, void *, void *))
+{
+    f_row_t *pivot = VECTOR_AT(rows, end_row, f_row_t *);
+    f_row_t *row;
+    size_t j;
+    size_t i = begin_row;
+    for (j = begin_row; j < end_row; j++) {
+        row = VECTOR_AT(rows, j, f_row_t *);
+        if (cmp_rows(row, pivot, left_col, right_col, cmp) < 0) {
+            vector_swap_elems(rows, i, j);
+            i = i + 1;
+        }
+    }
+    vector_swap_elems(rows, i, end_row);
+    return i;
+}
+
+static
+void qsort_rows(f_vector_t *rows,
+                size_t begin_row, size_t end_row,
+                size_t left_col, size_t right_col,
+                int (*cmp)(int col, void *, void *))
+{
+    if (begin_row < end_row) {
+        // Dummy try to avoid worst case for sorted data.
+        int t = (rand() % (end_row - begin_row + 1) + begin_row);
+        vector_swap_elems(rows, t, end_row);
+
+        size_t q = partition(rows, begin_row, end_row, left_col, right_col, cmp);
+        if (q == 0) {
+            qsort_rows(rows, q + 1, end_row, left_col, right_col, cmp);
+        } else {
+            qsort_rows(rows, begin_row, q - 1, left_col, right_col, cmp);
+            qsort_rows(rows, q + 1, end_row, left_col, right_col, cmp);
+        }
+    }
+}
+
+
+void ft_sort_rows(ft_table_t *table,
+                  size_t top_left_row, size_t top_left_col,
+                  size_t bottom_right_row, size_t bottom_right_col,
+                  int (*cmp)(int col, void *, void *))
+{
+
+    size_t rows = ft_row_count(table);
+
+    // `begin_row` and `end_row` included in sorting interval
+    size_t begin_row = top_left_row;
+    size_t end_row = MIN(bottom_right_row, rows - 1);
+    if (end_row <= begin_row) {
+        return;
+    }
+
+    // TODO: try use stable sorting algorithm.
+    qsort_rows(table->rows, begin_row, end_row,
+               top_left_col, bottom_right_col, cmp);
+}
+
 
 /********************************************************
    End of file "fort_impl.c"
@@ -7437,6 +7523,38 @@ f_status vector_swap(f_vector_t *cur_vec, f_vector_t *mv_vec, size_t pos)
     mv_vec->m_size = new_mv_sz;
     F_FREE(tmp);
     return FT_SUCCESS;
+}
+
+static
+void swap_memory_regions(char *lhs, char *rhs, size_t region_size)
+{
+    // NOTE: wasn't able to find a better approach for this operation
+    // without allocating memory and possible failure.
+    uint32_t buffer[64];
+    size_t cp;
+    while (region_size > 0) {
+        cp = MIN(sizeof(buffer), region_size);
+        memcpy(buffer, lhs, cp);
+        memcpy(lhs, rhs, cp);
+        memcpy(rhs, buffer, cp);
+        region_size -= cp;
+        lhs += cp;
+        rhs += cp;
+    }
+}
+
+FT_INTERNAL
+void vector_swap_elems(f_vector_t *vec, size_t i, size_t j)
+{
+    assert(vec);
+    assert(i < vec->m_size);
+    assert(j < vec->m_size);
+    if (i == j)
+        return;
+
+    char *ip = (char *)vec->m_data + vec->m_item_size * i;
+    char *jp = (char *)vec->m_data + vec->m_item_size * j;
+    swap_memory_regions(ip, jp, vec->m_item_size);
 }
 
 FT_INTERNAL

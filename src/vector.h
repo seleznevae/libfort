@@ -37,6 +37,9 @@ FT_INTERNAL
 f_status vector_swap(f_vector_t *cur_vec, f_vector_t *mv_vec, size_t pos);
 
 FT_INTERNAL
+void vector_swap_elems(f_vector_t *vec, size_t i, size_t j);
+
+FT_INTERNAL
 void vector_clear(f_vector_t *);
 
 FT_INTERNAL

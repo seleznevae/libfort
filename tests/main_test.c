@@ -13,6 +13,7 @@ void test_table_basic(void);
 void test_table_copy(void);
 void test_table_changing_cell(void);
 void test_table_erase(void);
+void test_table_sort(void);
 #ifdef FT_HAVE_WCHAR
 void test_wcs_table_boundaries(void);
 #endif
@@ -55,6 +56,7 @@ struct test_case bb_test_suite [] = {
     {"test_table_insert_strategy", test_table_insert_strategy},
     {"test_table_changing_cell", test_table_changing_cell},
     {"test_table_erase", test_table_erase},
+    {"test_table_sort", test_table_sort},
     {"test_table_border_style", test_table_border_style},
     {"test_table_builtin_border_styles", test_table_builtin_border_styles},
     {"test_table_cell_properties", test_table_cell_properties},

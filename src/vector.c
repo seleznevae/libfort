@@ -216,6 +216,38 @@ f_status vector_swap(f_vector_t *cur_vec, f_vector_t *mv_vec, size_t pos)
     return FT_SUCCESS;
 }
 
+static
+void swap_memory_regions(char *lhs, char *rhs, size_t region_size)
+{
+    // NOTE: wasn't able to find a better approach for this operation
+    // without allocating memory and possible failure.
+    uint32_t buffer[64];
+    size_t cp;
+    while (region_size > 0) {
+        cp = MIN(sizeof(buffer), region_size);
+        memcpy(buffer, lhs, cp);
+        memcpy(lhs, rhs, cp);
+        memcpy(rhs, buffer, cp);
+        region_size -= cp;
+        lhs += cp;
+        rhs += cp;
+    }
+}
+
+FT_INTERNAL
+void vector_swap_elems(f_vector_t *vec, size_t i, size_t j)
+{
+    assert(vec);
+    assert(i < vec->m_size);
+    assert(j < vec->m_size);
+    if (i == j)
+        return;
+
+    char *ip = (char *)vec->m_data + vec->m_item_size * i;
+    char *jp = (char *)vec->m_data + vec->m_item_size * j;
+    swap_memory_regions(ip, jp, vec->m_item_size);
+}
+
 FT_INTERNAL
 void vector_clear(f_vector_t *vector)
 {

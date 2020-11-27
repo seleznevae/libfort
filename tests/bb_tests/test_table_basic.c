@@ -2068,6 +2068,48 @@ void test_table_erase(void)
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+}
 
+// TODO: write more tests for string sorting.
+int cmp_strings(int col, void *lhs, void *rhs)
+{
+    (void)col;
+    return -strcmp(lhs, rhs);
+}
 
+void test_table_sort(void)
+{
+    ft_table_t *table = NULL;
+
+    SCENARIO("Test write functions") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+        ft_printf_ln(table, "a");
+        ft_printf_ln(table, "z");
+        ft_printf_ln(table, "b");
+        ft_printf_ln(table, "m");
+        ft_printf_ln(table, "y");
+        ft_printf_ln(table, "c");
+        ft_printf_ln(table, "k");
+
+        ft_sort_rows(table,
+                     0, 0,
+                     ft_row_count(table) - 1, 0,
+                     cmp_strings);
+
+        const char *table_str = ft_to_string(table);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "+---+\n"
+            "| z |\n"
+            "| y |\n"
+            "| m |\n"
+            "| k |\n"
+            "| c |\n"
+            "| b |\n"
+            "| a |\n"
+            "+---+\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+    }
 }
