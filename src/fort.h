@@ -371,6 +371,16 @@ int ft_is_empty(const ft_table_t *table);
 size_t ft_row_count(const ft_table_t *table);
 
 /**
+ * Get number of columns in the table.
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @return
+ *   Number of columns in the table.
+ */
+size_t ft_col_count(const ft_table_t *table);
+
+/**
  *  Erase range of cells.
  *
  *  Range of cells is determined by 2 points (top-left and bottom-right) (both
