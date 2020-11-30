@@ -51,6 +51,85 @@ void test_table_sizes(void)
 }
 
 
+void test_table_counts(void)
+{
+    ft_table_t *table = ft_create_table();
+    assert_true(table != NULL);
+    assert_true(set_test_props_for_table(table) == FT_SUCCESS);
+
+
+    size_t rows = 0;
+    size_t cols = 0;
+    int empty = 0;
+
+    WHEN("Table is empty") {
+        empty = ft_is_empty(table);
+        rows = ft_row_count(table);
+        cols = ft_col_count(table);
+        assert_true(empty);
+        assert_true(rows == 0);
+        assert_true(cols == 0);
+    }
+
+    WHEN("Insert one cell") {
+        int n = ft_printf(table, "%s", "1");
+        assert_true(n == 1);
+        empty = ft_is_empty(table);
+        rows = ft_row_count(table);
+        cols = ft_col_count(table);
+        assert_true(!empty);
+        assert_true(rows == 1);
+        assert_true(cols == 1);
+    }
+
+    WHEN("Insert two cells in the same row") {
+        int n = ft_printf_ln(table, "%s|%s", "2", "3");
+        assert_true(n == 2);
+        empty = ft_is_empty(table);
+        rows = ft_row_count(table);
+        cols = ft_col_count(table);
+        assert_true(!empty);
+        assert_true(rows == 1);
+        assert_true(cols == 3);
+    }
+
+    WHEN("Insert one cell in the next row") {
+        int status = ft_write(table, "hello");
+        assert_true(FT_IS_SUCCESS(status));
+        empty = ft_is_empty(table);
+        rows = ft_row_count(table);
+        cols = ft_col_count(table);
+        assert_true(!empty);
+        assert_true(rows == 2);
+        assert_true(cols == 3);
+    }
+
+    WHEN("Delete first row") {
+        int status = ft_erase_range(table, 0, 0, 0, DEFAULT_VECTOR_CAPACITY);
+        assert_true(FT_IS_SUCCESS(status));
+        empty = ft_is_empty(table);
+        rows = ft_row_count(table);
+        cols = ft_col_count(table);
+        assert_true(!empty);
+        assert_true(rows == 1);
+        assert_true(cols == 1);
+    }
+
+    WHEN("Delete second/last row") {
+        int status = ft_erase_range(table, 0, 0, 0, DEFAULT_VECTOR_CAPACITY);
+        assert_true(FT_IS_SUCCESS(status));
+        empty = ft_is_empty(table);
+        rows = ft_row_count(table);
+        cols = ft_col_count(table);
+        assert_true(empty);
+        assert_true(rows == 0);
+        assert_true(cols == 0);
+    }
+
+    ft_destroy_table(table);
+}
+
+
 void test_table_geometry(void)
 {
     ft_table_t *table = ft_create_table();

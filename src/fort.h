@@ -45,9 +45,9 @@ SOFTWARE.
  *****************************************************************************/
 
 #define LIBFORT_MAJOR_VERSION 0
-#define LIBFORT_MINOR_VERSION 4
-#define LIBFORT_REVISION 2
-#define LIBFORT_VERSION_STR "0.4.2"
+#define LIBFORT_MINOR_VERSION 5
+#define LIBFORT_REVISION 0
+#define LIBFORT_VERSION_STR "0.5.0"
 
 
 /*****************************************************************************
@@ -369,6 +369,16 @@ int ft_is_empty(const ft_table_t *table);
  *   Number of rows in the table.
  */
 size_t ft_row_count(const ft_table_t *table);
+
+/**
+ * Get number of columns in the table.
+ *
+ * @param table
+ *   Pointer to formatted table.
+ * @return
+ *   Number of columns in the table.
+ */
+size_t ft_col_count(const ft_table_t *table);
 
 /**
  *  Erase range of cells.
