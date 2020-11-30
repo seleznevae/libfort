@@ -1173,6 +1173,18 @@ public:
     }
 
     /**
+     * Get number of columns in the table.
+     *
+     * @return
+     *   Number of columns in the table.
+     */
+    std::size_t
+    col_count() const noexcept
+    {
+        return ft_col_count(table_);
+    }
+
+    /**
      * Get current cell.
      *
      * @return
