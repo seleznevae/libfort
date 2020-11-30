@@ -1,3 +1,9 @@
+## v0.4.3
+
+### Bug fixes
+
+- Fix `ft_printf_ln` when it is used for position which have empty cells before it.
+
 ## v0.4.2
 
 ### Internal
