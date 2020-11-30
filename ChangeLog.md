@@ -1,3 +1,9 @@
+## v0.5.0
+
+### API
+
+- Add function `ft_col_count()` to get number of columns in the table.
+
 ## v0.4.2
 
 ### Internal
