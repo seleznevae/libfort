@@ -14,7 +14,7 @@ endif()
 if (NOT DEFINED libfort_LIBRARIES)
 	message(FATAL_ERROR "libfort_LIBRARIES are not defined")
 endif()
-if (NOT ${libfort_VERSION} EQUAL "0.4.1")
+if (NOT ${libfort_VERSION} EQUAL "0.5.0")
 	message(FATAL_ERROR "libfort_VERSION is incorrect")
 endif()
 
