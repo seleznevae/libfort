@@ -1,3 +1,13 @@
+## v0.5.0
+
+### API
+
+- Add function `ft_col_count()` to get number of columns in the table.
+
+### Bug fixes
+
+- Fix `ft_printf_ln` when it is used for position which have empty cells before it.
+
 ## v0.4.2
 
 ### Internal

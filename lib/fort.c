@@ -2833,6 +2833,20 @@ size_t ft_row_count(const ft_table_t *table)
     return vector_size(table->rows);
 }
 
+size_t ft_col_count(const ft_table_t *table)
+{
+    assert(table && table->rows);
+    size_t i = 0;
+    size_t cols_n = 0;
+    size_t rows_n = vector_size(table->rows);
+    for (i = 0; i < rows_n; ++i) {
+        f_row_t *row = VECTOR_AT(table->rows, i, f_row_t *);
+        size_t ncols = columns_in_row(row);
+        cols_n = MAX(cols_n, ncols);
+    }
+    return cols_n;
+}
+
 int ft_erase_range(ft_table_t *table,
                    size_t top_left_row, size_t top_left_col,
                    size_t bottom_right_row, size_t bottom_right_col)
@@ -5569,6 +5583,11 @@ f_status swap_row(f_row_t *cur_row, f_row_t *ins_row, size_t pos)
         memcpy(cur_row, ins_row, sizeof(f_row_t));
         memcpy(ins_row, &tmp, sizeof(f_row_t));
         return FT_SUCCESS;
+    }
+
+    // Append empty cells to `cur_row` if needed.
+    while (vector_size(cur_row->cells) < pos) {
+        create_cell_in_position(cur_row, vector_size(cur_row->cells));
     }
 
     return vector_swap(cur_row->cells, ins_row->cells, pos);

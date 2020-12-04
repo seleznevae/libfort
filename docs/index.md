@@ -44,6 +44,7 @@ These pages contain the API documentation of **libfort** - simple library to cre
         - @link ft_set_default_printf_field_separator ft_set_default_printf_field_separator @endlink -- Set field separator for ft_printf, ft_printf_ln
         - @link ft_is_empty ft_is_empty @endlink -- check if table is empty
         - @link ft_row_count ft_row_count @endlink -- get number of rows in the table
+        - @link ft_col_count ft_col_count @endlink -- get number of columns in the table
         - @link ft_strerror ft_strerror @endlink -- get string describing the error code
 
   - Data structures and types
@@ -82,6 +83,7 @@ These pages contain the API documentation of **libfort** - simple library to cre
         - @link fort::table::column column @endlink -- get column
         - @link fort::table::is_empty is_empty @endlink -- check if table is empty
         - @link fort::table::row_count row_count @endlink -- get number of rows in the table
+        - @link fort::table::col_count col_count @endlink -- get number of columns in the table
 
   - @link fort::property_owner fort::property_owner @endlink -- base class for all objects (table, row, column, cell) for which user can specify properties
     - Modify appearance

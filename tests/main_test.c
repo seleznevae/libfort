@@ -8,6 +8,7 @@ void test_vector_basic(void);
 void test_vector_stress(void);
 void test_string_buffer(void);
 void test_table_sizes(void);
+void test_table_counts(void);
 void test_table_geometry(void);
 void test_table_basic(void);
 void test_table_copy(void);
@@ -37,6 +38,7 @@ struct test_case wb_test_suite [] = {
     {"test_vector_stress", test_vector_stress},
     {"test_string_buffer", test_string_buffer},
     {"test_table_sizes", test_table_sizes},
+    {"test_table_counts", test_table_counts},
     {"test_table_geometry", test_table_geometry},
     {"test_table_copy", test_table_copy},
 };

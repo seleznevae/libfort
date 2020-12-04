@@ -234,6 +234,20 @@ size_t ft_row_count(const ft_table_t *table)
     return vector_size(table->rows);
 }
 
+size_t ft_col_count(const ft_table_t *table)
+{
+    assert(table && table->rows);
+    size_t i = 0;
+    size_t cols_n = 0;
+    size_t rows_n = vector_size(table->rows);
+    for (i = 0; i < rows_n; ++i) {
+        f_row_t *row = VECTOR_AT(table->rows, i, f_row_t *);
+        size_t ncols = columns_in_row(row);
+        cols_n = MAX(cols_n, ncols);
+    }
+    return cols_n;
+}
+
 int ft_erase_range(ft_table_t *table,
                    size_t top_left_row, size_t top_left_col,
                    size_t bottom_right_row, size_t bottom_right_col)

@@ -213,6 +213,11 @@ f_status swap_row(f_row_t *cur_row, f_row_t *ins_row, size_t pos)
         return FT_SUCCESS;
     }
 
+    // Append empty cells to `cur_row` if needed.
+    while (vector_size(cur_row->cells) < pos) {
+        create_cell_in_position(cur_row, vector_size(cur_row->cells));
+    }
+
     return vector_swap(cur_row->cells, ins_row->cells, pos);
 }
 

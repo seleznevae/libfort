@@ -296,6 +296,43 @@ void test_bug_fixes(void)
         assert_str_equal(table_str, table_str_etalon);
         ft_destroy_table(table);
     }
+
+    SCENARIO("Issue 58 - https://github.com/seleznevae/libfort/issues/58") {
+        {
+            ft_table_t *table = ft_create_table();
+            ft_printf_ln(table, "00|01");
+            ft_printf_ln(table, "10|11");
+            ft_set_cur_cell(table, 0, 5);
+            ft_printf_ln(table, "05");
+
+            const char *table_str = ft_to_string(table);
+            assert_true(table_str != NULL);
+            const char *table_str_etalon =
+                "+----+----+--+--+--+----+\n"
+                "| 00 | 01 |  |  |  | 05 |\n"
+                "| 10 | 11 |  |  |  |    |\n"
+                "+----+----+--+--+--+----+\n";
+            assert_str_equal(table_str, table_str_etalon);
+            ft_destroy_table(table);
+        }
+        {
+            ft_table_t *table = ft_create_table();
+            ft_printf_ln(table, "00|01|02|03|04|05");
+            ft_printf_ln(table, "10|11|12|13|14|15");
+            ft_set_cur_cell(table, 0, 4);
+            ft_printf_ln(table, "24|25|26|27|28|29|30");
+
+            const char *table_str = ft_to_string(table);
+            assert_true(table_str != NULL);
+            const char *table_str_etalon =
+                "+----+----+----+----+----+----+----+----+----+----+----+\n"
+                "| 00 | 01 | 02 | 03 | 24 | 25 | 26 | 27 | 28 | 29 | 30 |\n"
+                "| 10 | 11 | 12 | 13 | 14 | 15 |    |    |    |    |    |\n"
+                "+----+----+----+----+----+----+----+----+----+----+----+\n";
+            assert_str_equal(table_str, table_str_etalon);
+            ft_destroy_table(table);
+        }
+    }
 }
 
 void test_table_basic(void)
