@@ -1167,83 +1167,51 @@ void ft_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size
 #endif /* FT_HAVE_UTF8 */
 
 static
-int cmp_rows(f_row_t *row1, f_row_t *row2,
-             size_t left_col, size_t right_col,
-             int (*cmp)(int col, void *, void *))
+void insert_sort_rows(f_vector_t *rows, size_t begin_row, size_t end_row,
+                      int (*cmp)(const ft_row_t *r1, const ft_row_t *r2, void *arg),
+                      void *arg)
 {
-    assert(left_col == right_col); // for now
+    size_t i, j;
+    f_row_t *row1;
+    f_row_t *row2;
+    for (i = begin_row + 1; i <= end_row; ++i) {
+        for (j = i; j > begin_row; --j) {
+            row1 = VECTOR_AT(rows, j - 1, f_row_t *);
+            row2 = VECTOR_AT(rows, j, f_row_t *);
+            if (cmp(row1, row2, arg) > 0) {
+                vector_swap_elems(rows, j - 1, j);
+            } else {
+                break;
+            }
 
-    f_cell_t *c1 = get_cell(row1, left_col);
-    f_cell_t *c2 = get_cell(row2, left_col);
-
-    f_string_buffer_t *sb1 = c1 ? cell_get_string_buffer(c1) : NULL;
-    f_string_buffer_t *sb2 = c2 ? cell_get_string_buffer(c2) : NULL;
-
-    void *str1 = sb1 ? sb1->str.data : NULL;
-    void *str2 = sb2 ? sb2->str.data : NULL;
-    return cmp(left_col, str1, str2);
-}
-
-static
-size_t partition(f_vector_t *rows,
-                 size_t begin_row, size_t end_row,
-                 size_t left_col, size_t right_col,
-                 int (*cmp)(int col, void *, void *))
-{
-    f_row_t *pivot = VECTOR_AT(rows, end_row, f_row_t *);
-    f_row_t *row;
-    size_t j;
-    size_t i = begin_row;
-    for (j = begin_row; j < end_row; j++) {
-        row = VECTOR_AT(rows, j, f_row_t *);
-        if (cmp_rows(row, pivot, left_col, right_col, cmp) < 0) {
-            vector_swap_elems(rows, i, j);
-            i = i + 1;
-        }
-    }
-    vector_swap_elems(rows, i, end_row);
-    return i;
-}
-
-static
-void qsort_rows(f_vector_t *rows,
-                size_t begin_row, size_t end_row,
-                size_t left_col, size_t right_col,
-                int (*cmp)(int col, void *, void *))
-{
-    if (begin_row < end_row) {
-        // Dummy try to avoid worst case for sorted data.
-        int t = (rand() % (end_row - begin_row + 1) + begin_row);
-        vector_swap_elems(rows, t, end_row);
-
-        size_t q = partition(rows, begin_row, end_row, left_col, right_col, cmp);
-        if (q == 0) {
-            qsort_rows(rows, q + 1, end_row, left_col, right_col, cmp);
-        } else {
-            qsort_rows(rows, begin_row, q - 1, left_col, right_col, cmp);
-            qsort_rows(rows, q + 1, end_row, left_col, right_col, cmp);
         }
     }
 }
 
-
-void ft_sort_rows(ft_table_t *table,
-                  size_t top_left_row, size_t top_left_col,
-                  size_t bottom_right_row, size_t bottom_right_col,
-                  int (*cmp)(int col, void *, void *))
+const void *ft_get_cell(const ft_row_t *row, size_t column)
 {
+    const f_cell_t *cell = get_cell_c(row, column);
+    f_string_buffer_t *sb = cell ? cell_get_string_buffer((f_cell_t *)cell) : NULL;
+    return sb ? sb->str.data : NULL;
+}
 
-    size_t rows = ft_row_count(table);
+void ft_sort_rows(ft_table_t *table, size_t top_row, size_t bottom_row,
+                  int (*cmp)(const ft_row_t *r1, const ft_row_t *r2, void *arg),
+                  void *arg)
+{
+    const size_t rows = ft_row_count(table);
 
     // `begin_row` and `end_row` included in sorting interval
-    size_t begin_row = top_left_row;
-    size_t end_row = MIN(bottom_right_row, rows - 1);
+    const size_t begin_row = top_row;
+    const size_t end_row = MIN(bottom_row, rows - 1);
     if (end_row <= begin_row) {
         return;
     }
 
-    // TODO: try use stable sorting algorithm.
-    qsort_rows(table->rows, begin_row, end_row,
-               top_left_col, bottom_right_col, cmp);
+    /* NOTE: insert sort is obviously slow in case of a large number of elements
+     * to sort. But we need a stable sort here. And it doesn't seem to be easy
+     * to implement faster algorithms here.
+     * TODO: implement O(n*log(n)) algorithm.
+     */
+    insert_sort_rows(table->rows, begin_row, end_row, cmp, arg);
 }
-

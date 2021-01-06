@@ -989,6 +989,53 @@ const char *ft_strerror(int error_code);
 
 
 
+
+/** NOTE: this class is intended for internal usage only.
+ * Please use `ft_row_t` alias in the user code.
+ */
+struct f_row;
+
+/**
+ * Row of the table.
+ */
+typedef struct f_row ft_row_t;
+
+/**
+ * Get cell content for a particular column of the table row
+ *
+ * This function is intended to be used with `ft_sort_rows` function.
+ *
+ * @param row
+ *   Row of the table.
+ * @param column
+ *   Column index of the cell.
+ * @return
+ *   Content of the cell. Should be casted to (cont char*) or (const wchar_t*)
+ *   depending on the table content. If cell was not filled with the data then
+ *   NULL is returned.
+ */
+const void *ft_get_cell(const ft_row_t *row, size_t column);
+
+/**
+ * Sort rows of the table.
+ *
+ * @param table
+ *   A pointer to the ft_table_t structure.
+ * @param top_row
+ *   The firt row of the row range to sort.
+ * @param bottom_row
+ *   The last row of the row range to sort.
+ * @param cmp
+ *   Row comparator function. To extract content of the particular cell in the
+ *   row use `ft_get_cell`.
+ * @param arg
+ *   User provided argument that will be passed to the `cmp` function.
+ */
+void ft_sort_rows(ft_table_t *table, size_t top_row, size_t bottom_row,
+                  int (*cmp)(const ft_row_t *r1, const ft_row_t *r2, void *arg),
+                  void *arg);
+
+
 #ifdef FT_HAVE_WCHAR
 
 
@@ -1049,12 +1096,6 @@ const void *ft_to_u8string(const ft_table_t *table);
 void ft_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size_t *width));
 
 #endif /* FT_HAVE_UTF8 */
-
-
-void ft_sort_rows(ft_table_t *table,
-                  size_t top_left_row, size_t top_left_col,
-                  size_t bottom_right_row, size_t bottom_right_col,
-                  int (*cmp)(int col, void *, void *));
 
 
 FT_END_DECLS

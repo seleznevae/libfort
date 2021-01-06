@@ -8,6 +8,7 @@ add_executable(${PROJECT_NAME}_test_dev
     wb_tests/test_vector.c
     wb_tests/test_string_buffer.c
     wb_tests/test_table_geometry.c
+    bb_tests/test_row_sorting.c
     bb_tests/test_table_basic.c
     bb_tests/test_table_border_style.c
     bb_tests/test_table_properties.c
@@ -27,6 +28,7 @@ target_include_directories(${PROJECT_NAME}_test_dev
 
 add_executable(${PROJECT_NAME}_test
     main_test.c
+    bb_tests/test_row_sorting.c
     bb_tests/test_table_basic.c
     bb_tests/test_table_border_style.c
     bb_tests/test_table_properties.c
