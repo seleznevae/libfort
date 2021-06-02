@@ -7,6 +7,7 @@
 ### Bug fixes
 
 - Fix `ft_printf_ln` when it is used for position which have empty cells before it.
+- Fix invalid `enum ft_color` values.
 
 ## v0.4.2
 
