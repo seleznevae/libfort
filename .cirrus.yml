@@ -1,4 +1,8 @@
-main_task_template: &MAIN_TASK_TEMPLATE
+main_task_template:
+  name: freebsd_12_1
+  freebsd_instance:
+    image_family: freebsd-12-1
+
   install_script:
     - uname -a
     - pkg install -y cmake
@@ -57,11 +61,11 @@ main_task_template: &MAIN_TASK_TEMPLATE
     - rm -r build/* 
 
 
-main_task_freebsd_12_1:
-  << : *MAIN_TASK_TEMPLATE
-  name: freebsd_12_1
-  freebsd_instance:
-    image_family: freebsd-12-1
+#main_task_freebsd_12_1:
+#  << : *MAIN_TASK_TEMPLATE
+#  name: freebsd_12_1
+#  freebsd_instance:
+#    image_family: freebsd-12-1
 
 # main_task_freebsd_13_0:
 #   << : *MAIN_TASK_TEMPLATE
