@@ -58,6 +58,13 @@ main_task_template: &MAIN_TASK_TEMPLATE
     - cd ..
     - rm -r build/* 
 
+other_task:
+  << : *MAIN_TASK_TEMPLATE
+
+  freebsd_instance:
+    image_family: freebsd-12-1
+
+  name: freebsd_12_1
 
 main_task:
   << : *MAIN_TASK_TEMPLATE
@@ -65,4 +72,4 @@ main_task:
   freebsd_instance:
     image_family: freebsd-13-0
 
-  name: freebsd
+  name: freebsd_13_0
