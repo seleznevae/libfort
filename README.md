@@ -1,6 +1,6 @@
 # libfort (Library to create FORmatted Tables)
 
-[![Build Status](https://travis-ci.org/seleznevae/libfort.svg?branch=master)](https://travis-ci.org/seleznevae/libfort)
+[![Build Status](https://travis-ci.com/seleznevae/libfort.svg?branch=master)](https://travis-ci.com/seleznevae/libfort)
 [![Build Status](https://api.cirrus-ci.com/github/seleznevae/libfort.svg)](https://cirrus-ci.com/github/seleznevae/libfort)
 [![Build status](https://ci.appveyor.com/api/projects/status/ll1qygb56pho95xw/branch/master?svg=true)](https://ci.appveyor.com/project/seleznevae/libfort/branch/master)
 [![Build Status](https://cloud.drone.io/api/badges/seleznevae/libfort/status.svg?ref=refs/heads/master)](https://cloud.drone.io/seleznevae/libfort)
@@ -344,6 +344,7 @@ The following compilers are currently used in continuous integration at [Travis]
 | AppleClang 8.1.0   | Darwin Kernel Version 16.7.0 |
 | AppleClang 9.1.0   | Darwin Kernel Version 17.4.0 |
 | Clang 8.0.1        | FreeBSD 12.1                 |
+| Clang 11.0.1       | FreeBSD 13.0                 |
 | Visual Studio 2017 | Windows Server 2016          |
 
 

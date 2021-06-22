@@ -1,4 +1,7 @@
 ---
+# NOTE: there were some problems when we just used `alpine` image so we pinned the exaxt
+# version. Consider returning to just `alpine` image when it will be fixed.
+
 kind: pipeline
 name: test-on-amd64
 
@@ -7,7 +10,7 @@ platform:
 
 steps:
   - name: test
-    image: alpine
+    image: alpine:3.12.3
     commands:
       - apk add gcc g++ cmake make binutils-gold
       - ls
@@ -20,7 +23,7 @@ steps:
       - ctest -VV
 
   - name: test-tcc-compiler
-    image: alpine
+    image: alpine:3.12.3
     commands:
       - apk add gcc g++ cmake make binutils-gold
       # tcc available only in in edge alpine repo
@@ -47,7 +50,7 @@ platform:
 
 steps:
   - name: test
-    image: alpine
+    image: alpine:3.12.3
     commands:
       - apk add gcc g++ cmake make binutils-gold
       - ls
@@ -68,7 +71,7 @@ platform:
 
 steps:
   - name: test
-    image: alpine
+    image: alpine:3.12.3
     commands:
       - apk add gcc g++ cmake make binutils-gold
       - ls

@@ -1,7 +1,14 @@
-freebsd_instance:
-  image_family: freebsd-12-1
-
 main_task:
+
+  matrix:
+    - name: freebsd_12_1
+      freebsd_instance:
+        image_family: freebsd-12-1
+
+    - name: freebsd_13_0
+      freebsd_instance:
+        image_family: freebsd-13-0
+
   install_script:
     - uname -a
     - pkg install -y cmake
@@ -57,4 +64,4 @@ main_task:
     - ls
     - ctest -VV
     - cd ..
-    - rm -r build/* 
+    - rm -r build/*
