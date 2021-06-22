@@ -1,8 +1,5 @@
 
-
-main_task:
-  freebsd_instance:
-    image_family: freebsd-13-0
+main_task_template: &REGULAR_TASK_TEMPLATE
 
   install_script:
     - uname -a
@@ -60,3 +57,12 @@ main_task:
     - ctest -VV
     - cd ..
     - rm -r build/* 
+
+
+main_task:
+  << : *REGULAR_TASK_TEMPLATE
+
+  freebsd_instance:
+    image_family: freebsd-13-0
+
+  name: freebsd
