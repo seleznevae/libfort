@@ -1,5 +1,13 @@
+main_task:
 
-main_task_template: &MAIN_TASK_TEMPLATE
+  matrix:
+    - name: freebsd_12_1
+      freebsd_instance:
+        image_family: freebsd-12-1
+
+    - name: freebsd_13_0
+      freebsd_instance:
+        image_family: freebsd-13-0
 
   install_script:
     - uname -a
@@ -58,18 +66,5 @@ main_task_template: &MAIN_TASK_TEMPLATE
     - cd ..
     - rm -r build/* 
 
-other_task:
-  << : *MAIN_TASK_TEMPLATE
 
-  freebsd_instance:
-    image_family: freebsd-12-1
 
-  name: freebsd_12_1
-
-main_task:
-  << : *MAIN_TASK_TEMPLATE
-
-  freebsd_instance:
-    image_family: freebsd-13-0
-
-  name: freebsd_13_0
