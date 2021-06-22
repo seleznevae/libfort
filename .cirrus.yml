@@ -1,5 +1,5 @@
 
-main_task_template: &MAIN_TASK_TEMPLATE
+main_task_template: &REGULAR_TASK_TEMPLATE
 
   install_script:
     - uname -a
@@ -60,7 +60,7 @@ main_task_template: &MAIN_TASK_TEMPLATE
 
 
 main_task_13_0:
-  << : *MAIN_TASK_TEMPLATE
+  << : *REGULAR_TASK_TEMPLATE
 
   freebsd_instance:
     image_family: freebsd-13-0
