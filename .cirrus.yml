@@ -1,9 +1,4 @@
-
-
-main_task:
-  freebsd_instance:
-    image_family: freebsd-13-0
-
+main_task_template: &MAIN_TASK_TEMPLATE
   install_script:
     - uname -a
     - pkg install -y cmake
@@ -60,3 +55,14 @@ main_task:
     - ctest -VV
     - cd ..
     - rm -r build/* 
+
+
+main_task_freebsd_12_1:
+  << : *MAIN_TASK_TEMPLATE
+  freebsd_instance:
+    image_family: freebsd-12-1
+
+main_task_freebsd_13_0:
+  << : *MAIN_TASK_TEMPLATE
+  freebsd_instance:
+    image_family: freebsd-13-0
