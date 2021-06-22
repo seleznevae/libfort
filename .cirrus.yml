@@ -1,7 +1,9 @@
-freebsd_instance:
-  image_family: freebsd-13-0
+
 
 main_task:
+  freebsd_instance:
+    image_family: freebsd-13-0
+
   install_script:
     - uname -a
     - pkg install -y cmake
