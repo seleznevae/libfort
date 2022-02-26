@@ -291,7 +291,7 @@ int ft_nu8print(f_conv_context_t *cntx, const void *beg, const void *end);
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include "fort_utils.h"
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
 
 #define INVALID_VEC_INDEX ((size_t) -1)
@@ -357,7 +357,7 @@ size_t vector_index_of(const f_vector_t *, const void *item);
 #ifndef WCWIDTH_H
 #define WCWIDTH_H
 
-#include "fort_utils.h"
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
 #ifdef FT_HAVE_WCHAR
 #include <wchar.h>
@@ -1767,7 +1767,7 @@ utf8_int32_t utf8uprcodepoint(utf8_int32_t cp)
 #ifndef STRING_BUFFER_H
 #define STRING_BUFFER_H
 
-#include "fort_utils.h"
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
 
 /*****************************************************************************
@@ -1859,7 +1859,7 @@ void buffer_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, 
 #ifndef PROPERTIES_H
 #define PROPERTIES_H
 
-#include "fort_utils.h"
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 #include <stdint.h>
 #include <limits.h>
 
@@ -2079,7 +2079,7 @@ f_table_properties_t *copy_table_properties(const f_table_properties_t *property
 #ifndef CELL_H
 #define CELL_H
 
-#include "fort_utils.h"
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
 FT_INTERNAL
 f_cell_t *create_cell(void);
@@ -2136,10 +2136,10 @@ f_string_buffer_t *cell_get_string_buffer(f_cell_t *cell);
 #ifndef ROW_H
 #define ROW_H
 
-#include "fort_utils.h"
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 #include "fort.h"
 #include <stdarg.h>
-#include "properties.h"
+/* #include "properties.h" */ /* Commented by amalgamation script */
 #ifdef FT_HAVE_WCHAR
 #include <wchar.h>
 #endif
@@ -2226,7 +2226,7 @@ f_row_t *create_row_from_wstring(const wchar_t *str);
 #ifndef TABLE_H
 #define TABLE_H
 
-#include "fort_utils.h"
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 
 struct ft_table {
     f_vector_t *rows;
@@ -2289,9 +2289,9 @@ f_status table_internal_codepoints_geometry(const ft_table_t *table, size_t *hei
    Begin of file "cell.c"
  ********************************************************/
 
-#include "cell.h"
-#include "properties.h"
-#include "string_buffer.h"
+/* #include "cell.h" */ /* Commented by amalgamation script */
+/* #include "properties.h" */ /* Commented by amalgamation script */
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
 #include <assert.h>
 
 struct f_cell {
@@ -2628,12 +2628,12 @@ SOFTWARE.
 #include <string.h>
 #include <wchar.h>
 
-#include "vector.h"
-#include "fort_utils.h"
-#include "string_buffer.h"
-#include "table.h"
-#include "row.h"
-#include "properties.h"
+/* #include "vector.h" */ /* Commented by amalgamation script */
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
+/* #include "table.h" */ /* Commented by amalgamation script */
+/* #include "row.h" */ /* Commented by amalgamation script */
+/* #include "properties.h" */ /* Commented by amalgamation script */
 
 
 ft_table_t *ft_create_table(void)
@@ -3770,14 +3770,14 @@ void ft_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size
    Begin of file "fort_utils.c"
  ********************************************************/
 
-#include "fort_utils.h"
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 #ifdef FT_HAVE_WCHAR
 #include <wchar.h>
 #endif
 #if defined(FT_HAVE_UTF8)
-#include "utf8.h"
+/* #include "utf8.h" */ /* Commented by amalgamation script */
 #endif
-#include "string_buffer.h"
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
 
 
 char g_col_separator = FORT_DEFAULT_COL_SEPARATOR;
@@ -4252,10 +4252,10 @@ int u8nprint_n_strings(void *buf, size_t length, size_t n, const void *str)
    Begin of file "properties.c"
  ********************************************************/
 
-#include "fort_utils.h"
+/* #include "fort_utils.h" */ /* Commented by amalgamation script */
 #include <assert.h>
-#include "properties.h"
-#include "vector.h"
+/* #include "properties.h" */ /* Commented by amalgamation script */
+/* #include "vector.h" */ /* Commented by amalgamation script */
 
 #define FT_RESET_COLOR "\033[0m"
 
@@ -5286,10 +5286,10 @@ f_table_properties_t *copy_table_properties(const f_table_properties_t *properti
 
 #include <assert.h>
 #include <ctype.h>
-#include "row.h"
-#include "cell.h"
-#include "string_buffer.h"
-#include "vector.h"
+/* #include "row.h" */ /* Commented by amalgamation script */
+/* #include "cell.h" */ /* Commented by amalgamation script */
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
+/* #include "vector.h" */ /* Commented by amalgamation script */
 
 
 struct f_row {
@@ -6199,16 +6199,16 @@ clear:
    Begin of file "string_buffer.c"
  ********************************************************/
 
-#include "string_buffer.h"
-#include "properties.h"
-#include "wcwidth.h"
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
+/* #include "properties.h" */ /* Commented by amalgamation script */
+/* #include "wcwidth.h" */ /* Commented by amalgamation script */
 #include <assert.h>
 #include <stddef.h>
 #ifdef FT_HAVE_WCHAR
 #include <wchar.h>
 #endif
 #if defined(FT_HAVE_UTF8)
-#include "utf8.h"
+/* #include "utf8.h" */ /* Commented by amalgamation script */
 #endif
 
 static ptrdiff_t str_iter_width(const char *beg, const char *end)
@@ -6535,7 +6535,8 @@ f_string_buffer_t *copy_string_buffer(const f_string_buffer_t *buffer)
 #endif /* FT_HAVE_WCHAR */
 #ifdef FT_HAVE_UTF8
         case UTF8_BUF:
-            if (FT_IS_ERROR(fill_buffer_from_u8string(result, buffer->str.u8str))) {
+            if (FT_IS_ERROR(
+                    fill_buffer_from_u8string(result, buffer->str.u8str))) {
                 destroy_string_buffer(result);
                 return NULL;
             }
@@ -6915,11 +6916,11 @@ int buffer_check_align(f_string_buffer_t *buffer)
    Begin of file "table.c"
  ********************************************************/
 
-#include "table.h"
-#include "string_buffer.h"
-#include "cell.h"
-#include "vector.h"
-#include "row.h"
+/* #include "table.h" */ /* Commented by amalgamation script */
+/* #include "string_buffer.h" */ /* Commented by amalgamation script */
+/* #include "cell.h" */ /* Commented by amalgamation script */
+/* #include "vector.h" */ /* Commented by amalgamation script */
+/* #include "row.h" */ /* Commented by amalgamation script */
 
 FT_INTERNAL
 f_separator_t *create_separator(int enabled)
@@ -7248,7 +7249,7 @@ f_status table_internal_codepoints_geometry(const ft_table_t *table, size_t *hei
    Begin of file "vector.c"
  ********************************************************/
 
-#include "vector.h"
+/* #include "vector.h" */ /* Commented by amalgamation script */
 #include <assert.h>
 #include <string.h>
 
@@ -7591,7 +7592,7 @@ size_t vector_index_of(const f_vector_t *vector, const void *item)
  * Latest version: http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
  */
 
-#include "wcwidth.h"
+/* #include "wcwidth.h" */ /* Commented by amalgamation script */
 
 #ifdef FT_HAVE_WCHAR
 
