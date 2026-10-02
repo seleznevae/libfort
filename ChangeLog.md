@@ -12,6 +12,7 @@
 ### Internal
 
 - Update CI pipelines on different platforms.
+- Fix compilation with clang.
 
 ## v0.4.2
 

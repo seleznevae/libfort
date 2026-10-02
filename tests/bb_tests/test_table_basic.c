@@ -1954,7 +1954,7 @@ void test_table_changing_cell(void)
     }
 }
 
-static struct ft_table *create_test_table()
+static struct ft_table *create_test_table(void)
 {
     ft_table_t *table = ft_create_table();
     assert_true(table != NULL);
