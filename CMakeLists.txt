@@ -76,7 +76,7 @@ endif()
 # Sanitizers
 # ------------------------------------------------------------------------------
 
-if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
+if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" MATCHES "^(Apple)?Clang$")
     # asan case
     if(FORT_BUILD_TYPE STREQUAL "asan")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
@@ -96,7 +96,7 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" STREQUAL "Clang")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover")
             set(FORT_LINK_LIBRARIES ubsan)
 
-        elseif("${FORT_COMPILER}" STREQUAL "Clang")
+        elseif("${FORT_COMPILER}" MATCHES "^(Apple)?Clang$")
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-sanitize-recover=all")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize-recover=all")
         endif()

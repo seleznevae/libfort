@@ -216,6 +216,54 @@ jobs:
             run_cmake build-nowchar -DFORT_ENABLE_WCHAR=OFF -DFORT_ENABLE_UTF8=OFF
             ctest --test-dir build-nowchar --output-on-failure
 
+  macos:
+    name: macOS ${{ matrix.os }} ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-15 }
+          - { os: macos-15, name: asan,  cmake_args: -DFORT_BUILD_TYPE=asan }
+          - { os: macos-15, name: ubsan, cmake_args: -DFORT_BUILD_TYPE=ubsan }
+          - { os: macos-15, name: no wchar/utf8, cmake_args: -DFORT_ENABLE_WCHAR=OFF -DFORT_ENABLE_UTF8=OFF }
+          # Intel
+          - { os: macos-15-intel }
+    env:
+      # C.UTF-8 may be missing on macOS
+      LANG: en_US.UTF-8
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Print tool versions
+        run: |
+          sw_vers
+          uname -m
+          cc --version
+          cmake --version
+
+      - name: Build lib/fort.c as gnu89
+        run: cc -Wall -Wextra -Werror -std=gnu89 -c lib/fort.c -o fort.o
+
+      - name: Build lib/fort.c with C++ compiler
+        run: c++ -Wall -Wextra -Werror -x c++ -c lib/fort.c -o fort.o
+
+      - name: Configure
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_C_STANDARD=99
+          -DCMAKE_CXX_STANDARD=11
+          -DCMAKE_C_FLAGS=-Werror
+          -DCMAKE_CXX_FLAGS=-Werror
+          ${{ matrix.cmake_args }}
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
   windows-msvc:
     name: Windows MSVC ${{ matrix.arch }} ${{ matrix.config }} ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
