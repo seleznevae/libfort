@@ -1907,6 +1907,69 @@ void test_table_copy(void)
     }
 }
 
+#ifdef FT_HAVE_UTF8
+void test_table_copy_utf8(void)
+{
+    ft_table_t *table = NULL;
+
+    WHEN("Test table copy utf8") {
+        table = ft_create_table();
+        assert_true(table != NULL);
+
+        assert_true(ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_BOTTOM_PADDING, 1) == FT_SUCCESS);
+        assert_true(ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_TOP_PADDING, 1) == FT_SUCCESS);
+        assert_true(ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_LEFT_PADDING, 2) == FT_SUCCESS);
+        assert_true(ft_set_cell_prop(table, FT_ANY_ROW, FT_ANY_COLUMN, FT_CPROP_RIGHT_PADDING, 2) == FT_SUCCESS);
+
+
+        ft_set_border_style(table, FT_DOUBLE2_STYLE);
+
+        /* Set "header" type for the first row */
+        ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        
+        ft_u8write_ln(table, "Movie title", "Director", "Year", "Rating ⭐");
+
+        ft_u8write_ln(table, "The Shawshank Redemption", "Frank Darabont", "1994", "9.5");
+        ft_u8write_ln(table, "The Godfather", "Francis Ford Coppola", "1972", "9.2");
+        ft_add_separator(table);
+
+        ft_u8write_ln(table, "2001: A Space Odyssey", "Stanley Kubrick", "1968", "8.5");
+
+        /* Set center alignment for the 1st and 3rd columns */
+        ft_set_cell_prop(table, FT_ANY_ROW, 1, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+        ft_set_cell_prop(table, FT_ANY_ROW, 3, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);
+
+
+        ft_table_t *table_copy = ft_copy_table(table);
+
+        assert_true(table != NULL);
+        const char *table_str = ft_to_string(table_copy);
+        assert_true(table_str != NULL);
+        const char *table_str_etalon =
+            "╔════════════════════════════╤════════════════════════╤════════╤════════════╗\n"
+            "║                            │                        │        │            ║\n"
+            "║  Movie title               │        Director        │  Year  │  Rating ⭐  ║\n"
+            "║                            │                        │        │            ║\n"
+            "╠════════════════════════════╪════════════════════════╪════════╪════════════╣\n"
+            "║                            │                        │        │            ║\n"
+            "║  The Shawshank Redemption  │     Frank Darabont     │  1994  │    9.5     ║\n"
+            "║                            │                        │        │            ║\n"
+            "╟────────────────────────────┼────────────────────────┼────────┼────────────╢\n"
+            "║                            │                        │        │            ║\n"
+            "║  The Godfather             │  Francis Ford Coppola  │  1972  │    9.2     ║\n"
+            "║                            │                        │        │            ║\n"
+            "╠════════════════════════════╪════════════════════════╪════════╪════════════╣\n"
+            "║                            │                        │        │            ║\n"
+            "║  2001: A Space Odyssey     │    Stanley Kubrick     │  1968  │    8.5     ║\n"
+            "║                            │                        │        │            ║\n"
+            "╚════════════════════════════╧════════════════════════╧════════╧════════════╝\n";
+        assert_str_equal(table_str, table_str_etalon);
+        ft_destroy_table(table);
+        ft_destroy_table(table_copy);
+    }
+}
+#endif
+
 
 
 void test_table_changing_cell(void)
