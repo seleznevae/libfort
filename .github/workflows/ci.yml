@@ -212,3 +212,72 @@ jobs:
 
             run_cmake build-nowchar -DFORT_ENABLE_WCHAR=OFF -DFORT_ENABLE_UTF8=OFF
             ctest --test-dir build-nowchar --output-on-failure
+
+  windows-msvc:
+    name: Windows MSVC ${{ matrix.arch }} ${{ matrix.config }} ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-2022, arch: x64,   config: Debug }
+          - { os: windows-2022, arch: x64,   config: Release }
+          - { os: windows-2022, arch: Win32, config: Debug }
+          - { os: windows-2022, arch: Win32, config: Release }
+          - { os: windows-2025, arch: x64,   config: Release }
+          # Strict conformance mode, as it was tested on AppVeyor
+          - { os: windows-2022, arch: x64,   config: Release, name: strict,
+              cxxflags: /permissive- /std:c++latest /utf-8 /F4000000, ldflags: /STACK:4000000 }
+    env:
+      # CMake appends these to its default flags (unlike -DCMAKE_CXX_FLAGS, which replaces them)
+      CXXFLAGS: ${{ matrix.cxxflags }}
+      LDFLAGS: ${{ matrix.ldflags }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Configure
+        run: cmake -S . -B build -A ${{ matrix.arch }}
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.config }} --parallel
+
+      - name: Test
+        run: ctest --test-dir build -C ${{ matrix.config }} --output-on-failure
+
+  windows-mingw:
+    name: Windows MinGW gcc
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+
+      - name: Print tool versions
+        run: |
+          gcc --version
+          cmake --version
+
+      - name: Configure
+        run: >
+          cmake -S . -B build -G Ninja
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_C_STANDARD=99
+          -DCMAKE_CXX_STANDARD=11
+          -DCMAKE_C_FLAGS=-Werror
+          -DCMAKE_CXX_FLAGS=-Werror
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
