@@ -1,10 +1,6 @@
 # libfort (Library to create FORmatted Tables)
 
-[![Build Status](https://travis-ci.com/seleznevae/libfort.svg?branch=master)](https://travis-ci.com/seleznevae/libfort)
-[![Build Status](https://api.cirrus-ci.com/github/seleznevae/libfort.svg)](https://cirrus-ci.com/github/seleznevae/libfort)
-[![Build status](https://ci.appveyor.com/api/projects/status/ll1qygb56pho95xw/branch/master?svg=true)](https://ci.appveyor.com/project/seleznevae/libfort/branch/master)
-[![Build Status](https://cloud.drone.io/api/badges/seleznevae/libfort/status.svg?ref=refs/heads/master)](https://cloud.drone.io/seleznevae/libfort)
-[![Coverage Status](https://coveralls.io/repos/github/seleznevae/libfort/badge.svg?branch=master)](https://coveralls.io/github/seleznevae/libfort?branch=master)
+[![CI](https://github.com/seleznevae/libfort/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/seleznevae/libfort/actions/workflows/ci.yml?query=branch%3Adevelop)
 [![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/h566MmC2bfdsZZDr)
 [![Documentation](https://img.shields.io/badge/docs-doxygen-blue.svg)](http://seleznevae.github.io/libfort)
 [![Doc](https://img.shields.io/badge/doc-wiki-blue.svg)](https://github.com/seleznevae/libfort/wiki)
@@ -329,24 +325,22 @@ should use some external libraries and provide an appropriate function to
 
 ## Supported platforms and compilers
 
-The following compilers are currently used in continuous integration at [Travis](https://travis-ci.org/seleznevae/libfort), [AppVeyor](https://ci.appveyor.com/project/seleznevae/libfort) and [Cirrus](https://cirrus-ci.com/github/seleznevae/libfort):
+The following platforms and compilers are currently tested in continuous integration at [GitHub Actions](https://github.com/seleznevae/libfort/actions/workflows/ci.yml):
 
-| Compiler           | Operating System             |
-|--------------------|------------------------------|
-| GCC 5.5.0          | Ubuntu 16.04.11              |
-| GCC 4.9.4          | Ubuntu 16.04.11              |
-| GCC 5.5.0          | Ubuntu 16.04.11              |
-| GCC 6.5.0          | Ubuntu 16.04.11              |
-| GCC 7.5.0          | Ubuntu 16.04.11              |
-| GCC 8.4.0          | Ubuntu 16.04.11              |
-| GCC 9.3.0          | Ubuntu 16.04.11              |
-| Clang 5.0.0        | Ubuntu 16.04.11              |
-| AppleClang 7.3.0   | Darwin Kernel Version 15.6.0 |
-| AppleClang 8.1.0   | Darwin Kernel Version 16.7.0 |
-| AppleClang 9.1.0   | Darwin Kernel Version 17.4.0 |
-| Clang 8.0.1        | FreeBSD 12.1                 |
-| Clang 11.0.1       | FreeBSD 13.0                 |
-| Visual Studio 2017 | Windows Server 2016          |
+| Compiler                     | Operating System          | Architecture  |
+|------------------------------|---------------------------|---------------|
+| GCC 9 - 14                   | Ubuntu 24.04              | x86_64        |
+| Clang 14 - 20                | Ubuntu 24.04              | x86_64        |
+| GCC, Clang                   | Ubuntu 24.04              | arm64         |
+| GCC (musl)                   | Alpine Linux              | x86_64, armv7 |
+| TCC                          | Alpine Linux              | x86_64        |
+| Clang                        | FreeBSD 14                | x86_64        |
+| AppleClang                   | macOS 15                  | arm64, x86_64 |
+| Visual Studio 2022 (MSVC)    | Windows Server 2022, 2025 | x86, x64      |
+| MinGW-w64 GCC (MSYS2 UCRT64) | Windows Server 2022       | x64           |
+
+Builds are also checked with AddressSanitizer and UndefinedBehaviorSanitizer (Linux, macOS, FreeBSD),
+without `wchar_t` and UTF-8 support, and with the C89 (`gnu89`) standard.
 
 
 Please note:

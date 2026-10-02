@@ -1,0 +1,5 @@
+[codespell]
+# lib/ is generated from src/, src/utf8.h is third-party code
+skip = ./.git,./build*,./lib,./src/utf8.h,./docs/images,./docs/tutorial/C_API/Misc.md
+# "bu" is a Turkish word in UTF-8 test strings
+ignore-words-list = bu
