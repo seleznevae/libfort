@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, master]
+  pull_request:
+    branches: [develop, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-basic:
+    name: Linux gcc (basic)
+    runs-on: ubuntu-24.04
+    env:
+      CC: gcc
+      CXX: g++
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Print tool versions
+        run: |
+          ${CC} --version
+          ${CXX} --version
+          cmake --version
+          python3 --version
+
+      # lib/ must be exactly what amalgamate.py generates from src/
+      - name: Check amalgamation is up to date
+        run: |
+          python3 amalgamate.py
+          git diff --exit-code -- lib/
+
+      # Old C standard (gnu89 instead of c89 because some functions are not defined in c89)
+      - name: Build lib/fort.c as gnu89
+        run: ${CC} -Wall -Wextra -Werror -std=gnu89 -c lib/fort.c -o fort.o
+
+      - name: Build lib/fort.c with C++ compiler
+        run: ${CXX} -Wall -Wextra -Werror -x c++ -c lib/fort.c -o fort.o
+
+      - name: Configure
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_C_STANDARD=99
+          -DCMAKE_CXX_STANDARD=11
+          -DCMAKE_C_FLAGS=-Werror
+          -DCMAKE_CXX_FLAGS=-Werror
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure

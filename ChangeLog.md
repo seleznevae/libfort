@@ -15,6 +15,7 @@
 - Fix compilation with clang.
 - Update amalgamate.py script.
 - Update cmake version.
+- Add github actions.
 
 ## v0.4.2
 
