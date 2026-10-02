@@ -14,6 +14,7 @@
 - Update CI pipelines on different platforms.
 - Fix compilation with clang.
 - Update amalgamate.py script.
+- Update cmake version.
 
 ## v0.4.2
 
