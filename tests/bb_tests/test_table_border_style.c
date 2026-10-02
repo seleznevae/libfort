@@ -243,7 +243,7 @@ static ft_table_t *create_complex_table(void)
     return table;
 }
 
-#ifdef FT_HAVE_WCHAR
+#if defined(FT_HAVE_WCHAR) && !defined(FT_MICROSOFT_COMPILER) && !defined(_WIN32)
 static ft_table_t *create_basic_wtable(void)
 {
     ft_table_t *table = ft_create_table();
@@ -282,7 +282,7 @@ void test_table_builtin_border_styles(void)
     ft_table_t *table = NULL;
     const char *table_str = NULL;
     const char *table_str_etalon = NULL;
-#if defined(FT_HAVE_WCHAR) && !defined(FT_MICROSOFT_COMPILER)
+#if defined(FT_HAVE_WCHAR) && !defined(FT_MICROSOFT_COMPILER) && !defined(_WIN32)
     const wchar_t *table_wstr = NULL;
     const wchar_t *table_wstr_etalon = NULL;
 #endif
