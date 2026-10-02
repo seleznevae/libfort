@@ -8,14 +8,16 @@
 
 - Fix `ft_printf_ln` when it is used for position which have empty cells before it.
 - Fix invalid `enum ft_color` values.
+- Fix configuration with CMake 4.x (minimum required CMake version is 3.10 now).
 
 ### Internal
 
-- Update CI pipelines on different platforms.
-- Fix compilation with clang.
-- Update amalgamate.py script.
-- Update cmake version.
-- Add github actions.
+- Migrate CI from Travis CI, AppVeyor, Cirrus CI and Drone to GitHub Actions.
+- Add builds with gcc 9-14, clang 14-20, MSVC 2022, MinGW, AppleClang, tcc, FreeBSD 14, Alpine (musl), arm64 and armv7 to CI.
+- Enable sanitizer builds with AppleClang.
+- Fix compilation of tests with new clang and MinGW.
+- Fix amalgamate.py for Python 3.
+- Add spell checking with codespell and fix typos.
 
 ## v0.4.2
 
