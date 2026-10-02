@@ -164,3 +164,50 @@ jobs:
           cmake --build _build --parallel
           ./_build/foo-app
           cmake --install _build
+
+  freebsd:
+    name: FreeBSD 14 clang
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build and test in FreeBSD VM
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: "14.3"
+          usesh: true
+          prepare: pkg install -y cmake
+          run: |
+            set -e
+            export LANG=C.UTF-8
+            uname -a
+            cc --version
+            c++ --version
+            cmake --version
+
+            # Basic C and C++ builds
+            cc -Wall -Wextra -Werror -std=gnu89 -c lib/fort.c -o fort.o
+            c++ -Wall -Wextra -Werror -x c++ -c lib/fort.c -o fort.o
+
+            run_cmake() {
+              dir=$1; shift
+              cmake -S . -B "$dir" \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_C_STANDARD=99 \
+                -DCMAKE_CXX_STANDARD=11 \
+                -DCMAKE_C_FLAGS=-Werror \
+                -DCMAKE_CXX_FLAGS=-Werror \
+                "$@"
+              cmake --build "$dir" --parallel
+            }
+
+            # ASan doesn't work reliably with ASLR (enabled by default since FreeBSD 13.2)
+            run_cmake build-asan -DFORT_BUILD_TYPE=asan
+            proccontrol -m aslr -s disable ctest --test-dir build-asan --output-on-failure
+
+            run_cmake build-ubsan -DFORT_BUILD_TYPE=ubsan
+            ctest --test-dir build-ubsan --output-on-failure
+
+            run_cmake build-nowchar -DFORT_ENABLE_WCHAR=OFF -DFORT_ENABLE_UTF8=OFF
+            ctest --test-dir build-nowchar --output-on-failure
