@@ -13,7 +13,7 @@ libfort
 
 MIT License
 
-Copyright (c) 2017 - 2020 Seleznev Anton
+Copyright (c) 2017 - 2026 Seleznev Anton
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -65,7 +65,7 @@ SOFTWARE.
         lines = f.readlines()
 
     
-    forbidden_strings = map(lambda hdr_name: '#include "{}"'.format(hdr_name), config["header_files"])
+    forbidden_strings = set(map(lambda hdr_name: '#include "{}"'.format(hdr_name), config["header_files"]))
            
     lines = map(lambda line: comment_line(line.strip()) + "\n" if line.strip() in forbidden_strings else line, lines)
 

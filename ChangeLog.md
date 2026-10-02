@@ -13,6 +13,7 @@
 
 - Update CI pipelines on different platforms.
 - Fix compilation with clang.
+- Update amalgamate.py script.
 
 ## v0.4.2
 
