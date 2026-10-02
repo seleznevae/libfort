@@ -166,7 +166,7 @@ SOFTWARE.
     FT_STR_2_CAT_(arg1, arg2)
 
 /**
- * @interanl
+ * @internal
  */
 static FT_INLINE int ft_check_if_string_helper(const char *str)
 {
@@ -175,7 +175,7 @@ static FT_INLINE int ft_check_if_string_helper(const char *str)
 }
 
 /**
- * @interanl
+ * @internal
  */
 static FT_INLINE int ft_check_if_wstring_helper(const wchar_t *str)
 {
@@ -909,7 +909,7 @@ int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t propert
  */
 enum ft_adding_strategy {
     FT_STRATEGY_REPLACE = 0,  /**< Replace old content. */
-    FT_STRATEGY_INSERT        /**< Insert new conten. Old content is shifted. */
+    FT_STRATEGY_INSERT        /**< Insert new content. Old content is shifted. */
 };
 
 

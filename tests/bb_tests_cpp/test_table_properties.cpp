@@ -295,7 +295,7 @@ void test_cpp_table_cell_properties(void)
         assert_string_equal(table_str, table_str_etalon);
     }
 
-    WHEN("Empty string has 0 heigt") {
+    WHEN("Empty string has 0 height") {
         fort::char_table::default_props().set_cell_top_padding(1);
         fort::char_table::default_props().set_cell_bottom_padding(1);
         fort::char_table::default_props().set_cell_left_padding(1);

@@ -20,7 +20,7 @@ int main(void)
     ft_write_ln(table, "Mauris", "Curabitur",
                 "Proin condimentum eros viverra nunc ultricies, at fringilla \n"
                 "quam pellentesque.");
-    ft_write_ln(table, "Summary", "", "Sed tempor est eget odio varius dignissim.");
+    ft_write_ln(table, "Summary", "", "Sed tempor est eget odio various dignissim.");
 
     /* Setup alignments and cell span */
     ft_set_cell_prop(table, 0, 2, FT_CPROP_TEXT_ALIGN, FT_ALIGNED_CENTER);

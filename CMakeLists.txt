@@ -88,7 +88,7 @@ if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" MATCHES "^(Apple)?Cla
 
     #ubsan case
     if(FORT_BUILD_TYPE STREQUAL "ubsan")
-        # -fno-sanitize-recover option is used to force faild
+        # -fno-sanitize-recover option is used to force failed
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
         if("${FORT_COMPILER}" STREQUAL "GNU")

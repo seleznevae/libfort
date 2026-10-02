@@ -22,7 +22,7 @@ int main()
              "quam pellentesque."
           << fort::endr;
     table << "Summary" << ""
-          << "Sed tempor est eget odio varius dignissim."
+          << "Sed tempor est eget odio various dignissim."
           << fort::endr;
 
 

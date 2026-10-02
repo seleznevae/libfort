@@ -439,7 +439,7 @@ public:
     }
 
     /**
-     * Copy contstructor.
+     * Copy constructor.
      */
     table(const table &tbl)
         : property_owner_t(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(NULL)
@@ -458,7 +458,7 @@ public:
     }
 
     /**
-     * Move contstructor.
+     * Move constructor.
      */
     table(table &&tbl)
         : property_owner_t(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(tbl.table_)
@@ -562,7 +562,7 @@ public:
      * std::ostream is used.
      *
      * @param arg
-     *   Obect that would be inserted in the current cell.
+     *   Object that would be inserted in the current cell.
      * @return
      *   - Reference to the current table.
      */
@@ -1060,7 +1060,7 @@ public:
     /**
      * Range of cells.
      *
-     * @note: at the moment function of propery owener will work only on the
+     * @note: at the moment function of property owner will work only on the
      * top left cell.
      * @todo: Implement their work on the whole range.
      */

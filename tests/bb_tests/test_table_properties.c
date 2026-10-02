@@ -283,7 +283,7 @@ void test_table_cell_properties(void)
         ft_destroy_table(table);
     }
 
-    WHEN("Differrent paddings") {
+    WHEN("Different paddings") {
         set_test_properties_as_default();
 
         ft_set_default_cell_prop(FT_CPROP_BOTTOM_PADDING, 3);
@@ -398,7 +398,7 @@ void test_table_cell_properties(void)
         ft_destroy_table(table);
     }
 
-    WHEN("Empty string has 0 heigt") {
+    WHEN("Empty string has 0 height") {
 
         ft_set_default_cell_prop(FT_CPROP_BOTTOM_PADDING, 1);
         ft_set_default_cell_prop(FT_CPROP_TOP_PADDING, 1);

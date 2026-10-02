@@ -732,7 +732,7 @@ void test_table_basic(void)
     }
 #endif
 
-    WHEN("Multiline conten") {
+    WHEN("Multiline content") {
         table = ft_create_table();
         assert_true(table != NULL);
         assert_true(set_test_props_for_table(table) == FT_SUCCESS);
@@ -1976,7 +1976,7 @@ void test_table_erase(void)
         // invalid rows
         assert_true(ft_erase_range(table, 1, 1, 0, 2) == FT_EINVAL);
 
-        // invalid colums
+        // invalid columns
         assert_true(ft_erase_range(table, 1, 1, 2, 0) == FT_EINVAL);
 
         ft_destroy_table(table);

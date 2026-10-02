@@ -87,7 +87,7 @@ These pages contain the API documentation of **libfort** - simple library to cre
 
   - @link fort::property_owner fort::property_owner @endlink -- base class for all objects (table, row, column, cell) for which user can specify properties
     - Modify appearance
-      - @link fort::table::set_cell_min_width set_cell_min_width @endlink -- set minimun width
+      - @link fort::table::set_cell_min_width set_cell_min_width @endlink -- set minimum width
       - @link fort::table::set_cell_text_align set_cell_text_align @endlink -- set text alignment
       - @link fort::table::set_cell_top_padding set_cell_top_padding @endlink -- set top padding
       - @link fort::table::set_cell_bottom_padding set_cell_bottom_padding @endlink -- set bottom padding

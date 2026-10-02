@@ -34,7 +34,7 @@ Add 2 files ( [`fort.c`](https://github.com/seleznevae/libfort/blob/master/lib/f
 ```
 in your source code where you will use **libfort** functions.
 
-For C++ projects that use compiler with C++11 support (and later) there are also availabe convenient C++ wrappers around C functions (see [`fort.hpp`](https://github.com/seleznevae/libfort/blob/master/lib/fort.hpp) in **lib** direrctory). In that case instead of _fort.h_ you will need to include
+For C++ projects that use compiler with C++11 support (and later) there are also available convenient C++ wrappers around C functions (see [`fort.hpp`](https://github.com/seleznevae/libfort/blob/master/lib/fort.hpp) in **lib** directory). In that case instead of _fort.h_ you will need to include
 ```CPP
 #include "fort.hpp"
 ```

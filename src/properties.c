@@ -302,6 +302,9 @@ static int get_prop_value_if_exists_otherwise_default(const struct f_cell_props 
             return cell_opts->content_text_style;
         default:
             /* todo: implement later */
+            /* TODO: a library shouldn't terminate the process; return an error
+             * or a default value instead.
+             */
             exit(333);
     }
 }

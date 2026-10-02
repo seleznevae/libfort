@@ -24,7 +24,7 @@ struct test_case {
 };
 
 /*
- *  Test utility funcitons
+ *  Test utility functions
  */
 
 #define assert_true(args) assert(args)

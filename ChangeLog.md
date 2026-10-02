@@ -79,7 +79,7 @@
 
 ### Bug fixes
 
-- Fix incorrect behaviour when setting properties with `FT_CUR_...` macroses.
+- Fix incorrect behaviour when setting properties with `FT_CUR_...` macros.
 
 ## v0.3.0
 

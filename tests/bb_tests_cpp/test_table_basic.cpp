@@ -160,7 +160,7 @@ void test_cpp_table_basic(void)
         assert_true(table.row_count() == 3);
     }
 
-    WHEN("Checking basic constructors and assignmets.") {
+    WHEN("Checking basic constructors and assignments.") {
         fort::char_table table;
         assert_true(set_cpp_test_props_for_table(&table));
 

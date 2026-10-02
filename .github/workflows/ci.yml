@@ -430,3 +430,13 @@ jobs:
               -DCMAKE_CXX_FLAGS=-Werror
             cmake --build build --parallel
             ctest --test-dir build --output-on-failure
+
+  lint:
+    name: Lint (codespell)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      # Settings are in .codespellrc
+      - name: Check spelling
+        run: pipx run codespell

@@ -4172,6 +4172,9 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
                 if ((wcs_len == (size_t) - 1) || wcs_len > 1) {
                     return -1;
                 } else {
+                    /* TODO: this branch doesn't check `length`, so it can write
+                     * past the end of `buf` if length <= n.
+                     */
                     wcs[wcs_len] = L'\0';
                     size_t k = n;
                     while (k) {
@@ -4179,6 +4182,10 @@ int wsnprint_n_string(wchar_t *buf, size_t length, size_t n, const char *str)
                         ++buf;
                         --k;
                     }
+                    /* TODO: `buf` was already advanced by n in the loop above,
+                     * so this writes the terminator at buf + 2n instead of buf + n.
+                     * Probably should be `*buf = L'\0';`.
+                     */
                     buf[n] = L'\0';
                     return (int)n;
                 }
@@ -4556,6 +4563,9 @@ static int get_prop_value_if_exists_otherwise_default(const struct f_cell_props 
             return cell_opts->content_text_style;
         default:
             /* todo: implement later */
+            /* TODO: a library shouldn't terminate the process; return an error
+             * or a default value instead.
+             */
             exit(333);
     }
 }
