@@ -14,6 +14,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # wchar tests call setlocale(LC_CTYPE, "") and need a UTF-8 locale
+  LANG: C.UTF-8
+
 jobs:
   linux-basic:
     name: Linux gcc (basic)
@@ -58,3 +62,105 @@ jobs:
 
       - name: Test
         run: ctest --test-dir build --output-on-failure
+
+  linux:
+    name: Linux ${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Compilers
+          - { name: gcc-9,  cc: gcc-9,  cxx: g++-9,  packages: gcc-9 g++-9 }
+          - { name: gcc-10, cc: gcc-10, cxx: g++-10, packages: gcc-10 g++-10 }
+          - { name: gcc-11, cc: gcc-11, cxx: g++-11, packages: gcc-11 g++-11 }
+          - { name: gcc-12, cc: gcc-12, cxx: g++-12, packages: gcc-12 g++-12 }
+          - { name: gcc-13, cc: gcc-13, cxx: g++-13, packages: gcc-13 g++-13 }
+          - { name: gcc-14, cc: gcc-14, cxx: g++-14, packages: gcc-14 g++-14 }
+          - { name: clang-14, cc: clang-14, cxx: clang++-14, packages: clang-14 }
+          - { name: clang-15, cc: clang-15, cxx: clang++-15, packages: clang-15 }
+          - { name: clang-16, cc: clang-16, cxx: clang++-16, packages: clang-16 }
+          - { name: clang-17, cc: clang-17, cxx: clang++-17, packages: clang-17 }
+          - { name: clang-18, cc: clang-18, cxx: clang++-18, packages: clang-18 }
+          - { name: clang-19, cc: clang-19, cxx: clang++-19, packages: clang-19 }
+          - { name: clang-20, cc: clang-20, cxx: clang++-20, packages: clang-20 }
+          # Sanitizers
+          - { name: gcc-14 asan,    cc: gcc-14,   cxx: g++-14,     packages: gcc-14 g++-14, cmake_args: -DFORT_BUILD_TYPE=asan }
+          - { name: gcc-14 ubsan,   cc: gcc-14,   cxx: g++-14,     packages: gcc-14 g++-14, cmake_args: -DFORT_BUILD_TYPE=ubsan }
+          - { name: clang-20 asan,  cc: clang-20, cxx: clang++-20, packages: clang-20,      cmake_args: -DFORT_BUILD_TYPE=asan }
+          - { name: clang-20 ubsan, cc: clang-20, cxx: clang++-20, packages: clang-20,      cmake_args: -DFORT_BUILD_TYPE=ubsan }
+          # Without wchar and UTF-8 support
+          - { name: no wchar/utf8, cc: gcc, cxx: g++, cmake_args: -DFORT_ENABLE_WCHAR=OFF -DFORT_ENABLE_UTF8=OFF }
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install compiler
+        if: matrix.packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.packages }}
+
+      # Newer kernels use high-entropy ASLR that breaks ASan in some compiler versions
+      - name: Reduce ASLR entropy for sanitizers
+        if: contains(matrix.cmake_args, 'FORT_BUILD_TYPE')
+        run: sudo sysctl vm.mmap_rnd_bits=28
+
+      - name: Print tool versions
+        run: |
+          ${CC} --version
+          ${CXX} --version
+          cmake --version
+
+      - name: Build lib/fort.c as gnu89
+        run: ${CC} -Wall -Wextra -Werror -std=gnu89 -c lib/fort.c -o fort.o
+
+      - name: Build lib/fort.c with C++ compiler
+        run: ${CXX} -Wall -Wextra -Werror -x c++ -c lib/fort.c -o fort.o
+
+      - name: Configure
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_C_STANDARD=99
+          -DCMAKE_CXX_STANDARD=11
+          -DCMAKE_C_FLAGS=-Werror
+          -DCMAKE_CXX_FLAGS=-Werror
+          ${{ matrix.cmake_args }}
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  linux-integration:
+    name: Linux integration (install, find_package, add_subdirectory)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build and install libfort
+        run: |
+          cmake -S . -B build -DFORT_ENABLE_TESTING=OFF -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+          cmake --build build --parallel
+          cmake --install build
+
+      - name: Test find_package integration
+        working-directory: tests/package_tests
+        run: |
+          cmake -S . -B _build -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install -DCMAKE_INSTALL_PREFIX=./_install_foo
+          cmake --build _build --parallel
+          ./_build/foo-app
+          cmake --install _build
+
+      - name: Test add_subdirectory integration
+        working-directory: tests/add_subdirectory_tests
+        run: |
+          ln -s ${{ github.workspace }} libfort
+          cmake -S . -B _build -DCMAKE_INSTALL_PREFIX=./_install_foo
+          cmake --build _build --parallel
+          ./_build/foo-app
+          cmake --install _build
