@@ -65,7 +65,7 @@ jobs:
 
   linux:
     name: Linux ${{ matrix.name }}
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.os || 'ubuntu-24.04' }}
     strategy:
       fail-fast: false
       matrix:
@@ -91,6 +91,9 @@ jobs:
           - { name: clang-20 ubsan, cc: clang-20, cxx: clang++-20, packages: clang-20,      cmake_args: -DFORT_BUILD_TYPE=ubsan }
           # Without wchar and UTF-8 support
           - { name: no wchar/utf8, cc: gcc, cxx: g++, cmake_args: -DFORT_ENABLE_WCHAR=OFF -DFORT_ENABLE_UTF8=OFF }
+          # ARM64 (native runner)
+          - { name: arm64 gcc,   os: ubuntu-24.04-arm, cc: gcc,   cxx: g++ }
+          - { name: arm64 clang, os: ubuntu-24.04-arm, cc: clang, cxx: clang++, packages: clang }
     env:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
@@ -281,3 +284,101 @@ jobs:
 
       - name: Test
         run: ctest --test-dir build --output-on-failure
+
+  alpine:
+    name: Alpine (musl) gcc
+    runs-on: ubuntu-24.04
+    container: alpine:latest
+    steps:
+      - name: Install packages
+        run: apk add gcc g++ musl-dev cmake make git
+
+      - uses: actions/checkout@v5
+
+      - name: Print tool versions
+        run: |
+          cat /etc/alpine-release
+          gcc --version
+          cmake --version
+
+      - name: Build lib/fort.c as gnu89
+        run: gcc -Wall -Wextra -Werror -std=gnu89 -c lib/fort.c -o fort.o
+
+      - name: Build lib/fort.c with C++ compiler
+        run: g++ -Wall -Wextra -Werror -x c++ -c lib/fort.c -o fort.o
+
+      - name: Configure
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_C_STANDARD=99
+          -DCMAKE_CXX_STANDARD=11
+          -DCMAKE_C_FLAGS=-Werror
+          -DCMAKE_CXX_FLAGS=-Werror
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  tcc:
+    name: Alpine tcc
+    runs-on: ubuntu-24.04
+    container: alpine:latest
+    steps:
+      - name: Install packages
+        run: apk add tcc tcc-libs-static tcc-dev musl-dev g++ cmake make git
+
+      - uses: actions/checkout@v5
+
+      - name: Print tool versions
+        run: |
+          tcc -v
+          cmake --version
+
+      # No -Werror: tcc doesn't know exit() is noreturn and warns about missing return values
+      - name: Build lib/fort.c
+        run: tcc -Wall -c lib/fort.c -o fort.o
+
+      # Only C tests: C++ tests and examples need a C++ compiler
+      - name: Build and test with wchar
+        run: |
+          cmake -S . -B build -DCMAKE_C_COMPILER=tcc
+          cmake --build build --parallel --target libfort_test_dev libfort_test
+          ./build/tests/libfort_test_dev
+          ./build/tests/libfort_test
+
+      - name: Build and test without wchar
+        run: |
+          cmake -S . -B build-nowchar -DCMAKE_C_COMPILER=tcc -DFORT_ENABLE_WCHAR=OFF
+          cmake --build build-nowchar --parallel --target libfort_test_dev libfort_test
+          ./build-nowchar/tests/libfort_test_dev
+          ./build-nowchar/tests/libfort_test
+
+  armv7:
+    name: Linux armv7 (32-bit, QEMU)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: uraimo/run-on-arch-action@v3
+        with:
+          arch: armv7
+          distro: alpine_latest
+          install: apk add gcc g++ musl-dev cmake make
+          env: |
+            LANG: C.UTF-8
+          run: |
+            set -e
+            uname -m
+            gcc --version
+            cmake -S . -B build \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_C_STANDARD=99 \
+              -DCMAKE_CXX_STANDARD=11 \
+              -DCMAKE_C_FLAGS=-Werror \
+              -DCMAKE_CXX_FLAGS=-Werror
+            cmake --build build --parallel
+            ctest --test-dir build --output-on-failure
