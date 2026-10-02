@@ -199,7 +199,8 @@ jobs:
                 -DCMAKE_C_FLAGS=-Werror \
                 -DCMAKE_CXX_FLAGS=-Werror \
                 "$@"
-              cmake --build "$dir" --parallel
+              # BSD make doesn't accept bare -j, so the job count must be explicit
+              cmake --build "$dir" --parallel "$(sysctl -n hw.ncpu)"
             }
 
             # ASan doesn't work reliably with ASLR (enabled by default since FreeBSD 13.2)
