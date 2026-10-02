@@ -219,6 +219,7 @@ int main(void)
 ```C++
 /* C++ API */
 #include <iostream>
+#include <vector>
 #include "fort.hpp"
 int main(void)
 {
