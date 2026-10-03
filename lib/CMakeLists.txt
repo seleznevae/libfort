@@ -61,7 +61,7 @@ install(
 configure_file(libfort.pc.in libfort.pc @ONLY)
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/libfort.pc
-    DESTINATION lib/pkgconfig
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
 
 include(CMakePackageConfigHelpers)

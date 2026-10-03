@@ -4,6 +4,7 @@
 
 - Fix building libfort as a shared library (DLL) on Windows: export of symbols and import library generation (#66).
   When libfort is used as a DLL without CMake, define `FT_SHARED` (and `FT_BUILDING_LIBRARY` when building the DLL itself).
+- Fix installation path of pkg-config file `libfort.pc` and include directory in it when non-default `CMAKE_INSTALL_LIBDIR` or `CMAKE_INSTALL_INCLUDEDIR` is used (e.g. `lib64`).
 - Fix conflict of `headers` target with targets of the parent project when libfort is added via `add_subdirectory` (the target is renamed to `libfort_headers`).
 
 ## v0.5.0
