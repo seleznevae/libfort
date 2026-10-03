@@ -139,34 +139,64 @@ jobs:
       - name: Test
         run: ctest --test-dir build --output-on-failure
 
-  linux-integration:
-    name: Linux integration (install, find_package, add_subdirectory)
-    runs-on: ubuntu-24.04
+  integration:
+    name: Integration ${{ matrix.name }} (install, find_package, add_subdirectory)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Linux,               os: ubuntu-24.04 }
+          - { name: macOS,               os: macos-15 }
+          - { name: Windows MSVC,        os: windows-2022 }
+          - { name: Windows MSVC shared, os: windows-2022, shared: true }
+    defaults:
+      run:
+        shell: bash
+    env:
+      CONFIG: Release
+      SHARED: ${{ matrix.shared && 'ON' || 'OFF' }}
     steps:
       - uses: actions/checkout@v5
 
+      - name: Set paths
+        run: |
+          # CMake on Windows needs native paths (D:/a/...), not MSYS ones (/d/a/...)
+          if [ "$RUNNER_OS" = Windows ]; then
+            root=$(cygpath -m "$GITHUB_WORKSPACE")
+            # Multi-config generator puts executables to <build dir>/<config>
+            echo "EXE_SUBDIR=$CONFIG/" >> "$GITHUB_ENV"
+          else
+            root=$GITHUB_WORKSPACE
+          fi
+          echo "INSTALL_DIR=$root/install" >> "$GITHUB_ENV"
+          # Installed fort.dll for shared build on Windows
+          echo "$root/install/bin" >> "$GITHUB_PATH"
+
       - name: Build and install libfort
         run: |
-          cmake -S . -B build -DFORT_ENABLE_TESTING=OFF -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
-          cmake --build build --parallel
-          cmake --install build
+          cmake -S . -B build -DFORT_ENABLE_TESTING=OFF -DBUILD_SHARED_LIBS="$SHARED" -DCMAKE_BUILD_TYPE="$CONFIG" -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+          cmake --build build --config "$CONFIG" --parallel
+          cmake --install build --config "$CONFIG"
 
       - name: Test find_package integration
         working-directory: tests/package_tests
         run: |
-          cmake -S . -B _build -DCMAKE_PREFIX_PATH=${{ github.workspace }}/install -DCMAKE_INSTALL_PREFIX=./_install_foo
-          cmake --build _build --parallel
-          ./_build/foo-app
-          cmake --install _build
+          cmake -S . -B _build -DCMAKE_BUILD_TYPE="$CONFIG" -DCMAKE_PREFIX_PATH="$INSTALL_DIR" -DCMAKE_INSTALL_PREFIX=./_install_foo
+          cmake --build _build --config "$CONFIG" --parallel
+          "./_build/${EXE_SUBDIR}foo-app"
+          cmake --install _build --config "$CONFIG"
 
+      # libfort is copied (not symlinked) because symlinks need special privileges on Windows
       - name: Test add_subdirectory integration
         working-directory: tests/add_subdirectory_tests
         run: |
-          ln -s ${{ github.workspace }} libfort
-          cmake -S . -B _build -DCMAKE_INSTALL_PREFIX=./_install_foo
-          cmake --build _build --parallel
-          ./_build/foo-app
-          cmake --install _build
+          mkdir libfort
+          cp -r ../../CMakeLists.txt ../../lib ../../cmake libfort/
+          cmake -S . -B _build -DCMAKE_BUILD_TYPE="$CONFIG" -DBUILD_SHARED_LIBS="$SHARED" -DCMAKE_INSTALL_PREFIX=./_install_foo
+          cmake --build _build --config "$CONFIG" --parallel
+          PATH="$(pwd)/_build/libfort/lib/${EXE_SUBDIR}:$PATH" "./_build/${EXE_SUBDIR}foo-app"
+          cmake --install _build --config "$CONFIG"
 
   freebsd:
     name: FreeBSD 14 clang
