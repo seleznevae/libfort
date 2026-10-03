@@ -1,3 +1,9 @@
+## v0.5.1
+
+### Bug fixes
+
+- Fix conflict of `headers` target with targets of the parent project when libfort is added via `add_subdirectory` (the target is renamed to `libfort_headers`).
+
 ## v0.5.0
 
 ### API

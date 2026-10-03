@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(libfort VERSION 0.5.0)
+project(libfort VERSION 0.5.1)
 
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)"
     "\\1.\\2" libfort_SOVERSION
@@ -173,7 +173,7 @@ file(GLOB_RECURSE FortHeaders
     "tests/*.h"
     "tests/*.hpp"
     "src/*.h")
-add_custom_target(headers SOURCES ${FortHeaders})
+add_custom_target(${PROJECT_NAME}_headers SOURCES ${FortHeaders})
 
 
 # ------------------------------------------------------------------------------
