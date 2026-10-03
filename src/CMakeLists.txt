@@ -2,7 +2,8 @@ option(FORT_HAVE_WCHAR "Enable wchar support" ON)
 option(FORT_HAVE_UTF8 "Enable UTF8 support" ON)
 option(FORT_TEST_BUILD "Export some internal symbols for tests" ON)
 
-add_library(fort_dev
+# Always static: tests use internal functions that are not exported from shared library
+add_library(fort_dev STATIC
     fort_impl.c
     vector.c
     string_buffer.c

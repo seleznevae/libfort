@@ -133,6 +133,29 @@ SOFTWARE.
 
 
 /*****************************************************************************
+ *               Export of symbols from shared library
+ *****************************************************************************/
+
+/*
+ * When libfort is used as a shared library (DLL) on Windows define FT_SHARED.
+ * When the shared library itself is built define FT_SHARED and
+ * FT_BUILDING_LIBRARY.
+ * CMake build of libfort defines them automatically.
+ */
+#if !defined(FT_API)
+#if (defined(_WIN32) || defined(__CYGWIN__)) && defined(FT_SHARED)
+#if defined(FT_BUILDING_LIBRARY)
+#define FT_API __declspec(dllexport)
+#else
+#define FT_API __declspec(dllimport)
+#endif
+#else
+#define FT_API
+#endif
+#endif /* !defined(FT_API) */
+
+
+/*****************************************************************************
  *               Declare inline
  *****************************************************************************/
 
@@ -275,7 +298,7 @@ typedef struct ft_table ft_table_t;
  * @return
  *   The pointer to the new allocated ft_table_t, on success. NULL on error.
  */
-ft_table_t *ft_create_table(void);
+FT_API ft_table_t *ft_create_table(void);
 
 /**
  * Destroy formatted table.
@@ -287,7 +310,7 @@ ft_table_t *ft_create_table(void);
  *   Pointer to formatted table previousley created with ft_create_table. If
  *   table is a null pointer, the function does nothing.
  */
-void ft_destroy_table(ft_table_t *table);
+FT_API void ft_destroy_table(ft_table_t *table);
 
 /**
  * Copy formatted table.
@@ -298,7 +321,7 @@ void ft_destroy_table(ft_table_t *table);
  * @return
  *   The pointer to the new allocated ft_table_t, on success. NULL on error.
  */
-ft_table_t *ft_copy_table(ft_table_t *table);
+FT_API ft_table_t *ft_copy_table(ft_table_t *table);
 
 /**
  * Move current position to the first cell of the next line(row).
@@ -312,7 +335,7 @@ ft_table_t *ft_copy_table(ft_table_t *table);
  *   This function can fail only in case FT_STRATEGY_INSERT adding strategy
  *   was set for the table.
  */
-int ft_ln(ft_table_t *table);
+FT_API int ft_ln(ft_table_t *table);
 
 /**
  * Get row number of the current cell.
@@ -322,7 +345,7 @@ int ft_ln(ft_table_t *table);
  * @return
  *   Row number of the current cell.
  */
-size_t ft_cur_row(const ft_table_t *table);
+FT_API size_t ft_cur_row(const ft_table_t *table);
 
 /**
  * Get column number of the current cell.
@@ -332,7 +355,7 @@ size_t ft_cur_row(const ft_table_t *table);
  * @return
  *   Column number of the current cell.
  */
-size_t ft_cur_col(const ft_table_t *table);
+FT_API size_t ft_cur_col(const ft_table_t *table);
 
 /**
  * Set current cell position.
@@ -347,7 +370,7 @@ size_t ft_cur_col(const ft_table_t *table);
  * @param col
  *   New row number for the current cell.
  */
-void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col);
+FT_API void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col);
 
 /**
  * Check if table is empty.
@@ -358,7 +381,7 @@ void ft_set_cur_cell(ft_table_t *table, size_t row, size_t col);
  *   1 - table is empty
  *   0 - some data has been inserted
  */
-int ft_is_empty(const ft_table_t *table);
+FT_API int ft_is_empty(const ft_table_t *table);
 
 /**
  * Get number of rows in the table.
@@ -368,7 +391,7 @@ int ft_is_empty(const ft_table_t *table);
  * @return
  *   Number of rows in the table.
  */
-size_t ft_row_count(const ft_table_t *table);
+FT_API size_t ft_row_count(const ft_table_t *table);
 
 /**
  * Get number of columns in the table.
@@ -378,7 +401,7 @@ size_t ft_row_count(const ft_table_t *table);
  * @return
  *   Number of columns in the table.
  */
-size_t ft_col_count(const ft_table_t *table);
+FT_API size_t ft_col_count(const ft_table_t *table);
 
 /**
  *  Erase range of cells.
@@ -400,7 +423,7 @@ size_t ft_col_count(const ft_table_t *table);
  *   - 0 - Operation was successfully implemented
  *   - (<0): In case of error
  */
-int ft_erase_range(ft_table_t *table,
+FT_API int ft_erase_range(ft_table_t *table,
                    size_t top_left_row, size_t top_left_col,
                    size_t bottom_right_row, size_t bottom_right_col);
 
@@ -431,7 +454,7 @@ int ft_erase_range(ft_table_t *table,
  *   - Number of printed cells
  *   - (<0): In case of error
  */
-int ft_printf(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_API int ft_printf(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 /**
  * Write data formatted according to the format string to a variety of table
@@ -458,7 +481,7 @@ int ft_printf(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMA
  *   - Number of printed cells.
  *   - (<0): In case of error.
  */
-int ft_printf_ln(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_API int ft_printf_ln(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #else
 
@@ -466,8 +489,8 @@ int ft_printf_ln(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FO
  * @cond IGNORE_DOC
  */
 
-int ft_printf_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-int ft_printf_ln_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_API int ft_printf_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_API int ft_printf_ln_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
 #define ft_printf(table, ...) \
     (( 0 ? fprintf(stderr, __VA_ARGS__) : 1), ft_printf_impl(table, __VA_ARGS__))
@@ -486,7 +509,7 @@ int ft_printf_ln_impl(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBU
  * @param separator
  *   New separator.
  */
-void ft_set_default_printf_field_separator(char separator);
+FT_API void ft_set_default_printf_field_separator(char separator);
 
 
 /**
@@ -547,7 +570,7 @@ void ft_set_default_printf_field_separator(char separator);
  *   - 0: Success; data were written
  *   - (<0): In case of error
  */
-int ft_nwrite(ft_table_t *table, size_t count, const char *cell_content, ...);
+FT_API int ft_nwrite(ft_table_t *table, size_t count, const char *cell_content, ...);
 
 /**
  * Write specified number of strings to the table and go to the next line.
@@ -573,7 +596,7 @@ int ft_nwrite(ft_table_t *table, size_t count, const char *cell_content, ...);
  *   - 0: Success; data were written
  *   - (<0): In case of error
  */
-int ft_nwrite_ln(ft_table_t *table, size_t count, const char *cell_content, ...);
+FT_API int ft_nwrite_ln(ft_table_t *table, size_t count, const char *cell_content, ...);
 
 
 
@@ -593,7 +616,7 @@ int ft_nwrite_ln(ft_table_t *table, size_t count, const char *cell_content, ...)
  *   - 0: Success; data were written
  *   - (<0): In case of error
  */
-int ft_row_write(ft_table_t *table, size_t cols, const char *row_cells[]);
+FT_API int ft_row_write(ft_table_t *table, size_t cols, const char *row_cells[]);
 
 /**
  * Write strings from the array to the table and go to the next line.
@@ -612,7 +635,7 @@ int ft_row_write(ft_table_t *table, size_t cols, const char *row_cells[]);
  *   - 0: Success; data were written
  *   - (<0): In case of error
  */
-int ft_row_write_ln(ft_table_t *table, size_t cols, const char *row_cells[]);
+FT_API int ft_row_write_ln(ft_table_t *table, size_t cols, const char *row_cells[]);
 
 
 /**
@@ -632,7 +655,7 @@ int ft_row_write_ln(ft_table_t *table, size_t cols, const char *row_cells[]);
  *   - 0: Success; data were written
  *   - (<0): In case of error
  */
-int ft_table_write(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[]);
+FT_API int ft_table_write(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[]);
 
 /**
  * Write strings from the 2D array to the table and go to the next line.
@@ -652,7 +675,7 @@ int ft_table_write(ft_table_t *table, size_t rows, size_t cols, const char *tabl
  *   - 0: Success; data were written
  *   - (<0): In case of error
  */
-int ft_table_write_ln(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[]);
+FT_API int ft_table_write_ln(ft_table_t *table, size_t rows, size_t cols, const char *table_cells[]);
 
 
 /**
@@ -664,7 +687,7 @@ int ft_table_write_ln(ft_table_t *table, size_t rows, size_t cols, const char *t
  *   - 0: Success; separator was added.
  *   - (<0): In case of error
  */
-int ft_add_separator(ft_table_t *table);
+FT_API int ft_add_separator(ft_table_t *table);
 
 
 /**
@@ -684,7 +707,7 @@ int ft_add_separator(ft_table_t *table);
  *   - The pointer to the string representation of formatted table, on success.
  *   - NULL on error.
  */
-const char *ft_to_string(const ft_table_t *table);
+FT_API const char *ft_to_string(const ft_table_t *table);
 
 
 
@@ -723,21 +746,21 @@ struct ft_border_style {
  * properly initialized.
  * @{
  */
-extern const struct ft_border_style *const FT_BASIC_STYLE;
-extern const struct ft_border_style *const FT_BASIC2_STYLE;
-extern const struct ft_border_style *const FT_SIMPLE_STYLE;
-extern const struct ft_border_style *const FT_PLAIN_STYLE;
-extern const struct ft_border_style *const FT_DOT_STYLE;
-extern const struct ft_border_style *const FT_EMPTY_STYLE;
-extern const struct ft_border_style *const FT_EMPTY2_STYLE;
-extern const struct ft_border_style *const FT_SOLID_STYLE;
-extern const struct ft_border_style *const FT_SOLID_ROUND_STYLE;
-extern const struct ft_border_style *const FT_NICE_STYLE;
-extern const struct ft_border_style *const FT_DOUBLE_STYLE;
-extern const struct ft_border_style *const FT_DOUBLE2_STYLE;
-extern const struct ft_border_style *const FT_BOLD_STYLE;
-extern const struct ft_border_style *const FT_BOLD2_STYLE;
-extern const struct ft_border_style *const FT_FRAME_STYLE;
+FT_API extern const struct ft_border_style *const FT_BASIC_STYLE;
+FT_API extern const struct ft_border_style *const FT_BASIC2_STYLE;
+FT_API extern const struct ft_border_style *const FT_SIMPLE_STYLE;
+FT_API extern const struct ft_border_style *const FT_PLAIN_STYLE;
+FT_API extern const struct ft_border_style *const FT_DOT_STYLE;
+FT_API extern const struct ft_border_style *const FT_EMPTY_STYLE;
+FT_API extern const struct ft_border_style *const FT_EMPTY2_STYLE;
+FT_API extern const struct ft_border_style *const FT_SOLID_STYLE;
+FT_API extern const struct ft_border_style *const FT_SOLID_ROUND_STYLE;
+FT_API extern const struct ft_border_style *const FT_NICE_STYLE;
+FT_API extern const struct ft_border_style *const FT_DOUBLE_STYLE;
+FT_API extern const struct ft_border_style *const FT_DOUBLE2_STYLE;
+FT_API extern const struct ft_border_style *const FT_BOLD_STYLE;
+FT_API extern const struct ft_border_style *const FT_BOLD2_STYLE;
+FT_API extern const struct ft_border_style *const FT_FRAME_STYLE;
 /** @} */
 
 
@@ -751,7 +774,7 @@ extern const struct ft_border_style *const FT_FRAME_STYLE;
  *   - 0: Success; default border style was changed.
  *   - (<0): In case of error
  */
-int ft_set_default_border_style(const struct ft_border_style *style);
+FT_API int ft_set_default_border_style(const struct ft_border_style *style);
 
 /**
  * Set border style for the table.
@@ -764,7 +787,7 @@ int ft_set_default_border_style(const struct ft_border_style *style);
  *   - 0: Success; table border style was changed.
  *   - (<0): In case of error
  */
-int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
+FT_API int ft_set_border_style(ft_table_t *table, const struct ft_border_style *style);
 
 
 
@@ -868,7 +891,7 @@ enum ft_row_type {
  *   - 0: Success; default cell property was changed.
  *   - (<0): In case of error
  */
-int ft_set_default_cell_prop(uint32_t property, int value);
+FT_API int ft_set_default_cell_prop(uint32_t property, int value);
 
 /**
  * Set property for the specified cell of the table.
@@ -887,7 +910,7 @@ int ft_set_default_cell_prop(uint32_t property, int value);
  *   - 0: Success; cell property was changed.
  *   - (<0): In case of error
  */
-int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t property, int value);
+FT_API int ft_set_cell_prop(ft_table_t *table, size_t row, size_t col, uint32_t property, int value);
 
 
 /**
@@ -924,7 +947,7 @@ enum ft_adding_strategy {
  *   - 0: Success; default table property was changed.
  *   - (<0): In case of error
  */
-int ft_set_default_tbl_prop(uint32_t property, int value);
+FT_API int ft_set_default_tbl_prop(uint32_t property, int value);
 
 /**
  * Set table property.
@@ -939,7 +962,7 @@ int ft_set_default_tbl_prop(uint32_t property, int value);
  *   - 0: Success; default table property was changed.
  *   - (<0): In case of error
  */
-int ft_set_tbl_prop(ft_table_t *table, uint32_t property, int value);
+FT_API int ft_set_tbl_prop(ft_table_t *table, uint32_t property, int value);
 
 
 /**
@@ -957,7 +980,7 @@ int ft_set_tbl_prop(ft_table_t *table, uint32_t property, int value);
  *   - 0: Success; cell span was changed.
  *   - (<0): In case of error
  */
-int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span);
+FT_API int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span);
 
 
 /**
@@ -974,7 +997,7 @@ int ft_set_cell_span(ft_table_t *table, size_t row, size_t col, size_t hor_span)
  *   To return memory allocation/deallocation functions to their standard values
  *   set f_malloc and f_free to NULL.
  */
-void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
+FT_API void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *ptr));
 
 
 /**
@@ -985,31 +1008,31 @@ void ft_set_memory_funcs(void *(*f_malloc)(size_t size), void (*f_free)(void *pt
  * @return
  *   String describing the error.
  */
-const char *ft_strerror(int error_code);
+FT_API const char *ft_strerror(int error_code);
 
 
 
 #ifdef FT_HAVE_WCHAR
 
 
-int ft_wprintf(ft_table_t *table, const wchar_t *fmt, ...);
-int ft_wprintf_ln(ft_table_t *table, const wchar_t *fmt, ...);
+FT_API int ft_wprintf(ft_table_t *table, const wchar_t *fmt, ...);
+FT_API int ft_wprintf_ln(ft_table_t *table, const wchar_t *fmt, ...);
 
 
 #define ft_wwrite(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
 #define ft_wwrite_ln(table, ...)\
     (0 ? CHECK_IF_ARGS_ARE_WSTRINGS(__VA_ARGS__) : ft_nwwrite_ln(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
-int ft_nwwrite(ft_table_t *table, size_t n, const wchar_t *cell_content, ...);
-int ft_nwwrite_ln(ft_table_t *table, size_t n, const wchar_t *cell_content, ...);
+FT_API int ft_nwwrite(ft_table_t *table, size_t n, const wchar_t *cell_content, ...);
+FT_API int ft_nwwrite_ln(ft_table_t *table, size_t n, const wchar_t *cell_content, ...);
 
-int ft_row_wwrite(ft_table_t *table, size_t cols, const wchar_t *row_cells[]);
-int ft_row_wwrite_ln(ft_table_t *table, size_t cols, const wchar_t *row_cells[]);
+FT_API int ft_row_wwrite(ft_table_t *table, size_t cols, const wchar_t *row_cells[]);
+FT_API int ft_row_wwrite_ln(ft_table_t *table, size_t cols, const wchar_t *row_cells[]);
 
-int ft_table_wwrite(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
-int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
+FT_API int ft_table_wwrite(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
+FT_API int ft_table_wwrite_ln(ft_table_t *table, size_t rows, size_t cols, const wchar_t *table_cells[]);
 
-const wchar_t *ft_to_wstring(const ft_table_t *table);
+FT_API const wchar_t *ft_to_wstring(const ft_table_t *table);
 #endif
 
 
@@ -1019,13 +1042,13 @@ const wchar_t *ft_to_wstring(const ft_table_t *table);
     (ft_u8nwrite(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
 #define ft_u8write_ln(table, ...)\
     (ft_u8nwrite_ln(table, FT_PP_NARG_(__VA_ARGS__), __VA_ARGS__))
-int ft_u8nwrite(ft_table_t *table, size_t n, const void *cell_content, ...);
-int ft_u8nwrite_ln(ft_table_t *table, size_t n, const void *cell_content, ...);
+FT_API int ft_u8nwrite(ft_table_t *table, size_t n, const void *cell_content, ...);
+FT_API int ft_u8nwrite_ln(ft_table_t *table, size_t n, const void *cell_content, ...);
 
-int ft_u8printf(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
-int ft_u8printf_ln(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_API int ft_u8printf(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
+FT_API int ft_u8printf_ln(ft_table_t *table, const char *fmt, ...) FT_PRINTF_ATTRIBUTE_FORMAT(2, 3);
 
-const void *ft_to_u8string(const ft_table_t *table);
+FT_API const void *ft_to_u8string(const ft_table_t *table);
 
 /**
  * Set custom function to compute visible width of UTF-8 string.
@@ -1046,7 +1069,7 @@ const void *ft_to_u8string(const ft_table_t *table);
  *   zero value. If function returns nonzero value libfort fallbacks to default
  *   internal algorithm.
  */
-void ft_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size_t *width));
+FT_API void ft_set_u8strwid_func(int (*u8strwid)(const void *beg, const void *end, size_t *width));
 
 #endif /* FT_HAVE_UTF8 */
 

@@ -18,6 +18,17 @@ set_target_properties(fort
         POSITION_INDEPENDENT_CODE ON
 )
 
+get_target_property(fort_type fort TYPE)
+if(fort_type STREQUAL "SHARED_LIBRARY")
+    # Export/import of symbols from DLL on Windows (see FT_API in fort.h)
+    target_compile_definitions(fort
+        PUBLIC
+            FT_SHARED
+        PRIVATE
+            FT_BUILDING_LIBRARY
+    )
+endif()
+
 if(NOT FORT_HAVE_WCHAR)
     target_compile_definitions(fort
         PRIVATE
