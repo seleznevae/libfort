@@ -1,6 +1,7 @@
 # libfort (Library to create FORmatted Tables)
 
 [![CI](https://github.com/seleznevae/libfort/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/seleznevae/libfort/actions/workflows/ci.yml?query=branch%3Adevelop)
+[![codecov](https://codecov.io/gh/seleznevae/libfort/branch/develop/graph/badge.svg)](https://codecov.io/gh/seleznevae/libfort)
 [![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/h566MmC2bfdsZZDr)
 [![Documentation](https://img.shields.io/badge/docs-doxygen-blue.svg)](http://seleznevae.github.io/libfort)
 [![Doc](https://img.shields.io/badge/doc-wiki-blue.svg)](https://github.com/seleznevae/libfort/wiki)

@@ -198,6 +198,38 @@ jobs:
           PATH="$(pwd)/_build/libfort/lib/${EXE_SUBDIR}:$PATH" "./_build/${EXE_SUBDIR}foo-app"
           cmake --install _build --config "$CONFIG"
 
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install gcovr
+        run: pipx install gcovr
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DFORT_BUILD_TYPE=coveralls
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+      # lib/fort.c is skipped because it is amalgamation of src/*.c,
+      # src/utf8.h is third-party code
+      - name: Generate coverage report
+        run: >
+          gcovr --root . --object-directory build
+          --filter 'src/' --filter 'lib/fort\.hpp' --exclude 'src/utf8\.h'
+          --print-summary --cobertura coverage.xml
+
+      - uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
   freebsd:
     name: FreeBSD 14 clang
     runs-on: ubuntu-24.04
