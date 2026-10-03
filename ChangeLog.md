@@ -7,6 +7,13 @@
 - Fix installation path of pkg-config file `libfort.pc` and include directory in it when non-default `CMAKE_INSTALL_LIBDIR` or `CMAKE_INSTALL_INCLUDEDIR` is used (e.g. `lib64`).
 - Fix conflict of `headers` target with targets of the parent project when libfort is added via `add_subdirectory` (the target is renamed to `libfort_headers`).
 
+### Internal
+
+- Add integration tests (install, `find_package`, `add_subdirectory`) on Windows and macOS to CI.
+- Add builds of shared library with MSVC to CI.
+- Add code coverage reports to Codecov.
+- Publish documentation to GitHub Pages via GitHub Actions.
+
 ## v0.5.0
 
 ### API
