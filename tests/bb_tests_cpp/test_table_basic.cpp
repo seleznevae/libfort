@@ -118,6 +118,64 @@ void test_cpp_bug_fixes(void)
     }
 }
 
+
+template <typename Table>
+static void check_table_copy_move_formatting()
+{
+    Table source;
+    source << std::hex << std::fixed << std::setprecision(2)
+           << std::setfill('0') << std::setw(4);
+
+    Table expected;
+    expected.write("00ff", "1.25", "10");
+    const std::string expected_str = expected.to_string();
+
+    Table copied(source);
+    copied << 255 << 1.25 << 16;
+    assert_string_equal(copied.to_string(), expected_str);
+
+    Table assigned;
+    assigned << std::oct << std::scientific << std::setprecision(5)
+             << std::setfill('*') << std::setw(9);
+    assigned = source;
+    assigned << 255 << 1.25 << 16;
+    assert_string_equal(assigned.to_string(), expected_str);
+
+    Table move_source(source);
+    Table moved(std::move(move_source));
+    moved << 255 << 1.25 << 16;
+    assert_string_equal(moved.to_string(), expected_str);
+
+    Table move_assignment_source(source);
+    Table move_assigned;
+    move_assigned << std::oct << std::scientific << std::setprecision(5)
+                  << std::setfill('*') << std::setw(9);
+    move_assigned = std::move(move_assignment_source);
+    move_assigned << 255 << 1.25 << 16;
+    assert_string_equal(move_assigned.to_string(), expected_str);
+
+    source << 255 << 1.25 << 16;
+    assert_string_equal(source.to_string(), expected_str);
+
+    Table default_source;
+    moved = default_source;
+    move_assigned = std::move(default_source);
+    moved << 255 << 1.25;
+    move_assigned << 255 << 1.25;
+    Table default_expected;
+    default_expected.write("255", "1.25");
+    assert_string_equal(moved.to_string(), default_expected.to_string());
+    assert_string_equal(move_assigned.to_string(), default_expected.to_string());
+}
+
+void test_cpp_table_copy_move_formatting(void)
+{
+    check_table_copy_move_formatting<fort::char_table>();
+#ifdef FT_HAVE_UTF8
+    check_table_copy_move_formatting<fort::utf8_table>();
+#endif
+}
+
 void test_cpp_table_basic(void)
 {
     WHEN("Empty table.") {

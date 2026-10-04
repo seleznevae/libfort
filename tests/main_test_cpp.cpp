@@ -4,6 +4,7 @@
 
 /* Test cases */
 void test_cpp_table_basic(void);
+void test_cpp_table_copy_move_formatting(void);
 void test_cpp_table_write(void);
 void test_cpp_table_insert(void);
 void test_cpp_table_erase(void);
@@ -16,6 +17,7 @@ void test_cpp_bug_fixes(void);
 
 struct test_case bb_test_suite [] = {
     {"test_cpp_table_basic", test_cpp_table_basic},
+    {"test_cpp_table_copy_move_formatting", test_cpp_table_copy_move_formatting},
     {"test_cpp_table_write", test_cpp_table_write},
     {"test_cpp_table_insert", test_cpp_table_insert},
     {"test_cpp_table_erase", test_cpp_table_erase},
