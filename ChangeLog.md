@@ -1,3 +1,10 @@
+## v0.5.2
+
+### Bug fixes
+
+- Preserve stream formatting state (e.g. `std::hex`, `std::setprecision`, `std::setfill`) when C++ tables are copied or moved (#75).
+- Fix possible memory leak in C++ table copy constructor and copy assignment operator when an exception is thrown.
+
 ## v0.5.1
 
 ### Bug fixes
