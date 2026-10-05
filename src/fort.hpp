@@ -35,6 +35,7 @@ SOFTWARE.
 #define LIBFORT_HPP
 
 #include <iomanip>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <stdexcept>
@@ -445,15 +446,18 @@ public:
         : property_owner_t(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(NULL)
     {
         if (tbl.table_) {
-            ft_table_t *table_copy = ft_copy_table(tbl.table_);
-            if (table_copy == NULL)
+            std::unique_ptr<ft_table_t, decltype(&ft_destroy_table)>
+                table_copy(ft_copy_table(tbl.table_), &ft_destroy_table);
+            if (!table_copy)
                 throw std::runtime_error("Error during table copy");
 
             stream_.str(std::string());
             if (tbl.stream_.tellp() >= 0) {
-                stream_ << tbl.stream_.str();
+                stream_.str(tbl.stream_.str());
+                stream_.seekp(0, std::ios_base::end);
             }
-            table_ = table_copy;
+            stream_.copyfmt(tbl.stream_);
+            table_ = table_copy.release();
         }
     }
 
@@ -464,9 +468,11 @@ public:
         : property_owner_t(FT_ANY_ROW, FT_ANY_COLUMN, this), table_(tbl.table_)
     {
         if (tbl.stream_.tellp() >= 0) {
-            stream_ << tbl.stream_.str();
+            stream_.str(tbl.stream_.str());
+            stream_.seekp(0, std::ios_base::end);
             tbl.stream_.str(std::string());
         }
+        stream_.copyfmt(tbl.stream_);
         tbl.table_ = 0;
     }
 
@@ -479,16 +485,19 @@ public:
             return *this;
 
         if (tbl.table_) {
-            ft_table_t *table_copy = ft_copy_table(tbl.table_);
-            if (table_copy == NULL)
+            std::unique_ptr<ft_table_t, decltype(&ft_destroy_table)>
+                table_copy(ft_copy_table(tbl.table_), &ft_destroy_table);
+            if (!table_copy)
                 throw std::runtime_error("Error during table copy");
 
             stream_.str(std::string());
             if (tbl.stream_.tellp() >= 0) {
-                stream_ << tbl.stream_.str();
+                stream_.str(tbl.stream_.str());
+                stream_.seekp(0, std::ios_base::end);
             }
+            stream_.copyfmt(tbl.stream_);
             ft_destroy_table(table_);
-            table_ = table_copy;
+            table_ = table_copy.release();
         }
         return *this;
     }
@@ -504,9 +513,11 @@ public:
         if (tbl.table_) {
             stream_.str(std::string());
             if (tbl.stream_.tellp() >= 0) {
-                stream_ << tbl.stream_.str();
+                stream_.str(tbl.stream_.str());
+                stream_.seekp(0, std::ios_base::end);
                 tbl.stream_.str(std::string());
             }
+            stream_.copyfmt(tbl.stream_);
             ft_destroy_table(table_);
             table_ = tbl.table_;
             tbl.table_ = NULL;
