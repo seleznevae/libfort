@@ -5,6 +5,10 @@
 - Preserve stream formatting state (e.g. `std::hex`, `std::setprecision`, `std::setfill`) when C++ tables are copied or moved (#75).
 - Fix possible memory leak in C++ table copy constructor and copy assignment operator when an exception is thrown.
 
+### Internal
+
+- Update Doxygen configuration for Doxygen 1.9.8 and switch documentation to [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css) theme.
+
 ## v0.5.1
 
 ### Bug fixes
