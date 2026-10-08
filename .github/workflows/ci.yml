@@ -187,6 +187,30 @@ jobs:
           "./_build/${EXE_SUBDIR}foo-app"
           cmake --install _build --config "$CONFIG"
 
+      - name: Test pkg-config integration
+        if: runner.os == 'Linux'
+        working-directory: tests/package_tests
+        run: |
+          check_pkg_config() {
+            export PKG_CONFIG_PATH="$1"
+            pkg-config --print-errors --exists libfort
+            echo "libfort.pc flags: $(pkg-config --cflags --libs libfort)"
+            c++ foo-app.cpp $(pkg-config --cflags --libs libfort) -o _foo-app-pkg-config
+            ./_foo-app-pkg-config
+          }
+          check_pkg_config "$(dirname "$(find "$INSTALL_DIR" -name libfort.pc)")"
+
+          # Absolute CMAKE_INSTALL_<dir> (e.g. in Nix) must not be prefixed with ${prefix} in libfort.pc.
+          # They are outside of the source tree since CMake doesn't allow absolute include dirs in it.
+          abs_dir="$RUNNER_TEMP/libfort-abs-dirs"
+          cmake -S ../.. -B _build_abs_dirs -DFORT_ENABLE_TESTING=OFF -DCMAKE_BUILD_TYPE="$CONFIG" \
+            -DCMAKE_INSTALL_PREFIX="$abs_dir/prefix" \
+            -DCMAKE_INSTALL_INCLUDEDIR="$abs_dir/include" \
+            -DCMAKE_INSTALL_LIBDIR="$abs_dir/lib"
+          cmake --build _build_abs_dirs --parallel
+          cmake --install _build_abs_dirs
+          check_pkg_config "$abs_dir/lib/pkgconfig"
+
       # libfort is copied (not symlinked) because symlinks need special privileges on Windows
       - name: Test add_subdirectory integration
         working-directory: tests/add_subdirectory_tests

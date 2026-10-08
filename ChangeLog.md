@@ -4,6 +4,7 @@
 
 - Preserve stream formatting state (e.g. `std::hex`, `std::setprecision`, `std::setfill`) when C++ tables are copied or moved (#75).
 - Fix possible memory leak in C++ table copy constructor and copy assignment operator when an exception is thrown.
+- Fix include and library paths in pkg-config file `libfort.pc` when absolute `CMAKE_INSTALL_INCLUDEDIR` or `CMAKE_INSTALL_LIBDIR` is used (e.g. in Nix packages) (#76).
 
 ### Internal
 
