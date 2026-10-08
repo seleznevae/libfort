@@ -27,6 +27,7 @@ void test_table_tbl_properties(void);
 void test_memory_errors(void);
 void test_error_codes(void);
 #ifdef FT_HAVE_UTF8
+void test_table_copy_utf8(void);
 void test_utf8_table(void);
 #endif
 
@@ -52,6 +53,7 @@ struct test_case bb_test_suite [] = {
 #endif
 #ifdef FT_HAVE_UTF8
     {"test_utf8_table", test_utf8_table},
+    {"test_table_copy_utf8", test_table_copy_utf8},
 #endif
     {"test_table_write", test_table_write},
     {"test_table_insert_strategy", test_table_insert_strategy},
