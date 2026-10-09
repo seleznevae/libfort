@@ -440,7 +440,9 @@ typedef int32_t utf8_int32_t;
 extern "C" {
 #endif
 
-#if defined(__clang__) || defined(__GNUC__)
+/* clang-cl defines both __clang__ and _MSC_VER. Weak symbols in COFF can't be
+ * defined in several object files, so it has to use __inline like MSVC */
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER)
 #define utf8_nonnull __attribute__((nonnull))
 #define utf8_pure __attribute__((pure))
 #define utf8_restrict __restrict__
