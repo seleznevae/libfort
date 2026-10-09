@@ -368,6 +368,9 @@ jobs:
           # Shared library (DLL with import library fort.lib)
           - { os: windows-2022, arch: x64,   config: Release, name: shared, shared: true }
           - { os: windows-2022, arch: Win32, config: Debug,   name: shared, shared: true }
+          # clang-cl with MSVC headers and CRT
+          - { os: windows-2022, arch: x64,   config: Debug,   name: ClangCL, cmake_args: -T ClangCL }
+          - { os: windows-2022, arch: Win32, config: Release, name: ClangCL, cmake_args: -T ClangCL }
     env:
       # CMake appends these to its default flags (unlike -DCMAKE_CXX_FLAGS, which replaces them)
       CXXFLAGS: ${{ matrix.cxxflags }}
@@ -376,7 +379,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Configure
-        run: cmake -S . -B build -A ${{ matrix.arch }} -DBUILD_SHARED_LIBS=${{ matrix.shared && 'ON' || 'OFF' }}
+        run: cmake -S . -B build -A ${{ matrix.arch }} -DBUILD_SHARED_LIBS=${{ matrix.shared && 'ON' || 'OFF' }} ${{ matrix.cmake_args }}
 
       - name: Build
         run: cmake --build build --config ${{ matrix.config }} --parallel
@@ -395,26 +398,39 @@ jobs:
         run: ctest --test-dir build -C ${{ matrix.config }} --output-on-failure
 
   windows-mingw:
-    name: Windows MinGW gcc
+    name: Windows MinGW ${{ matrix.name }}
     runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: gcc (UCRT64),      msystem: UCRT64,  compiler: gcc,   cc: gcc,   cxx: g++ }
+          # 32-bit with legacy msvcrt.dll instead of UCRT
+          - { name: gcc x86 (MINGW32), msystem: MINGW32, compiler: gcc,   cc: gcc,   cxx: g++ }
+          # llvm-mingw: clang with libc++
+          - { name: clang (CLANG64),   msystem: CLANG64, compiler: clang, cc: clang, cxx: clang++ }
     defaults:
       run:
         shell: msys2 {0}
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
     steps:
       - uses: actions/checkout@v5
 
       - uses: msys2/setup-msys2@v2
         with:
-          msystem: UCRT64
+          msystem: ${{ matrix.msystem }}
           update: true
-          install: >-
-            mingw-w64-ucrt-x86_64-gcc
-            mingw-w64-ucrt-x86_64-cmake
-            mingw-w64-ucrt-x86_64-ninja
+          pacboy: >-
+            ${{ matrix.compiler }}:p
+            cmake:p
+            ninja:p
 
       - name: Print tool versions
         run: |
-          gcc --version
+          ${CC} --version
+          ${CXX} --version
           cmake --version
 
       - name: Configure

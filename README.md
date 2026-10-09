@@ -328,17 +328,20 @@ should use some external libraries and provide an appropriate function to
 
 The following platforms and compilers are currently tested in continuous integration at [GitHub Actions](https://github.com/seleznevae/libfort/actions/workflows/ci.yml):
 
-| Compiler                     | Operating System          | Architecture  |
-|------------------------------|---------------------------|---------------|
-| GCC 9 - 14                   | Ubuntu 24.04              | x86_64        |
-| Clang 14 - 20                | Ubuntu 24.04              | x86_64        |
-| GCC, Clang                   | Ubuntu 24.04              | arm64         |
-| GCC (musl)                   | Alpine Linux              | x86_64, armv7 |
-| TCC                          | Alpine Linux              | x86_64        |
-| Clang                        | FreeBSD 14                | x86_64        |
-| AppleClang                   | macOS 15                  | arm64, x86_64 |
-| Visual Studio 2022 (MSVC)    | Windows Server 2022, 2025 | x86, x64      |
-| MinGW-w64 GCC (MSYS2 UCRT64) | Windows Server 2022       | x64           |
+| Compiler                        | Operating System          | Architecture  |
+|---------------------------------|---------------------------|---------------|
+| GCC 9 - 14                      | Ubuntu 24.04              | x86_64        |
+| Clang 14 - 20                   | Ubuntu 24.04              | x86_64        |
+| GCC, Clang                      | Ubuntu 24.04              | arm64         |
+| GCC (musl)                      | Alpine Linux              | x86_64, armv7 |
+| TCC                             | Alpine Linux              | x86_64        |
+| Clang                           | FreeBSD 14                | x86_64        |
+| AppleClang                      | macOS 15                  | arm64, x86_64 |
+| Visual Studio 2022 (MSVC)       | Windows Server 2022, 2025 | x86, x64      |
+| Visual Studio 2022 (ClangCL)    | Windows Server 2022       | x86, x64      |
+| MinGW-w64 GCC (MSYS2 UCRT64)    | Windows Server 2022       | x64           |
+| MinGW-w64 GCC (MSYS2 MINGW32)   | Windows Server 2022       | x86           |
+| MinGW-w64 Clang (MSYS2 CLANG64) | Windows Server 2022       | x64           |
 
 Builds are also checked with AddressSanitizer and UndefinedBehaviorSanitizer (Linux, macOS, FreeBSD),
 without `wchar_t` and UTF-8 support, and with the C89 (`gnu89`) standard.
