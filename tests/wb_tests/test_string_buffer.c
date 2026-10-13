@@ -481,6 +481,12 @@ void test_buffer_text_visible_width(void)
     assert_true(buffer_text_visible_width(buffer) == 30);
 
 
+    /* Emoji are two columns wide (East Asian Width W) */
+    buffer->str.u8str = (void *)"\xF0\x9F\x98\x80";  /* U+1F600 */
+    assert_true(buffer_text_visible_width(buffer) == 2);
+    buffer->str.u8str = (void *)"ok \xE2\x9C\x85 \xF0\x9F\x9A\x80";  /* U+2705, U+1F680 */
+    assert_true(buffer_text_visible_width(buffer) == 8);
+
     /* Test custom width function for utf8 strings */
     ft_set_u8strwid_func(&u8strwid);
     buffer->str.u8str = (void *)"custom_string";
