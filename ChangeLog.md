@@ -7,6 +7,7 @@
 ### Internal
 
 - Add `check_version.py` script and CI step to check that version in headers, CMake files, `ChangeLog.md` and release tag is consistent. CI is also run on release tags now.
+- Add `CMake lint` CI job with `cmakelint` check of all CMake files (it was lost when CI moved from Travis to GitHub Actions).
 
 ## v0.5.2
 

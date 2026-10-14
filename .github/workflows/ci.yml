@@ -20,6 +20,17 @@ env:
   LANG: C.UTF-8
 
 jobs:
+  cmake-lint:
+    name: CMake lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check CMake files with cmakelint
+        run: |
+          pipx install cmakelint==1.4.3
+          cmakelint $(git ls-files '*CMakeLists.txt' '*.cmake')
+
   linux-basic:
     name: Linux gcc (basic)
     runs-on: ubuntu-24.04

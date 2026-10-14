@@ -9,36 +9,36 @@ add_subdirectory(libfort)
 add_executable(foo-app
     foo-app.cpp)
 target_link_libraries(foo-app
-	PRIVATE fort
+    PRIVATE fort
 )
 
 add_library(foo-lib
-	foo-lib.cpp)
+    foo-lib.cpp)
 target_link_libraries(foo-lib
-	PRIVATE libfort::fort)
+    PRIVATE libfort::fort)
 
 add_library(foo-lib-shared SHARED
-	foo-lib.cpp)
+    foo-lib.cpp)
 target_link_libraries(foo-lib-shared
-	PRIVATE libfort::fort)
+    PRIVATE libfort::fort)
 
 include(GNUInstallDirs)
 install(
-	TARGETS foo-lib foo-lib-shared
-	EXPORT ${PROJECT_NAME}-targets
-	INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    TARGETS foo-lib foo-lib-shared
+    EXPORT ${PROJECT_NAME}-targets
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 
 include(CMakePackageConfigHelpers)
 
 install(
-	EXPORT ${PROJECT_NAME}-targets
-	FILE ${PROJECT_NAME}-targets.cmake
-	NAMESPACE ${PROJECT_NAME}::
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}-targets
+    FILE ${PROJECT_NAME}-targets.cmake
+    NAMESPACE ${PROJECT_NAME}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 

@@ -76,7 +76,8 @@ endif()
 # Sanitizers
 # ------------------------------------------------------------------------------
 
-if("${FORT_COMPILER}" STREQUAL "GNU" OR "${FORT_COMPILER}" MATCHES "^(Apple)?Clang$")
+if("${FORT_COMPILER}" STREQUAL "GNU" OR
+        "${FORT_COMPILER}" MATCHES "^(Apple)?Clang$")
     # asan case
     if(FORT_BUILD_TYPE STREQUAL "asan")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
