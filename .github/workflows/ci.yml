@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [develop, master]
+    tags: ['v*']
   pull_request:
     branches: [develop, master]
   workflow_dispatch:
@@ -40,6 +41,10 @@ jobs:
         run: |
           python3 amalgamate.py
           git diff --exit-code -- lib/
+
+      # Version in headers, CMake, package tests and ChangeLog.md (and tag on release) must match
+      - name: Check version consistency
+        run: python3 check_version.py ${{ github.ref_type == 'tag' && format('--tag {0}', github.ref_name) || '' }}
 
       # Old C standard (gnu89 instead of c89 because some functions are not defined in c89)
       - name: Build lib/fort.c as gnu89
