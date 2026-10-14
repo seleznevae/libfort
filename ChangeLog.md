@@ -1,3 +1,9 @@
+## v0.5.3
+
+### Bug fixes
+
+- Count emoji and pictographs with East Asian Width `W` (Unicode 15.0) as two columns wide when calculating width of utf8 strings, so tables with emoji are aligned correctly (#77).
+
 ## v0.5.2
 
 ### Bug fixes

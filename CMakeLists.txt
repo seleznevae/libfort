@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(libfort VERSION 0.5.1)
+project(libfort VERSION 0.5.3)
 
 string(REGEX REPLACE "([0-9]+)\\.([0-9]+)\\.([0-9]+)"
     "\\1.\\2" libfort_SOVERSION
